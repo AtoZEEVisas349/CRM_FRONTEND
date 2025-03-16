@@ -3,39 +3,44 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../styles/styles.css";
+import "../../styles/styles.css";
 
-const Login = () => {
+const Signup = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    // Validation without toast
+    if (!username || !email || !password) {
       setError("All fields are required!");
       return;
     }
 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setError(""); // Clear previous errors
+
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/api/login", {
+      await axios.post("http://localhost:5000/api/signup", {
+        username,
         email,
         password,
       });
 
-      if (response.data.success) {
-        localStorage.setItem("token", response.data.token);
-        toast.success("Login successful! Redirecting...", { className: "toast-success" });
-        setTimeout(() => navigate("/dashboard"), 2000);
-      } else {
-        toast.error(response.data.message || "Login failed!", { className: "toast-error" });
-      }
+      toast.success("Signup successful! Redirecting to login...", { className: "toast-success" });
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      toast.error(error.response?.data?.message || "⚠️ An error occurred during login.", {
+      toast.error(error.response?.data?.message || "Signup failed! Try again.", {
         className: "toast-error",
       });
     } finally {
@@ -45,23 +50,32 @@ const Login = () => {
 
   return (
     <div className="container">
-      <ToastContainer position="top-right" autoClose={3000} toastClassName="toast-success" />
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="background-box-1"></div>
       <div className="background-box-2"></div>
 
       <div className="form-container">
-        <div className="left-box1">
+        <div className="left-box">
           <h2>WELCOME BACK!</h2>
-          <p>Don't have an account? Click below to sign up.</p>
-          <button className="switch-btn" onClick={() => navigate("/signup")}>
-            SIGN UP
+          <p>Already have an account? Click below to log in.</p>
+          <button className="switch-btn" onClick={() => navigate("/login")}>
+            SIGN IN
           </button>
         </div>
 
         <div className="right-box">
-          <h2>Welcome Back</h2>
+          <h2>Create Account</h2>
+          {error && <p className="error-message">{error}</p>} {/* Show validation errors here */}
           
-          <form onSubmit={handleLogin}>
+          <p>or use your email account</p>
+          <form onSubmit={handleSignup}>
+            <input
+              type="text"
+              placeholder="Username"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
             <input
               type="email"
               placeholder="Email"
@@ -76,13 +90,9 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-         
             <button type="submit" disabled={loading}>
-              {loading ? "Logging in..." : "LOGIN"}
+              {loading ? "Signing up..." : "SIGN UP"}
             </button>
-            <p className="link">
-            <a href="/forgot-password" className="forgot-password-link">Forgot Password?</a>
-           </p>
           </form>
         </div>
       </div>
@@ -90,4 +100,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

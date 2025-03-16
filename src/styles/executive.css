@@ -1,0 +1,187 @@
+/* styles/ReportCards.css */
+.e-heading {
+  margin-left: 15px;
+  margin-top: 20px;
+}
+
+.executive-app-container {
+  display: flex;
+  height: 100vh;
+}
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100% - 250px);
+  height: 60px;
+  background-color: white;
+  z-index: 100;
+  padding: 0 20px;
+  margin-left: 250px; /* To avoid overlap */
+}
+/* Report Cards Section */
+.report-cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-bottom: -20px;
+  margin-top: 30px; /* Space for fixed navbar */
+  gap: 20px;
+}
+.news h1{ 
+   margin-bottom: 10px;
+   margin-left: 20px;
+
+}
+.card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+  width: 250px;
+  height: 160px;
+  align-items: center;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.card-trend {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.card-trend.up {
+  color: #27ae60;
+}
+
+.card-trend.down {
+  color: #e74c3c;
+}
+
+.card-title {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.card-value {
+  font-size: 32px;
+  font-weight: 500;
+  color: #2d3436;
+}
+
+/* Map Section */
+.map-container {
+  grid-column: span 1;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: 170px;
+}
+
+.map {
+  height: 100%;
+  min-height: 100px;
+  position: relative;
+}
+
+.map-placeholder {
+  background-color: #e0e6ed;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dashboard-container {
+  display: flex;
+  width: 100vw; /* Full viewport width */
+  min-height: 100vh; /* Full viewport height */
+  background-color: white;
+  margin-left: 250px; /* Sidebar width */
+}
+
+.map-controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-controls button {
+  background-color: white;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.map-controls button:first-child {
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+.map-controls button:last-child {
+  border-radius: 0 0 4px 4px;
+}
+
+/* News Section */
+.news-section {
+  height: 300px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  
+}
+
+.executive-main-content {
+  margin-left: 250px;
+  width: calc(100% - 250px); /* Remaining full width */
+  padding: 20px;
+  background-color: #ffffff;
+  min-height: 100vh; /* This will allow full page height */
+  box-sizing: border-box;
+}
+
+.news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}

@@ -1,21 +1,30 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./components/Auth/Login";
+import Signup from "./components/Auth/Signup";
+import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./components/Auth/ResetPassword";
+import AdminRoutes from "./routes/AdminRoutes";
+import FollowUpRoutes from "./routes/FollowUpRoutes";
+import ExecutiveRoutes from "./routes/ExecutiveRoutes";
+import CustomerRoutes from "./routes/CustomerRoutes";
+import CloseLeadRoutes from "./routes/CloseLeadRoutes";
 
 const App = () => {
   return (
-    <Router>
       <Routes>
-        <Route path="/" element={<Navigate replace to="/signup" />} />
+        <Route path="/" element={<Navigate replace to={"/signup"} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route path="/follow-up/*" element={<FollowUpRoutes />} />
+        <Route path="/executive/*" element={<ExecutiveRoutes />} />
+        <Route path="/customer/*" element={<CustomerRoutes />} />
+        <Route path="/close-leads/*" element={<CloseLeadRoutes />} />
+
       </Routes>
-    </Router>
   );
 };
 

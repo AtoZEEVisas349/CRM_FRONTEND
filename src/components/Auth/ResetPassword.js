@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../styles/styles.css";
+import "../../styles/styles.css";
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState("");

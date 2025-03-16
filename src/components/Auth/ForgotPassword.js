@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "../styles/styles.css";
+import "../../styles/styles.css";
 import { FaLock } from "react-icons/fa"; // Importing a lock icon
 
 

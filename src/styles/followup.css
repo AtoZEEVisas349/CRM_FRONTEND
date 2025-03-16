@@ -1,0 +1,241 @@
+
+body {
+  overflow-y: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+.follow-app-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+/* Sidebar */
+.sidebar_container {
+  width: 250px;
+  height: 100vh;
+  background-color: #1e2433;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+/* Navbar */
+.navbar {
+  width: calc(100% - 250px); /* Sidebar width */
+  height: 60px;
+  background-color: white;
+  box-shadow: 0 2px 5px #ececec;
+  padding: 15px 30px;
+  margin-left: 220px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+}
+/* Main Content */
+.follow-main-content {
+  width: calc(100% - 250px); /* Full width minus sidebar */
+  margin-left: 250px; /* Sidebar width */
+  margin-top: 320px; /* Navbar height */
+  padding: 20px;
+  background-color: #fffdfd;
+  min-height: 100vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+}
+/* Client Details Container */
+.client-details-container {
+  margin-top: 30px;
+}
+
+/* Client Details Section */
+.client-details {
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  height: 180px;
+}
+
+/* Client Info */
+.client-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* User Icon Section */
+.user-icon-bg {
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-icon {
+  font-size: 20px;
+}
+.client-text {
+  display: flex;
+  flex-direction: column;
+}
+/* Client Info */
+.client-text h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.client-text p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: gray;
+}
+/* Status Badge */
+.status-badge {
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 12px;
+  border: 1px solid #ddd;
+}
+
+/* Last Follow Up */
+.last-followup {
+  flex: 1;
+  margin-left: 20px;
+  font-size: 16px;
+  color: gray;
+  margin-top: 10px;
+}
+.last-followup h5{
+  margin-bottom: 10px;
+}
+/* Close Button */
+.close-btn {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Last Review Section */
+.last-review {
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #555;
+  margin-left: 20px;
+}
+
+/* Lead Badge */
+.lead-badge {
+  background-color: #eef2f6;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #555;
+}/* Client Table */
+.client-table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.client-table th,
+.client-table td {
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+}
+.client-name {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.client-profession {
+  font-size: 12px;
+  color: gray;
+}
+.client-table th {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.client-table td {
+  font-size: 14px;
+  color: #555;
+}
+
+.followup-badge {
+  padding: 6px 10px;
+  background-color: #eaf5ff;
+  color: #007bff;
+  border-radius: 5px;
+}
+
+/* Hover Effect */
+.client-table tr:hover {
+  background-color: #f9f9f9;
+}
+/* Follow-Up Tabs */
+.followup-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.followup-tabs button {
+  margin-left: 5px;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  background: #e0e0e0;
+}
+
+.followup-tabs .active {
+  background: #2c3e50;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar_container {
+    transform: translateX(-100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    transition: 0.3s ease-in-out;
+    z-index: 1000;
+  }
+
+  .sidebar_container.active {
+    transform: translateX(0);
+  }
+
+  .navbar {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .follow-main-content {
+    margin-left: 0;
+    margin-top: 70px;
+  }
+}
