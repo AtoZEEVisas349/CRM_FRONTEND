@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../../styles/styles.css";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,30 +13,53 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     if (!email || !password) {
       setError("All fields are required!");
       return;
     }
-
+  
+    setError(""); // Clear previous errors
+  
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      });
-
-      if (response.data.success) {
-        localStorage.setItem("token", response.data.token);
-        toast.success("Login successful! Redirecting...", { className: "toast-success" });
-        setTimeout(() => navigate("/dashboard"), 2000);
-      } else {
-        toast.error(response.data.message || "Login failed!", { className: "toast-error" });
+      
+      // Get users from localStorage
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      
+      // Find user with matching email and password
+      const user = users.find(u => u.email === email && u.password === password);
+      
+      if (!user) {
+        throw new Error("Invalid email or password");
       }
+      
+      // Store user session info
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("userRole", user.role);
+      localStorage.setItem("currentUser", JSON.stringify({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }));
+      
+      toast.success("Login successful! Redirecting...");
+      
+      // Redirect based on role
+      setTimeout(() => {
+        if (user.role === "admin") {
+          navigate("/admin");
+        } else if (user.role === "executive") {
+          navigate("/executive");
+        } else {
+          navigate("/user");
+        }
+      }, 2000);
+      
     } catch (error) {
-      toast.error(error.response?.data?.message || "⚠️ An error occurred during login.", {
-        className: "toast-error",
-      });
+      console.error("Login error:", error);
+      setError(error.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,13 +67,13 @@ const Login = () => {
 
   return (
     <div className="container">
-      <ToastContainer position="top-right" autoClose={3000} toastClassName="toast-success" />
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="background-box-1"></div>
       <div className="background-box-2"></div>
 
       <div className="form-container">
-        <div className="left-box1">
-          <h2>WELCOME BACK!</h2>
+        <div className="left-box">
+          <h2>WELCOME!</h2>
           <p>Don't have an account? Click below to sign up.</p>
           <button className="switch-btn" onClick={() => navigate("/signup")}>
             SIGN UP
@@ -59,8 +81,10 @@ const Login = () => {
         </div>
 
         <div className="right-box">
-          <h2>Welcome Back</h2>
+          <h2>Login to Your Account</h2>
+          {error && <p className="error-message">{error}</p>}
           
+          <p>Enter your credentials</p>
           <form onSubmit={handleLogin}>
             <input
               type="email"
@@ -76,13 +100,10 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-         
+
             <button type="submit" disabled={loading}>
-              {loading ? "Logging in..." : "LOGIN"}
+              {loading ? "Logging in..." : "SIGN IN"}
             </button>
-            <p className="link">
-            <a href="/forgot-password" className="forgot-password-link">Forgot Password?</a>
-           </p>
           </form>
         </div>
       </div>

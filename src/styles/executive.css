@@ -161,6 +161,7 @@
 
 .executive-main-content {
   margin-left: 250px;
+  margin-top: 30px;
   width: calc(100% - 250px); /* Remaining full width */
   padding: 20px;
   background-color: #ffffff;

@@ -1,169 +1,104 @@
+.admin-sidebar {
+  width: 400px;
+  background: #1e2433;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  color: white;
+}
 
-.sidebar {
-    width: 250px;
-    background: #1e2337; /* Dark Blue */
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    overflow-y: auto;
-    color: white;
-  }
-  
-  .sidebar h2 {
-    font-size: 26px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 5px;
-  }
-  
-  .crm_label {
-    text-align: center;
-    font-size: 16px;
-    color: #b0b3c0;
-    margin-bottom: 20px;
-    margin-top: 10px;
-  }
-  
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar ul li {
-    padding: 12px 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    transition: 0.3s;
-    margin-bottom: 10px; /* Increased spacing */
-    border-radius: 5px;
-  }
-  
-  .sidebar ul li i {
-    margin-right: 12px;
-  }
-  
-  .sidebar ul li.active {
-    background: #2980b9; /* Light Blue */
-    font-weight: bold;
-  }
-  
-  .sidebar ul li:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .sidebar ul li a.sidebar-link {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    text-decoration: none;
-    color: white;
-    transition: 0.3s;
-    border-radius: 5px;
-    width: 100%;
-  }
-  
-  .sidebar ul li a.sidebar-link:active {
-    background: #2980b9;
-    font-weight: bold;
-  }
-  
-  .aside_link {
-    text-decoration: none;
-    color: white;
-  }
-  
-  .aside_icon {
-    color: #0f5472;
-    margin-right: 10px;
-  }
-  
-  /* Navbar */
-  .admin-dashboard_container {
-    margin-left: 270px;
-    padding: 20px;
-    width: calc(100% - 270px);
-    transition: margin-left 0.3s ease-in-out;
-  }
-  
-  .admin-heading1 {
-    height: 50px;
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(27, 153, 238, 0.1);
-    /* background: #2b2c41; */
-  }
-  .admin-menu_toggle {
-    display: none;
-    font-size: 24px;
-    cursor: pointer;
-    position: absolute;
-    top: 35px;
-    left: 25px;
-    background: none;
-    border: none;
-    /* color: #0f5472; */
-    color: black;
-  }
-  
-  .admin-logo_name {
-    margin: 5px 10px;
-    font-size: 20px;
-    cursor: pointer;
-    transition: color 0.03s;
-    /* color: white; */
-    color: black;
-  }
-  
-  .admin-logo_name:hover {
-    color: #0f5472;
-    /* color: white; */
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .sidebar {
+.admin-sidebar h2 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.admin-crm-label {
+  font-size: 16px;
+  color: #b0b3c0;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.admin-header-wrapper {
+  width: 50%;
+  text-align: center;
+  display: block;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar ul li {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  transition: 0.3s;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.admin-sidebar ul li i {
+  margin-right: 12px;
+}
+
+.admin-sidebar ul li.active {
+  background: #2980b9;
+  font-weight: bold;
+}
+
+.admin-sidebar ul li:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar ul li a.admin-aside-link {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.admin-sidebar ul li a.admin-aside-link:active {
+  background: #2980b9;
+  font-weight: bold;
+}
+
+.admin-aside-link {
+  text-decoration: none;
+  color: white;
+}
+
+.admin-aside-icon {
+  color: #0f5472;
+  margin-right: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-sidebar {
       transform: translateX(-100%);
-    }
-    .sidebar:active {
-      transform: translateX(0);
-    }
-    .admin-dashboard_container {
-      margin-left: 0;
-      width: 100%;
-    }
-    .admin-menu_toggle {
-      display: block;
-      font-size: 24px;
-      cursor: pointer;
-      position: absolute;
-      top: 35px;
-      left: 24px;
-      background: none;
-      border: none;
-      /* color: white; */
-    }
   }
-  
-  @media (max-width: 768px) {
-    .admin-menu_toggle {
-      display: block;
-    }
-    .sidebar {
-      transform: translateX(-100%);
-      position: fixed;
-      top: 0px;
-      left: 0px;
-      height: 100%;
-      width: 250px;
-      transition: transform 0.3s ease-in-out;
-      z-index: 1000;
-    }
-    .sidebar.active {
+  .admin-sidebar.active {
       transform: translateX(0);
-    }
   }
-  
+}

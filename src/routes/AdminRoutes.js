@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Sidebar from "../pages/admin/Sidebar";
 import Header from "../pages/admin/Header";
 import Summary from "../pages/admin/Summary";
 import DealFunnel from "../pages/admin/DealFunnel";
@@ -8,20 +7,20 @@ import OpportunityStage from "../pages/admin/OpportunityStage";
 import RevenueChart from "../pages/admin/RevenueChart";
 import ProfitChart from "../pages/admin/ProfitChart";
 import Meetings from "../pages/admin/Meetings";
-import AssignTask from "../pages/admin/AssignTask"; 
-import "../styles/admin.css";
+import AssignTask from "../pages/admin/AssignTask";
 import AdminSidebar from "../components/AdminSidebar";
+import "../styles/admin.css"
 
 const AdminRoutes = () => {
   return (
     <div className="admin-dashboard-container">
-      <AdminSidebar />
+      <AdminSidebar/>
       <main className="admin-main-content">
         <Routes>
           <Route
             path="/"
             element={
-              <>
+              <div className="dashboard-wrapper">
                 <Header />
                 <Summary />
                 <div className="charts">
@@ -33,7 +32,7 @@ const AdminRoutes = () => {
                   <ProfitChart />
                   <Meetings />
                 </div>
-              </>
+              </div>
             }
           />
 

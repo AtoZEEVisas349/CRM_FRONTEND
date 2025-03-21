@@ -22,7 +22,7 @@ const meetingsData = [
 const Meetings = () => {
   return (
     <div className="meetings-container">
-      <h3 className="meetings-header">4 Meetings Today</h3>
+      <h3 className="meetings-header">3 Meetings Today</h3>
       {meetingsData.map((meeting, index) => (
         <div
           key={index}

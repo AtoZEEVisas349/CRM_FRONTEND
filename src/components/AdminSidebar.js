@@ -1,32 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import adminsidebar from "../styles/adminsidebar.css"
+import "../styles/adminsidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFlagCheckered,
   faUsers,
   faFolderOpen,
   faFile,
   faReceipt,
   faGear,
   faBars,
-  faPhone,
-  faMessage,
-  faBell,
-  faUser,
+  faChartBar
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminSidebar = () => {
   const [isActive, setIsActive] = useState(false);
 
+  useEffect(() => {
+    const savedState = localStorage.getItem("adminSidebarActive");
+    if (savedState === "true") {
+      setIsActive(true);
+    }
+  }, []);
+
   const toggleSidebar = () => {
     setIsActive(!isActive);
+    localStorage.setItem("adminSidebarActive", !isActive);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const sidebar = document.querySelector(".sidebar");
-      const menuToggle = document.querySelector(".menu_toggle");
+      const sidebar = document.querySelector(".admin-sidebar");
+      const menuToggle = document.querySelector(".admin-menu-toggle");
       if (
         sidebar &&
         menuToggle &&
@@ -42,78 +46,59 @@ const AdminSidebar = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
   return (
     <section>
-      <aside className={`sidebar ${isActive ? "active" : ""}`}>
-        <h2>AtoZee Visas</h2>
-        <p className="crm_label">CRM</p>
+      <div className="admin-menu-toggle" onClick={toggleSidebar}>
+        <FontAwesomeIcon icon={faBars} />
+      </div>
+
+      <aside className={`admin-sidebar ${isActive ? "active" : ""}`}>
+        <div className="admin-header-wrapper">
+          <h2>AtoZee Visas</h2>
+          <p className="admin-crm-label">CRM</p>
+        </div>
         <nav>
           <ul>
             <li className="active">
-              <Link to="#" className="aside_link">
-              📊 Report
+              <Link to="/" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faChartBar} />
+                Report
               </Link>
             </li>
             <li>
-              <Link to="#" className="aside_link">
-                <span>
-                  <FontAwesomeIcon className="aside_icon" icon={faUsers} />
-                </span>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faUsers} />
                 Client
               </Link>
             </li>
             <li>
-              <Link to="#" className="aside_link" target="_blank">
-                <span>
-                  <FontAwesomeIcon className="aside_icon" icon={faFolderOpen} />
-                </span>
+              <Link to="#" className="admin-aside-link" target="_blank">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
                 Assign Task
               </Link>
             </li>
             <li>
-              <Link to="#" className="aside_link">
-                <span>
-                  <FontAwesomeIcon className="aside_icon" icon={faFile} />
-                </span>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />
                 Task Management
               </Link>
             </li>
             <li>
-              <Link to="#" className="aside_link">
-                <span>
-                  <FontAwesomeIcon className="aside_icon" icon={faReceipt} />
-                </span>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faReceipt} />
                 Invoice
               </Link>
             </li>
             <li>
-              <Link to="#" className="aside_link">
-                <span>
-                  <FontAwesomeIcon className="aside_icon" icon={faGear} />
-                </span>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faGear} />
                 Settings
               </Link>
             </li>
           </ul>
         </nav>
       </aside>
-      <section className="admin-dashboard_container">
-        <header className="admin-heading1">
-          <button
-            className="admin-menu_toggle"
-            onClick={toggleSidebar}
-            aria-expanded={isActive}
-          >
-            <FontAwesomeIcon icon={faBars} />
-          </button>
-          <div className="admin-logo">
-            <FontAwesomeIcon className="admin-logo_name" icon={faPhone} />
-            <FontAwesomeIcon className="admin-logo_name" icon={faMessage} />
-            <FontAwesomeIcon className="admin-logo_name" icon={faBell} />
-            <FontAwesomeIcon className="admin-logo_name" icon={faUser} />
-          </div>
-        </header>
-      </section>
     </section>
   );
 };

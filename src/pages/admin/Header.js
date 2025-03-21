@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import { 
-  FaPhone, FaEnvelope, FaBell, FaUser, 
   FaFilter, FaCalendarAlt, FaChevronDown 
 } from "react-icons/fa";
 import DatePicker from "react-datepicker";  
 import "react-datepicker/dist/react-datepicker.css"; 
+import AdminNav from "./AdminNav";
 
 const Header = () => {
   const today = new Date();
@@ -14,9 +14,10 @@ const Header = () => {
   const datepickerRef = useRef(null);
 
   return (
+    <>
+    <AdminNav/>
     <header className="header">
       <h1>Dashboard</h1>
-
       <div className="header-right">
         {/* Date Picker with Dropdown Icon and Filter Icon */}
         <div className="date-filter">
@@ -46,6 +47,7 @@ const Header = () => {
         </div>
       </div>
     </header>
+    </>
   );
 };
 
