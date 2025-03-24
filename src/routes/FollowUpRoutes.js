@@ -25,7 +25,7 @@ const FollowUpRoutes = () => {
             </button>
           ))}
         </div>
-        <ClientTable />
+        <ClientTable filter={activeTab} />
       </div>
     </div>
   );
