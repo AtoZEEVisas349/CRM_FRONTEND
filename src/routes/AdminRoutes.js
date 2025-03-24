@@ -37,8 +37,8 @@ const AdminRoutes = () => {
           />
 
           {/* Assign Task Page */}
-          <Route path="/assign-task" element={<AssignTask />} />
-        </Routes>
+          <Route path="assign-task" element={<AssignTask />} />
+          </Routes>
       </main>
     </div>
   );

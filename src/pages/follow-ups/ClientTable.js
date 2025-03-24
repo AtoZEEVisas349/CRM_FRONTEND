@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const clients = [
   { name: "Cody Fisher", profession: "Fashion Designer", phone: "(212) 535-8263", email: "jacobjackson1988@yahoo.com", followUp: "Call today" },
@@ -12,19 +13,17 @@ const clients = [
 const ClientTable = () => {
   const [editableIndex, setEditableIndex] = useState(null);
   const [followUps, setFollowUps] = useState(clients.map(client => client.followUp));
+  const navigate = useNavigate();
 
-  const handleEdit = (index) => {
-    setEditableIndex(index);
+  const handleEdit = (clientName) => {
+    // Navigate to the client details page with the client's name as a URL parameter
+    navigate(`/clients/${encodeURIComponent(clientName)}`);
   };
 
   const handleChange = (event, index) => {
     const updatedFollowUps = [...followUps];
     updatedFollowUps[index] = event.target.value;
     setFollowUps(updatedFollowUps);
-  };
-
-  const handleBlur = () => {
-    setEditableIndex(null);
   };
 
   return (
@@ -56,20 +55,10 @@ const ClientTable = () => {
             <td>{client.phone}</td>
             <td>{client.email}</td>
             <td>
-              {editableIndex === index ? (
-                <input
-                  type="text"
-                  value={followUps[index]}
-                  onChange={(e) => handleChange(e, index)}
-                  onBlur={handleBlur}
-                  autoFocus
-                />
-              ) : (
-                <span className="followup-badge">{followUps[index]}</span>
-              )}
+              <span className="followup-badge">{followUps[index]}</span>
               <span
                 className="edit-icon"
-                onClick={() => handleEdit(index)}
+                onClick={() => handleEdit(client.name)}
                 style={{ marginLeft: "10px", cursor: "pointer" }}
               >
                 ✏️

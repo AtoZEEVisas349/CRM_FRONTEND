@@ -4,9 +4,9 @@
 /* Close Leads Main Section */
 .close-leads-main {
   margin-left: 250px; /* Same as sidebar width */
-  margin-top: 80px; /* Navbar height */
+  margin-top: 100px; /* Navbar height */
   padding: 20px;
-  background-color: #fcf8f8;
+  background-color: #ffffff;
   min-height: 100vh; /* This will cover the full screen */
   width: calc(95vw - 200px); /* Full width */
   overflow-y: auto;
@@ -36,7 +36,7 @@
   height: 60px;
   display: flex;
   align-items: center;
-  gap: 60%; /* Reduced gap */
+  gap:67%; /* Reduced gap */
   margin-bottom: 20px;
   padding: 0 20px; /* Add padding for spacing */
 }
@@ -45,7 +45,7 @@
   font-size: 28px;
   font-weight: bold;
   color: #333;
-  margin-left: -15px;
+  margin-left: -20px;
 }
 
 .top_bar_btn {
@@ -97,7 +97,6 @@
     justify-content: flex-end;
     padding: 0px;
   }
-  
   .table_bar {
     margin: 0 10px;
     font-size: 25px;

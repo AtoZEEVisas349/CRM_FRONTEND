@@ -99,7 +99,7 @@ const SidebarandNavbar = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link to="#" className="submenu_item">
+                      <Link to="/customer" className="submenu_item">
                         <span className="submenu_icon">
                           <FontAwesomeIcon icon={faClock} />
                         </span>

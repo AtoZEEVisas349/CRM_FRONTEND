@@ -6,7 +6,7 @@ const NavSearch = () => {
   return (
     <>
       <div className="top_bar">
-        <h1 className="c-heading">Close Leads</h1>
+        <h1 className="c-heading">CloseLeads</h1>
         <div className="top_bar_btn">
           <button className="add_btn">+ New</button>
           <div className="c-search_bar">

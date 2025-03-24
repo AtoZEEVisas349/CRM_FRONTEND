@@ -61,7 +61,7 @@ const AdminSidebar = () => {
         <nav>
           <ul>
             <li className="active">
-              <Link to="/" className="admin-aside-link">
+              <Link to="#" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faChartBar} />
                 Report
               </Link>
@@ -73,11 +73,12 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
-              <Link to="#" className="admin-aside-link" target="_blank">
+              <a href="/admin/assign-task" target="_blank" rel="noopener noreferrer" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
                 Assign Task
-              </Link>
+              </a>
             </li>
+
             <li>
               <Link to="#" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />

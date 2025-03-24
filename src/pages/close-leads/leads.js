@@ -6,7 +6,7 @@ import { faTableCellsLarge, faBars } from "@fortawesome/free-solid-svg-icons";
 const leads = () => {
   return (
     <>
-      <div className="c-heading2">
+     <div className="c-heading2">
         <select className="filter_dropdown">
           <option>Group by: Stage</option>
         </select>
@@ -14,6 +14,8 @@ const leads = () => {
         <FontAwesomeIcon className="table_bar" icon={faBars} />
       </div>
       <h2 className="Total_leads">Total leads: 25</h2>
+     
+
       <div className="country_container">
         {asserts.map((countryData, index) => {
           return (
