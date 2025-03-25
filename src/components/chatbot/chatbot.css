@@ -1,0 +1,176 @@
+/* Full-Screen Chat with Soft Light Theme */
+.chat-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #000913, #000c1f); /* Light gradient */
+    margin: 0;
+    padding: 0;
+}
+
+/* Chat Container with Glassmorphic Effect */
+.chat-container {
+    width: calc(100vw - 30px);
+    height: calc(100vh - 30px);
+    background: rgba(235, 232, 232, 0.993);
+    backdrop-filter: blur(15px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* Header with New Elegant Gradient */
+.chat-header {
+    background: linear-gradient(105deg, #6a11cb, #2575fc); /* Purple to Blue Gradient */
+    color: white;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat Messages Area */
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Custom Scrollbar */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+/* Message Bubbles */
+.message {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+    word-wrap: break-word;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-in-out;
+}
+/* Bot Message */
+.bot-message {
+    align-self: flex-start;
+    background: #e2d5f7; 
+    color: #000000; 
+    padding: 10px 16px;
+    border-radius: 18px;
+    margin: 4px;
+    box-shadow: 1px 3px 6px rgba(0, 0, 0, 0.1);
+    max-width: 70%;
+}
+
+/* User Message */
+.user-message {
+    align-self: flex-end;
+    background: #daeafa;
+    color: #0A223E; 
+    padding: 10px 16px;
+    border-radius: 18px;
+    margin: 4px;
+    box-shadow: 1px 3px 6px rgba(0, 0, 0, 0.1);
+    max-width: 70%;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chat Input Section */
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: rgba(212, 210, 252, 0.6);
+    backdrop-filter: blur(12px);
+    gap: 15px;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+/* Input Field */
+.chat-input-container input {
+    width: 95%;
+    padding: 12px;
+    border: 2px solid #8A6ED5; 
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    color: #333;
+    padding-left: 15px;
+    transition: 0.3s ease-in-out;
+    outline: none; 
+}
+
+/* Input Field Focus Effect */
+.chat-input-container input:focus {
+    border-color: #6DA9F7;
+    box-shadow: 0px 0px 8px rgba(109, 169, 247, 0.5);
+    background: rgba(255, 255, 255, 1);
+}
+
+.chat-input-container input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Buttons */
+.chat-input-container button {
+    background: #024abe; /* User Message Color */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover Effects */
+.chat-input-container button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px rgba(79, 146, 255, 0.5);
+}
+
+/* Microphone Button */
+.mic-button {
+    background: #f5610b !important; /* Soft Orange */
+}
+
+.mic-button:hover {
+    box-shadow: 0px 0px 10px rgba(245, 158, 11, 0.5);
+}

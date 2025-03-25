@@ -9,6 +9,7 @@ import ExecutiveRoutes from "./routes/ExecutiveRoutes";
 import CustomerRoutes from "./routes/CustomerRoutes";
 import CloseLeadRoutes from "./routes/CloseLeadRoutes";
 import ClientRoutes from "./routes/ClientRoutes";
+import ChatBotRoutes from "./routes/ChatBotRoutes";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/customer/*" element={<CustomerRoutes />} />
         <Route path="/close-leads/*" element={<CloseLeadRoutes />} />
         <Route path="/clients/*" element={<ClientRoutes />} />
+        <Route path="/chatBot/*" element={<ChatBotRoutes/>} />
       </Routes>
   );
 };

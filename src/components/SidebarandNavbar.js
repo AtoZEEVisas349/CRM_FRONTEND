@@ -16,6 +16,7 @@ import {
   faCircleQuestion,
   faBell,
   faCircleUser,
+  faRobot, // Import bot icon
 } from "@fortawesome/free-solid-svg-icons";
 
 const SidebarandNavbar = () => {
@@ -45,6 +46,7 @@ const SidebarandNavbar = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
   return (
     <section className="sidebar_navbar">
       <section className={`sidebar_container ${isActive ? "active" : ""}`}>
@@ -75,7 +77,7 @@ const SidebarandNavbar = () => {
                   <FontAwesomeIcon icon={faUserPlus} />
                 </span>
                 Leads
-                <span className="dropdown_icon" style={{ marginLeft: '50%', fontSize: '12px' }}>
+                <span className="dropdown_icon" style={{ marginLeft: "50%", fontSize: "12px" }}>
                   ▼
                 </span>
               </Link>
@@ -162,6 +164,12 @@ const SidebarandNavbar = () => {
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
           <FontAwesomeIcon className="navbar_icon" icon={faBell} />
           <FontAwesomeIcon className="navbar_icon" icon={faCircleUser} />
+          <FontAwesomeIcon 
+    className="navbar_icon bot_icon" 
+    icon={faRobot} 
+    onClick={() => window.open("/chatbot", "_blank")}
+    style={{ cursor: "pointer" }}
+/>
         </div>
       </section>
     </section>
