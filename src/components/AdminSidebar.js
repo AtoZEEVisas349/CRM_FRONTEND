@@ -80,7 +80,7 @@ const AdminSidebar = () => {
             </li>
 
             <li>
-              <Link to="#" className="admin-aside-link">
+              <Link to="/taskManagement" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />
                 Task Management
               </Link>

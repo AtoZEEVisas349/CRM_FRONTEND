@@ -25,7 +25,7 @@ const ClientDetail= () => {
               <div className="c-info">
                 <div className="info-item">
                   <span className="label">Name -</span>
-                  <span className="value">Cody Fisher</span>
+                  <span clasnsName="value">Cody Fisher</span>
                 </div>
                 <div className="info-item">
                   <span className="label">Email -</span>

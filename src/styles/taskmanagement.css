@@ -1,0 +1,141 @@
+/* LeadsDashboard.css */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .leads-dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin-left: 250px;
+    padding: 20px;
+    min-height: 100vh;
+    width: 80%;
+    background-color: #f4f4f4;
+  }
+  .container-icon{
+    background-color: grey;
+    border-radius: 250px;
+    margin-left: 35px;
+    padding: 6px;
+  }
+  .Logo{
+    font-weight: bolder;
+    margin-left: 20px;
+    margin-top: 10px;
+    font-size: x-large;
+  }
+  
+  .taskmanage-header {
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    margin-left: 20px;
+    width: 74.5vw;
+}
+  
+.header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+}
+  
+  .header-actions select{
+    width: 36vw;
+    padding: 5px 10px;
+    margin: 5px 0;
+  }
+  
+  .main-content {
+    display: flex;
+    flex: 1;
+  }
+  
+  .leads-table {
+    flex: 3;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .leads-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .source-header {
+    margin-left: auto;
+    margin-right: 30px;
+  }
+  
+  .assign-header {
+    margin-right: 350px;
+  }
+  
+  .lead-row {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
+  
+  .lead-details {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+  }
+  
+  .lead-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .lead-info span {
+    margin-bottom: 5px;
+    margin-left: 30px;
+    width: 100%;
+  }
+  
+  .lead-source {
+    flex: 0 0 100px;
+    text-align: center;
+    margin-right: 20px;
+  }
+  
+  .lead-assign {
+    flex: 0 0 100px;
+    text-align: center;
+    margin-right: 20px;
+  }
+  
+  .lead-actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .lead-actions button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  .header-sort-filter button{
+    padding: 8px;
+    border: 2px solid #007bff;
+    color: #007bff;
+    margin-left: 5px; 
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .header-sort-filter button:hover{
+    border-color: #8abdf3;
+    color: #8abdf3;
+  }
+  .header-sort-filter .reset{
+   border-color: #8abdf3;
+   color: #8abdf3;
+  }
+
+  .edit { background-color: #007bff; color: white; border-radius: 5px; border-color: #f0f0f0;}
+  .delete { background-color: #dc3545; color: white; border-radius: 5px; border-color: #f0f0f0; }
+  .follow-up { background-color: #ffc107; color: black; border-radius: 5px; border-color: #f0f0f0;}
+  .whatsapp { background-color: #28a745; color: white; border-radius: 5px; border-color: #f0f0f0;}
