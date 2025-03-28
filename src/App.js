@@ -10,7 +10,8 @@ import CustomerRoutes from "./routes/CustomerRoutes";
 import CloseLeadRoutes from "./routes/CloseLeadRoutes";
 import ClientRoutes from "./routes/ClientRoutes";
 import ChatBotRoutes from "./routes/ChatBotRoutes";
-import LeadAssignRoute from "./routes/LeadAssignRoute";
+import FreshLeadRoutes from "./routes/FreshLeadRoutes";
+import LeadAssignRoutes from "./routes/LeadAssignRoute";
 
 const App = () => {
   return (
@@ -27,7 +28,8 @@ const App = () => {
         <Route path="/close-leads/*" element={<CloseLeadRoutes />} />
         <Route path="/clients/*" element={<ClientRoutes />} />
         <Route path="/chatBot/*" element={<ChatBotRoutes/>} />
-        <Route path="/taskManagement/*" element={<LeadAssignRoute/>} />
+        <Route path="/leadassign/*" element={<LeadAssignRoutes/>} />
+        <Route path="/freshlead/*" element={<FreshLeadRoutes/>} />
       </Routes>
   );
 };

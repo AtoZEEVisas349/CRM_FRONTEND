@@ -8,8 +8,9 @@ const Chat = () => {
     const [userInput, setUserInput] = useState("");
     const chatContainerRef = useRef(null);
     const [isTyping, setIsTyping] = useState(false);
-    const [isListening, setIsListening] = useState(false); // State to track mic status
-    const recognitionRef = useRef(null); // Store SpeechRecognition instance
+    const [isListening, setIsListening] = useState(false);
+    const [isManuallyStopped, setIsManuallyStopped] = useState(false);
+    const recognitionRef = useRef(null);
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -17,24 +18,30 @@ const Chat = () => {
         }
     }, [messages]);
 
-    // Initialize SpeechRecognition only when the mic button is clicked
     const handleMicClick = () => {
-        if (!recognitionRef.current) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Speech recognition is not supported in this browser.");
-                return;
-            }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Speech recognition is not supported in this browser.");
+            return;
+        }
 
+        if (!recognitionRef.current) {
             recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
+            recognitionRef.current.continuous = true; // Keep listening until stopped manually
+            recognitionRef.current.interimResults = false; // Only final results
             recognitionRef.current.lang = "en-US";
 
             recognitionRef.current.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setUserInput(transcript);
-                setTimeout(() => handleSend(transcript), 500);
+                let finalTranscript = "";
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    finalTranscript += event.results[i][0].transcript + " ";
+                }
+                finalTranscript = finalTranscript.trim();
+
+                if (finalTranscript) {
+                    setUserInput(finalTranscript);
+                    handleSend(finalTranscript); // Send instantly
+                }
             };
 
             recognitionRef.current.onerror = (event) => {
@@ -43,23 +50,27 @@ const Chat = () => {
             };
 
             recognitionRef.current.onend = () => {
-                setIsListening(false);
+                if (!isManuallyStopped) {
+                    recognitionRef.current.start(); // Restart if not manually stopped
+                } else {
+                    setIsListening(false);
+                }
             };
         }
 
         if (!isListening) {
+            setIsManuallyStopped(false); // Reset manual stop flag
             recognitionRef.current.start();
             setIsListening(true);
         } else {
+            setIsManuallyStopped(true); // Mark as manually stopped
             recognitionRef.current.stop();
             setIsListening(false);
         }
     };
 
-    const handleSend = async (input = userInput) => {
+    const handleSend = async (input) => {
         if (!input.trim()) return;
-
-        // Add user message to chat
         setMessages((prev) => [...prev, { text: input, isUser: true }]);
         setUserInput("");
         setIsTyping(true);
@@ -68,29 +79,16 @@ const Chat = () => {
             const response = await fetch("http://localhost:5000/api/chatbot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: input }), // ✅ Fixed: Ensure the key matches backend
+                body: JSON.stringify({ prompt: input }),
             });
-
             const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to fetch response");
-            }
-
-            setMessages((prev) => [...prev, { text: data.message, isUser: false }]); // ✅ Fixed: Correct response key
+            if (!response.ok) throw new Error(data.error || "Failed to fetch response");
+            setMessages((prev) => [...prev, { text: data.message, isUser: false }]);
         } catch (error) {
             console.error("Error:", error);
             setMessages((prev) => [...prev, { text: "Error: Unable to get response.", isUser: false }]);
         } finally {
             setIsTyping(false);
-        }
-    };
-
-    // ✅ Fixed: Define handleKeyDown to prevent ESLint error
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault(); // Prevents new line on Enter key
-            handleSend();
         }
     };
 
@@ -117,13 +115,15 @@ const Chat = () => {
                         type="text" 
                         value={userInput} 
                         onChange={(e) => setUserInput(e.target.value)} 
-                        onKeyDown={handleKeyDown} // ✅ Fixed: Now defined properly
                         placeholder="Type your message..." 
                     />
-                    <button onClick={() => handleSend()} className="send-button"><FaPaperPlane /></button>
-                    <button onClick={handleMicClick} className={`mic-button ${isListening ? "active" : ""}`}>
-                        <FaMicrophone />
+                    <button onClick={() => handleSend(userInput)} className="send-button">
+                        <FaPaperPlane />
                     </button>
+                    <button onClick={handleMicClick} className={`mic-button ${isListening ? "active" : ""}`}>
+                       <FaMicrophone />
+                   </button>
+
                 </div>
             </div>
         </div>

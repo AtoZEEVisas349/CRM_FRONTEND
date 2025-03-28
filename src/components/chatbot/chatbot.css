@@ -24,9 +24,8 @@
     overflow: hidden;
 }
 
-/* Header with New Elegant Gradient */
 .chat-header {
-    background: linear-gradient(105deg, #6a11cb, #2575fc); /* Purple to Blue Gradient */
+    background: #334164; /* Light gradient */
     color: white;
     text-align: center;
     font-size: 22px;
@@ -36,7 +35,7 @@
     justify-content: center;
     gap: 10px;
     padding: 16px;
-    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Chat Messages Area */

@@ -61,7 +61,7 @@ const AdminSidebar = () => {
         <nav>
           <ul>
             <li className="active">
-              <Link to="#" className="admin-aside-link">
+              <Link to="/admin" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faChartBar} />
                 Report
               </Link>
@@ -80,7 +80,7 @@ const AdminSidebar = () => {
             </li>
 
             <li>
-              <Link to="/taskManagement" className="admin-aside-link">
+              <Link to="/leadassign" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />
                 Task Management
               </Link>

@@ -1,9 +1,10 @@
 import React from 'react'
-import AdminSidebar from '../components/AdminSidebar'
-import TaskManagement from '../pages/LeadAssign/TaskManagement'
-import '../styles/leadassign.css'
+import AdminSidebar from '../components/AdminSidebar';
+import TaskManagement from '../pages/LeadAssign/TaskManagement';
+import '../styles/leadAssign.css';
 
-function LeadAssignRoute() {
+
+function LeadAssignRoutes() {
   return (
     <div className="lead-assign-container">
       <div className='lead-sidebar'>
@@ -16,4 +17,4 @@ function LeadAssignRoute() {
   )
 }
 
-export default LeadAssignRoute
+export default LeadAssignRoutes;

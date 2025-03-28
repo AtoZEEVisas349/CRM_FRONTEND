@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -13,46 +12,43 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     if (!email || !password) {
       setError("All fields are required!");
       return;
     }
-  
+
     setError(""); // Clear previous errors
-  
+
     try {
       setLoading(true);
-      
-      // Get users from localStorage
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      
-      // Find user with matching email and password
-      const user = users.find(u => u.email === email && u.password === password);
-      
-      if (!user) {
-        throw new Error("Invalid email or password");
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed!");
       }
-      
-      // Store user session info
-      localStorage.setItem("token", user.token);
-      localStorage.setItem("userRole", user.role);
-      localStorage.setItem("currentUser", JSON.stringify({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role
-      }));
-      
+
+      // Store user data in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userRole", data.user.role);
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+
       toast.success("Login successful! Redirecting...");
-      
-      // Redirect based on role
+
       setTimeout(() => {
-        if (user.role === "admin") {
+        if (data.user.role === "Admin") {
           navigate("/admin");
-        } else if (user.role === "executive") {
+        } else if (data.user.role === "Executive") {
           navigate("/executive");
-        } else {
+        } else if (data.user.role === "TL") {
           navigate("/user");
         }
       }, 2000);
@@ -83,7 +79,7 @@ const Login = () => {
         <div className="right-box">
           <h2>Login to Your Account</h2>
           {error && <p className="error-message">{error}</p>}
-          
+
           <p>Enter your credentials</p>
           <form onSubmit={handleLogin}>
             <input

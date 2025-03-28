@@ -85,7 +85,7 @@ const SidebarandNavbar = () => {
                 {isOpen && (
                   <ul className="submenu_nav">
                     <li>
-                      <Link to="#" className="sidebar_nav">
+                      <Link to="/freshlead" className="sidebar_nav">
                         <span className="sidebar_icon">
                           <FontAwesomeIcon icon={faUsers} />
                         </span>
