@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "../../styles/styles.css";
+import { forgotPassword } from "../../api/auth"; // Import API function
 import { FaLock } from "react-icons/fa"; // Importing a lock icon
 
 
@@ -20,12 +21,12 @@ const ForgotPassword = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post("http://localhost:5000/api/forgot-password", { email });
+            const data = await forgotPassword(email); // Call API function
 
-            toast.success(response.data.message);
+            toast.success(data.message);
             navigate("/login"); // Redirect to login after showing success
         } catch (error) {
-            toast.error(error.response?.data?.error || "Failed to send reset link!");
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }

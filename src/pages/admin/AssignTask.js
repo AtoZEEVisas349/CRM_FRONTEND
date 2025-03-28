@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { uploadFile } from "../../api/fileUpload";
 
 const AssignTask = () => {
   const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -10,27 +13,22 @@ const AssignTask = () => {
 
   const handleUpload = async () => {
     if (!file) {
-      alert("Please select a file first!");
+      setError("Please select a file first!");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
+    setError("");
+    setSuccess("");
+    setUploading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/client-leads/upload",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      console.log(response.data);
-      alert("File uploaded successfully!");
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("File upload failed!");
+      const response = await uploadFile(file); // Call API function
+      setSuccess("File uploaded successfully!");
+      console.log("Upload Response:", response);
+    } catch (err) {
+      setError(err.message || "File upload failed!");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -39,8 +37,17 @@ const AssignTask = () => {
       <div className="background-text">AtoZeeVisas</div>
       <div className="assign-task">
         <h2>Upload File</h2>
+
+        {/* Display error message */}
+        {error && <p className="error-message">{error}</p>}
+
+        {/* Display success message */}
+        {success && <p className="success-message">{success}</p>}
+
         <input type="file" onChange={handleFileChange} accept=".csv, .xlsx" />
-        <button onClick={handleUpload}>Upload</button>
+        <button onClick={handleUpload} disabled={uploading}>
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
       </div>
     </div>
   );

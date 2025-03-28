@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } from "../../api/apiService";
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
@@ -7,44 +7,32 @@ const TaskManagement = () => {
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
 
-  // Fetch Leads
+  // ✅ Fetch Leads
   const fetchLeads = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/client-leads/getClients");
-      setLeads(response.data.leads);
+      const data = await fetchLeadsAPI();
+      setLeads(data);
     } catch (error) {
-      console.error("Error fetching leads:", error);
+      console.error("❌ Failed to load leads:", error);
     }
   };
 
-// Fetch Executives
-const fetchExecutives = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.get("http://localhost:5000/api/executives", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    console.log("Fetched Executives:", response.data); // Log the response
-
-    if (response.data.executives) {
-      setExecutives(response.data.executives);
-      console.log("✔ Executives Set:", response.data.executives);
-    } else {
-      console.log("⚠ No executives found!");
+  // ✅ Fetch Executives
+  const fetchExecutives = async () => {
+    try {
+      const data = await fetchExecutivesAPI();
+      setExecutives(data);
+    } catch (error) {
+      console.error("❌ Failed to load executives:", error);
     }
-  } catch (error) {
-    console.error("❌ Error fetching executives:", error.response?.data || error.message);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchLeads();
     fetchExecutives();
   }, []);
 
-  // Handle Select Executive
+  // Handle Executive Selection
   const handleExecutiveChange = (event) => {
     setSelectedExecutive(event.target.value);
   };
@@ -67,55 +55,39 @@ const fetchExecutives = async () => {
     }
   };
 
+  // ✅ Assign Leads
   const assignLeads = async () => {
     if (!selectedExecutive) {
       alert("Please select an executive before assigning leads.");
       return;
     }
-  
+
     if (selectedLeads.length === 0) {
       alert("Please select at least one lead to assign.");
       return;
     }
-  
-    // Find the selected executive's details (convert IDs to numbers if necessary)
+
     const executive = executives.find((exec) => String(exec.id) === String(selectedExecutive));
-    
     if (!executive) {
       alert("Invalid executive selected.");
-      console.error("❌ Executive not found in the list. Executives:", executives, "Selected ID:", selectedExecutive);
       return;
     }
-  
+
     try {
       await Promise.all(
         selectedLeads.map(async (leadId) => {
-          console.log(`🔄 Assigning Lead ID: ${leadId} to Executive: ${executive.username}`);
-  
-          const response = await axios.put(
-            `http://localhost:5000/api/client-leads/assign-executive/${leadId}`,
-            {
-              executiveId: executive.id, // Correct executive ID
-              executiveName: executive.username, // Correct executive name
-            },
-            {
-              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            }
-          );
-  
-          console.log(`✅ Lead ${leadId} assigned successfully:`, response.data);
+          await assignLeadAPI(leadId, executive.id, executive.username);
         })
       );
-  
+
       alert("Leads assigned successfully!");
       fetchLeads(); // Refresh the leads list
       setSelectedLeads([]); // Reset selection
     } catch (error) {
-      console.error("❌ Error assigning leads:", error.response?.data || error.message);
-      alert("Failed to assign leads. Check the console for details.");
+      console.error("❌ Error assigning leads:", error);
+      alert("Failed to assign leads.");
     }
   };
-  
   
   return (
     <div className="leads-dashboard">

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { signupUser } from "../../api/auth"; // Import API function
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -25,67 +26,36 @@ const Signup = () => {
       return;
     }
   
-    const roleMapping = {
-      admin: "Admin",
-      executive: "Executive",
-      user: "TL",
-    };
-  
-    const mappedRole = roleMapping[role];
-  
     setError("");
-  
+
     try {
-      setLoading(true);
-      console.log("Signup Request Payload:", {
-        username,
-        email,
-        password,
-        role: mappedRole,
-      });
-  
-      const response = await fetch("http://localhost:5000/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          role: mappedRole,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.error || "Signup failed!");
-      }
-  
-      toast.success("Signup successful! Redirecting...");
-  
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userRole", mappedRole);
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          id: data.user.id,
-          username: data.user.username,
-          email: data.user.email,
-          role: data.user.role,
-        })
-      );
-  
-      setTimeout(() => {
-        navigate(mappedRole === "Admin" ? "/admin" : mappedRole === "Executive" ? "/executive" : "/user");
-      }, 2000);
+        setLoading(true);
+        const data = await signupUser(username, email, password, role); // Call API function
+
+        toast.success("Signup successful! Redirecting...");
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userRole", data.user.role);
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify({
+                id: data.user.id,
+                username: data.user.username,
+                email: data.user.email,
+                role: data.user.role,
+            })
+        );
+
+        setTimeout(() => {
+            navigate(data.user.role === "Admin" ? "/admin" : data.user.role === "Executive" ? "/executive" : "/user");
+        }, 2000);
     } catch (error) {
-      console.error("Signup error:", error);
-      setError(error.message || "Signup failed!");
+        console.error("Signup error:", error);
+        setError(error.message);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
-  
+};
 
   return (
     <div className="container">

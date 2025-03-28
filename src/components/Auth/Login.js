@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { loginUser } from "../../api/auth"; // Import API function
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
@@ -22,19 +23,7 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed!");
-      }
+      const data = await loginUser(email, password); // Call API function
 
       // Store user data in localStorage
       localStorage.setItem("token", data.token);
@@ -55,7 +44,7 @@ const Login = () => {
       
     } catch (error) {
       console.error("Login error:", error);
-      setError(error.message || "Login failed. Please try again.");
+      setError(error.message);
     } finally {
       setLoading(false);
     }

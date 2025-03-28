@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { FaPhone } from "react-icons/fa"; // For the phone icon
+import { FaPhone } from "react-icons/fa";
+import { fetchAssignedLeads } from "../../api/apiService"; // Import API service
 
 const FreshLeads = () => {
   const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchAssignedLeads();
+    getLeads();
   }, []);
 
-  const fetchAssignedLeads = async () => {
+  const getLeads = async () => {
     try {
-      const token = localStorage.getItem("token"); // Get token if required
-      const executiveName = "testing"; // Use logged-in executive's name dynamically
-      
-      const response = await axios.get(
-        `http://localhost:5000/api/client-leads/executive?executiveName=${executiveName}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      setLeads(response.data.leads);
-    } catch (error) {
-      console.error("Error fetching assigned leads:", error);
+      setLoading(true);
+      setError("");
+
+      const executiveName = localStorage.getItem("executiveName") || "defaultUser";
+      const data = await fetchAssignedLeads(executiveName);
+
+      setLeads(data);
+    } catch (err) {
+      setError("Failed to load leads. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 

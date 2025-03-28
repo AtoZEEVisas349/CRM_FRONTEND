@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/styles.css";
+import { resetPassword } from "../../api/auth"; // Import API function
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState("");
@@ -20,21 +21,19 @@ const ResetPassword = () => {
         return;
       }
   
+   
       try {
         setLoading(true);
-        const response = await axios.post("http://localhost:5000/api/reset-password", {
-          token,
-          newPassword,
-        });
-  
-        toast.success(response.data.message);
-        navigate("/login"); // Redirect to login after resetting password
-      } catch (error) {
-        toast.error(error.response?.data?.error || "Failed to reset password!");
-      } finally {
+        const data = await resetPassword(token, newPassword); // Call API function
+
+        toast.success(data.message);
+        navigate("/login"); // Redirect to login after success
+    } catch (error) {
+        toast.error(error.message);
+    } finally {
         setLoading(false);
-      }
-    };
+    }
+};
   
     return (
       <div className="auth-container">
