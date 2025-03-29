@@ -18,6 +18,22 @@ const Chat = () => {
         }
     }, [messages]);
 
+    // ✅ Function to Validate If Input Is a Question
+    function isValidQuestion(text) {
+        const questionWords = ["what", "who", "where", "when", "why", "how", "which", "does", "is", "can", "could", "should", "would", "may", "might"];
+        
+        const lowerText = text.toLowerCase();
+
+        // ✅ Check for question mark or question words at the beginning
+        if (lowerText.endsWith("?") || questionWords.some(word => lowerText.startsWith(word))) {
+            return true;
+        }
+
+        // ✅ Check for Hindi & other language patterns (basic keywords)
+        const hindiQuestionWords = ["क्या", "कैसे", "कौन", "कब", "क्यों", "कितना", "किधर", "कौनसा"];
+        return hindiQuestionWords.some(word => lowerText.includes(word));
+    }
+
     const handleMicClick = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
@@ -39,8 +55,13 @@ const Chat = () => {
                 finalTranscript = finalTranscript.trim();
 
                 if (finalTranscript) {
-                    setUserInput(finalTranscript);
-                    handleSend(finalTranscript); // Send instantly
+                    // ✅ Process only if it's a valid question
+                    if (isValidQuestion(finalTranscript)) {
+                        setUserInput(finalTranscript);
+                        handleSend(finalTranscript);
+                    } else {
+                        setMessages((prev) => [...prev, { text: "Please ask a valid question.", isUser: false }]);
+                    }
                 }
             };
 
@@ -71,6 +92,13 @@ const Chat = () => {
 
     const handleSend = async (input) => {
         if (!input.trim()) return;
+
+        // ✅ Process only valid questions
+        if (!isValidQuestion(input)) {
+            setMessages((prev) => [...prev, { text: "Please ask a valid question.", isUser: false }]);
+            return;
+        }
+
         setMessages((prev) => [...prev, { text: input, isUser: true }]);
         setUserInput("");
         setIsTyping(true);
@@ -121,9 +149,8 @@ const Chat = () => {
                         <FaPaperPlane />
                     </button>
                     <button onClick={handleMicClick} className={`mic-button ${isListening ? "active" : ""}`}>
-                       <FaMicrophone />
-                   </button>
-
+                        <FaMicrophone />
+                    </button>
                 </div>
             </div>
         </div>
