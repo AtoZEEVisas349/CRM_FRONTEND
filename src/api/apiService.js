@@ -1,14 +1,17 @@
 import axios from "axios";
 
+// ✅ Define API Base URL
+const API_BASE_URL = "http://localhost:5000/api"; // Change if needed
+
 // Create an Axios instance with base settings
 const apiService = axios.create({
-  baseURL: "http://localhost:5000/api", // Replace with your backend URL
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Automatically attach token to requests (if available)
+// ✅ Automatically attach token to requests (if available)
 apiService.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -32,8 +35,17 @@ export const fetchLeadsAPI = async () => {
 };
 
 // ✅ Function to fetch assigned leads by executive name
-export const fetchAssignedLeads = async (executiveName) => {
+export const fetchAssignedLeads = async () => {
   try {
+    const executiveName = localStorage.getItem("executiveName");
+
+    if (!executiveName) {
+      console.error("🚨 Executive name missing in localStorage!");
+      throw new Error("Executive name not found in localStorage!");
+    }
+
+    console.log("🔍 Fetching leads for:", executiveName);
+
     const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
     return response.data.leads;
   } catch (error) {
@@ -41,6 +53,7 @@ export const fetchAssignedLeads = async (executiveName) => {
     throw error;
   }
 };
+
 
 // ✅ Function to fetch all executives
 export const fetchExecutivesAPI = async () => {

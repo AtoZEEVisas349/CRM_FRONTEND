@@ -25,10 +25,20 @@ const Login = () => {
       setLoading(true);
       const data = await loginUser(email, password); // Call API function
 
-      // Store user data in localStorage
+      // ✅ Check if user data contains `username`
+      if (!data.user || !data.user.username) {
+        throw new Error("User username missing in response!");
+      }
+
+      // ✅ Store user data in localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("userRole", data.user.role);
       localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+      // ✅ Store executive's username (only for Executives)
+      if (data.user.role === "Executive") {
+        localStorage.setItem("executiveName", data.user.username);
+      }
 
       toast.success("Login successful! Redirecting...");
 
@@ -41,9 +51,7 @@ const Login = () => {
           navigate("/user");
         }
       }, 2000);
-      
     } catch (error) {
-      console.error("Login error:", error);
       setError(error.message);
     } finally {
       setLoading(false);
