@@ -10,7 +10,7 @@ function LeadAssignRoutes() {
       <div className='lead-sidebar'>
         <AdminSidebar/>
       </div>  
-      <div className='lead-content'>
+      <div className='f-lead-content'>
        <TaskManagement/> 
       </div>
     </div>

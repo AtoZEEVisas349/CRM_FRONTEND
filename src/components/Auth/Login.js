@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { loginUser } from "../../api/auth"; // Import API function
 import "react-toastify/dist/ReactToastify.css";
+import {Link} from "react-router-dom"
 
 const Login = () => {
   const navigate = useNavigate();
@@ -95,8 +96,9 @@ const Login = () => {
             />
 
             <button type="submit" disabled={loading}>
-              {loading ? "Logging in..." : "SIGN IN"}
+            {loading ? "Logging in..." : "SIGN IN"}
             </button>
+            <Link to= "/forgot-password" className="forgot-link">Forgot Password</Link>
           </form>
         </div>
       </div>

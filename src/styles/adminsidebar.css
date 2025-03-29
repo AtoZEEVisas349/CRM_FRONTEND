@@ -33,7 +33,7 @@
   margin-right: auto;
 }
 .admin-header-wrapper {
-  width: 50%;
+  width: 70%;
   text-align: center;
   display: block;
 }
@@ -100,7 +100,7 @@
   }
   .admin-sidebar.active {
       transform: translateX(0);
-  }
+}
 }
 .logout_container {
   position: absolute;

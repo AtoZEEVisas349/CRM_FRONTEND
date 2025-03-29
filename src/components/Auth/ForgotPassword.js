@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/styles.css";
 import { forgotPassword } from "../../api/auth"; // Import API function
 import { FaLock } from "react-icons/fa"; // Importing a lock icon
+import {Link} from "react-router-dom"
 
 
 const ForgotPassword = () => {
@@ -49,13 +50,14 @@ const ForgotPassword = () => {
                 <button type="submit" disabled={loading}>
                     {loading ? "Sending..." : "Send Reset Link"}
                 </button>
-            </form>
-            <p className="login-link">
+                <p className="login-link">
                 Remembered your password? <a href="/login">Login here</a>
-            </p>
+            </p> 
+            </form>
+
         </div>
     </div>
 );
 };
 
-export default ForgotPassword;
+export default ForgotPassword;

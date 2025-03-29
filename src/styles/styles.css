@@ -155,7 +155,12 @@ form button:hover {
 .link{
     margin-top: 5%;
 }
-
+.forgot-link {
+    display: block;
+    margin-top: 15px; 
+    text-align: center; 
+    color: #007bff; 
+  }
 /* Hide the default dropdown */
 .Role {
     appearance: none;
@@ -208,8 +213,6 @@ form button:hover {
   }
   
 
-
-/*-----------------------Responsive------------------*/
 /* For large screens (Desktops & Laptops) */
 @media screen and (max-width: 1200px) {
     .container {
@@ -326,7 +329,8 @@ form button:hover {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #E5EAF5; /* Matching background */
+    width: 100vw;
+    background: white; /* Matching background */
 }
 
 /* Auth Box */
@@ -335,9 +339,9 @@ form button:hover {
     background: white;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    height: 50%;
+    height: 58%;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Title Styling */
@@ -486,6 +490,7 @@ form button:hover {
         align-items: center; /* Ensures vertical centering */
         height: 100vh; /* Ensures full-screen height */
         padding-top: 0; /* Removes unnecessary padding */
+        width: 100vw;
     }
     .auth-icon {
         display: block;
@@ -532,6 +537,6 @@ form button:hover {
         font-size: 13px;
     }
     .auth-container {
-        padding-top: 0;
-    }
+        padding-top:0;
+}
 }
