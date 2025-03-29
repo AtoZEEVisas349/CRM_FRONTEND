@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // ✅ Define API Base URL
-const API_BASE_URL = "http://localhost:5000/api"; // Change if needed
+const API_BASE_URL = "http://localhost:5000/api"; 
 
 // Create an Axios instance with base settings
 const apiService = axios.create({
@@ -43,8 +43,6 @@ export const fetchAssignedLeads = async () => {
       console.error("🚨 Executive name missing in localStorage!");
       throw new Error("Executive name not found in localStorage!");
     }
-
-    console.log("🔍 Fetching leads for:", executiveName);
 
     const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
     return response.data.leads;

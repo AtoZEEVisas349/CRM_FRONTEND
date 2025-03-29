@@ -1,4 +1,5 @@
 import apiService from "./apiService";
+import { Navigate } from "react-router-dom";
 
 /*------------------------------LOGIN-----------------------*/
 export const loginUser = async (email, password) => {
@@ -50,3 +51,14 @@ export const signupUser = async (username, email, password, role) => {
         throw new Error(error.response?.data?.error || "Signup failed!");
     }
 };
+/*---------------------------------AUTHENTICATION & PRIVATE ROUTE----------------------------------*/
+
+// Check if user is authenticated
+export const isAuthenticated = () => {
+    return localStorage.getItem("token") ? true : false;
+  };
+  
+  // Private Route Component
+  export const PrivateRoute = ({ children }) => {
+    return isAuthenticated() ? children : <Navigate to="/login" replace />;
+  };

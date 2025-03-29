@@ -102,3 +102,35 @@
       transform: translateX(0);
   }
 }
+.logout_container {
+  position: absolute;
+  bottom: 20px;
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust to perfectly center */
+  width: auto; /* Auto width */
+  text-align: center; /* Align text */
+}
+
+.logout_btn {
+  width: auto; /* Fit content */
+  padding: 10px 15px;
+  background-color: #404046; /* Dark logout button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center text & icon */
+  transition: background 0.3s ease-in-out;
+}
+
+.logout_icon {
+  margin-right: 8px;
+}
+
+.logout_btn:hover {
+  background-color: #565660; /* Lighter on hover */
+}
+

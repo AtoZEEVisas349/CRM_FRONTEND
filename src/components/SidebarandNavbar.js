@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/sidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,17 +16,32 @@ import {
   faCircleQuestion,
   faBell,
   faCircleUser,
-  faRobot, // Import bot icon
+  faRobot,
+  faRightFromBracket, // Import logout icon
 } from "@fortawesome/free-solid-svg-icons";
 
 const SidebarandNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsActive(!isActive);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("executiveName");
+  
+    navigate("/login");
+  
+    setTimeout(() => {
+      window.location.reload(); // ✅ Prevent going back after logout
+    }, 100);
+  };
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       const sidebar = document.querySelector(".sidebar_container");
@@ -77,7 +92,10 @@ const SidebarandNavbar = () => {
                   <FontAwesomeIcon icon={faUserPlus} />
                 </span>
                 Leads
-                <span className="dropdown_icon" style={{ marginLeft: "50%", fontSize: "12px" }}>
+                <span
+                  className="dropdown_icon"
+                  style={{ marginLeft: "50%", fontSize: "12px" }}
+                >
                   ▼
                 </span>
               </Link>
@@ -146,7 +164,16 @@ const SidebarandNavbar = () => {
             </li>
           </ul>
         </nav>
+
+        {/* ✅ Logout Button at Bottom */}
+        <div className="logout_container">
+          <button className="logout_btn" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faRightFromBracket} className="logout_icon" />
+            Logout
+          </button>
+        </div>
       </section>
+
       <section className="navbar">
         <div className="menu_search">
           <button
@@ -164,12 +191,12 @@ const SidebarandNavbar = () => {
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
           <FontAwesomeIcon className="navbar_icon" icon={faBell} />
           <FontAwesomeIcon className="navbar_icon" icon={faCircleUser} />
-          <FontAwesomeIcon 
-    className="navbar_icon bot_icon" 
-    icon={faRobot} 
-    onClick={() => window.open("/chatbot", "_blank")}
-    style={{ cursor: "pointer" }}
-/>
+          <FontAwesomeIcon
+            className="navbar_icon bot_icon"
+            icon={faRobot}
+            onClick={() => window.open("/chatbot", "_blank")}
+            style={{ cursor: "pointer" }}
+          />
         </div>
       </section>
     </section>

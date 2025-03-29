@@ -191,3 +191,29 @@
     transform: translateX(0);
   }
 }
+.logout_container {
+  position: absolute;
+  bottom: 20px;
+  left: 40%; /* Move container to center */
+  transform: translateX(-50%); /* Adjust to perfectly center */
+  width: auto; /* Adjust width */
+  text-align: center; /* Align text */
+}
+
+.logout_btn {
+  width: auto; /* Adjust width to fit content */
+  padding: 10px 15px; /* Maintain padding */
+  background-color: #404046; /* Logout button color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Align text and icon to center */
+}
+
+.logout_icon {
+  margin-right: 8px;
+}

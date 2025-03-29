@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FaPhone } from "react-icons/fa";
-import { fetchAssignedLeads } from "../../api/apiService"; // Import API function
+import "../../styles/freshlead.css";
+import { fetchAssignedLeads } from "../../api/apiService"; 
 
-const FreshLeads = () => {
-  const [leads, setLeads] = useState([]);
+function FreshLead() {
+  const [leadsData, setLeadsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -11,8 +11,8 @@ const FreshLeads = () => {
     const loadLeads = async () => {
       try {
         setLoading(true);
-        const data = await fetchAssignedLeads(); // Fetch dynamically
-        setLeads(data);
+        const data = await fetchAssignedLeads(); 
+        setLeadsData(data);
       } catch (err) {
         setError("Failed to load leads. Please try again.");
       } finally {
@@ -24,64 +24,62 @@ const FreshLeads = () => {
   }, []);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
-      <h2 style={{ textAlign: "center" }}>Assigned Leads</h2>
-
-      {loading ? (
-        <p style={{ textAlign: "center" }}>Loading leads...</p>
-      ) : error ? (
-        <p style={{ color: "red", textAlign: "center" }}>{error}</p>
-      ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
+    <div className="fresh-leads-main-content">
+    {loading && <p className="loading-text">Loading leads...</p>}
+    {error && <p className="error-text">{error}</p>}
+    {!loading && !error && (
+      <div className="fresh-leads-table-container">
+        <table className="fresh-leads-table">
           <thead>
-            <tr style={{ background: "#f4f4f4", textAlign: "left" }}>
-              <th style={{ padding: "10px" }}>Name</th>
-              <th style={{ padding: "10px" }}>Phone</th>
-              <th style={{ padding: "10px" }}>Email</th>
-              <th style={{ padding: "10px" }}>Add follow-ups</th>
-              <th style={{ padding: "10px" }}>Status</th>
-              <th style={{ padding: "10px" }}>Call</th>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Add follow-ups</th>  {/* Updated this */}
+              <th>Status</th>  {/* Updated this */}
+              <th>Call</th>
             </tr>
           </thead>
           <tbody>
-            {leads.length > 0 ? (
-              leads.map((lead, index) => (
-                <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
-                  <td style={{ padding: "10px", display: "flex", alignItems: "center" }}>
-                    <div style={{
-                      width: "40px", height: "40px", borderRadius: "50%", background: "#ddd",
-                      display: "flex", justifyContent: "center", alignItems: "center", marginRight: "10px"
-                    }}>
-                      👤
+            {leadsData.length > 0 ? (
+              leadsData.map((lead, index) => (
+                <tr key={index}>
+                  <td>
+                    <div className="fresh-leads-name">
+                      <div className="freshlead-icon">👤</div>
+                      <div className="fresh-lead-detail">
+                        <div>{lead.name}</div>
+                        <div className="fresh-leads-profession">{lead.profession}</div>
+                      </div>
                     </div>
-                    <strong>{lead.name}</strong>
                   </td>
-                  <td style={{ padding: "10px" }}>{lead.phone}</td>
-                  <td style={{ padding: "10px" }}>{lead.email}</td>
-                  <td style={{ padding: "10px" }}>
-                    <button style={{
-                      padding: "5px 10px", border: "none", background: "#eee", borderRadius: "5px",
-                      cursor: "pointer"
-                    }}>
-                      Call today
+                  <td>{lead.phone}</td>
+                  <td>{lead.email}</td>
+                  {/* Add follow-ups as button-like elements */}
+                  <td>
+                    <button className="followup-badge">
+                     Add Follow Up ✏ {lead.followUp}
                     </button>
                   </td>
-                  <td style={{ padding: "10px" }}>⭘</td>
-                  <td style={{ padding: "10px" }}>
-                    <FaPhone style={{ cursor: "pointer", color: "#007bff" }} />
+                  {/* Status as a radio button */}
+                  <td>
+                    <input type="radio" name="leadStatus" className="status-radio" />
+                  </td>
+                  <td>
+                    <button className="fresh-leads-call-button">📞</button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" style={{ textAlign: "center", padding: "10px" }}>No assigned leads available.</td>
+                <td colSpan="6" className="no-leads-text">No assigned leads available.</td>
               </tr>
             )}
           </tbody>
         </table>
-      )}
-    </div>
-  );
-};
-
-export default FreshLeads;
+      </div>
+    )}
+  </div>
+);
+}
+export default FreshLead;
