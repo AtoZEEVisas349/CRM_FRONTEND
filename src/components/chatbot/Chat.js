@@ -3,315 +3,138 @@ import { FaMicrophone, FaPaperPlane, FaUser } from "react-icons/fa";
 import { MdSmartToy } from "react-icons/md";
 import "./chatbot.css";
 
-<<<<<<< HEAD
 const Chat = ({ isCallActive }) => {
-    const [messages, setMessages] = useState([]);
-    const [userInput, setUserInput] = useState("");
-    const [isTyping, setIsTyping] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const chatContainerRef = useRef(null);
-    const recognitionRef = useRef(null);
-    const wakeWordRecognitionRef = useRef(null);
-
-    useEffect(() => {
-        chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
-    }, [messages]);
-
-    useEffect(() => {
-        startWakeWordListening();
-    }, []);
-
-    const stopWakeWordRecognition = () => {
-        if (wakeWordRecognitionRef.current) {
-            wakeWordRecognitionRef.current.abort();
-            wakeWordRecognitionRef.current.onend = null;
-            wakeWordRecognitionRef.current = null;
-        }
-    };
-
-    const startWakeWordListening = () => {
-        if (isListening || isCallActive) return;
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) return;
-
-        if (wakeWordRecognitionRef.current) return;
-
-        wakeWordRecognitionRef.current = new SpeechRecognition();
-        wakeWordRecognitionRef.current.lang = "en-US";
-        wakeWordRecognitionRef.current.continuous = true;
-        wakeWordRecognitionRef.current.interimResults = false;
-
-        wakeWordRecognitionRef.current.onresult = (event) => {
-            if (isListening || isCallActive) return;
-            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-            if (transcript.includes("hello") || transcript.includes("how can i help you")) {
-                stopWakeWordRecognition();
-                startSpeechRecognition();
-            }
-        };
-
-        wakeWordRecognitionRef.current.onerror = (event) => {
-            console.error("Wake word recognition error:", event.error);
-        };
-
-        wakeWordRecognitionRef.current.onend = () => {
-            if (!isListening && !isCallActive) {
-                setTimeout(startWakeWordListening, 2000);
-            }
-        };
-
-        try {
-            wakeWordRecognitionRef.current.start();
-        } catch (error) {
-            console.warn("Wake word start error:", error);
-        }
-    };
-
-    const handleMicClick = () => {
-        if (isListening) {
-            stopSpeechRecognition();
-        } else {
-            startSpeechRecognition();
-        }
-    };
-
-    const whWordsEnglish = ["what", "who", "when", "where", "why", "how", "which","Whose","Whom","Can","Could","Would","Should","Is","Are","Do","Does","Did","Have","Has","Had","May","Shall"];
-    const whWordsHindi = ["क्या","कौन","कब","कहाँ","क्यों","कैसे","किस","किसका","किसके","किसकी","कितना","कितने","कितनी","किसे","किसके लिए","कौनसा","कौनसे","कौनसी"];  
-    const whWordsHindiLatin = ["kya", "kaun", "kab", "kahan", "kyon", "kaise", "kis", "kiska", "kiske", "kiski", "kitna", "kitne", "kitni", "kise", "kiske liye", "kaunsa", "kaunse", "kaunsi"]; // Hindi in Latin script  
-    
-    const detectLanguage = (transcript) => {
-        const hindiRegex = /[\u0900-\u097F]/; // Check if Hindi script is used  
-        if (hindiRegex.test(transcript)) return "hi-IN"; // Proper Hindi text detected  
-    
-        // ✅ Check if Hindi WH-words are present (even in Latin script)  
-        if (whWordsHindiLatin.some((word) => transcript.toLowerCase().includes(word))) {
-            return "hi-IN";  
-        }
-    
-        return "en-US"; // Default to English  
-    };
-    
-    const startSpeechRecognition = () => {
-        stopWakeWordRecognition();
-    
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Speech recognition is not supported in this browser.");
-            return;
-        }
-    
-        if (recognitionRef.current) {
-            recognitionRef.current.stop();
-        }
-    
-        recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = true;
-        recognitionRef.current.interimResults = true;
-        recognitionRef.current.lang = "en-US"; // Default to English
-    
-        recognitionRef.current.onstart = () => {
-            console.log("Voice recognition started...");
-            setIsListening(true);
-        };
-    
-        recognitionRef.current.onresult = (event) => {
-            let transcript = "";
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                transcript += event.results[i][0].transcript + " ";
-            }
-    
-            transcript = transcript.trim();
-            console.log("Live Speech:", transcript);
-    
-            // ✅ Dynamically detect language
-            const detectedLang = detectLanguage(transcript);
-            recognitionRef.current.lang = detectedLang;
-            console.log(`Detected Language: ${detectedLang}`);
-    
-            const whWords =
-                detectedLang === "hi-IN"
-                    ? [...whWordsHindi, ...whWordsHindiLatin] // ✅ Supports both Devanagari & Latin Hindi
-                    : whWordsEnglish;
-    
-            // ✅ If Hindi, check for WH-words **anywhere** in the sentence
-            if (
-                (detectedLang === "hi-IN" && whWords.some((word) => transcript.toLowerCase().includes(word.toLowerCase()))) ||
-                (detectedLang === "en-US" && whWords.some((word) => transcript.toLowerCase().startsWith(word.toLowerCase())))
-            ) {
-                setUserInput(transcript);
-    
-                if (event.results[event.results.length - 1].isFinal) {
-                    handleSend(transcript, detectedLang); // ✅ Send detected language
-                }
-            } else {
-                console.log("Ignored: Not a WH-family question.");
-            }
-        };
-    
-        recognitionRef.current.onerror = (event) => {
-            console.error("Speech recognition error:", event.error);
-        };
-    
-        recognitionRef.current.onend = () => {
-            console.log("Speech recognition ended. Restarting...");
-            if (!isCallActive) {
-                recognitionRef.current.start();
-            }
-        };
-    
-        recognitionRef.current.start();
-    };
-    
-    
-    const stopSpeechRecognition = () => {
-        if (recognitionRef.current) {
-            recognitionRef.current.stop();
-            recognitionRef.current.onend = null;
-            recognitionRef.current = null;
-        }
-        setIsListening(false);
-        startWakeWordListening();
-    };
-
-    const handleSend = async (input, lang) => {
-        if (!input.trim()) return;
-        setMessages((prev) => [...prev, { text: input, isUser: true }]);
-        setUserInput("");
-        setIsTyping(true);
-    
-        try {
-            const response = await fetch("http://localhost:5000/api/chatbot", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: input, language: lang }), // ✅ Send detected language to backend
-            });
-    
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || "Failed to fetch response");
-    
-            setMessages((prev) => [...prev, { text: limitTo80Words(data.message), isUser: false }]);
-        } catch (error) {
-            console.error("Error:", error);
-            setMessages((prev) => [...prev, { text: "Error: Unable to get response.", isUser: false }]);
-        } finally {
-            setIsTyping(false);
-        }
-    };
-
-    const limitTo80Words = (text) => {
-        let words = text.split(/\s+/);
-        return words.length > 80 ? words.slice(0, 80).join(' ') + '...' : text;
-    };
-
-    return (
-        <div className="chat-page">
-            <div className="chat-container">
-                <div className="chat-header">
-                    <MdSmartToy size={30} className="chat-icon" />
-                    <h2>AI ChatBot</h2>
-                </div>
-                <div className="chat-messages" ref={chatContainerRef}>
-                    {messages.map((msg, index) => (
-                        <div key={index} className={msg.isUser ? "message user-message" : "message bot-message"}>
-                            {msg.isUser ? <FaUser className="user-icon" /> : <MdSmartToy className="bot-icon" />}
-                            <div className="message-content">{msg.text}</div>
-                        </div>
-                    ))}
-                    {isTyping && <div className="typing-indicator">...</div>}
-                </div>
-                <div className="chat-input-container">
-                    <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} placeholder="Type your message..." />
-                    <button onClick={() => handleSend(userInput)} className="send-button">
-                        <FaPaperPlane />
-                    </button>
-                    <button onClick={handleMicClick} className={`mic-button ${isListening ? "active" : ""}`}>
-                        <FaMicrophone />
-                    </button>
-                </div>
-            </div>
-=======
-const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
-  const chatContainerRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const chatContainerRef = useRef(null);
   const recognitionRef = useRef(null);
+  const wakeWordRecognitionRef = useRef(null);
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
+    chatContainerRef.current?.scrollTo(
+      0,
+      chatContainerRef.current.scrollHeight
+    );
   }, [messages]);
 
-  const startListening = () => {
+  const stopWakeWordRecognition = () => {
+    if (wakeWordRecognitionRef.current) {
+      wakeWordRecognitionRef.current.abort();
+      wakeWordRecognitionRef.current.onend = null;
+      wakeWordRecognitionRef.current = null;
+    }
+  };
+
+  const startWakeWordListening = () => {
+    if (isListening || isCallActive) return;
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    if (wakeWordRecognitionRef.current) return;
+
+    wakeWordRecognitionRef.current = new SpeechRecognition();
+    wakeWordRecognitionRef.current.lang = "en-US";
+    wakeWordRecognitionRef.current.continuous = true;
+    wakeWordRecognitionRef.current.interimResults = false;
+
+    wakeWordRecognitionRef.current.onresult = (event) => {
+      if (isListening || isCallActive) return;
+      const transcript =
+        event.results[event.results.length - 1][0].transcript.toLowerCase();
+      if (
+        transcript.includes("hello") ||
+        transcript.includes("how can i help you")
+      ) {
+        stopWakeWordRecognition();
+        startSpeechRecognition();
+      }
+    };
+
+    wakeWordRecognitionRef.current.onerror = (event) => {
+      console.error("Wake word recognition error:", event.error);
+    };
+
+    wakeWordRecognitionRef.current.onend = () => {
+      if (!isListening && !isCallActive) {
+        setTimeout(startWakeWordListening, 2000);
+      }
+    };
+
+    try {
+      wakeWordRecognitionRef.current.start();
+    } catch (error) {
+      console.warn("Wake word start error:", error);
+    }
+  };
+
+  useEffect(() => {
+    startWakeWordListening();
+  }, []);
+
+  const handleMicClick = () => {
+    if (isListening) {
+      stopSpeechRecognition();
+    } else {
+      startSpeechRecognition();
+    }
+  };
+
+  const startSpeechRecognition = () => {
+    stopWakeWordRecognition();
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Speech recognition is not supported in this browser.");
       return;
     }
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+    recognitionRef.current.lang = "en-US";
 
-    if (!recognitionRef.current) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = "en-US";
+    recognitionRef.current.onstart = () => {
+      setIsListening(true);
+    };
 
-      recognitionRef.current.onresult = (event) => {
-        const lastResultIndex = event.results.length - 1;
-        const transcript = event.results[lastResultIndex][0].transcript.trim();
+    recognitionRef.current.onresult = (event) => {
+      let transcript =
+        event.results[event.results.length - 1][0].transcript.trim();
+      setUserInput(transcript);
+      if (event.results[event.results.length - 1].isFinal) {
+        handleSend(transcript);
+      }
+    };
 
-        if (transcript) {
-          setMessages((prev) => {
-            // Prevent duplicate messages by checking if the last message is the same
-            if (prev.length > 0 && prev[prev.length - 1].text === transcript) {
-              return prev;
-            }
-            return [...prev, { text: transcript, isUser: "Caller" }];
-          });
-          handleSend(transcript, "Caller");
-        }
-      };
+    recognitionRef.current.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+    };
 
-      recognitionRef.current.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        setIsListening(false);
-        setTimeout(() => startListening(), 1000); // Restart on error
-      };
-
-      recognitionRef.current.onend = () => {
-        if (isListening) {
-          setTimeout(() => recognitionRef.current.start(), 500); // Auto-restart
-        }
-      };
-    }
-
+    recognitionRef.current.onend = () => {
+      if (!isCallActive) {
+        recognitionRef.current.start();
+      }
+    };
     recognitionRef.current.start();
-    setIsListening(true);
   };
 
-  const stopListening = () => {
+  const stopSpeechRecognition = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
-      setIsListening(false);
+      recognitionRef.current.onend = null;
+      recognitionRef.current = null;
     }
+    setIsListening(false);
+    startWakeWordListening();
   };
 
-  const handleMicClick = () => {
-    if (!isListening) {
-      startListening();
-    } else {
-      stopListening();
-    }
-  };
-
-  const handleSend = async (input, sender) => {
+  const handleSend = async (input) => {
     if (!input.trim()) return;
-
-    setUserInput(""); // Clear input after sending
+    setMessages((prev) => [...prev, { text: input, isUser: true }]);
+    setUserInput("");
     setIsTyping(true);
 
     try {
@@ -323,19 +146,12 @@ const Chat = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.error || "Failed to fetch response");
-
-      setMessages((prev) => {
-        // Prevent duplicate bot responses
-        if (prev.length > 0 && prev[prev.length - 1].text === data.message) {
-          return prev;
-        }
-        return [...prev, { text: data.message, isUser: "Bot" }];
-      });
+      setMessages((prev) => [...prev, { text: data.message, isUser: false }]);
     } catch (error) {
       console.error("Error:", error);
       setMessages((prev) => [
         ...prev,
-        { text: "Error: Unable to get response.", isUser: "Bot" },
+        { text: "Error: Unable to get response.", isUser: false },
       ]);
     } finally {
       setIsTyping(false);
@@ -348,19 +164,17 @@ const Chat = () => {
         <div className="chat-header">
           <MdSmartToy size={30} className="chat-icon" />
           <h2>AI ChatBot</h2>
->>>>>>> 4c86dea (chat)
         </div>
-
         <div className="chat-messages" ref={chatContainerRef}>
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`message ${
-                msg.isUser === "Caller" ? "caller-message" : "bot-message"
-              }`}
+              className={
+                msg.isUser ? "message user-message" : "message bot-message"
+              }
             >
-              {msg.isUser === "Caller" ? (
-                <FaUser className="caller-icon" />
+              {msg.isUser ? (
+                <FaUser className="user-icon" />
               ) : (
                 <MdSmartToy className="bot-icon" />
               )}
@@ -369,7 +183,6 @@ const Chat = () => {
           ))}
           {isTyping && <div className="typing-indicator">...</div>}
         </div>
-
         <div className="chat-input-container">
           <input
             type="text"
@@ -377,10 +190,7 @@ const Chat = () => {
             onChange={(e) => setUserInput(e.target.value)}
             placeholder="Type your message..."
           />
-          <button
-            onClick={() => handleSend(userInput, "Caller")}
-            className="send-button"
-          >
+          <button onClick={() => handleSend(userInput)} className="send-button">
             <FaPaperPlane />
           </button>
           <button
