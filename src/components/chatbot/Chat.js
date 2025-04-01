@@ -3,6 +3,7 @@ import { FaMicrophone, FaPaperPlane, FaUser } from "react-icons/fa";
 import { MdSmartToy } from "react-icons/md";
 import "./chatbot.css";
 
+<<<<<<< HEAD
 const Chat = ({ isCallActive }) => {
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState("");
@@ -229,8 +230,169 @@ const Chat = ({ isCallActive }) => {
                     </button>
                 </div>
             </div>
+=======
+const Chat = () => {
+  const [messages, setMessages] = useState([]);
+  const [userInput, setUserInput] = useState("");
+  const chatContainerRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const startListening = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    if (!recognitionRef.current) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = "en-US";
+
+      recognitionRef.current.onresult = (event) => {
+        const lastResultIndex = event.results.length - 1;
+        const transcript = event.results[lastResultIndex][0].transcript.trim();
+
+        if (transcript) {
+          setMessages((prev) => {
+            // Prevent duplicate messages by checking if the last message is the same
+            if (prev.length > 0 && prev[prev.length - 1].text === transcript) {
+              return prev;
+            }
+            return [...prev, { text: transcript, isUser: "Caller" }];
+          });
+          handleSend(transcript, "Caller");
+        }
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+        setTimeout(() => startListening(), 1000); // Restart on error
+      };
+
+      recognitionRef.current.onend = () => {
+        if (isListening) {
+          setTimeout(() => recognitionRef.current.start(), 500); // Auto-restart
+        }
+      };
+    }
+
+    recognitionRef.current.start();
+    setIsListening(true);
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (!isListening) {
+      startListening();
+    } else {
+      stopListening();
+    }
+  };
+
+  const handleSend = async (input, sender) => {
+    if (!input.trim()) return;
+
+    setUserInput(""); // Clear input after sending
+    setIsTyping(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: input }),
+      });
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Failed to fetch response");
+
+      setMessages((prev) => {
+        // Prevent duplicate bot responses
+        if (prev.length > 0 && prev[prev.length - 1].text === data.message) {
+          return prev;
+        }
+        return [...prev, { text: data.message, isUser: "Bot" }];
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        { text: "Error: Unable to get response.", isUser: "Bot" },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  return (
+    <div className="chat-page">
+      <div className="chat-container">
+        <div className="chat-header">
+          <MdSmartToy size={30} className="chat-icon" />
+          <h2>AI ChatBot</h2>
+>>>>>>> 4c86dea (chat)
         </div>
-    );
+
+        <div className="chat-messages" ref={chatContainerRef}>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`message ${
+                msg.isUser === "Caller" ? "caller-message" : "bot-message"
+              }`}
+            >
+              {msg.isUser === "Caller" ? (
+                <FaUser className="caller-icon" />
+              ) : (
+                <MdSmartToy className="bot-icon" />
+              )}
+              <div className="message-content">{msg.text}</div>
+            </div>
+          ))}
+          {isTyping && <div className="typing-indicator">...</div>}
+        </div>
+
+        <div className="chat-input-container">
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder="Type your message..."
+          />
+          <button
+            onClick={() => handleSend(userInput, "Caller")}
+            className="send-button"
+          >
+            <FaPaperPlane />
+          </button>
+          <button
+            onClick={handleMicClick}
+            className={`mic-button ${isListening ? "active" : ""}`}
+          >
+            <FaMicrophone />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Chat;
