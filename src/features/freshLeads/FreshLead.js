@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/freshlead.css";
-import { fetchAssignedLeads } from "../../api/apiService"; 
+import { fetchAssignedLeads } from "../../services/apiService"; 
 
 function FreshLead() {
   const [leadsData, setLeadsData] = useState([]);

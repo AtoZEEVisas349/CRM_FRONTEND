@@ -1,23 +1,13 @@
-import React from 'react';
-import ReportCards from "../pages/executive/ReportCards";
-import NewsSection from "../pages/executive/NewsSection";
-import SidebarandNavbar from "../components/SidebarandNavbar";
-import "../styles/executive.css";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import ExecutiveLayout from "../layouts/ExecutiveLayout";
 
 const ExecutiveRoutes = () => {
   return (
-    <div className="executive-app-container">
-      <SidebarandNavbar />
-      <div className="executive-main-content">
-        <div className="dashboard-container">
-          <div className="dashboard-main-content">
-            <ReportCards />
-            <NewsSection />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<ExecutiveLayout />} />
+    </Routes>
   );
-}
+};
 
 export default ExecutiveRoutes;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaMicrophone, FaPaperPlane, FaUser } from "react-icons/fa";
 import { MdSmartToy } from "react-icons/md";
-import "./chatbot.css";
 
 const Chat = ({ isCallActive }) => {
   const [messages, setMessages] = useState([]);

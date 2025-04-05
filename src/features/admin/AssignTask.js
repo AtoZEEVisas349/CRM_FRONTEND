@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { uploadFile } from "../../api/fileUpload";
+import { uploadFile } from "../../services/fileUpload";
 
 const AssignTask = () => {
   const [file, setFile] = useState(null);

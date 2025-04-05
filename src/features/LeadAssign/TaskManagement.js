@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } from "../../api/apiService";
+import { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } from "../../services/apiService";
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);

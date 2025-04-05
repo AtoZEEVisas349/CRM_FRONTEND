@@ -1,6 +1,6 @@
 import React from "react";
-import Chat from "../components/chatbot/Chat";
-
+import Chat from "../features/chatbot/Chat";
+import "../styles/chatbot.css";
 
 const ChatBotRoutes = () => {
     return (

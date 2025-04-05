@@ -1,8 +1,8 @@
 import React from "react";
-import Leads from "../pages/close-leads/leads";
-import NavSearch from "../pages/close-leads/NavSearch";
+import Leads from "../features/close-leads/leads";
+import NavSearch from "../features/close-leads/NavSearch";
 import "../styles/closeLeads.css";
-import SideandNavbar from "../components/SidebarandNavbar";
+import SideandNavbar from "../layouts/SidebarandNavbar";
 
 const CloseLeadRoutes = () => {
   return (

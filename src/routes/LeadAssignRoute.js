@@ -1,6 +1,6 @@
 import React from "react";
-import AdminSidebar from "../components/AdminSidebar";
-import TaskManagement from "../pages/LeadAssign/TaskManagement";
+import AdminSidebar from "../layouts/AdminSidebar";
+import TaskManagement from "../features/LeadAssign/TaskManagement";
 import "../styles/leadassign.css";
 
 function LeadAssignRoutes() {

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // For navigation
-import SearchBar from "../pages/convert-customer/SearchBar";
-import CustomerTable from "../pages/convert-customer/CustomerTable";
-import SidebarandNavbar from "../components/SidebarandNavbar";
+import SearchBar from "../features/convert-customer/SearchBar";
+import CustomerTable from "../features/convert-customer/CustomerTable";
+import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/customer.css";
 
 const CustomerRoutes = () => {

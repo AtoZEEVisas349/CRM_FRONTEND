@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { loginUser } from "../../api/auth"; // Import API function
+import { loginUser } from "../../services/auth"; // Import API function
 import "react-toastify/dist/ReactToastify.css";
 import {Link} from "react-router-dom"
 
@@ -94,7 +94,6 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-
             <button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "SIGN IN"}
             </button>

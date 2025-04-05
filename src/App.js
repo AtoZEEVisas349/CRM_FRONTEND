@@ -1,11 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { PrivateRoute } from "./api/auth"; // ✅ Import from API folder
-
-import Login from "./components/Auth/Login";
-import Signup from "./components/Auth/Signup";
-import ForgotPassword from "./components/Auth/ForgotPassword";
-import ResetPassword from "./components/Auth/ResetPassword";
-
+import { PrivateRoute } from "./services/auth"; // ✅ Import from API folder
+import Login from "./features/authentication/Login";
+import Signup from "./features/authentication/Signup";
+import ForgotPassword from "./features/authentication/ForgotPassword";
+import ResetPassword from "./features/authentication/ResetPassword";
 import AdminRoutes from "./routes/AdminRoutes";
 import FollowUpRoutes from "./routes/FollowUpRoutes";
 import ExecutiveRoutes from "./routes/ExecutiveRoutes";
@@ -24,7 +22,6 @@ const App = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-
       {/* ✅ Protected Routes Using PrivateRoute */}
       <Route path="/admin/*" element={<PrivateRoute><AdminRoutes /></PrivateRoute>} />
       <Route path="/follow-up/*" element={<PrivateRoute><FollowUpRoutes /></PrivateRoute>} />

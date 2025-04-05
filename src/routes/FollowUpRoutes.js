@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ClientDetails from "../pages/follow-ups/ClientDetails";
-import ClientTable from "../pages/follow-ups/ClientTable";
-import SidebarandNavbar from "../components/SidebarandNavbar";
+import ClientDetails from "../features/follow-ups/ClientDetails";
+import ClientTable from "../features/follow-ups/ClientTable";
+import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
 
 const FollowUpRoutes = () => {

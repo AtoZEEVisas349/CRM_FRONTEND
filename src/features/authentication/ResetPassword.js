@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/styles.css";
-import { resetPassword } from "../../api/auth"; // Import API function
+import { resetPassword } from "../../services/auth"; // Import API function
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState("");

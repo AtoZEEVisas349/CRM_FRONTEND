@@ -28,8 +28,9 @@
    width: 100vw;
    overflow-x: hidden; /* Prevents horizontal scroll */
    margin-left: 400px;
- }
+   background-color: #0d0d15;
 
+ }
 
 /* Main Content Area */
 .admin-main-content {
@@ -40,6 +41,8 @@
  overflow-y: auto;
  position: relative;
  z-index: 1;
+ background-color: #0d0d15;
+
 }
 /* Admin Content Cards */
 .admin-card {
@@ -55,9 +58,9 @@
    justify-content: space-between;
    align-items: center;
    padding: 15px 20px;
-   background: #fff;
    margin-bottom: 10px;
    margin-top: 10px;
+   color: #fff;
  }
  
  h1 {
@@ -96,10 +99,10 @@
    gap: 5px;
    border: 1px solid #ddd;
    border-radius: 5px;
-   background: #f8f9fa;
+   background: #dcdce7;
    cursor: pointer;
    position: relative;
-   width: 300px;
+   width: 240px;
    padding: 8px 12px;
  }
  
@@ -140,50 +143,41 @@
  }
  
  .summary {
-   display: grid;  /* Change from flex to grid */
-   grid-template-columns: repeat(2, 1fr); /* Create 2 columns of equal width */
-   grid-gap: 15px; /* Gap between grid items */
-   margin-bottom: 20px;
- }
- .box-icon {
-   color: #2980B9 !important; /* Force apply blue color */
- }
- 
- 
- .box {
- background: #fefeff;
- padding: 20px;
- border-radius: 8px;
- text-align: left;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
- }
- 
- .box-content {
-   display: flex; 
-   align-items: center; /* Align icon and text vertically */
-   gap: 15px; /* Space between icon and text */
- }
- .box-icon {
-   font-size: 28px; /* Icon size */
-   color: #444; /* Icon color */
- }
- 
- .box h3 {
-   margin: 0;
-   font-size: 20px; /* Text size */
-   font-weight: bold;
- }
- 
- .box small {
-   color: #777; /* Gray text for small text */
-   margin-top: auto;
-   font-size: 14px;
- }
- .charts {
-   display: flex;
-   gap: 10px;
-   padding-top:0px;
- }
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+  margin-bottom: 20px;
+  height: auto; /* Ensures content determines height */
+  width: 100%; /* Ensure full width */
+}
+
+.box {
+  background: #1e1e2e;
+  padding: 30px; /* Increased padding for a larger box */
+  border-radius: 12px; /* Slightly larger rounded corners */
+  text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More shadow for better visibility */
+  width: 80%; /* Allow full width in grid */
+  min-height: 150px; /* Increased height */
+}
+
+.box-content {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increase space between icon and text */
+}
+
+.box-icon {
+  font-size: 36px; /* Make the icon larger */
+}
+
+.box h3 {
+  font-size: 24px; /* Make heading text bigger */
+}
+
+.box small {
+  font-size: 16px; /* Increase size of small text */
+}
+
  
  .chart img {
    width: 100%;
@@ -219,23 +213,24 @@
    background: #50e3c2;
  }
  .chart-container {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   background: white;
-   padding: 20px;
-   border-radius: 10px;
-   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
-   border: 1px solid #ddd; /* Light gray border */
-   width: 100%;
- }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a1a2e;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  max-width: 600px;
+}
  .chart-wrapper {
-   width: 100%;
-   background: white;
+  width: 80% !important; /* Adjust as needed */
+  max-width: 1000px !important; /* Ensure it's not limited */
    padding: 20px;
    border-radius: 10px;
    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
    margin-top: 25px;
+     background-color: #13131f;
+
  }
  
  .chart-title {
@@ -243,27 +238,34 @@
    font-weight: bold;
    margin-bottom: 10px;
    text-align: left;
+   color: #f7f4f4;
  }
  
  .chart-box {
    width: 100%;
    height: 350px;
- }
+  }
  
- .chart {
-   text-align: center;
- }
- 
+.chart {
+  text-align: center;
+}
+
+.chart h2 {
+  font-size: 18px;
+  font-weight: bold;
+}
  .chart-image {
    width: 200px;
    height: auto;
  }
  .chart-data {
-   background: #f8f9fa;
-   padding: 15px;
-   border-radius: 5px;
-   width: 200px;
- }
+  font-size: 14px;
+}
+
+.chart-label {
+  display: flex;
+  align-items: center;
+}
  .chart-data p {
    display: flex;
    justify-content: space-between; /* Ensures spacing between text and number */
@@ -272,19 +274,15 @@
    font-size: 14px;
  }
  
- .chart-label {
-   display: flex;
-   align-items: center;
- }
- 
+
  .dot {
-   width: 8px;
-   height: 8px;
-   background: black;
-   border-radius: 50%;
-   display: inline-block;
-   margin-right: 8px;
- }
+  height: 8px;
+  width: 8px;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
  .additional-section {
    display: flex;
    gap: 20px;
@@ -304,7 +302,7 @@
  
  /* Profit Chart */
  .profit-container {
-   background: white;
+  background: #13131f;
    padding: 19px;
    border-radius: 10px;
    flex: 1;
@@ -319,6 +317,7 @@
  .profit-header h3{
    padding-bottom: 6%;
    font-size: 24px;
+   color: #f5f3f3;
  }
  .year-selector {
    display: flex;
@@ -365,21 +364,15 @@
    pointer-events: none; /* Prevent interference with select */
  }
  .meetings-container {
-   background: white;
+  background: #13131f;
    padding: 10px;
    border-radius: 10px;
    flex: 1;
    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
  }
  
- .meetings-header {
-   font-size: 20px;
-   font-weight: bold;
-   margin-bottom: 15px;
-   color: #333;
- }
  .meeting-card {
-   background: #f8f8f8;
+  background: #13131f;
    padding: 20px; /* More spacing */
    border-radius: 10px;
    margin-bottom: 15px;
@@ -531,7 +524,8 @@
    font-size: 20px;
    cursor: pointer;
    transition: color 0.03s;
-   color: black;
+   color: #fff;
+
  }
  
  .admin-logo_name:hover {
@@ -590,4 +584,214 @@
    }
  }
 
- 
+ .executive-activity {
+  background: #13131f;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 400px; /* Ensuring it scales well */
+  margin: 0 auto; /* Centers the card */
+}
+.e-section-title {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+}
+/* Activity List */
+.activity-item {
+  display: flex;
+  flex-direction: column;
+  margin-top: 35px;
+  margin-bottom: 35px;
+}
+
+/* Activity Label */
+.activity-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #d1d5db;
+  margin-bottom: 25px;
+}
+
+/* Icons */
+.activity-icon {
+  font-size: 22px;
+  margin-right: 10px;
+}
+
+/* Responsive Progress Bar */
+.activity-progress {
+  height: 12px;
+  background: #2d2d69;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%; /* Takes full width of the container */
+  max-width: 90vw; /* Responsive to screen size */
+}
+
+/* Dynamic Fill */
+.progress-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.5s ease-in-out;
+  min-width: 5%; /* Ensures visibility even at small values */
+}
+.lead-section-graph {
+  background: #13131f;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 600px; /* Adjust width */
+  margin: 0 auto; /* Centering */
+  text-align: center;
+}
+.charts {
+  display: flex;
+  flex-direction: column;  /* Ensure charts stack vertically */
+  gap: 20px; /* Add spacing between rows */
+}
+
+.chart-row {
+  display: flex;
+  justify-content: flex-start; /* Align items from the start */
+  width: 100%;
+  gap: 10px; /* Small gap between elements */
+}
+
+.chart-row > div {
+  flex: 1; /* Ensure equal space for both charts */
+  max-width: 48%; /* Adjust width to prevent large gaps */
+}
+
+
+.revenue-executive-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%; /* Ensure full width */
+
+}
+
+.revenue-executive-container > * {
+  flex: 1;
+}
+
+@media (max-width: 1024px) {
+  .revenue-executive-container {
+    flex-direction: column; /* Stack on smaller screens */
+  }
+}
+.executive-container {
+  background-color: #13131f; /* Match RevenueChart background */
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 50% !important; /* Reduce width */
+  max-width: 400px !important; /* Adjust as needed */  height: 430px; /* Match RevenueChart */
+  overflow-y: auto; /* Enable scrolling */
+  margin-top: 25px;
+}
+
+.executive-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.executive-empty {
+  color: #aaa;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.executive-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.executive-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.executive-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.executive-icon {
+  font-size: 2rem; /* Bigger icon */
+  color: white;
+}
+
+.executive-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.executive-name {
+  font-size: 1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.executive-id {
+  font-size: 0.9rem;
+  color: gray;
+  margin-right: 10px; /* Align ID properly to the right */
+}
+.exec-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #e9e3e3;
+  padding-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.executive-name {
+  font-weight: 600;
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 18px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.executive-name::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: -3px;
+  background: #8b5cf6;
+  transition: width 0.3s ease;
+}
+
+.executive-name:hover::after {
+  width: 100%;
+}
+
+.executive-name:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+

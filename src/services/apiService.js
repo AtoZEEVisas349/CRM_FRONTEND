@@ -78,5 +78,39 @@ export const assignLeadAPI = async (leadId, executiveId, executiveName) => {
     throw error;
   }
 };
+// ================== 📊 Executive Activity APIs ==================
+
+// ✅ Fetch all executive activities
+export const fetchAllExecutivesActivities = async () => {
+  try {
+    const response = await apiService.get("/executive-activities");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching all executive activities:", error);
+    throw error;
+  }
+};
+
+// ✅ Fetch activity data for a single executive
+export const fetchExecutiveActivity = async (executiveId) => {
+  try {
+    const response = await apiService.get(`/executive-activities/${executiveId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error fetching activity data for executive ${executiveId}:`, error);
+    throw error;
+  }
+};
+
+// ✅ Fetch lead section visits for a single executive
+export const fetchLeadSectionVisits = async (executiveId) => {
+  try {
+    const response = await apiService.get(`/executive-activities/${executiveId}`);
+    return response.data.leadSectionVisits;
+  } catch (error) {
+    console.error(`❌ Error fetching lead section visits for executive ${executiveId}:`, error);
+    throw error;
+  }
+};
 
 export default apiService;

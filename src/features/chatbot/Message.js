@@ -1,6 +1,5 @@
 import React from "react";
 import { FaUser, FaRobot } from "react-icons/fa";
-import "./chatbot.css";
 
 const Message = ({ text, isUser }) => {
     return (

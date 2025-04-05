@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { signupUser } from "../../api/auth"; // Import API function
+import { signupUser } from "../../services/auth"; // Import API function
 
 const Signup = () => {
   const navigate = useNavigate();

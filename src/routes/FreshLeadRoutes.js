@@ -1,6 +1,6 @@
 import React from 'react'
-import FreshLeads from '../pages/freshLeads/FreshLead';
-import SidebarandNavbar from "../components/SidebarandNavbar";
+import FreshLeads from '../features/freshLeads/FreshLead';
+import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/freshlead.css";
 
 const FreshLeadRoutes=()=> {

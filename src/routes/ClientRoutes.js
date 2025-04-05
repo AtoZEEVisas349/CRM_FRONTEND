@@ -1,9 +1,9 @@
 import React from "react";
-import ClientDetail from '../pages/client-details/ClientDetail.js';
-import ClientInteraction from '../pages/client-details/ClientInteraction.js';
-import FollowUpDetail from '../pages/client-details/FollowupDetail.js';
+import ClientDetail from '../features/client-details/ClientDetail.js';
+import ClientInteraction from '../features/client-details/ClientInteraction.js';
+import FollowUpDetail from '../features/client-details/FollowupDetail.js';
 import "../styles/client.css";
-import SideandNavbar from "../components/SidebarandNavbar";
+import SideandNavbar from "../layouts/SidebarandNavbar";
 
 const ClientRoutes = () => {
     return (
