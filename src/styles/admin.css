@@ -36,7 +36,6 @@
 .admin-main-content {
  width: calc(100% - 200px); /* Full width minus sidebar */
  padding: 20px;
- background-color: white;
  min-height: 100vh;
  overflow-y: auto;
  position: relative;
@@ -46,7 +45,6 @@
 }
 /* Admin Content Cards */
 .admin-card {
- background-color: white;
  padding: 20px;
  border-radius: 10px;
  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -216,7 +214,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1a1a2e;
+  background-color: #0f172a;
   padding: 20px;
   border-radius: 10px;
   color: white;
@@ -229,7 +227,7 @@
    border-radius: 10px;
    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
    margin-top: 25px;
-     background-color: #13131f;
+     background-color: #0f172a;
 
  }
  
@@ -302,7 +300,7 @@
  
  /* Profit Chart */
  .profit-container {
-  background: #13131f;
+  background: #0f172a;
    padding: 19px;
    border-radius: 10px;
    flex: 1;
@@ -364,7 +362,7 @@
    pointer-events: none; /* Prevent interference with select */
  }
  .meetings-container {
-  background: #13131f;
+  background: #0f172a;
    padding: 10px;
    border-radius: 10px;
    flex: 1;
@@ -372,7 +370,7 @@
  }
  
  .meeting-card {
-  background: #13131f;
+  background: #1e1e2e;
    padding: 20px; /* More spacing */
    border-radius: 10px;
    margin-bottom: 15px;
@@ -585,7 +583,7 @@
  }
 
  .executive-activity {
-  background: #13131f;
+  background: #0f172a;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
@@ -642,7 +640,7 @@
   min-width: 5%; /* Ensures visibility even at small values */
 }
 .lead-section-graph {
-  background: #13131f;
+  background: #0f172a;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
@@ -689,7 +687,7 @@
   }
 }
 .executive-container {
-  background-color: #13131f; /* Match RevenueChart background */
+  background-color: #0f172a; /* Match RevenueChart background */
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

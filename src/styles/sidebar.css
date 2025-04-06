@@ -1,4 +1,3 @@
-
 .sidebar_navbar {
   display: flex;
 }
@@ -42,7 +41,7 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 12px 10px;
+  padding: 12px 15px;
   color: #fff;
   transition: background-color 0.2s;
 }
@@ -99,13 +98,12 @@
 
 .navbar {
   padding: 20px;
-  width: calc(100% - 270px);
+  width: calc(100% - 260px);
   transition: margin-left 0.3s ease-in-out;
 
   display: flex;
   justify-content: space-between;
   box-shadow: 0 2px 5px #ececec;
-
   height: 70px;
 }
 
@@ -215,5 +213,5 @@
 }
 
 .logout_icon {
-  margin-right: 8px;
+  margin-right: 8px;
 }

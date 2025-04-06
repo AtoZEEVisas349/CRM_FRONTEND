@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/sidebar.css";
+import ExecutiveActivity from "../features/executive/ExecutiveActivity";
+import { recordStopWork } from "../services/executiveService";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -17,35 +20,40 @@ import {
   faBell,
   faCircleUser,
   faRobot,
-  faRightFromBracket, // Import logout icon
+  faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 
 const SidebarandNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [showTracker, setShowTracker] = useState(false);
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsActive(!isActive);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("executiveName");
-  
+  const handleLogout = async () => {
+    const userRole = localStorage.getItem("userRole");
+
+    if (userRole === "Executive") {
+      try {
+        await recordStopWork();
+      } catch (error) {
+        console.error("Failed to record work stop:", error);
+      }
+    }
+
+    localStorage.clear();
     navigate("/login");
-  
-    setTimeout(() => {
-      window.location.reload(); // ✅ Prevent going back after logout
-    }, 100);
+    setTimeout(() => window.location.reload(), 100);
   };
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       const sidebar = document.querySelector(".sidebar_container");
       const menuToggle = document.querySelector(".menu_toggle");
+
       if (
         sidebar &&
         menuToggle &&
@@ -57,20 +65,21 @@ const SidebarandNavbar = () => {
     };
 
     document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
     <section className="sidebar_navbar">
+      {/* Sidebar */}
       <section className={`sidebar_container ${isActive ? "active" : ""}`}>
         <div className="sidebar_heading">
           <h1>AtoZeeVisas</h1>
         </div>
+
         <div>
           <h3 className="sidebar_crm">CRM</h3>
         </div>
+
         <nav className="navbar_container">
           <ul>
             <li>
@@ -92,52 +101,47 @@ const SidebarandNavbar = () => {
                   <FontAwesomeIcon icon={faUserPlus} />
                 </span>
                 Leads
-                <span
-                  className="dropdown_icon"
-                  style={{ marginLeft: "50%", fontSize: "12px" }}
-                >
-                  ▼
-                </span>
+                <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼</span>
               </Link>
-              <div className="submenu_container">
-                {isOpen && (
-                  <ul className="submenu_nav">
-                    <li>
-                      <Link to="/freshlead" className="sidebar_nav">
-                        <span className="sidebar_icon">
-                          <FontAwesomeIcon icon={faUsers} />
-                        </span>
-                        Fresh Leads
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/follow-up" className="submenu_item">
-                        <span className="submenu_icon">
-                          <FontAwesomeIcon icon={faList} />
-                        </span>
-                        Follow ups
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/customer" className="submenu_item">
-                        <span className="submenu_icon">
-                          <FontAwesomeIcon icon={faClock} />
-                        </span>
-                        Convert
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/close-leads" className="submenu_item">
-                        <span className="submenu_icon">
-                          <FontAwesomeIcon icon={faCircleXmark} />
-                        </span>
-                        Close
-                      </Link>
-                    </li>
-                  </ul>
-                )}
-              </div>
+
+              {isOpen && (
+                <ul className="submenu_nav">
+                  <li>
+                    <Link to="/freshlead" className="submenu_item">
+                      <span className="submenu_icon">
+                        <FontAwesomeIcon icon={faUsers} />
+                      </span>
+                      Fresh Leads
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/follow-up" className="submenu_item">
+                      <span className="submenu_icon">
+                        <FontAwesomeIcon icon={faList} />
+                      </span>
+                      Follow ups
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/customer" className="submenu_item">
+                      <span className="submenu_icon">
+                        <FontAwesomeIcon icon={faClock} />
+                      </span>
+                      Convert
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/close-leads" className="submenu_item">
+                      <span className="submenu_icon">
+                        <FontAwesomeIcon icon={faCircleXmark} />
+                      </span>
+                      Close
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
+
             <li>
               <Link to="#" className="sidebar_nav">
                 <span className="sidebar_icon">
@@ -146,6 +150,7 @@ const SidebarandNavbar = () => {
                 Task Management
               </Link>
             </li>
+
             <li>
               <Link to="#" className="sidebar_nav">
                 <span className="sidebar_icon">
@@ -154,6 +159,7 @@ const SidebarandNavbar = () => {
                 Invoice
               </Link>
             </li>
+
             <li>
               <Link to="#" className="sidebar_nav">
                 <span className="sidebar_icon">
@@ -165,28 +171,25 @@ const SidebarandNavbar = () => {
           </ul>
         </nav>
 
-        {/* ✅ Logout Button at Bottom */}
         <div className="logout_container">
           <button className="logout_btn" onClick={handleLogout}>
-            <FontAwesomeIcon icon={faRightFromBracket} className="logout_icon" />
-            Logout
+            <FontAwesomeIcon icon={faRightFromBracket} /> Logout
           </button>
         </div>
       </section>
 
+      {/* Navbar */}
       <section className="navbar">
         <div className="menu_search">
-          <button
-            className="menu_toggle"
-            onClick={toggleSidebar}
-            aria-expanded={isActive}
-          >
+          <button className="menu_toggle" onClick={toggleSidebar}>
             <FontAwesomeIcon icon={faBars} />
           </button>
+
           <div className="search_bar">
-            <input type="text" className="search_input" placeholder="Search" />
+            <input className="search_input" placeholder="Search" />
           </div>
         </div>
+
         <div className="navbar_icons">
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
           <FontAwesomeIcon className="navbar_icon" icon={faBell} />
@@ -197,8 +200,18 @@ const SidebarandNavbar = () => {
             onClick={() => window.open("/chatbot", "_blank")}
             style={{ cursor: "pointer" }}
           />
+          <FontAwesomeIcon
+            className="navbar_icon"
+            icon={faClock}
+            title="Toggle Activity Tracker"
+            onClick={() => setShowTracker((prev) => !prev)}
+            style={{ cursor: "pointer" }}
+          />
         </div>
       </section>
+
+      {/* Activity Tracker */}
+      {showTracker && <ExecutiveActivity />}
     </section>
   );
 };

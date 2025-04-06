@@ -1,34 +1,17 @@
-// /layouts/ExecutiveLayout.js
-import React from "react";
-import SidebarandNavbar from "../layouts/SidebarandNavbar";
+import React from 'react';
 import ReportCard from "../features/executive/ReportCard";
-import ExecutiveActivity from "../features/executive/ExecutiveActivity";
-import LeadSectionGraph from "../features/executive/LeadSectionGraph";
-import MapDisplay from "../features/executive/MapDisplay";
-import NewsSection from "../features/executive/NewsSection";
+import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/executive.css";
-
+import NewsComponent from '../features/executive/NewsComponent';
 const ExecutiveLayout = () => {
   return (
     <div className="executive-app-container">
       <SidebarandNavbar />
       <div className="executive-main-content">
         <div className="dashboard-container">
-          {/* Top Section: Report Cards and Map */}
-          <div className="top-section">
+          <div className="dashboard-main-content">
             <ReportCard />
-            <MapDisplay />
-          </div>
-          
-          {/* Middle Section: Analytics Graph and Executive Activity */}
-          <div className="middle-section">
-          <LeadSectionGraph />
-          <ExecutiveActivity />
-          </div>
-          
-          {/* Bottom Section: Lead Section Graph and News */}
-          <div className="bottom-section">
-            <NewsSection />
+            <NewsComponent />
           </div>
         </div>
       </div>

@@ -10,55 +10,28 @@ import {
   faGear,
   faBars,
   faChartBar,
-  faSignOutAlt
+  faSignOutAlt,
+  faExclamationTriangle,
+  faFileAlt,
+  faBug,
+  faShieldAlt,
+  faLifeRing,
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminSidebar = () => {
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedState = localStorage.getItem("adminSidebarActive");
-    if (savedState === "true") {
-      setIsActive(true);
-    }
-  }, []);
-
   const toggleSidebar = () => {
     setIsActive(!isActive);
     localStorage.setItem("adminSidebarActive", !isActive);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const sidebar = document.querySelector(".admin-sidebar");
-      const menuToggle = document.querySelector(".admin-menu-toggle");
-      if (
-        sidebar &&
-        menuToggle &&
-        !sidebar.contains(event.target) &&
-        !menuToggle.contains(event.target)
-      ) {
-        setIsActive(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("executiveName");
-
+    localStorage.clear();
     navigate("/login");
-
     setTimeout(() => {
-      window.location.reload(); // ✅ Prevent going back after logout
+      window.location.reload();
     }, 100);
   };
 
@@ -70,39 +43,54 @@ const AdminSidebar = () => {
 
       <aside className={`admin-sidebar ${isActive ? "active" : ""}`}>
         <div className="admin-header-wrapper">
-          <h2>AtoZee Visas</h2>
-          <p className="admin-crm-label">CRM</p>
+          <h2>Vertex<span className="highlight">Guard</span></h2>
         </div>
+
         <nav>
+          <p className="sidebar-section">General</p>
           <ul>
             <li className="active">
               <Link to="/admin" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faChartBar} />
-                Report
+                Overview
               </Link>
             </li>
             <li>
               <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faUsers} />
-                Client
-              </Link>
-            </li>
-            <li>
-              <a href="/admin/assign-task" target="_blank" rel="noopener noreferrer" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
-                Assign Task
-              </a>
-            </li>
-            <li>
-              <Link to="/leadassign" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />
-                Task Management
+                <FontAwesomeIcon className="admin-aside-icon" icon={faExclamationTriangle} />
+                Issues
               </Link>
             </li>
             <li>
               <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faReceipt} />
-                Invoice
+                <FontAwesomeIcon className="admin-aside-icon" icon={faFileAlt} />
+                Files
+              </Link>
+            </li>
+          </ul>
+
+          <p className="sidebar-section">Reports</p>
+          <ul>
+            <li>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faBug} />
+                Threat Details
+              </Link>
+            </li>
+            <li>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faShieldAlt} />
+                Threats
+              </Link>
+            </li>
+          </ul>
+
+          <p className="sidebar-section">Settings</p>
+          <ul>
+            <li>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faLifeRing} />
+                Help & Supports
               </Link>
             </li>
             <li>
@@ -114,7 +102,6 @@ const AdminSidebar = () => {
           </ul>
         </nav>
 
-        {/* ✅ Logout Button */}
         <div className="logout_container">
           <button className="logout_btn" onClick={handleLogout}>
             <FontAwesomeIcon className="logout_icon" icon={faSignOutAlt} />
