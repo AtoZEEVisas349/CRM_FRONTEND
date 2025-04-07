@@ -63,6 +63,19 @@ export const fetchExecutivesAPI = async () => {
     throw error;
   }
 };
+// ✅ Fetch executive details by ID
+export const fetchExecutiveInfo = async (executiveId) => {
+  try {
+    const response = await apiService.get(`/executives/${executiveId}`);
+    console.log("API response:", response);
+    return response;
+  } catch (error) {
+    console.error("API error in fetchExecutiveInfo:", error);
+    throw error;
+  }
+};
+
+
 
 // ✅ Function to assign leads to an executive
 export const assignLeadAPI = async (leadId, executiveId, executiveName) => {

@@ -35,12 +35,15 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userRole", data.user.role);
       localStorage.setItem("currentUser", JSON.stringify(data.user));
+      console.log("User data after login:", data.user);
+localStorage.setItem("userId", data.user.id); // ✅ use "id" instead of "_id"
 
-      // ✅ Store executive's username (only for Executives)
-      if (data.user.role === "Executive") {
-        localStorage.setItem("executiveName", data.user.username);
-      }
+if (data.user.role === "Executive") {
+  localStorage.setItem("executiveName", data.user.username);
+  localStorage.setItem("executiveId", data.user.id); // ✅ fix here
+}
 
+      
       toast.success("Login successful! Redirecting...");
 
       setTimeout(() => {

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/sidebar.css";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { recordStopWork } from "../services/executiveService";
+import { fetchExecutiveInfo } from "../services/apiService"; // ✅ Import your API function
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,7 +28,18 @@ const SidebarandNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
+  const [showUserPopover, setShowUserPopover] = useState(false);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(false); // ✅ Add this
+  const [userData, setUserData] = useState({
+    name: localStorage.getItem("userName") || "User",
+    email: localStorage.getItem("userEmail") || "user@example.com",
+    role: localStorage.getItem("userRole") || "Role",
+  });
+  
+
   const navigate = useNavigate();
+  const popoverRef = useRef(null);
+  const userIconRef = useRef(null);
 
   const toggleSidebar = () => {
     setIsActive(!isActive);
@@ -49,8 +61,56 @@ const SidebarandNavbar = () => {
     setTimeout(() => window.location.reload(), 100);
   };
 
+  const fetchUserDetails = async () => {
+    setIsLoadingUserData(true);
+    try {
+      const executiveId = localStorage.getItem("userId");
+      console.log("Executive ID:", executiveId); // 👈 Check this
+  
+      if (!executiveId) {
+        console.error("No executiveId found in localStorage!");
+        setIsLoadingUserData(false);
+        return;
+      }
+  
+      const response = await fetchExecutiveInfo(executiveId);
+      console.log("Executive data response:", response.data);
+  
+      if (response?.data?.executive) {
+        const { username, email, role } = response.data.executive;
+        setUserData({
+          name: username || "User",
+          email: email || "user@example.com",
+          role: role || "Role",
+        });
+      } else {
+        console.error("Executive data is missing:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      setIsLoadingUserData(false);
+    }
+  };
+  
+  
+
+  const handleUserIconClick = () => {
+    setShowUserPopover((prev) => !prev);
+    fetchUserDetails(); // ✅ Fetch fresh user details when icon is clicked
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target) &&
+        userIconRef.current &&
+        !userIconRef.current.contains(event.target)
+      ) {
+        setShowUserPopover(false);
+      }
+
       const sidebar = document.querySelector(".sidebar_container");
       const menuToggle = document.querySelector(".menu_toggle");
 
@@ -170,12 +230,6 @@ const SidebarandNavbar = () => {
             </li>
           </ul>
         </nav>
-
-        <div className="logout_container">
-          <button className="logout_btn" onClick={handleLogout}>
-            <FontAwesomeIcon icon={faRightFromBracket} /> Logout
-          </button>
-        </div>
       </section>
 
       {/* Navbar */}
@@ -193,7 +247,13 @@ const SidebarandNavbar = () => {
         <div className="navbar_icons">
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
           <FontAwesomeIcon className="navbar_icon" icon={faBell} />
-          <FontAwesomeIcon className="navbar_icon" icon={faCircleUser} />
+          <FontAwesomeIcon
+            ref={userIconRef}
+            className="navbar_icon"
+            icon={faCircleUser}
+            onClick={handleUserIconClick} // ✅ Call the function here
+            style={{ cursor: "pointer", position: "relative" }}
+          />
           <FontAwesomeIcon
             className="navbar_icon bot_icon"
             icon={faRobot}
@@ -208,6 +268,25 @@ const SidebarandNavbar = () => {
             style={{ cursor: "pointer" }}
           />
         </div>
+
+        {/* User Popover */}
+        {showUserPopover && (userData || isLoadingUserData) && (
+  <div className="user_popover">
+    {isLoadingUserData ? (
+      <p>Loading user data...</p>
+    ) : (
+      <>
+        <p><strong>{userData.name}</strong></p>
+        <p>{userData.email}</p>
+        <p>Role: {userData.role}</p>
+        <button className="logout_btn" onClick={handleLogout}>
+          <FontAwesomeIcon icon={faRightFromBracket} /> Logout
+        </button>
+      </>
+    )}
+  </div>
+)}
+
       </section>
 
       {/* Activity Tracker */}

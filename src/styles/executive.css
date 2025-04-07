@@ -269,23 +269,6 @@ html, body {
     border: none;
   }
   
-  /* ===== Logout Button ===== */
-  .logout-button {
-    background: #ff4d4d;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    cursor: pointer;
-    margin-top: 20px;
-    display: block;
-    width: 100%;
-    text-align: center;
-  }
-  
-  .logout-button:hover {
-    background: #e43f3f;
-  }
   .lead-section-graph {
     background: #13131f;
     padding: 20px;
@@ -354,5 +337,46 @@ html, body {
     border-radius: 8px;
     transition: width 0.5s ease-in-out;
     min-width: 5%; /* Ensures visibility even at small values */
+  }
+  .user_popover {
+    position: absolute;
+    top: 60px; /* Adjust based on your navbar height */
+    right: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    z-index: 1000;
+    width: 200px;
+    transition: all 0.3s ease;
+    
+    /* Add these 👇 */
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .user_popover p {
+    margin: 5px 0;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .logout_btn {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .logout_btn:hover {
+    background-color: #d62828;
   }
   
