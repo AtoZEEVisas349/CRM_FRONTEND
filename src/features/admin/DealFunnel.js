@@ -13,7 +13,7 @@ const DealFunnel = () => {
   return (
     <div className="chart-container">
       <div className="chart">
-        <h2>Deal Funnel</h2>
+        <h2 className="exec-section-title">Deal Funnel</h2>
         <ResponsiveContainer width={250} height={180}>
           <FunnelChart>
             <Tooltip />

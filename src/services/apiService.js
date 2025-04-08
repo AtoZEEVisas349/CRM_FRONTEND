@@ -67,7 +67,6 @@ export const fetchExecutivesAPI = async () => {
 export const fetchExecutiveInfo = async (executiveId) => {
   try {
     const response = await apiService.get(`/executives/${executiveId}`);
-    console.log("API response:", response);
     return response;
   } catch (error) {
     console.error("API error in fetchExecutiveInfo:", error);
@@ -75,7 +74,16 @@ export const fetchExecutiveInfo = async (executiveId) => {
   }
 };
 
-
+// ✅ Fetch admin profile
+export const fetchAdminProfile = async () => {
+  try {
+    const response = await apiService.get('/admin/profile');
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching admin profile:", error);
+    throw error;
+  }
+};
 
 // ✅ Function to assign leads to an executive
 export const assignLeadAPI = async (leadId, executiveId, executiveName) => {

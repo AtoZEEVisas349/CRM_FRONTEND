@@ -39,7 +39,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
   ];
 
   return (
-    <div className="executive-activity">
+    <div className="exec-activity">
       <h2 className="exec-section-title">
         <span>Executive Activity</span>
         <span className="executive-name">{executiveName || "Loading..."}</span>

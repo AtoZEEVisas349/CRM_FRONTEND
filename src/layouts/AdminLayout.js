@@ -39,7 +39,7 @@ const AdminLayout = () => {
 
   return (
     <div className="admin-dashboard-container">
-      <AdminSidebar />
+      <AdminSidebar className="admin-sidbare"/>
       <main className="admin-main-content">
         <div className="dashboard-wrapper">
           <Header />
@@ -51,14 +51,13 @@ const AdminLayout = () => {
             </div>
             <div className="chart-row">
             <LeadGraph 
-  selectedExecutiveId={currentExecutive?.id} 
-  executiveName={currentExecutive?.username} 
-/>
-<ExecutiveActi 
-  selectedExecutiveId={currentExecutive?.id} 
-  executiveName={currentExecutive?.username} 
-/>
-
+              selectedExecutiveId={currentExecutive?.id} 
+              executiveName={currentExecutive?.username} 
+            />
+            <ExecutiveActi 
+              selectedExecutiveId={currentExecutive?.id} 
+              executiveName={currentExecutive?.username} 
+            />
             </div>
           </div>
           <div className="revenue-executive-container">

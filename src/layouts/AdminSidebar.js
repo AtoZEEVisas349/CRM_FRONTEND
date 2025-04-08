@@ -3,18 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faUsers,
   faFolderOpen,
   faFile,
   faReceipt,
   faGear,
   faBars,
   faChartBar,
-  faSignOutAlt,
-  faExclamationTriangle,
-  faFileAlt,
-  faBug,
-  faShieldAlt,
+  faUsers,
   faLifeRing,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -43,7 +38,7 @@ const AdminSidebar = () => {
 
       <aside className={`admin-sidebar ${isActive ? "active" : ""}`}>
         <div className="admin-header-wrapper">
-          <h2>Vertex<span className="highlight">Guard</span></h2>
+          <h2>Atozee<span className="highlight">Visas</span></h2>
         </div>
 
         <nav>
@@ -56,33 +51,33 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
-              <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faExclamationTriangle} />
-                Issues
-              </Link>
-            </li>
-            <li>
-              <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faFileAlt} />
-                Files
-              </Link>
-            </li>
+            <a href="/assign-task" target="_blank" rel="noopener noreferrer" className="admin-aside-link">
+              <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
+              Assign Task
+            </a>
+          </li>
+           <li>
+            <Link to="/leadassign" className="admin-aside-link">
+              <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />
+              Task Management
+            </Link>
+          </li>
           </ul>
 
           <p className="sidebar-section">Reports</p>
           <ul>
             <li>
               <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faBug} />
-                Threat Details
+                <FontAwesomeIcon className="admin-aside-icon" icon={faUsers} />
+                Executive Details
               </Link>
             </li>
             <li>
-              <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faShieldAlt} />
-                Threats
-              </Link>
-            </li>
+            <Link to="#" className="admin-aside-link">
+              <FontAwesomeIcon className="admin-aside-icon" icon={faReceipt} />
+              Invoice
+            </Link>
+          </li>
           </ul>
 
           <p className="sidebar-section">Settings</p>
@@ -101,13 +96,6 @@ const AdminSidebar = () => {
             </li>
           </ul>
         </nav>
-
-        <div className="logout_container">
-          <button className="logout_btn" onClick={handleLogout}>
-            <FontAwesomeIcon className="logout_icon" icon={faSignOutAlt} />
-            Logout
-          </button>
-        </div>
       </aside>
     </section>
   );

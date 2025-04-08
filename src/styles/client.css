@@ -451,3 +451,103 @@
     display: flex;
     align-items: center;
   }
+  /*----------------------Speech o text----------------------*/
+  /* Common styles for both components */
+.textarea-with-speech {
+  position: relative;
+  margin-top: 8px;
+}
+
+.interaction-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  padding-right: 42px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.interaction-textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.speech-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.speech-btn:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.speech-btn.listening {
+  background: #ff4d4f;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Form control styles */
+.radio-group, .checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.radio-container, .checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.radio-container input, .checkbox-container input {
+  margin-right: 6px;
+}
+
+/* Container styles */
+.followup-detail-container, .client-interaction-container {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3, h4 {
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 4px;
+}

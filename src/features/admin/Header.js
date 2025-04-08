@@ -4,7 +4,7 @@ import {
 } from "react-icons/fa";
 import DatePicker from "react-datepicker";  
 import "react-datepicker/dist/react-datepicker.css"; 
-import AdminNav from "./AdminNav";
+import AdminNavbar from "../../layouts/AdminNavbar";
 
 const Header = () => {
   const today = new Date();
@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
     <>
-    <AdminNav/>
+    <AdminNavbar/>
     <header className="header">
       <h1>Dashboard</h1>
       <div className="header-right">

@@ -36,12 +36,20 @@ const Login = () => {
       localStorage.setItem("userRole", data.user.role);
       localStorage.setItem("currentUser", JSON.stringify(data.user));
       console.log("User data after login:", data.user);
-localStorage.setItem("userId", data.user.id); // ✅ use "id" instead of "_id"
+      localStorage.setItem("userId", data.user.id); // ✅ use "id" instead of "_id"
 
-if (data.user.role === "Executive") {
-  localStorage.setItem("executiveName", data.user.username);
-  localStorage.setItem("executiveId", data.user.id); // ✅ fix here
-}
+      if (data.user.role === "Admin") {
+        localStorage.setItem("adminName", data.user.username); // ✅ admin name
+        localStorage.setItem("adminId", data.user.id);         // ✅ admin id
+        navigate("/admin");
+      } else if (data.user.role === "Executive") {
+        localStorage.setItem("executiveName", data.user.username);
+        localStorage.setItem("executiveId", data.user.id);
+        navigate("/executive");
+      } else if (data.user.role === "TL") {
+        navigate("/user");
+      }
+      
 
       
       toast.success("Login successful! Redirecting...");

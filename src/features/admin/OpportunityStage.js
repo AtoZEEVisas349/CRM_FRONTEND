@@ -16,7 +16,7 @@ const OpportunityStage = () => {
   return (
     <div className="chart-container">
       <div className="chart">
-        <h2>Opportunity Stage</h2>
+        <h2 className="exec-section-title">Opportunity Stage</h2>
         <PieChart width={250} height={200}>
           <Pie
             data={data}

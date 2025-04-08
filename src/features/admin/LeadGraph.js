@@ -74,7 +74,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   };
 
   return (
-    <div className="lead-section-graph">
+    <div className="lead-sec-graph">
       <h2 className="exec-section-title">
         <span>Lead Visit</span>
         <span className="executive-name">{executiveName || "Loading..."}</span>

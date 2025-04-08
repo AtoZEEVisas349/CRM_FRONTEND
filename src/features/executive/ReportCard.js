@@ -26,15 +26,14 @@ const ReportCard = () => {
   return (
     <div className="report-cards">
       {cards.map((card, index) => (
-        <div key={index} className="report-card">
+        <div key={index} className={`report-card report-card-${index}`}>
           <div className="card-icon">{card.icon}</div>
           <div className="card-details">
             <h4>{card.title}</h4>
             <p className="card-value">{card.value}</p>
             <p
-              className={`card-change ${
-                card.change.includes("-") ? "negative" : "positive"
-              }`}
+              className={`card-change ${card.change.includes("-") ? "negative" : "positive"
+                }`}
             >
               {card.change} Compared to last month
             </p>

@@ -5,7 +5,7 @@ const meetingsData = [
   {
     title: "Internal Preparation Meeting",
     time: "08:00 - 09:00 AM",
-    isUpcoming: true, // Show "In 10 mins" badge
+    isUpcoming: true,
   },
   {
     title: "Internal Preparation Meeting",
@@ -29,7 +29,6 @@ const Meetings = () => {
           className={`meeting-card ${meeting.isUpcoming ? "upcoming" : ""}`}
         >
           <div className="meeting-details">
-            {meeting.isUpcoming && <span className="badge">In 10 mins</span>}
             <h4>{meeting.title}</h4>
             <p>{meeting.time}</p>
           </div>

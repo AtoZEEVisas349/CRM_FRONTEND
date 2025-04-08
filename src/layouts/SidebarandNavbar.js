@@ -4,7 +4,6 @@ import "../styles/sidebar.css";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { recordStopWork } from "../services/executiveService";
 import { fetchExecutiveInfo } from "../services/apiService"; // ✅ Import your API function
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -35,7 +34,22 @@ const SidebarandNavbar = () => {
     email: localStorage.getItem("userEmail") || "user@example.com",
     role: localStorage.getItem("userRole") || "Role",
   });
-  
+  // Inside component state
+  const [isLightMode, setIsLightMode] = useState(() => {
+    return localStorage.getItem("theme") === "light";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isLightMode) {
+      root.classList.add("light-mode");
+      localStorage.setItem("theme", "light");
+    } else {
+      root.classList.remove("light-mode");
+      localStorage.setItem("theme", "dark");
+    }
+  }, [isLightMode]);
+
 
   const navigate = useNavigate();
   const popoverRef = useRef(null);
@@ -74,7 +88,6 @@ const SidebarandNavbar = () => {
       }
   
       const response = await fetchExecutiveInfo(executiveId);
-      console.log("Executive data response:", response.data);
   
       if (response?.data?.executive) {
         const { username, email, role } = response.data.executive;
@@ -141,7 +154,7 @@ const SidebarandNavbar = () => {
         </div>
 
         <nav className="navbar_container">
-          <ul>
+          <ul><b>
             <li>
               <Link to="/executive" className="sidebar_nav">
                 <span className="sidebar_icon">
@@ -228,7 +241,19 @@ const SidebarandNavbar = () => {
                 Settings
               </Link>
             </li>
-          </ul>
+            <li>
+              <div className="theme_toggle_wrapper">
+                <div
+                  className={`theme_toggle_btn ${isLightMode ? "light-mode-toggle" : "dark-mode-toggle"}`}
+                  onClick={() => setIsLightMode((prev) => !prev)}
+                >
+                  <div className="toggle-label">Light</div>
+                  <div className="toggle-label">Dark</div>
+                  <div className="toggle-slider"></div>
+                </div>
+              </div>
+            </li>
+          </b></ul>
         </nav>
       </section>
 
@@ -270,17 +295,23 @@ const SidebarandNavbar = () => {
         </div>
 
         {/* User Popover */}
-        {showUserPopover && (userData || isLoadingUserData) && (
-  <div className="user_popover">
+        {showUserPopover && (
+  <div className="user_popover" ref={popoverRef}>
     {isLoadingUserData ? (
-      <p>Loading user data...</p>
+      <div className="loading_spinner"></div>
     ) : (
       <>
-        <p><strong>{userData.name}</strong></p>
-        <p>{userData.email}</p>
-        <p>Role: {userData.role}</p>
+        <div className="user_details">
+          <div className="user_avatar">{userData.name.charAt(0)}</div>
+          <div>
+            <p className="user_name">{userData.name}</p>
+            <p className="user_email">{userData.email}</p>
+            <p className="user_role">{userData.role}</p>
+          </div>
+        </div>
         <button className="logout_btn" onClick={handleLogout}>
-          <FontAwesomeIcon icon={faRightFromBracket} /> Logout
+          <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} />
+          Logout
         </button>
       </>
     )}
