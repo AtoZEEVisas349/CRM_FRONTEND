@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/sidebar.css";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { recordStopWork } from "../services/executiveService";
-import { fetchExecutiveInfo } from "../services/apiService"; // ✅ Import your API function
+import { useApi } from "../context/ApiContext"; // ✅ Using your ApiContext
+import { useAuth } from "../context/AuthContext"; // ✅ Import Auth Context
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -28,16 +29,42 @@ const SidebarandNavbar = () => {
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
-  const [isLoadingUserData, setIsLoadingUserData] = useState(false); // ✅ Add this
-  const [userData, setUserData] = useState({
-    name: localStorage.getItem("userName") || "User",
-    email: localStorage.getItem("userEmail") || "user@example.com",
-    role: localStorage.getItem("userRole") || "Role",
-  });
-  // Inside component state
+  const { user, logout } = useAuth(); // ✅ Only use what's provided
   const [isLightMode, setIsLightMode] = useState(() => {
     return localStorage.getItem("theme") === "light";
   });
+
+  const { executiveInfo, executiveLoading, fetchExecutiveData } = useApi(); // ✅ Access context
+  const navigate = useNavigate();
+  const popoverRef = useRef(null);
+  const userIconRef = useRef(null);
+
+  const toggleSidebar = () => {
+    setIsActive(!isActive);
+  };
+  const handleLogout = async () => {
+    const executiveId = localStorage.getItem("executiveId");
+  
+    try {
+      // Stop work if executiveId exists
+      if (executiveId) {
+        await recordStopWork({ executiveId });
+      }
+  
+      // Call the logout function from context (not authService directly!)
+      await logout();
+  
+      // ✅ Do not manually clear localStorage or setUser here, it's already handled inside context
+    } catch (error) {
+      console.error("Logout failed:", error.message);
+    }
+  };
+  
+  
+  const handleUserIconClick = () => {
+    setShowUserPopover((prev) => !prev);
+    fetchExecutiveData(); // ✅ Use context function to fetch latest data
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -49,69 +76,6 @@ const SidebarandNavbar = () => {
       localStorage.setItem("theme", "dark");
     }
   }, [isLightMode]);
-
-
-  const navigate = useNavigate();
-  const popoverRef = useRef(null);
-  const userIconRef = useRef(null);
-
-  const toggleSidebar = () => {
-    setIsActive(!isActive);
-  };
-
-  const handleLogout = async () => {
-    const userRole = localStorage.getItem("userRole");
-
-    if (userRole === "Executive") {
-      try {
-        await recordStopWork();
-      } catch (error) {
-        console.error("Failed to record work stop:", error);
-      }
-    }
-
-    localStorage.clear();
-    navigate("/login");
-    setTimeout(() => window.location.reload(), 100);
-  };
-
-  const fetchUserDetails = async () => {
-    setIsLoadingUserData(true);
-    try {
-      const executiveId = localStorage.getItem("userId");
-      console.log("Executive ID:", executiveId); // 👈 Check this
-  
-      if (!executiveId) {
-        console.error("No executiveId found in localStorage!");
-        setIsLoadingUserData(false);
-        return;
-      }
-  
-      const response = await fetchExecutiveInfo(executiveId);
-  
-      if (response?.data?.executive) {
-        const { username, email, role } = response.data.executive;
-        setUserData({
-          name: username || "User",
-          email: email || "user@example.com",
-          role: role || "Role",
-        });
-      } else {
-        console.error("Executive data is missing:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    } finally {
-      setIsLoadingUserData(false);
-    }
-  };
-  
-  
-
-  const handleUserIconClick = () => {
-    setShowUserPopover((prev) => !prev);
-    fetchUserDetails(); // ✅ Fetch fresh user details when icon is clicked
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -297,16 +261,16 @@ const SidebarandNavbar = () => {
         {/* User Popover */}
         {showUserPopover && (
   <div className="user_popover" ref={popoverRef}>
-    {isLoadingUserData ? (
-      <div className="loading_spinner"></div>
+    {executiveLoading ? (
+      <p>Loading user details........</p>
     ) : (
       <>
         <div className="user_details">
-          <div className="user_avatar">{userData.name.charAt(0)}</div>
+          <div className="user_avatar">{executiveInfo.name?.charAt(0)}</div>
           <div>
-            <p className="user_name">{userData.name}</p>
-            <p className="user_email">{userData.email}</p>
-            <p className="user_role">{userData.role}</p>
+            <p className="user_name">{executiveInfo.name}</p>
+            <p className="user_email">{executiveInfo.email}</p>
+            <p className="user_role">{executiveInfo.role}</p>
           </div>
         </div>
         <button className="logout_btn" onClick={handleLogout}>
@@ -317,9 +281,7 @@ const SidebarandNavbar = () => {
     )}
   </div>
 )}
-
-      </section>
-
+</section>
       {/* Activity Tracker */}
       {showTracker && <ExecutiveActivity />}
     </section>

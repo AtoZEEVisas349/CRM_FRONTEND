@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } from "../../services/apiService";
+import { useApi } from "../../context/ApiContext"; // ✅ Import useApi hook
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
   const [executives, setExecutives] = useState([]);
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
+
+  const { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } = useApi(); // ✅ Destructure API functions from context
 
   // ✅ Fetch Leads
   const fetchLeads = async () => {
@@ -32,12 +34,10 @@ const TaskManagement = () => {
     fetchExecutives();
   }, []);
 
-  // Handle Executive Selection
   const handleExecutiveChange = (event) => {
     setSelectedExecutive(event.target.value);
   };
 
-  // Handle Select Lead Checkbox
   const handleLeadSelection = (leadId) => {
     setSelectedLeads((prevSelectedLeads) =>
       prevSelectedLeads.includes(String(leadId))
@@ -46,7 +46,6 @@ const TaskManagement = () => {
     );
   };
 
-  // Select/Unselect All Leads
   const toggleSelectAll = () => {
     if (selectedLeads.length === leads.length) {
       setSelectedLeads([]);
@@ -55,7 +54,6 @@ const TaskManagement = () => {
     }
   };
 
-  // ✅ Assign Leads
   const assignLeads = async () => {
     if (!selectedExecutive) {
       alert("Please select an executive before assigning leads.");
@@ -81,27 +79,27 @@ const TaskManagement = () => {
       );
 
       alert("Leads assigned successfully!");
-      fetchLeads(); // Refresh the leads list
-      setSelectedLeads([]); // Reset selection
+      fetchLeads();
+      setSelectedLeads([]);
     } catch (error) {
       console.error("❌ Error assigning leads:", error);
       alert("Failed to assign leads.");
     }
   };
-  
+
   return (
     <div className="leads-dashboard">
       <div className="Logo">Lead Assign</div>
       <div className="taskmanage-header">
         <div className="header-actions">
-        <select value={selectedExecutive} onChange={handleExecutiveChange}>
-  <option value="">-- Select Executive --</option>
-  {executives.map((exec) => (
-    <option key={exec.id} value={String(exec.id)}> {/* Ensure value is a string */}
-      {exec.username}
-    </option>
-  ))}
-</select>
+          <select value={selectedExecutive} onChange={handleExecutiveChange}>
+            <option value="">-- Select Executive --</option>
+            {executives.map((exec) => (
+              <option key={exec.id} value={String(exec.id)}>
+                {exec.username}
+              </option>
+            ))}
+          </select>
 
           <select>
             <option>Fresh</option>

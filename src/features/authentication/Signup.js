@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { signupUser } from "../../services/auth"; // Import API function
-
+import img1 from "../../assets/img1.jpg";
+import img2 from "../../assets/img2.jpg";
+import img3 from "../../assets/img3.jpg";
 const Signup = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -12,7 +14,28 @@ const Signup = () => {
   const [role, setRole] = useState("admin");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const slides = [{
+    text: "Fast & Secure",
+    img:img1
+  },
+  {
+    text: "User-Friendly Interface",
+    img: img3
+  },
+  {
+    text: "24/7 Support",
+    img: img2
+  }];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+  
   const handleSignup = async (e) => {
     e.preventDefault();
   
@@ -45,10 +68,10 @@ const Signup = () => {
                 role: data.user.role,
             })
         );
-
+        setSignupSuccess(true);
         setTimeout(() => {
-            navigate(data.user.role === "Admin" ? "/admin" : data.user.role === "Executive" ? "/executive" : "/user");
-        }, 2000);
+            navigate(data.user.role === "Admin" ? "/login" : data.user.role === "Executive" ? "/login" : "/user");
+        }, 5000);
     } catch (error) {
         console.error("Signup error:", error);
         setError(error.message);
@@ -57,38 +80,61 @@ const Signup = () => {
     }
 };
 
+
   return (
     <div className="container">
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="background-box-1"></div>
-      <div className="background-box-2"></div>
+      
+    <div className="left-half">
+      
+    <div className="image-wrapper">
+      <img src={slides[currentIndex].img}
+    alt="Slide"
+    className="background-img" />
 
-      <div className="form-container">
-        <div className="left-box1">
-          <h2>WELCOME BACK!</h2>
-          <p>Already have an account? Click below to log in.</p>
-          <button className="switch-btn" onClick={() => navigate("/login")}>
-            SIGN IN
-          </button>
+      <img
+        src={slides[currentIndex].img}
+        alt="Slide"
+        className="background-img"
+      />
+
+      <div className="slider-overlay">
+        <div className="slider-text">{slides[currentIndex].text}</div>
+
+        <div className="indicator-container">
+          {slides.map((_, i) => (
+            <div
+              key={i}
+              className={`indicator-line ${i === currentIndex ? "active" : ""}`}
+            ></div>
+          ))}
         </div>
+      </div>
+    </div>
+    </div>
 
-        <div className="right-box">
-          <h2>Create Account</h2>
-          {error && <p className="error-message">{error}</p>}
+    <div className="right-half">
+      <div className="login-form">
+        
+            <div className="create">Create an Account</div>
+            
 
-          <p>or use your email account</p>
-          <form onSubmit={handleSignup}>
-            <input
-              type="text"
-              placeholder="Username"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              required
+            <p className="small-text">
+             Already have an account? <a href="/login" style={{color:"black"}}>Login</a>
+            </p>
+            {error && <p className="error-message">{error}</p>}
+            <form onSubmit={handleSignup}>
+          <input
+            type="text"
+        placeholder="Username"
+       required
+     value={username}
+      onChange={(e) => setUsername(e.target.value)}
+     />
+      <input
+       type="email"
+          placeholder="Email"
+          required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -100,19 +146,19 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <select value={role} onChange={(e) => setRole(e.target.value)} className="Role">
-              <option value="admin">Admin</option>
+             <select value={role} onChange={(e) => setRole(e.target.value)} className="Role">
+               <option value="admin">Admin</option>
               <option value="executive">Executive</option>
-              <option value="user">Team Lead</option>
-            </select>
+               <option value="user">Team Lead</option>
+             </select>
 
-            <button type="submit" disabled={loading}>
+             <button type="submit" disabled={loading}>
               {loading ? "Signing up..." : "SIGN UP"}
             </button>
           </form>
-        </div>
       </div>
     </div>
+  </div>
   );
 };
 

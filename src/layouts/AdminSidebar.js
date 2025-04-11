@@ -51,10 +51,10 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
-            <a href="/assign-task" target="_blank" rel="noopener noreferrer" className="admin-aside-link">
+            <Link to="/admin/assign-task" className="admin-aside-link">
               <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
               Assign Task
-            </a>
+            </Link>
           </li>
            <li>
             <Link to="/leadassign" className="admin-aside-link">

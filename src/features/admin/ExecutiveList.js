@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { fetchExecutivesAPI } from "../../services/apiService";
 import { FaUserCircle } from "react-icons/fa";
+import { useApi } from "../../context/ApiContext"; // ✅ import the hook
 
 const ExecutiveList = ({ onSelectExecutive }) => {
   const [executives, setExecutives] = useState([]);
+  const { fetchExecutivesAPI } = useApi(); // ✅ get API function from context
 
   useEffect(() => {
     const fetchExecutives = async () => {
       try {
-        const data = await fetchExecutivesAPI();
+        const data = await fetchExecutivesAPI(); // ✅ use context function
         setExecutives(data);
       } catch (error) {
         console.error("Error fetching executives:", error);
@@ -16,7 +17,7 @@ const ExecutiveList = ({ onSelectExecutive }) => {
     };
 
     fetchExecutives();
-  }, []);
+  }, [fetchExecutivesAPI]); // ✅ dependency array
 
   return (
     <div className="executive-container">

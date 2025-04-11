@@ -20,21 +20,25 @@ const getHeaders = () => ({
 export const recordStartWork = async () => {
   try {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log("📦 Payload for start work:", { executiveId: currentUser.id, executiveName: currentUser.username });
+
     const response = await axios.post(
       `${API_BASE_URL}/api/executive-activities/startWork`,
       {
         executiveId: currentUser.id,
         executiveName: currentUser.username
-        // No client-side timestamp - server will use its own time
       },
       { headers: getHeaders() }
     );
+
+    console.log("✅ API Response for start work:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error recording start work:', error);
+    console.error('❌ Error recording start work:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Failed to record work start');
   }
 };
+
 
 /**
  * Record when executive stops work (logout)
@@ -157,10 +161,7 @@ export const endCall = async (leadId) => {
   }
 };
 
-/**
- * Get current activity status and times for the executive
- * @returns {Promise} API response with current status and durations
- */
+
 export const getActivityStatus = async () => {
   try {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');

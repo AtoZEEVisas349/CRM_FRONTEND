@@ -80,7 +80,7 @@ export const fetchAdminProfile = async () => {
     const response = await apiService.get('/admin/profile');
     return response.data;
   } catch (error) {
-    console.error("❌ Error fetching admin profile:", error);
+    console.error("Error fetching admin profile:", error);
     throw error;
   }
 };

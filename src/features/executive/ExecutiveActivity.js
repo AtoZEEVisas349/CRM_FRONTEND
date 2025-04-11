@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCoffee, faPhone, faSync } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -10,8 +10,11 @@ import {
 } from "../../services/executiveService";
 import { toast } from "react-toastify";
 import "../../styles/executiveTracker.css";
+import { useExecutiveActivity } from '../../context/ExecutiveActivityContext';
 
 const ExecutiveActivity = () => {
+  const { user } = useExecutiveActivity();
+
   const [status, setStatus] = useState({
     onBreak: false,
     isOnCall: false,
@@ -56,23 +59,17 @@ const ExecutiveActivity = () => {
   };
 
   useEffect(() => {
-    const userRole = localStorage.getItem("userRole");
-
-    if (userRole === "Executive") {
+    if (user?.role === "Executive") {
       fetchActivityStatus();
 
-      const backendInterval = setInterval(() => {
-        fetchActivityStatus();
-      }, 30000);
+      const backendInterval = setInterval(fetchActivityStatus, 30000);
 
       const uiInterval = setInterval(() => {
         setStatus((prev) => ({
           ...prev,
           workingTime: prev.workingTime + 1,
           breakTime: prev.onBreak ? prev.breakTime + 1 : prev.breakTime,
-          callDuration: prev.isOnCall
-            ? prev.callDuration + 1
-            : prev.callDuration,
+          callDuration: prev.isOnCall ? prev.callDuration + 1 : prev.callDuration,
         }));
       }, 1000);
 
@@ -81,7 +78,7 @@ const ExecutiveActivity = () => {
         clearInterval(uiInterval);
       };
     }
-  }, []);
+  }, [user?.role]);
 
   const toggleBreak = async () => {
     try {
@@ -97,9 +94,7 @@ const ExecutiveActivity = () => {
 
       await fetchActivityStatus();
     } catch (error) {
-      toast.error(
-        `Failed to ${status.onBreak ? "end" : "start"} break: ${error.message}`
-      );
+      toast.error(`Failed to ${status.onBreak ? "end" : "start"} break: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -125,9 +120,7 @@ const ExecutiveActivity = () => {
 
       await fetchActivityStatus();
     } catch (error) {
-      toast.error(
-        `Failed to ${status.isOnCall ? "end" : "start"} call: ${error.message}`
-      );
+      toast.error(`Failed to ${status.isOnCall ? "end" : "start"} call: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -144,8 +137,6 @@ const ExecutiveActivity = () => {
     fetchActivityStatus();
     toast.info("Activity data refreshed");
   };
-
-  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
 
   return (
     <div className="activity-tracker-container">
@@ -165,51 +156,41 @@ const ExecutiveActivity = () => {
           <div className="exec-info">
             <div className="exec-avatar">
               <span className="initial">
-                {currentUser?.username?.charAt(0).toUpperCase() || "U"}
+                {user?.username?.charAt(0).toUpperCase() || "U"}
               </span>
             </div>
             <div className="exec-details">
               <div className="exec-name">
-                <strong>{currentUser?.username || "Unknown User"}</strong>
+                <strong>{user?.username || "Unknown User"}</strong>
               </div>
               <div className="exec-id">
-                ID: <span>{currentUser?.id || "N/A"}</span>
+                ID: <span>{user?.id || "N/A"}</span>
               </div>
             </div>
           </div>
 
           <div className="status-badge">
             <strong>Status:</strong>{" "}
-            {status.onBreak
-              ? "On Break"
-              : status.isOnCall
-              ? "On Call"
-              : "Working"}
+            {status.onBreak ? "On Break" : status.isOnCall ? "On Call" : "Working"}
           </div>
 
           <div className="time-display">
             <div className="time-block">
               <span className="time-label">Working Time:</span>
-              <span className="time-value">
-                {formatTime(status.workingTime)}
-              </span>
+              <span className="time-value">{formatTime(status.workingTime)}</span>
             </div>
 
             {status.onBreak && (
               <div className="time-block break-time">
                 <span className="time-label">Break Time:</span>
-                <span className="time-value">
-                  {formatTime(status.breakTime)}
-                </span>
+                <span className="time-value">{formatTime(status.breakTime)}</span>
               </div>
             )}
 
             {status.isOnCall && (
               <div className="time-block call-time">
                 <span className="time-label">Call Duration:</span>
-                <span className="time-value">
-                  {formatTime(status.callDuration)}
-                </span>
+                <span className="time-value">{formatTime(status.callDuration)}</span>
               </div>
             )}
 
@@ -223,9 +204,7 @@ const ExecutiveActivity = () => {
             </div>
 
             <div className="motivation-box">
-              <blockquote>
-                "Small consistent actions lead to big results."
-              </blockquote>
+              <blockquote>"Small consistent actions lead to big results."</blockquote>
               <small>- AtoZee Motivation</small>
             </div>
           </div>

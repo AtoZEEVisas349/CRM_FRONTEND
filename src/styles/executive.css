@@ -398,7 +398,7 @@ html, body {
   width: 44px;
   height: 44px;
   background: linear-gradient(135deg, #4a90e2, #007bff);
-  color: white;
+  color: rgb(218, 213, 213);
   border-radius: 50%;
   display: flex;
   align-items: center;

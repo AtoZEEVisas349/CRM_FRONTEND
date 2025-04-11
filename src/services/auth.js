@@ -1,4 +1,5 @@
 import apiService from "./apiService";
+import axios from "axios";
 import { Navigate } from "react-router-dom";
 
 /*------------------------------LOGIN-----------------------*/
@@ -51,6 +52,28 @@ export const signupUser = async (username, email, password, role) => {
         throw new Error(error.response?.data?.error || "Signup failed!");
     }
 };
+/*---------------------------------LOGOUT API----------------------------------*/
+export const logoutUser = async () => {
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await apiService.post(
+      "/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error in logoutUser:", error);
+    throw error;
+  }
+};
+
 /*---------------------------------AUTHENTICATION & PRIVATE ROUTE----------------------------------*/
 
 // Check if user is authenticated

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
 import DealFunnel from "../features/admin/DealFunnel";
@@ -7,7 +7,6 @@ import OpportunityStage from "../features/admin/OpportunityStage";
 import RevenueChart from "../features/admin/RevenueChart";
 import ProfitChart from "../features/admin/ProfitChart";
 import Meetings from "../features/admin/Meetings";
-import AssignTask from "../features/admin/AssignTask";
 import LeadGraph from "../features/admin/LeadGraph";
 import ExecutiveActi from "../features/admin/ExecuitveActi";
 import AdminSidebar from "../layouts/AdminSidebar";
@@ -16,6 +15,7 @@ import ExecutiveList from "../features/admin/ExecutiveList";
 import { fetchAllExecutivesActivities } from "../services/apiService";
 
 const AdminLayout = () => {
+  const location = useLocation();
   const [selectedExecutive, setSelectedExecutive] = useState(null);
   const [topExecutive, setTopExecutive] = useState(null);
 
@@ -23,7 +23,6 @@ const AdminLayout = () => {
     const fetchExecutives = async () => {
       try {
         const executives = await fetchAllExecutivesActivities();
-
         if (executives.length > 0) {
           setTopExecutive(executives[0]);
         }
@@ -37,39 +36,45 @@ const AdminLayout = () => {
 
   const currentExecutive = selectedExecutive || topExecutive;
 
+  // Check if route is dashboard or sub-page
+  const isDashboard = location.pathname === "/admin";
+
   return (
     <div className="admin-dashboard-container">
-      <AdminSidebar className="admin-sidbare"/>
+      <AdminSidebar className="admin-sidbare" />
       <main className="admin-main-content">
-        <div className="dashboard-wrapper">
-          <Header />
-          <Summary />
-          <div className="charts">
-            <div className="chart-row">
-              <DealFunnel />
-              <OpportunityStage />
+        {isDashboard ? (
+          <div className="dashboard-wrapper">
+            <Header />
+            <Summary />
+            <div className="charts">
+              <div className="chart-row">
+                <DealFunnel />
+                <OpportunityStage />
+              </div>
+              <div className="chart-row">
+                <LeadGraph
+                  selectedExecutiveId={currentExecutive?.id}
+                  executiveName={currentExecutive?.username}
+                />
+                <ExecutiveActi
+                  selectedExecutiveId={currentExecutive?.id}
+                  executiveName={currentExecutive?.username}
+                />
+              </div>
             </div>
-            <div className="chart-row">
-            <LeadGraph 
-              selectedExecutiveId={currentExecutive?.id} 
-              executiveName={currentExecutive?.username} 
-            />
-            <ExecutiveActi 
-              selectedExecutiveId={currentExecutive?.id} 
-              executiveName={currentExecutive?.username} 
-            />
+            <div className="revenue-executive-container">
+              <RevenueChart />
+              <ExecutiveList onSelectExecutive={setSelectedExecutive} />
+            </div>
+            <div className="additional-section">
+              <ProfitChart />
+              <Meetings />
             </div>
           </div>
-          <div className="revenue-executive-container">
-            <RevenueChart />
-            <ExecutiveList onSelectExecutive={setSelectedExecutive} />
-            </div>
-          <div className="additional-section">
-            <ProfitChart />
-            <Meetings />
-          </div>
-        </div>
-        <Outlet />
+        ) : (
+          <Outlet /> // ✅ This will now only render sub-pages like "Assign Task"
+        )}
       </main>
     </div>
   );

@@ -459,11 +459,11 @@ h1 {
 
  .assign-task-container {
    position: relative;
-   height: 100vh;
+   height: 95vh;
    display: flex;
    justify-content: center;
    align-items: center;
-   background: #f5f7fa;
+   background: #0f172a;
  }
  
  .background-text {
@@ -483,7 +483,7 @@ h1 {
    z-index: 1;
    max-width: 400px;
    padding: 20px;
-   background: #fff;
+   background: #c4c2c2;
    border-radius: 10px;
    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
    text-align: center;
@@ -500,7 +500,7 @@ h1 {
    padding: 10px;
    border: 2px dashed #007bff;
    border-radius: 8px;
-   background: #f9f9f9;
+   background: #f1f1f1;
    cursor: pointer;
    transition: all 0.3s ease-in-out;
  }
@@ -514,7 +514,7 @@ h1 {
    padding: 10px 20px;
    font-size: 16px;
    color: #fff;
-   background: #007bff;
+   background: #a14fee;
    border: none;
    border-radius: 5px;
    cursor: pointer;
@@ -522,7 +522,7 @@ h1 {
  }
  
  .assign-task button:hover {
-   background: #0056b3;
+   background: #8a36d8;
  }
  
  
