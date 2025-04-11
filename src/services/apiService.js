@@ -73,6 +73,17 @@ export const fetchExecutiveInfo = async (executiveId) => {
     throw error;
   }
 };
+// ✅ Fetch online executives
+export const fetchOnlineExecutives = async () => {
+  try {
+    const response = await apiService.get("/online");
+    return response.data.onlineExecutives;
+  } catch (error) {
+    console.error("❌ Error fetching online executives:", error);
+    throw error;
+  }
+};
+
 
 // ✅ Fetch admin profile
 export const fetchAdminProfile = async () => {

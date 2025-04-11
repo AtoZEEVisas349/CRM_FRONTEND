@@ -15,6 +15,10 @@ export const ApiProvider = ({ children }) => {
     role: "",
   });
   const [userLoading, setUserLoading] = useState(false);
+ 
+  // ✅ Online Executives state
+ const [onlineExecutives, setOnlineExecutives] = useState([]);
+ const [onlineLoading, setOnlineLoading] = useState(false);
 
   // ✅ Fetch executive data (already existing)
   const fetchExecutiveData = async () => {
@@ -57,9 +61,24 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
+  // ✅ Fetch online executives
+  const fetchOnlineExecutivesData = async () => {
+    setOnlineLoading(true);
+    try {
+      const data = await apiService.fetchOnlineExecutives();
+      setOnlineExecutives(data);
+    } catch (error) {
+      console.error("Error fetching online executives:", error);
+    } finally {
+      setOnlineLoading(false);
+    }
+  };
+  
+
   useEffect(() => {
     fetchExecutiveData();
     fetchUserData(); // ✅ Fetch user data on mount
+    fetchOnlineExecutivesData();
   }, []);
 
   const apiFunctions = {
@@ -97,6 +116,11 @@ export const ApiProvider = ({ children }) => {
         setUser,
         userLoading,
         fetchUserData,
+        
+        // ✅ Online Executives
+         onlineExecutives,
+         onlineLoading,
+         fetchOnlineExecutivesData,
       }}
     >
       {children}

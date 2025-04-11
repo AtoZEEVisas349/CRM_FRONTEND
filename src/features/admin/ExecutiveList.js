@@ -1,23 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
-import { useApi } from "../../context/ApiContext"; // ✅ import the hook
+import { useApi } from "../../context/ApiContext"; // check this path
 
 const ExecutiveList = ({ onSelectExecutive }) => {
   const [executives, setExecutives] = useState([]);
-  const { fetchExecutivesAPI } = useApi(); // ✅ get API function from context
+  const { fetchExecutivesAPI, onlineExecutives } = useApi();
 
   useEffect(() => {
     const fetchExecutives = async () => {
       try {
-        const data = await fetchExecutivesAPI(); // ✅ use context function
+        const data = await fetchExecutivesAPI();
         setExecutives(data);
       } catch (error) {
-        console.error("Error fetching executives:", error);
+        console.error("❌ Error fetching executives:", error);
       }
     };
 
     fetchExecutives();
-  }, [fetchExecutivesAPI]); // ✅ dependency array
+  }, [fetchExecutivesAPI]);
+
+  const isExecutiveOnline = (execId) => {
+
+    const isOnline = Array.isArray(onlineExecutives) && onlineExecutives.some(
+      (onlineExec) => onlineExec.id === execId
+    );
+
+    return isOnline;
+  };
 
   return (
     <div className="executive-container">
@@ -30,10 +39,13 @@ const ExecutiveList = ({ onSelectExecutive }) => {
             <li
               key={exec.id}
               className="executive-item"
-              onClick={() => onSelectExecutive(exec)} // Pass full executive object
+              onClick={() => onSelectExecutive(exec)}
               style={{ cursor: "pointer" }}
             >
-              <div className="executive-info">
+              <div className="executive-info" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span
+                className={`status-dot ${isExecutiveOnline(exec.id) ? "online" : "offline"}`}
+              ></span>
                 <FaUserCircle className="executive-icon" />
                 <div className="executive-details">
                   <p className="executive-name">{exec.username}</p>
