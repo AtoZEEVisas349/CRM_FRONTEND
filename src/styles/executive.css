@@ -8,7 +8,7 @@ html, body {
   overflow-x: hidden;
   display: flex;
   height: 100vh;
-  background-color: #0d0d15;
+  background-color: #081824;
   color: #F2EFE7;
   font-family: "Poppins", sans-serif;
 }
@@ -55,7 +55,7 @@ html, body {
   left: 250px;
   width: calc(100% - 250px);
   height: 60px;
-  background-color: #18182e;
+  background-color: #294152;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -84,12 +84,12 @@ html, body {
 /* ===== Main Content (Perfect Full Width) ===== */
 .executive-main-content {
   flex-grow: 1;
-  margin-left: 250px; /* Push content to the right for sidebar */
-  width: calc(100vw - 250px); /* Ensure it fills the entire remaining space */
+  margin-left: 250px;
+  width: calc(100vw - 250px);
   padding: 80px 20px;
-  overflow-y: auto;
-  min-height: 100vh;
-  box-sizing: border-box; /* Prevents width miscalculations */
+  height: calc(100vh); /* account for navbar */
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ===== Dashboard Grid System ===== */
@@ -106,18 +106,17 @@ html, body {
   gap: 20px;
 }
 /* Report Cards Container */
-.report-cards {
+.report-cards-exec {
   display: flex;
   gap: 20px;
   justify-content: space-between;
   padding: 20px;
+  margin-bottom: 30px;
 }
-
-/* Individual Card Styling */
 /* Report Card Styling */
 .report-card {
   flex: 1;
-  background: #443C68;
+  background: linear-gradient(145deg, #1a2a3a, #1f4e5f);
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -129,11 +128,13 @@ html, body {
   overflow: hidden; /* Ensure gradient covers entire area */
 }
 
-/* Hover Effect - Apply Gradient */
 .report-card:hover {
   transform: translateY(-5px);
-  background: linear-gradient(135deg, #7d6af3, #8a2be2); /* Purple gradient */
-  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4); /* Optional glow effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, rgba(73, 172, 238, 0.8), rgba(41, 104, 124, 0.8));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
 }
 
 /* Icon Styling */
@@ -149,7 +150,7 @@ html, body {
   justify-content: center;
   color: white;
   font-size: 20px;
-  background: linear-gradient(135deg, #783ffc, #6d28d9); /* Default icon bg */
+  background: linear-gradient(135deg, #e67e22, #d35400);
 }
 
 
@@ -159,23 +160,21 @@ html, body {
 }
 
 .card-details h4,
-.card-value {
-  font-size: 16px;
+.card-value1 {
+  font-size: 18px;
   font-weight: 500;
   color: #cfcfcf;
+  font-family: 'Poppins', sans-serif;
 }
-
-.card-value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #cfcfcf;
-  margin: 5px 0;
+.light-mode .card-value1{
+  color: #161616;
 }
 
 /* Percentage Change */
 .card-change {
-  font-size: 12px;
+  font-size: 18px;
   color: #c0c0c0;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 .positive {
@@ -183,7 +182,7 @@ html, body {
 }
 
 .negative {
-  color: #ef4444; /* Red for negative values */
+  color: rgb(243, 98, 72); /* Red for negative values */
 }
 
 /* Map */
@@ -252,15 +251,23 @@ html, body {
 .transaction-table tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.05);
 }
-
+.light-mode .news{
+  background-color: #d4d8d8;
+}
+.news h1{
+  color: #161616;
+}
 /* ===== News Section ===== */
 .news {
-  background: #344955;
+  background: #d4d8d8;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
   width: 100%; /* Ensure full width */
   max-width: none; /* Remove any width restrictions */
+}
+.news input{
+  background-color: #fff;
 }
 
 .news iframe {
@@ -270,6 +277,7 @@ html, body {
   border: none;
 }
 
+
 .lead-section-graph {
   background: #13131f;
   padding: 20px;
@@ -278,7 +286,7 @@ html, body {
   width: 100%;
   max-width: 600px; /* Adjust width */
   margin: 0 auto; /* Centering */
-  text-align: center;
+
 }
 
 /* ===== Executive Activity Styling ===== */
@@ -398,7 +406,7 @@ html, body {
   width: 44px;
   height: 44px;
   background: linear-gradient(135deg, #4a90e2, #007bff);
-  color: rgb(218, 213, 213);
+  color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -463,6 +471,28 @@ background: #d4f5dd; /* Light green for Profit */
 background: #fff4d6; /* Light yellow for Total Revenue */
 }
 
+
+ /* ---Hover Effect on report card --- */
+.light-mode .report-card-0:hover {
+  background: #8fc3ff; 
+  }
+  
+  .light-mode .report-card-1:hover {
+  background: #75fc99; 
+  }
+  
+  .light-mode .report-card-2:hover {
+  background: #fddc82; 
+  }
+
+.light-mode p.card-change.positive {
+  color: green !important;
+}
+
+.light-mode p.card-change.negative {
+  color: red !important;
+}
+
 /* Optional: Improve contrast in light mode */
 .light-mode .report-card h4,
 .light-mode .report-card .card-value,
@@ -474,3 +504,160 @@ color: #222 ;
 background: #333 !important;
 color: #fff !important;
 }
+
+
+
+/* ===== Responsive for all screens ===== */
+
+/* Small screens (Mobile) */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    display: none;
+    width: 0;
+  }
+
+  .navbar {
+    left: 0;
+    width: 100%;
+  }
+  .executive-main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .top-section,
+  .middle-section,
+  .bottom-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .report-cards {
+    display: flex;
+    flex-direction: column !important;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .report-card {
+    flex: 1;
+    width: 350px;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .news {
+    width: 90%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .map-container {
+    height: 150px;
+  }
+
+  .transaction-table th,
+  .transaction-table td {
+    font-size: 14px;
+  }
+
+  .news iframe {
+    height: 380px;
+  }
+}
+
+/* Medium screens (Tablet) */
+@media screen and (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .executive-main-content {
+    margin-left: 220px;
+    width: calc(100% - 220px) !important;
+  }
+
+  .top-section,
+  .middle-section,
+  .bottom-section {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .report-cards {
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+  }
+  .news iframe {
+    height: 880px;
+  }
+  
+}
+
+/* Large Tablets and Small Desktops */
+@media screen and (max-width: 1200px) {
+  .sidebar {
+    width: 250px;
+  }
+
+  .executive-main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+
+  .top-section,
+  .middle-section,
+  .bottom-section {
+    flex-direction: row;
+    gap: 30px;
+  }
+
+  .report-cards {
+    flex-direction: row;
+    gap: 30px;
+    justify-content: flex-start;
+  }
+  .news iframe {
+    height: 880px;
+  }
+}
+
+
+
+@media screen and (max-width: 480px) {
+  
+  .news iframe {
+    height: 350px; 
+  }
+  
+
+  .report-cards {
+    display: flex;
+    flex-direction: column !important;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .report-card {
+    flex: 1;
+    width: 300px;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .news {
+    width: 100%;
+    margin-left: 4px;
+    margin-right: 20px;
+  }
+ 
+  
+  .transaction-table th,
+  .transaction-table td {
+    font-size: 12px; 
+  }
+}
+

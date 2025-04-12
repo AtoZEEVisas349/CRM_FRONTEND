@@ -1,6 +1,6 @@
 import React from "react";
 
-const ClientDetail= () => {
+const ClientDetail = ({ followUpText }) => {
   return (
     <div className="c-container">
       <div className="c-header">
@@ -25,7 +25,7 @@ const ClientDetail= () => {
               <div className="c-info">
                 <div className="info-item">
                   <span className="label">Name -</span>
-                  <span clasnsName="value">Cody Fisher</span>
+                  <span className="value">Cody Fisher</span>
                 </div>
                 <div className="info-item">
                   <span className="label">Email -</span>
@@ -71,9 +71,7 @@ const ClientDetail= () => {
           <div className="follow-up-column">
             <div className="last-follow-up">
               <h3>Last Follow-up</h3>
-              <p>
-                Anthony Griffin is a 40-year-old man who identifies as African American and appears to be his stated age. He is approximately 6'4" tall, weighs 200 lbs, and appears to be in good health. He has been married for sixteen years in a "loving relationship" and was self-referred to counseling. The client has a BFA degree in Comedic Arts and is currently performing throughout the United States as a Stand-Up comic.
-              </p>
+              <p>{followUpText}</p>
             </div>
           </div>
         </div>

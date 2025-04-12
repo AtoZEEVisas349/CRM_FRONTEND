@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
-import { useApi } from "../../context/ApiContext"; // check this path
+import { useApi } from "../../context/ApiContext";
 
 const ExecutiveList = ({ onSelectExecutive }) => {
   const [executives, setExecutives] = useState([]);
-  const { fetchExecutivesAPI, onlineExecutives } = useApi();
+  const { fetchExecutivesAPI, onlineExecutives, fetchOnlineExecutivesData } = useApi();
 
   useEffect(() => {
     const fetchExecutives = async () => {
@@ -17,13 +17,18 @@ const ExecutiveList = ({ onSelectExecutive }) => {
     };
 
     fetchExecutives();
-  }, [fetchExecutivesAPI]);
+
+    const interval = setInterval(() => {
+      fetchOnlineExecutivesData();
+    }, 5000); // adjust time if needed
+
+    return () => clearInterval(interval);
+  }, [fetchExecutivesAPI, fetchOnlineExecutivesData]);
 
   const isExecutiveOnline = (execId) => {
-
-    const isOnline = Array.isArray(onlineExecutives) && onlineExecutives.some(
-      (onlineExec) => onlineExec.id === execId
-    );
+    const isOnline =
+      Array.isArray(onlineExecutives) &&
+      onlineExecutives.some((onlineExec) => onlineExec.id === execId);
 
     return isOnline;
   };
@@ -43,9 +48,9 @@ const ExecutiveList = ({ onSelectExecutive }) => {
               style={{ cursor: "pointer" }}
             >
               <div className="executive-info" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                className={`status-dot ${isExecutiveOnline(exec.id) ? "online" : "offline"}`}
-              ></span>
+                <span
+                  className={`status-dot ${isExecutiveOnline(exec.id) ? "online" : "offline"}`}
+                ></span>
                 <FaUserCircle className="executive-icon" />
                 <div className="executive-details">
                   <p className="executive-name">{exec.username}</p>

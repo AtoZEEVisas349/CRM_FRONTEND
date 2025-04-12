@@ -8,13 +8,10 @@ import { recordStartWork, recordStopWork } from "../services/executiveService"; 
 const ExecutiveLayout = () => {
   useEffect(() => {
     const startWork = async () => {
-      console.log("📌 Initiating work start API call...");
       try {
         const response = await recordStartWork();
-        console.log("✅ Work start response:", response);
   
         if (response.startWorkTime) {
-          console.log("🕒 Saving work start time to localStorage:", response.startWorkTime);
           localStorage.setItem('workStartTime', new Date(response.startWorkTime).getTime());
         }
       } catch (error) {
@@ -25,10 +22,8 @@ const ExecutiveLayout = () => {
     startWork();
   
     const handleBeforeUnload = async () => {
-      console.log("📌 Initiating work stop API call on unload...");
       try {
         await recordStopWork();
-        console.log("✅ Work stop recorded successfully");
       } catch (error) {
         console.error("❌ Error recording stop work:", error);
       }
