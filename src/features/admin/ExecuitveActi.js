@@ -1,33 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaCoffee, FaBriefcase, FaPhone } from "react-icons/fa";
-import { fetchExecutiveActivity } from "../../services/apiService";
+import { useApi } from "../../context/ApiContext";
 
 const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
-
-  const [activityData, setActivityData] = useState({
-    breakTime: 0,
-    workTime: 0,
-    callTime: 0,
-  });
+  const { activityData, getExecutiveActivity } = useApi();
+ 
 
   useEffect(() => {
-    const fetchActivityData = async () => {
-      if (!selectedExecutiveId) return;
-
-      try {
-        const data = await fetchExecutiveActivity(selectedExecutiveId);
-
-        setActivityData({
-          breakTime: data.breakTime || 0,
-          workTime: data.workTime || 0,
-          callTime: data.callTime || 0,
-        });
-      } catch (err) {
-        console.error("Error fetching executive activity data:", err);
-      }
-    };
-
-    fetchActivityData();
+    getExecutiveActivity(selectedExecutiveId);
   }, [selectedExecutiveId]);
 
   const activities = [

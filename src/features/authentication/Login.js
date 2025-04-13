@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { loginUser } from "../../services/auth"; // Import API function
+import { useAuth } from "../../context/AuthContext";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/signup.css";
 import img1 from "../../assets/img1.jpg";
@@ -9,6 +9,7 @@ import {Link} from "react-router-dom";
 import img3 from "../../assets/img2.jpg";
 import img4 from "../../assets/img3.jpg";
 const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,57 +30,18 @@ const Login = () => {
       text: "24/7 Support",
       img: img3
     }];
+
     useEffect(() => {
       const interval = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % texts.length);
       }, 3000);
       return () => clearInterval(interval);
     }, []);
-  const handleLogin = async (e) => {
-    e.preventDefault();
 
-    if (!email || !password) {
-      setError("All fields are required!");
-      return;
-    }
-
-    setError(""); // Clear previous errors
-
-    try {
-      setLoading(true);
-      const data = await loginUser(email, password); // Call API function
-
-      // ✅ Check if user data contains `username`
-      if (!data.user || !data.user.username) {
-        throw new Error("User username missing in response!");
-      }
-
-      // ✅ Store user data in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userRole", data.user.role);
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
-
-      // ✅ Store executive's username (only for Executives)
-      if (data.user.role === "Executive") {
-        localStorage.setItem("executiveName", data.user.username);
-      }
-
-      toast.success("Login successful! Redirecting...");
-      setTimeout(() => {
-        if (data.user.role === "Admin") {
-          navigate("/admin");
-        } else if (data.user.role === "Executive") {
-          navigate("/executive");
-        } else if (data.user.role === "TL") {
-          navigate("/user");
-        }
-      }, 5000);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleLogin = (e) => {
+      e.preventDefault();
+      login(email, password); 
+    };
 
   return (
  
@@ -99,7 +61,6 @@ const Login = () => {
 
       <div className="slider-overlay">
         <div className="slider-text">{slides[currentIndex].text}</div>
-
         <div className="indicator-container">
           {slides.map((_, i) => (
             <div

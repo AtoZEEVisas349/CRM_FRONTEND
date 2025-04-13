@@ -1,28 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { fetchLeadSectionVisits } from "../../services/apiService"; // ✅ import from service
 import "chart.js/auto";
-
+import { useApi } from "../../context/ApiContext";
 const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   console.log("LeadGraph - selectedExecutiveId:", selectedExecutiveId);
   console.log("LeadGraph - executiveName:", executiveName);
 
-  const [visitData, setVisitData] = useState([]);
+  // const [visitData, setVisitData] = useState([]);
+  const { visitData, fetchLeadSectionVisitsAPI, visitLoading } = useApi();
 
   useEffect(() => {
-    const fetchVisitData = async () => {
-      if (!selectedExecutiveId) return;
-
-      try {
-        const data = await fetchLeadSectionVisits(selectedExecutiveId);
-        setVisitData(data.leadSectionVisits || []);
-      } catch (err) {
-        console.error("Error fetching lead section visits:", err);
-      }
-    };
-
-    fetchVisitData();
+    fetchLeadSectionVisitsAPI(selectedExecutiveId);
   }, [selectedExecutiveId]);
+
 
   const data = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],

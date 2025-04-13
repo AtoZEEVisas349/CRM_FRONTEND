@@ -1,35 +1,20 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/styles.css";
-import { forgotPassword } from "../../services/auth"; // Import API function
 import { FaLock } from "react-icons/fa"; // Importing a lock icon
 
 
 const ForgotPassword = () => {
+    const { forgotPassword, loading } = useAuth();
     const [email, setEmail] = useState("");
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleForgotPassword = async (e) => {
+    const handleForgotPassword = (e) => {
         e.preventDefault();
-        if (!email) {
-            toast.error("Please enter your email!");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const data = await forgotPassword(email); // Call API function
-
-            toast.success(data.message);
-            navigate("/login"); // Redirect to login after showing success
-        } catch (error) {
-            toast.error(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+        forgotPassword(email); 
+      };
 
     return (
         <div className="auth-container">

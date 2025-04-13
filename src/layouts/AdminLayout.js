@@ -12,28 +12,17 @@ import ExecutiveActi from "../features/admin/ExecuitveActi";
 import AdminSidebar from "../layouts/AdminSidebar";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
-import { fetchAllExecutivesActivities } from "../services/apiService";
+import { useApi } from "../context/ApiContext";
 
 const AdminLayout = () => {
+  const { topExecutive, fetchExecutives } = useApi();
+
   const location = useLocation();
   const [selectedExecutive, setSelectedExecutive] = useState(null);
-  const [topExecutive, setTopExecutive] = useState(null);
-
+ 
   useEffect(() => {
-    const fetchExecutives = async () => {
-      try {
-        const executives = await fetchAllExecutivesActivities();
-        if (executives.length > 0) {
-          setTopExecutive(executives[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching executives:", error);
-      }
-    };
-
     fetchExecutives();
   }, []);
-
   const currentExecutive = selectedExecutive || topExecutive;
 
   // Check if route is dashboard or sub-page

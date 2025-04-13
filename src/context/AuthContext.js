@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import * as authService from "../services/auth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 // 1. Create Context
 const AuthContext = createContext();
@@ -21,26 +22,84 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Login function
-// Your context file (probably: src/context/AuthContext.js or similar)
-
-const login = async (email, password) => {
+  // Login
+  const login = async (email, password) => {
+    if (!email || !password) {
+      toast.error("All fields are required.");
+      return;
+    }
+  
     try {
+      setLoading(true);
       const response = await authService.loginUser(email, password);
       const user = response.user;
-      
-      // Save executiveId in localStorage (Make sure this is set properly)
-      localStorage.setItem("executiveId", user.executiveId);
-      localStorage.setItem("user", JSON.stringify(user));
+  
       localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("executiveId", user.executiveId);
   
       setUser(user);
-    } catch (error) {
-      throw error;
+      toast.success("Login successful!");
+  
+      // Add timeout before redirecting
+      setTimeout(() => {
+        const role = user.role;
+        if (role === "Admin") navigate("/admin");
+        else if (role === "Executive") navigate("/executive");
+        else if (role === "TL") navigate("/user");
+      }, 5000); // 5000ms = 5 seconds
+  
+    } catch (err) {
+      toast.error(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
   
-  
+
+//signup
+const signup = async (username, email, password, role) => {
+  if (!username || !email || !password || !role) {
+    toast.error("All fields are required!");
+    return;
+  }
+
+  if (password.length < 6) {
+    toast.error("Password must be at least 6 characters long.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const data = await authService.signupUser(username, email, password, role);
+    toast.success("Signup successful! Redirecting...");
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userRole", data.user.role);
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify({
+        id: data.user.id,
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role,
+      })
+    );
+
+    // You can redirect based on role
+    setTimeout(() => {
+      const redirectPath =
+        data.user.role === "Admin" || data.user.role === "Executive"
+          ? "/login"
+          : "/user";
+      navigate(redirectPath);
+    }, 5000);
+  } catch (error) {
+    console.error("Signup error:", error);
+    toast.error(error.message || "Signup failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Logout function
   const logout = async () => {
@@ -59,19 +118,47 @@ const login = async (email, password) => {
   
   
   // Forgot Password
-  const forgotPassword = async (email) => {
-    return await authService.forgotPassword(email);
-  };
+ const forgotPassword = async (email) => {
+  if (!email) {
+    toast.error("Please enter your email!");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const data = await authService.forgotPassword(email);
+    toast.success(data.message);
+    navigate("/login");
+  } catch (error) {
+    toast.error(error.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Reset Password
   const resetPassword = async (token, newPassword) => {
-    return await authService.resetPassword(token, newPassword);
+    if (!newPassword) {
+      toast.error("Please enter a new password!");
+      return;
+    }
+  
+    try {
+      setLoading(true);
+      const data = await authService.resetPassword(token, newPassword);
+      toast.success(data.message);
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.message || "Reset failed");
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   // Signup
-  const signup = async (username, email, password, role) => {
-    return await authService.signupUser(username, email, password, role);
-  };
+ 
 
   return (
     <AuthContext.Provider

@@ -28,6 +28,7 @@
 
 .fresh-leads-table-container {
     flex-grow: 1;
+    color: #333;
     overflow: auto; /* Allow table scrolling */
     max-height: calc(100vh - 120px); /* Adjust based on navbar and padding */
 }
@@ -80,6 +81,7 @@
 .fresh-leads-name {
     display: flex;
     align-items: center;
+    color: #333;
 }
 
 .freshlead-icon {

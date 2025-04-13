@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import * as apiService from "../services/apiService";
-
+import * as upload from "../services/fileUpload";
+import * as executiveService from "../services/executiveService"
 const ApiContext = createContext();
 
 export const ApiProvider = ({ children }) => {
@@ -73,12 +74,121 @@ export const ApiProvider = ({ children }) => {
       setOnlineLoading(false);
     }
   };
+
+//adminProfile
+  const [adminProfile, setAdminProfile] = useState(null);
+  const [loading, setLoading] = useState(false); 
+  const fetchAdmin = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.fetchAdminProfile();
+
+      if (data && data.username && data.email && data.role) {
+        const mappedData = {
+          name: data.username,
+          email: data.email,
+          role: data.role,
+        };
+        setAdminProfile(mappedData);
+      } else {
+        console.warn("⚠️ Unexpected API response format:", data);
+      }
+    } catch (error) {
+      console.error("🔴 Error fetching admin profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //fetchleadSectionVisit
+  const [visitData, setVisitData] = useState([]);
+  const [visitLoading, setVisitLoading] = useState(false);
+
+  const fetchLeadSectionVisitsAPI = async (executiveId) => {
+    if (!executiveId) return;
+    try {
+      setVisitLoading(true);
+      const data = await apiService.fetchLeadSectionVisits(executiveId);
+      setVisitData(data.leadSectionVisits || []);
+    } catch (error) {
+      console.error("❌ Error fetching visits:", error);
+    } finally {
+      setVisitLoading(false);
+    }
+  };
+
+  //fileupload
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState("");
+
+  const uploadFileAPI = async (file) => {
+    if (!file) {
+      setUploadError("Please select a file first!");
+      return;
+    }
+
+    setUploading(true);
+    setUploadError("");
+    setUploadSuccess("");
+
+    try {
+      const response = await upload.uploadFile(file);
+      setUploadSuccess("File uploaded successfully!");
+      return response;
+    } catch (error) {
+      setUploadError(error.message || "File upload failed!");
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+//fetchAllExecutivesActivities
+  const [topExecutive, setTopExecutive] = useState(null);
+
+  const fetchExecutives = async () => {
+    try {
+      const executives = await apiService.fetchAllExecutivesActivities();
+      if (executives.length > 0) {
+        setTopExecutive(executives[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching executives:", error);
+    }
+  };
+
+  //getExecutiveActivity
+  const [activityData, setActivityData] = useState({
+    breakTime: 0,
+    workTime: 0,
+    callTime: 0,
+  });
   
+  const getExecutiveActivity = async (executiveId) => {
+    if (!executiveId) return;
+  
+    try {
+      const data = await apiService.fetchExecutiveActivity(executiveId);
+      setActivityData({
+        breakTime: data.breakTime || 0,
+        workTime: data.workTime || 0,
+        callTime: data.callTime || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching executive activity data:", error);
+    }
+  };
 
   useEffect(() => {
     fetchExecutiveData();
     fetchUserData(); // ✅ Fetch user data on mount
     fetchOnlineExecutivesData();
+    fetchAdmin();
+    fetchLeadSectionVisitsAPI();
+    uploadFileAPI();
+    fetchExecutives();
+    getExecutiveActivity();
   }, []);
 
   const apiFunctions = {
@@ -91,13 +201,11 @@ export const ApiProvider = ({ children }) => {
     fetchExecutivesAPI: apiService.fetchExecutivesAPI,
     fetchExecutiveInfo: apiService.fetchExecutiveInfo,
 
-    // Admin
-    fetchAdminProfile: apiService.fetchAdminProfile,
 
     // Executive Activity
-    fetchAllExecutivesActivities: apiService.fetchAllExecutivesActivities,
-    fetchExecutiveActivity: apiService.fetchExecutiveActivity,
-    fetchLeadSectionVisits: apiService.fetchLeadSectionVisits,
+    // fetchAllExecutivesActivities: apiService.fetchAllExecutivesActivities,
+    // fetchExecutiveActivity: apiService.fetchExecutiveActivity,
+    // fetchLeadSectionVisits: apiService.fetchLeadSectionVisits,
   };
 
   return (
@@ -121,6 +229,19 @@ export const ApiProvider = ({ children }) => {
          onlineExecutives,
          onlineLoading,
          fetchOnlineExecutivesData,
+         //
+         adminProfile,
+         loading,
+         fetchAdmin,
+         //
+         visitData, fetchLeadSectionVisitsAPI, visitLoading,
+         //fileupload
+         uploadFileAPI, uploading, uploadError, uploadSuccess,
+         //
+         topExecutive, fetchExecutives ,
+         //
+         activityData,
+         getExecutiveActivity,
       }}
     >
       {children}

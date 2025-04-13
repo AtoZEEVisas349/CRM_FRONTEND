@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { uploadFile } from "../../services/fileUpload";
-
+import { useApi } from "../../context/ApiContext";
 const AssignTask = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -11,24 +11,13 @@ const AssignTask = () => {
     setFile(e.target.files[0]);
   };
 
+  const { uploadFileAPI, uploadError, uploadSuccess } = useApi();
+
   const handleUpload = async () => {
-    if (!file) {
-      setError("Please select a file first!");
-      return;
-    }
-
-    setError("");
-    setSuccess("");
-    setUploading(true);
-
     try {
-      const response = await uploadFile(file); // Call API function
-      setSuccess("File uploaded successfully!");
-      console.log("Upload Response:", response);
+      await uploadFileAPI(file);
     } catch (err) {
-      setError(err.message || "File upload failed!");
-    } finally {
-      setUploading(false);
+      console.error("Upload failed:", err);
     }
   };
 
@@ -39,10 +28,10 @@ const AssignTask = () => {
         <h2>Upload File</h2>
 
         {/* Display error message */}
-        {error && <p className="error-message">{error}</p>}
+        {uploadError && <p className="error-message">{error}</p>}
 
         {/* Display success message */}
-        {success && <p className="success-message">{success}</p>}
+        {uploadSuccess && <p className="success-message">{success}</p>}
 
         <input type="file" onChange={handleFileChange} accept=".csv, .xlsx" />
         <button onClick={handleUpload} disabled={uploading}>

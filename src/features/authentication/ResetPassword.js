@@ -1,39 +1,25 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/styles.css";
-import { resetPassword } from "../../services/auth"; // Import API function
+import { useAuth } from "../../context/AuthContext";
 
 const ResetPassword = () => {
+  const { resetPassword, loading } = useAuth();
     const [newPassword, setNewPassword] = useState("");
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-  
-    // Extract token from URL
-    const token = new URLSearchParams(location.search).get("token");
-  
-    const handleResetPassword = async (e) => {
-      e.preventDefault();
-      if (!newPassword) {
-        toast.error("Please enter a new password!");
-        return;
-      }
-  
    
-      try {
-        setLoading(true);
-        const data = await resetPassword(token, newPassword); // Call API function
+   const token = new URLSearchParams(location.search).get("token");
+    useEffect(() => {
+      console.log("Reset token from URL:", token);
+    }, [token]);
 
-        toast.success(data.message);
-        navigate("/login"); // Redirect to login after success
-    } catch (error) {
-        toast.error(error.message);
-    } finally {
-        setLoading(false);
-    }
-};
+    const handleResetPassword = (e) => {
+      e.preventDefault();
+      resetPassword(token, newPassword); 
+    };
   
     return (
       <div className="auth-container">
@@ -45,7 +31,6 @@ const ResetPassword = () => {
           
           <h2>Reset Password</h2>
           <p>Enter your new password below.</p>
-          
           <form onSubmit={handleResetPassword}>
             <input
               type="password"
