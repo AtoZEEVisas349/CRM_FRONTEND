@@ -4,50 +4,53 @@ import "../styles/adminsidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFolderOpen,
-  faFile,
-  faReceipt,
-  faGear,
-  faBars,
-  faChartBar,
-  faUsers,
-  faLifeRing,
+  faGauge,
+  faTasks,
+  faClipboardList,
+  faUserTie,
+  faFileInvoiceDollar,
+  faCircleQuestion,
+  faSliders,
+  faChartPie
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminSidebar = () => {
-  const [isActive, setIsActive] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
 
-  const toggleSidebar = () => {
-    setIsActive(!isActive);
-    localStorage.setItem("adminSidebarActive", !isActive);
-  };
+  useEffect(() => {
+    const stored = localStorage.getItem("adminSidebarExpanded");
+    if (stored === "false") {
+      setIsExpanded(false);
+    }
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
-  };
+    const handleSidebarToggle = () => {
+      const updated = localStorage.getItem("adminSidebarExpanded") === "true";
+      setIsExpanded(updated);
+    };
+
+    window.addEventListener("sidebarToggle", handleSidebarToggle);
+    return () => window.removeEventListener("sidebarToggle", handleSidebarToggle);
+  }, []);
+
 
   return (
     <section>
-      <div className="admin-menu-toggle" onClick={toggleSidebar}>
-        <FontAwesomeIcon icon={faBars} />
-      </div>
-
-      <aside className={`admin-sidebar ${isActive ? "active" : ""}`}>
+      <aside className={`admin-sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
         <div className="admin-header-wrapper">
-          <h2>Atozee<span className="highlight">Visas</span></h2>
+          <h2>
+            <span className="highlight">Atozee Visas</span>
+          </h2>
         </div>
 
         <nav>
-          <p className="sidebar-section">General</p>
+          <p className="sidebar-section sidebar-label">General</p>
           <ul>
             <li className="active">
               <Link to="/admin" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faChartBar} />
-                Overview
+              <FontAwesomeIcon className="admin-aside-icon" icon={faChartPie} />
+               <span className="sidebar-label">Overview</span>
+
               </Link>
             </li>
             <li>
@@ -55,43 +58,43 @@ const AdminSidebar = () => {
               <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
               Assign Task
             </Link>
-          </li>
-           <li>
-            <Link to="/leadassign" className="admin-aside-link">
-              <FontAwesomeIcon className="admin-aside-icon" icon={faFile} />
-              Task Management
-            </Link>
-          </li>
-          </ul>
-
-          <p className="sidebar-section">Reports</p>
-          <ul>
-            <li>
-              <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faUsers} />
-                Executive Details
-              </Link>
             </li>
             <li>
-            <Link to="#" className="admin-aside-link">
-              <FontAwesomeIcon className="admin-aside-icon" icon={faReceipt} />
-              Invoice
-            </Link>
-          </li>
+              <Link to="/leadassign" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+                <span className="sidebar-label">Task Management</span>
+              </Link>
+            </li>
           </ul>
 
-          <p className="sidebar-section">Settings</p>
+          <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
             <li>
               <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faLifeRing} />
-                Help & Supports
+                <FontAwesomeIcon className="admin-aside-icon" icon={faUserTie} />
+                <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
             <li>
               <Link to="#" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faGear} />
-                Settings
+                <FontAwesomeIcon className="admin-aside-icon" icon={faFileInvoiceDollar} />
+                <span className="sidebar-label">Invoice</span>
+              </Link>
+            </li>
+          </ul>
+
+          <p className="sidebar-section sidebar-label">Settings</p>
+          <ul>
+            <li>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faCircleQuestion} />
+                <span className="sidebar-label">Help & Supports</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="#" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faSliders} />
+                <span className="sidebar-label">Settings</span>
               </Link>
             </li>
           </ul>

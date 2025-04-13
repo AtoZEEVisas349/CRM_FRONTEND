@@ -1,49 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaCamera, FaFileAlt, FaDollarSign, FaChartBar } from "react-icons/fa";
 import "../../styles/admin.css";
 
 const Summary = () => {
+  const [activeBox, setActiveBox] = useState(null);
+
+  const handleBoxClick = (index) => {
+    setActiveBox(activeBox === index ? null : index);
+  };
+
+  const summaryItems = [
+    {
+      icon: <FaCamera className="box-icon" />,
+      title: "5 Leads",
+      subtitle: "9 Closed Deals"
+    },
+    {
+      icon: <FaFileAlt className="box-icon" />,
+      title: "20",
+      subtitle: "New Deals"
+    },
+    {
+      icon: <FaDollarSign className="box-icon" />,
+      title: "$20K",
+      subtitle: "Est. Revenue"
+    },
+    {
+      icon: <FaChartBar className="box-icon" />,
+      title: "$10K",
+      subtitle: "Est. Profit"
+    }
+  ];
+
   return (
     <div className="summary">
-      <div className="box">
-        <div className="box-content">
-          <FaCamera className="box-icon" />
-          <div>
-            <h3>5 Leads</h3>
-            <small>9 Closed Deals</small>
+      {summaryItems.map((item, index) => (
+        <div 
+          key={index}
+          className={`box box-hover-${index} ${activeBox === index ? 'active' : ''}`}
+          onClick={() => handleBoxClick(index)}
+        >
+          <div className="box-content">
+            {item.icon}
+            <div>
+            <h3 className={`box-title title-${index}`}>{item.title}</h3>
+            <small>{item.subtitle}</small>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="box">
-        <div className="box-content">
-          <FaFileAlt className="box-icon" />
-          <div>
-            <h3>20</h3>
-            <small>New Deals</small>
-          </div>
-        </div>
-      </div>
-
-      <div className="box">
-        <div className="box-content">
-          <FaDollarSign className="box-icon" />
-          <div>
-            <h3>$20K</h3>
-            <small>Est. Revenue</small>
-          </div>
-        </div>
-      </div>
-
-      <div className="box">
-        <div className="box-content">
-          <FaChartBar className="box-icon" />
-          <div>
-            <h3>$10K</h3>
-            <small>Est. Profit</small>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

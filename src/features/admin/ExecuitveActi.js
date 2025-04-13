@@ -3,8 +3,6 @@ import { FaCoffee, FaBriefcase, FaPhone } from "react-icons/fa";
 import { fetchExecutiveActivity } from "../../services/apiService";
 
 const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
-  console.log("ExecutiveActi - selectedExecutiveId:", selectedExecutiveId);
-  console.log("ExecutiveActi - executiveName:", executiveName);
 
   const [activityData, setActivityData] = useState({
     breakTime: 0,
@@ -47,7 +45,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
       {activities.map((activity, index) => (
         <div key={index} className="activity-item">
           <div className="activity-label">
-            <span className="activity-icon" style={{ color: activity.color }}>
+            <span className="activity-icon">
               {activity.icon}
             </span>
             <span className="activity-name">{activity.name}</span>

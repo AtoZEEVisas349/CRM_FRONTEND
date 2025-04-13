@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone, faMessage, faBell, faUser } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useContext } from 'react';
 import { fetchAdminProfile } from '../services/apiService';
-// ✅ Import the context
 import { useAuth } from '../context/AuthContext';
+import { ThemeContext } from '../features/admin/ThemeContext';
+import {
+  FaFilter, FaCalendarAlt, FaChevronDown, FaBars,
+  FaSun, FaMoon, FaPhone, FaUser, FaComment, FaBell
+} from "react-icons/fa";
 
 function AdminNavbar() {
   const [showPopover, setShowPopover] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const { logout } = useAuth(); // ✅ Use the context
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { logout } = useAuth();
 
   const togglePopover = async () => {
     setShowPopover(!showPopover);
@@ -19,7 +21,6 @@ function AdminNavbar() {
       setLoading(true);
       try {
         const data = await fetchAdminProfile();
-
         if (data && data.username && data.email && data.role) {
           const mappedData = {
             name: data.username,
@@ -28,10 +29,10 @@ function AdminNavbar() {
           };
           setUserData(mappedData);
         } else {
-          console.warn("⚠️ Unexpected API response format:", data);
+          console.warn("Unexpected API response format:", data);
         }
       } catch (error) {
-        console.error('🔴 Error fetching user profile:', error);
+        console.error('Error fetching user profile:', error);
       } finally {
         setLoading(false);
       }
@@ -40,48 +41,55 @@ function AdminNavbar() {
 
   const handleLogout = async () => {
     try {
-      await logout(); // ✅ Use the context logout function
+      await logout();
     } catch (error) {
-      console.error('🔴 Logout failed:', error);
+      console.error('Logout failed:', error);
     }
   };
 
   return (
-    <div className="admin-logo" style={{ position: 'relative' }}>
-      <FontAwesomeIcon className="admin-logo_name" icon={faPhone} />
-      <FontAwesomeIcon
-        className="admin-logo_name"
-        icon={faUser}
-        onClick={togglePopover}
-        style={{ cursor: 'pointer' }}
-      />
-      {showPopover && (
-        <div className="admin_user_popover">
-          {loading ? (
-            <div>Loading...</div>
-          ) : (
-            userData && (
-              <div className="admin_user_details">
-                <div className="admin_user_avatar">
-                  {userData.name?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                <div>
-                  <p className="admin_user_name">{userData.name}</p>
-                  <p className="admin_user_email">{userData.email}</p>
-                  <p className="admin_user_role">{userData.role}</p>
-                </div>
-              </div>
-            )
-          )}
+<div className="header-icons">
+  <button
+    className="theme-toggle"
+    onClick={toggleTheme}
+    aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+  >
+    {theme === 'light' ? <FaMoon /> : <FaSun />}
+  </button>
 
-          <button className="logout_btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
+  <FaPhone className="admin-logo_name icon-hover-zoom" />
+
+ <FaUser className="admin-logo_name icon-hover-zoom" onClick={togglePopover} style={{ cursor: 'pointer' }} />
+
+
+  {showPopover && (
+    <div className="admin_user_popover">
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        userData && (
+          <div className="admin_user_details">
+            <div className="admin_user_avatar">
+              {userData.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+            <div>
+              <p className="admin_user_name">{userData.name}</p>
+              <p className="admin_user_email">{userData.email}</p>
+              <p className="admin_user_role">{userData.role}</p>
+            </div>
+          </div>
+        )
       )}
-      <FontAwesomeIcon className="admin-logo_name" icon={faMessage} />
-      <FontAwesomeIcon className="admin-logo_name" icon={faBell} />
+      <button className="logout_btn" onClick={handleLogout}>
+        Logout
+      </button>
     </div>
+  )}
+
+<FaComment className="admin-logo_name icon-hover-zoom" />
+<FaBell className="admin-logo_name icon-hover-zoom" />
+</div>
+
   );
 }
 
