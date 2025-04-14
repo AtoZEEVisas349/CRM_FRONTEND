@@ -1,54 +1,41 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPhone, faMessage, faBell, faUser } from "@fortawesome/free-solid-svg-icons";
+import { fetchAdminProfile } from '../services/apiService';
+import { useApi } from '../context/ApiContext'; 
+// ✅ Import the context
 import { useAuth } from '../context/AuthContext';
-import { useApi } from '../context/ApiContext'; // ✅ Using Context API
-import { ThemeContext } from '../features/admin/ThemeContext';
-
-import {
-  FaFilter, FaCalendarAlt, FaChevronDown, FaBars,
-  FaSun, FaMoon, FaPhone, FaUser, FaComment, FaBell
-} from "react-icons/fa";
 
 function AdminNavbar() {
+ 
+  const { logout } = useAuth(); // ✅ Use the context
+  const { adminProfile, loading, fetchAdmin } = useApi();
   const [showPopover, setShowPopover] = useState(false);
-  const { theme, toggleTheme } = useContext(ThemeContext);
-  const { logout } = useAuth();
-  const { adminProfile, loading, fetchAdmin } = useApi(); // ✅ Using context API
 
   const togglePopover = async () => {
-    setShowPopover(prev => !prev);
-    if (!adminProfile && !loading) {
-      await fetchAdmin(); // ✅ Call fetch only if needed
-    }
+    setShowPopover((prev) => !prev);
+    // if (!adminProfile && !loading) {
+   await fetchAdmin(); // only call if needed
+    // }
   };
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout(); // ✅ Use the context logout function
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('🔴 Logout failed:', error);
     }
   };
 
   return (
-    <div className="header-icons" style={{ position: 'relative' }}>
-      {/* Theme Toggle */}
-      <button
-        className="theme-toggle"
-        onClick={toggleTheme}
-        aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-      >
-        {theme === 'light' ? <FaMoon /> : <FaSun />}
-      </button>
-
-      {/* Other Icons */}
-      <FaPhone className="admin-logo_name icon-hover-zoom" />
-      <FaUser
-        className="admin-logo_name icon-hover-zoom"
+    <div className="admin-logo" style={{ position: 'relative' }}>
+      <FontAwesomeIcon className="admin-logo_name" icon={faPhone} />
+      <FontAwesomeIcon
+        className="admin-logo_name"
+        icon={faUser}
         onClick={togglePopover}
         style={{ cursor: 'pointer' }}
       />
-
-      {/* User Popover */}
       {showPopover && (
         <div className="admin_user_popover">
           {loading ? (
@@ -67,14 +54,14 @@ function AdminNavbar() {
               </div>
             )
           )}
+
           <button className="logout_btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
       )}
-
-      <FaComment className="admin-logo_name icon-hover-zoom" />
-      <FaBell className="admin-logo_name icon-hover-zoom" />
+      <FontAwesomeIcon className="admin-logo_name" icon={faMessage} />
+      <FontAwesomeIcon className="admin-logo_name" icon={faBell} />
     </div>
   );
 }
