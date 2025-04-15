@@ -25,7 +25,7 @@ export const ApiProvider = ({ children }) => {
   const fetchExecutiveData = async () => {
     setExecutiveLoading(true);
     try {
-      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      const currentUser = JSON.parse(localStorage.getItem("user"));
       const executiveId = currentUser?.id;
 
       if (!executiveId) {

@@ -14,9 +14,9 @@ function AdminNavbar() {
 
   const togglePopover = async () => {
     setShowPopover((prev) => !prev);
-    // if (!adminProfile && !loading) {
-   await fetchAdmin(); // only call if needed
-    // }
+    if (!adminProfile && !loading) {
+      await fetchAdmin(); // only call if needed
+    }
   };
 
   const handleLogout = async () => {

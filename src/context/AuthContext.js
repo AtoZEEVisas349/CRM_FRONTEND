@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("executiveId", user.executiveId);
+      localStorage.setItem("executiveId", user.id);
   
       setUser(user);
       toast.success("Login successful!");

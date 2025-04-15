@@ -47,9 +47,9 @@ const SidebarandNavbar = () => {
   
     try {
       // Stop work if executiveId exists
-      if (executiveId) {
-        await recordStopWork({ executiveId });
-      }
+      // if (executiveId) {
+      //   await recordStopWork({ executiveId });
+      // }
   
       // Call the logout function from context (not authService directly!)
       await logout();
@@ -61,10 +61,10 @@ const SidebarandNavbar = () => {
   };
   
   
-  const handleUserIconClick = () => {
+  const handleUserIconClick = async () => {
     setShowUserPopover((prev) => !prev);
-    fetchExecutiveData(); // ✅ Use context function to fetch latest data
-  };
+  await  fetchExecutiveData(); // ✅ Use context function to fetch latest data
+};
 
   useEffect(() => {
     const root = document.documentElement;

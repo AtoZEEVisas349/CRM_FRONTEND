@@ -159,29 +159,32 @@ const Chat = ({ isCallActive }) => {
 
   return (
     <div className="chat-page">
+      {/* Chat Container - 3/4 Width */}
       <div className="chat-container">
         <div className="chat-header">
           <MdSmartToy size={30} className="chat-icon" />
           <h2>AI ChatBot</h2>
         </div>
+  
         <div className="chat-messages" ref={chatContainerRef}>
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={
-                msg.isUser ? "message user-message" : "message bot-message"
-              }
+              className={`message-wrapper ${msg.isUser ? "user-wrapper" : "bot-wrapper"}`}
             >
-              {msg.isUser ? (
-                <FaUser className="user-icon" />
-              ) : (
-                <MdSmartToy className="bot-icon" />
-              )}
-              <div className="message-content">{msg.text}</div>
+              <div className={`message ${msg.isUser ? "user-message" : "bot-message"}`}>
+                {msg.isUser ? (
+                  <FaUser className="user-icon" />
+                ) : (
+                  <MdSmartToy className="bot-icon" />
+                )}
+                <div className="message-content">{msg.text}</div>
+              </div>
             </div>
           ))}
           {isTyping && <div className="typing-indicator">...</div>}
         </div>
+  
         <div className="chat-input-container">
           <input
             type="text"
