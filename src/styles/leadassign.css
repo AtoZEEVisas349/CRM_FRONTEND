@@ -4,6 +4,15 @@ body {
   font-family: Arial, sans-serif;
 }
 
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-color) !important; /* Force override any other backgrounds */
+}
+
+
 .leads-dashboard {
   display: flex;
   flex-direction: column;
@@ -98,7 +107,7 @@ body {
   margin-bottom: 5px;
   margin-left: 30px;
   width: 100%;
-  color: black;
+  color: #28282B;
 }
 
 .lead-source {
@@ -112,7 +121,7 @@ body {
   flex: 0 0 100px;
   text-align: center;
   margin-right: 20px;
-  color: #0c0c0c;
+  color: #252525;
 }
 
 .lead-actions {
@@ -145,3 +154,86 @@ body {
 .delete { background-color: #dc3545; color: white; border-radius: 5px; border-color: #f0f0f0; }
 .follow-up { background-color: #ffc107; color: black; border-radius: 5px; border-color: #f0f0f0;}
 .whatsapp { background-color: #28a745; color: white; border-radius: 5px; border-color: #f0f0f0;}
+
+[data-theme="dark"] .leads-dashboard {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .lead-details {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .lead-info span,
+[data-theme="dark"] .lead-source,
+[data-theme="dark"] .lead-assign {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .lead-row {
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .leads-header span {
+  color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  .leads-dashboard {
+    margin-left: 0;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .taskmanage-header {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .header-actions {
+    grid-template-columns: 1fr; /* stack filters */
+    width: 100%;
+  }
+
+  .header-actions select {
+    width: 100%;
+  }
+
+  .header-sort-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .leads-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .lead-details {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .lead-info span {
+    margin-left: 0;
+  }
+
+  .lead-source,
+  .lead-assign {
+    margin: 5px 0;
+    text-align: left;
+  }
+
+  .lead-actions {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .lead-actions button {
+    width: 100%;
+  }
+}

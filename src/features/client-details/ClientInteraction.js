@@ -18,22 +18,13 @@ const ClientInteraction = () => {
   };
 
   return (
-    <div
-      className="client-interaction-container"
-      style={{
-        width: '100%',
-        padding: '20px',
-        background: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        boxSizing: 'border-box'
-      }}
-    >
+    <div className="client-interaction-container">
       <div className="add-interaction">
-        <div className="interaction-form" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-          {/* Editable Date & Time */}
-          <div className="interaction-datetime">
+        <h3>Add Interaction</h3>
+        <div className="interaction-form">
+          
+     {/* Editable Date & Time */}
+     <div className="interaction-datetime">
   <h4>Interaction Schedule and Time</h4>
 
   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -76,12 +67,11 @@ const ClientInteraction = () => {
   </div>
 </div>
 
-          {/* Connected Via */}
           <div className="connected-via">
             <h4>Connected Via</h4>
-            <div className="radio-group" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="radio-group">
               {["call", "email", "call/email"].map((method) => (
-                <label key={method} className="radio-container" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <label key={method} className="radio-container">
                   <input
                     type="radio"
                     name="contactMethod"
@@ -94,25 +84,15 @@ const ClientInteraction = () => {
             </div>
           </div>
 
-          {/* Follow-Up Type */}
           <div className="follow-up-type">
             <h4>Follow-Up Type</h4>
-            <div className="checkbox-group" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              {[
-                "interested",
-                "appointment",
-                "no-response",
-                "converted",
-                "not-interested",
-                "close"
-              ].map((type) => (
-                <label key={type} className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="checkbox-group">
+              {["interested", "appointment", "no-response", "converted", "not-interested", "close"].map((type) => (
+                <label key={type} className="checkbox-container">
                   <input
                     type="checkbox"
                     checked={followUpType.includes(type)}
-                    onChange={() =>
-                      handleCheckboxChange(type, setFollowUpType, followUpType)
-                    }
+                    onChange={() => handleCheckboxChange(type, setFollowUpType, followUpType)}
                   />
                   <span className="checkbox-label">{type.replace("-", " ")}</span>
                 </label>
@@ -120,12 +100,11 @@ const ClientInteraction = () => {
             </div>
           </div>
 
-          {/* Interaction Rating */}
           <div className="interaction-rating">
             <h4>Interaction Rating</h4>
-            <div className="radio-group" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="radio-group">
               {["hot", "warm", "cold"].map((rating) => (
-                <label key={rating} className="radio-container" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <label key={rating} className="radio-container">
                   <input
                     type="radio"
                     name="interactionRating"
@@ -137,11 +116,11 @@ const ClientInteraction = () => {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </div>
   );
 };
+
 
 export default ClientInteraction;

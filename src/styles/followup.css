@@ -1,67 +1,69 @@
-
 body {
   overflow-y: auto;
   font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .follow-app-container {
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
+
 /* Sidebar */
 .sidebar_container {
   width: 250px;
   height: 100vh;
-  background-color: #1e2433;
-  color: #fff;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
   font-family: Arial, sans-serif;
   position: fixed;
   left: 0;
   top: 0;
 }
 
-
 /* Main Content */
 .follow-main-content {
-  width: calc(100% - 250px); /* Full width minus sidebar */
-  margin-left: 250px; /* Sidebar width */
-  margin-top: 160px; /* Navbar height */
+  width: calc(100% - 250px);
+  margin-left: 250px;
+  margin-top: 160px;
   padding: 20px;
-  background-color: #fffdfd;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   min-height: 100vh;
   overflow-y: auto;
   position: relative;
   z-index: 1;
 }
-/* Client Details Container */
+
+/* Client Details */
 .client-details-container {
   margin-top: 30px;
   position: relative;
 }
 
-/* Client Details Section */
 .client-details {
   display: flex;
   justify-content: space-between;
-  background-color: white;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 10px var(--shadow-light);
+  border: 1px solid var(--border-color);
   height: 180px;
 }
 
-/* Client Info */
 .client-info {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* User Icon Section */
 .user-icon-bg {
-  background-color: #f1f5f9;
+  background-color: var(--bg-color);
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -69,86 +71,103 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .user-icon {
   font-size: 20px;
+  color: var(--text-color);
 }
+
 .client-text {
   display: flex;
   flex-direction: column;
+  color: var(--text-color);
 }
-/* Client Info */
+
 .client-text h4 {
   margin: 0;
   font-size: 14px;
   font-weight: bold;
+  color: var(--text-color);
 }
 
 .client-text p {
   margin: 2px 0;
   font-size: 12px;
-  color: gray;
+  color: var(--text-color);
 }
-/* Status Badge */
+
 .status-badge {
-  background-color: #f5f5f5;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   padding: 4px 8px;
   border-radius: 5px;
   font-weight: bold;
   font-size: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
 }
 
-/* Last Follow Up */
 .last-followup {
   flex: 1;
   margin-left: 20px;
   font-size: 16px;
-  color: gray;
+  color: var(--text-color);
   margin-top: 10px;
 }
-.last-followup h5{
+
+.last-followup h5 {
   margin-bottom: 10px;
 }
-/* Close Button */
+
 .close-btn {
   font-size: 20px;
   cursor: pointer;
+  color: var(--text-color);
 }
 
-/* Last Review Section */
 .last-review {
   padding: 12px;
-  background: #f9f9f9;
+  background: var(--card-bg);
   border-radius: 6px;
   font-size: 13px;
-  color: #555;
+  color: var(--text-color);
   margin-left: 20px;
 }
 
-/* Lead Badge */
-.lead-info{
+.lead-info {
   width: 40px;
 }
+
 .lead-badge {
-  background-color: #eef2f6;
-  padding: 4px ;
+  background-color: var(--card-bg);
+  padding: 4px;
   border-radius: 5px;
   font-size: 12px;
-  color: #555;
-}/* Client Table */
+  color: var(--text-color);
+}
+
+/* Client Table */
 .client-table {
   width: 100%;
-  background-color: white;
+  background-color: var(--card-bg);
   border-collapse: collapse;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px var(--shadow-light);
+  color: var(--text-color);
+}
+
+/* Table Headers - Fix color to black and prevent it from changing in light/dark mode */
+.client-table th {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000; /* Fixed black color for column headers */
 }
 
 .client-table th,
 .client-table td {
   padding: 12px 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
+
 .client-name {
   display: flex;
   align-items: center;
@@ -157,30 +176,26 @@ body {
 
 .client-profession {
   font-size: 12px;
-  color: gray;
-}
-.client-table th {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
+  color: var(--text-color);
 }
 
 .client-table td {
   font-size: 14px;
-  color: #555;
+  color: var(--text-color); /* Ensure content color adapts to light/dark mode */
 }
 
 .followup-badge {
   padding: 6px 10px;
-  background-color: #eaf5ff;
-  color: #007bff;
+  background-color: var(--badge-bg);
+  color: var(--text-color);
   border-radius: 5px;
 }
 
 /* Hover Effect */
 .client-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--card-bg);
 }
+
 /* Follow-Up Tabs */
 .followup-tabs {
   display: flex;
@@ -194,48 +209,50 @@ body {
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  background: #e0e0e0;
+  background: var(--card-bg);
+  color: var(--text-color);
 }
 
 .followup-tabs .active {
-  background: #2c3e50;
-  color: white;
+  background: var(--accent-color);
+  color: #fff;
 }
 
-/* Table Container with Scrolling */
 .table-container {
   max-height: 500px;
   overflow-y: auto;
   position: relative;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px var(--shadow-light);
 }
 
-/* Sticky Header */
-.client-table thead {
+.client-table-wrapper {
+  height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 10px var(--shadow-light);
+}
+
+.client-table thead tr {
   position: sticky;
   top: 0;
-  background-color: #fff;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 4px var(--shadow-light);
   z-index: 10;
 }
 
-/* Ensure table takes full width of container */
-.client-table {
-  width: 100%;
+.client-table tbody {
+  background-color: var(--card-bg);
 }
 
-/* Add a subtle shadow to the bottom of the header when scrolling */
-.client-table thead::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: rgba(0, 0, 0, 0.05);
+/* Ensure visibility of table headers and rows in dark mode */
+.dark .client-table th,
+.dark .client-table td {
+  color: var(--text-color); /* Ensure text color for dark mode */
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
   .sidebar_container {
     transform: translateX(-100%);
@@ -263,25 +280,6 @@ body {
   }
 }
 
-/* Table Container with Scrolling */
-.client-table-wrapper {
-  height: 500px;
-  overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  background-color: white;
-}
-
-/* Make the header sticky */
-.client-table thead tr {
-  position: sticky;
-  top: 0;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
-
-/* Ensure table content is properly spaced */
-.client-table tbody {
-  background-color: white;
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color);
 }

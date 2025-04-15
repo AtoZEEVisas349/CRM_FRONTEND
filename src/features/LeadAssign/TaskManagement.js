@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useApi } from "../../context/ApiContext"; // ✅ Import useApi hook
+import React, { useEffect, useState ,useContext} from "react";
+import { useApi } from "../../context/ApiContext"; // ✅ 
+// Import useApi hook
+import { ThemeContext } from "../../features/admin/ThemeContext";
+
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
   const [executives, setExecutives] = useState([]);
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
+  const { theme } = useContext(ThemeContext);
+
 
   const { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } = useApi(); // ✅ Destructure API functions from context
 

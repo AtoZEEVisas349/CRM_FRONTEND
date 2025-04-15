@@ -44,13 +44,12 @@ const Header = () => {
                 onChange={(update) => setDateRange(update)}
                 dateFormat="MMM dd, yyyy"
                 placeholderText="Select Date Range"
-                showMonthDropdown
-                showYearDropdown
                 dropdownMode="select"
                 minDate={new Date(2000, 0, 1)}
                 maxDate={new Date(currentYear, 11, 31)}
                 onFocus={(e) => e.target.blur()}
               />
+
               <FaChevronDown
                 className="icon enhanced-icon dropdown-icon"
                 onClick={() => datepickerRef.current.setOpen(true)}

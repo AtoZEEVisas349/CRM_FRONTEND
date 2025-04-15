@@ -2,23 +2,20 @@ import React from "react";
 import { asserts } from "./asserts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTableCellsLarge, faBars } from "@fortawesome/free-solid-svg-icons";
+import NavSearch from "./NavSearch"; 
 
-const leads = () => {
+const Leads = () => {
   return (
-    <>
-     <div className="c-heading2">
-        <select className="filter_dropdown">
-          <option>Group by: Stage</option>
-        </select>
-        <FontAwesomeIcon className="table_bar" icon={faTableCellsLarge} />
-        <FontAwesomeIcon className="table_bar" icon={faBars} />
-      </div>
-      <h2 className="Total_leads">Total leads: 25</h2>
-     
+    <div className="close-leads-page">
+      <NavSearch /> {/* ✅ Render the top bar here */}
 
-      <div className="country_container">
-        {asserts.map((countryData, index) => {
-          return (
+      <div className="leads_page_wrapper">
+        
+
+        <h2 className="Total_leads">Total leads: 25</h2>
+
+        <div className="country_container">
+          {asserts.map((countryData, index) => (
             <div key={index} className="country_cards">
               <div className="country_name">
                 <h3>{countryData.country}</h3>
@@ -39,11 +36,11 @@ const leads = () => {
                 ))}
               </ul>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default leads;
+export default Leads;

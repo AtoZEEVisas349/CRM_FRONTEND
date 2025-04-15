@@ -1,0 +1,82 @@
+/* theme.css */
+:root {
+    /* Light Mode */
+    --bg-color: #f5f7fa;
+    --text-color: #1a1a1a;
+    --sidebar-text: #1f2937;
+    --card-bg: #ffffff;
+    --sidebar-bg: rgb(165, 212, 206);
+    --navbar-bg: rgb(205, 236, 232);
+  
+    --input-bg: #ffffff;
+    --border-color: #cccccc;
+    --badge-bg: #e0e0e0;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --accent-color: #14b8a6; 
+    --accent-color-hover: #0ea89c;
+  }
+  
+  .dark {
+    /* Dark Mode */
+    --bg-color: #1a1a1a;
+    --text-color: #f1f1f1;
+    --sidebar-text: #f1f1f1;
+    --card-bg: #2a2a2a;
+    --sidebar-bg: #13131f;
+    --navbar-bg: #18182e;
+    --input-bg: #20203a;
+    --border-color: #444;
+    --badge-bg: #333;
+    --shadow-light: rgba(255, 255, 255, 0.05);
+    --accent-color: #8b5cf6;
+    --accent-color-hover: #7c3aed; 
+  
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  .sidebar_container,
+  .sidebar,
+  .navbar {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    box-shadow: 0 2px 6px var(--shadow-light);
+  }
+  
+  .card,
+  .client-details,
+  .client-table,
+  .table,
+  .box,
+  .chart-wrapper,
+  .user_popover {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: 0 2px 6px var(--shadow-light);
+  }
+  
+  /* Accent usage in light mode */
+  :root button,
+  :root .btn,
+  :root .link-highlight {
+    background-color: var(--accent-color);
+    color: white;
+  }
+  
+  :root button:hover,
+  :root .btn:hover,
+  :root .link-highlight:hover {
+    filter: brightness(0.9);
+  }
+  
+  input,
+  select,
+  textarea {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+  }
+  

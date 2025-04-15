@@ -1,181 +1,187 @@
-
-
 /* Main Content */
 .customer-main-content {
-    margin-left: 270px;
-    padding: 20px;
-    width: calc(100% - 270px);
-    transition: margin-left 0.3s ease-in-out;
-  }
-  /* Top Bar */
-  .heading {
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 80px;
-    margin-bottom: 25px;
-    padding: 10px 15px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    margin-left: 5px;
-  }
-  
-  .button {
-    font-weight: 600;
-    margin-right: 20px;
-    background-color: #0b6b79;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    transition: background 0.3s;
-  }
-  
-  .button:hover {
-    background: #08555e;
-  }
-  
-  /* Table Styles */
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .table-head {
-    font-size: 18px;
-    height: 60px;
-    background: #0d2735;
-    color: white;
-  }
-  
-  .table-head th {
-    padding: 15px;
-    text-align: left;
-  }
-  
-  .table-body {
-    text-align: left;
-    font-size: 16px;
-  }
-  
-  .table-body tr {
-    transition: background 0.3s;
-  }
-  
-  .table-body tr:hover {
-    background: #f0f4f5;
-  }
-  
-  .table-body td {
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
-    white-space: nowrap;
-  }
-  
-  .name {
-    text-decoration: none;
-    color: #020a0d;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .checkbox {
-    transform: scale(1.2);
-    cursor: pointer;
-  }
-  
-  /* Tags */
-  .tag {
-    background: #0b6b79;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    margin-right: 5px;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-   
-    .customer-main-content {
-        margin-left: 220px;
-        width: calc(100% - 220px);
-    }
-    .table-body td {
-        font-size: 14px;
-    }
-  }
-  
-  @media (max-width: 768px) {
- 
-    .customer-main-content {
-        margin-left: 0;
-        width: 100%;
-    }
+  margin-left: 270px;
+  width: calc(100% - 270px);
+  padding: 20px 40px;
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: margin-left 0.3s ease-in-out;
+}
 
-    .heading {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    .table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    .table-body td {
-        font-size: 14px;
-    }
+.heading {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 80px;
+  margin-bottom: 25px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-light);
+  transform: translateX(-50px); /* ✅ shifts it slightly left */
+}
+
+
+
+h2 {
+  margin-left: 5px;
+}
+
+.button {
+  font-weight: 600;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+}
+
+.button:hover {
+  background: #005bb5;
+}
+
+/* Table */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  min-width: 1000px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px var(--shadow-light);
+  margin: 0;
+}
+
+.table-head {
+  font-size: 18px;
+  height: 60px;
+  background: var(--accent-color);
+  color: white;
+}
+
+.table-head th {
+  padding: 15px;
+  text-align: left;
+}
+
+.table-body {
+  text-align: left;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.table-body tr {
+  transition: background 0.3s;
+}
+
+.table-body tr:hover {
+  background: var(--badge-bg);
+}
+
+.table-body td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+  color: var(--text-color);
+}
+
+/* Name cell */
+.name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* Tags */
+.tag {
+  background: var(--accent-color);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+/* Search Bar */
+.search-bar {
+  width: 100%;
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-color);
+  outline: none;
+  margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .customer-main-content {
+    margin-left: 220px;
+    width: calc(100% - 220px);
   }
-  
-  /* Search Bar */
-  .search-bar {
-    width: 100%;
-    padding: 8px 15px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    outline: none;
-    margin-bottom: 15px;
+
+  .table-body td {
+    font-size: 14px;
   }
- 
-  /* Adjust Main Content for Sidebar */
+}
+
+@media (max-width: 768px) {
   .customer-main-content {
     margin-left: 0;
-    padding: 20px;
-    width: 100%;
-    transition: margin-left 0.3s ease-in-out;
-  }
-  
-  /* Responsive Table */
-  .table-container {
-    overflow-x: auto;
     width: 100%;
   }
+
+  .heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   .table {
-    width: 100%;
-    min-width: 600px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
-  
-  /* Mobile Optimizations */
-  @media (min-width: 768px) {
-  
-    .customer-main-content {
-        margin-left: 270px;
-        width: calc(100% - 270px);
-    }
-    .menu-icon {
-        display: none;
-    }
+
+  .table-body td {
+    font-size: 14px;
   }
- 
+}
+
+.content-container {
+  width: 100%;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+
+.section {
+  width: 100%;
+  padding: 0 0 10px 0;
+}
+
+.generate-btn-wrapper {
+  display: flex;
+  justify-content: left; 
+  margin-top: 30px;        
+}

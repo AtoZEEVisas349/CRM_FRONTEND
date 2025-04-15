@@ -1,7 +1,7 @@
 :root {
   /* Light Theme */
   --bg-color: #f5f7fa;
-  --text-color: #333333;
+  --text-color: #000000;
   --card-bg: #ffffff;
   --border-color: #e0e0e0;
   --primary-color: #4a90e2;
@@ -12,7 +12,7 @@
   --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
  
   --chart-grid: rgba(0, 0, 0, 0.1);
-  --progress-bg: #e0e0e0;
+  --progress-bg: #0a0909;
   --executive-card-bg: #ffffff;
   --meeting-card-bg: #ffffff;
   --meeting-card-hover: #f5f5f5;
@@ -36,6 +36,7 @@
   --executive-text: #333333;
 
   --section-title-color: #1e293b;
+  
 
 }
 
@@ -46,10 +47,10 @@
 
 [data-theme="dark"] {
   /* Dark Theme Overrides */
-  --bg-color: #0d0d15;
-  --text-color: #f5f5f5;
-  --card-bg: #1f2533;
-  --border-color: #2d3748;
+  --bg-color: #07070e;        
+    --text-color: #f5f5f5;
+    --card-bg: #16161e;          /* Slightly lighter than background for contrast */
+    --border-color: #2d3748;
   --primary-color: #8b5cf6;
   --secondary-color: #a78bfa;
   --navbar-bg: #1e1e2e;
@@ -160,12 +161,30 @@ body {
 /* Navbar */
 .navbar {
   display: flex;
-
-  height: 60px;
-  padding: 15px 20px;
-  justify-content: flex-end; /* aligns content to the right */
-
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
 }
+
+.sidebar-expanded .navbar {
+  background-color: var(--main-bg-color); /* Adjust this to your main page color */
+}
+
+.sidebar-collapsed .navbar {
+  background-color: var(--cut-bg-color); /* Define a cut effect color */
+}
+
+
+body.sidebar-expanded .navbar {
+  padding-left: 250px;
+}
+
+body.sidebar-collapsed .navbar {
+  padding-left: 80px;
+}
+
+
+
 
 @media (max-width: 768px) {
   .navbar {
@@ -182,16 +201,18 @@ body {
 }
 
 
+
+
 /* Admin Container */
 .admin-dashboard-container {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow-x: hidden;
-  background-color: var(--bg-color);
+  width: 100%;
   margin: 0;
-
+  padding: 0;
+  display: flex;
+  background: var(--bg-color);
 }
+
+
 
 /* Sidebar — Make sure you have a sidebar CSS like this */
 .sidebar {
@@ -330,6 +351,8 @@ h1 {
   color: var(--icon-color);
   cursor: pointer;
   transition: color 0.3s ease;
+  display: flex;
+  justify-content: flex-end; /* Align icons to the right */
 }
 
 .header-icons .icon:hover {
@@ -396,6 +419,7 @@ h1 {
   width: 100%;
   text-align: left;
   padding-left: 5px;
+  color: #000000;
 }
 
 .dropdown-icon {
@@ -862,14 +886,7 @@ h1 {
    color: #222;
  }
 
- .assign-task-container {
-   position: relative;
-   height: 100vh;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   background: #f5f7fa;
- }
+
  
  .background-text {
    position: absolute;
@@ -929,6 +946,232 @@ h1 {
  .assign-task button:hover {
    background: #0056b3;
  }
+
+ /* 🌙 Dark Mode for AssignTask */
+[data-theme="dark"] .assign-task-container {
+  background-color: var(--bg-color);
+}
+
+[data-theme="dark"] .assign-task {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .assign-task h2 {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .assign-task input[type="file"] {
+  background-color: #2d3748;
+  border-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .assign-task button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+[data-theme="dark"] .assign-task button:hover {
+  background-color: #6d28d9;
+}
+
+[data-theme="dark"] .background-text {
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.assign-task-card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.assign-task-glass-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  color: var(--text-color);
+}
+
+.assign-task-glass-card h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px dashed var(--primary-color);
+  border-radius: 12px;
+  padding: 25px;
+  background-color: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.upload-box input[type="file"] {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.upload-text {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.glow-btn {
+  margin-top: 10px;
+  padding: 12px 28px;
+  font-size: 16px;
+  color: #fff;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.glow-btn:hover {
+  background: #6d28d9;
+  transform: scale(1.05);
+}
+
+[data-theme="dark"] .assign-task-glass-card {
+  background: rgba(31, 37, 51, 0.85);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+
+
+
+/* Search Input Styling */
+.search-input {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 300px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: var(--primary-color);
+}
+
+/* Icons Container Styling */
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Space out the icons */
+}
+
+/* Icon Button Styling */
+.icon-btn {
+  font-size: 18px;
+  color: var(--icon-color); /* Set a color for the icons */
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Hover Effect for Icons */
+.icon-btn:hover {
+  transform: scale(1.1); /* Slight zoom on hover */
+  color: var(--icon-hover-color); /* Change color on hover */
+}
+
+/* Theme Toggle Button Styling */
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--icon-color);
+  transition: transform 0.2s ease-in-out;
+  margin-right: 20px;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  color: var(--icon-hover-color);
+}
+
+.light {
+  background-color: #ffffff; /* Light theme background */
+}
+
+.dark {
+  background-color: #333333; /* Dark theme background */
+}
+
+/* Admin Popover Styling */
+.admin_user_popover {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  padding: 10px;
+  background-color: var(--popover-bg);
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.admin_user_details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin_user_avatar {
+  width: 40px;
+  height: 40px;
+  background-color: var(--avatar-bg);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--avatar-text-color);
+  font-size: 16px;
+}
+
+/* Logout Button Styling */
+.logout_btn {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.logout_btn:hover {
+  background-color: var(--primary-color-dark);
+}
+
+
+
  
  
  /* Navbar */
@@ -947,6 +1190,20 @@ h1 {
    color: #fff;
 
  }
+
+ .assign-task-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin-left: 250px;
+}
+
+.assign-task {
+  margin: auto;
+}
+
+
 
  /* Mobile states */
  @media (max-width: 768px) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import './styles/theme.css'; // ✅ Theme CSS here
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { ApiProvider } from './context/ApiContext';

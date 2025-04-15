@@ -39,7 +39,6 @@ export const recordStartWork = async () => {
   }
 };
 
-
 /**
  * Record when executive stops work (logout)
  * @returns {Promise} API response

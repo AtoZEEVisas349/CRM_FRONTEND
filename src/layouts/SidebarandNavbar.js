@@ -5,6 +5,8 @@ import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { recordStopWork } from "../services/executiveService";
 import { useApi } from "../context/ApiContext"; // ✅ Using your ApiContext
 import { useAuth } from "../context/AuthContext"; // ✅ Import Auth Context
+import { FaPlay, FaClock } from "react-icons/fa";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -59,7 +61,88 @@ const SidebarandNavbar = () => {
       console.error("Logout failed:", error.message);
     }
   };
-  
+  const [workTime, setWorkTime] = useState("00:00");
+  const [breakTime, setBreakTime] = useState("00:00");
+  const [isWorkRunning, setIsWorkRunning] = useState(false);
+  const [isBreakRunning, setIsBreakRunning] = useState(false);
+  const workIntervalRef = useRef(null);
+  const breakIntervalRef = useRef(null);
+
+  const handleWorkToggle = () => {
+    if (isWorkRunning) {
+      clearInterval(workIntervalRef.current);
+      setIsWorkRunning(false);
+      setWorkTime("00:00");
+    } else {
+      let time = 25 * 60;
+      workIntervalRef.current = setInterval(() => {
+        time--;
+        const min = String(Math.floor(time / 60)).padStart(2, "0");
+        const sec = String(time % 60).padStart(2, "0");
+        setWorkTime(`${min}:${sec}`);
+        if (time <= 0) {
+          clearInterval(workIntervalRef.current);
+          setIsWorkRunning(false);
+          setWorkTime("00:00");
+        }
+      }, 1000);
+      setIsWorkRunning(true);
+    }
+  };
+
+  const toggleBreak = () => {
+    if (isBreakRunning) {
+      clearInterval(breakIntervalRef.current);
+      setIsBreakRunning(false);
+      setBreakTime("00:00");
+    } else {
+      let time = 5 * 60;
+      breakIntervalRef.current = setInterval(() => {
+        time--;
+        const min = String(Math.floor(time / 60)).padStart(2, "0");
+        const sec = String(time % 60).padStart(2, "0");
+        setBreakTime(`${min}:${sec}`);
+        if (time <= 0) {
+          clearInterval(breakIntervalRef.current);
+          setIsBreakRunning(false);
+          setBreakTime("00:00");
+        }
+      }, 1000);
+      setIsBreakRunning(true);
+    }
+  };
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      clearInterval(workIntervalRef.current);
+      clearInterval(breakIntervalRef.current);
+    };
+  }, []);
+
+  const [hourDeg, setHourDeg] = useState(0);
+  const [minuteDeg, setMinuteDeg] = useState(0);
+  const [secondDeg, setSecondDeg] = useState(0);
+
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      setSecondDeg(seconds * 6); // 360 / 60
+      setMinuteDeg(minutes * 6 + seconds * 0.1); // 360 / 60 + smooth transition
+      setHourDeg((hours % 12) * 30 + minutes * 0.5); // 360 / 12 + progress
+    };
+
+    updateClock();
+    const interval = setInterval(updateClock, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
   
   const handleUserIconClick = async () => {
     setShowUserPopover((prev) => !prev);
@@ -118,106 +201,35 @@ const SidebarandNavbar = () => {
         </div>
 
         <nav className="navbar_container">
-          <ul><b>
+          <ul>
+            <li><Link to="/executive" className="sidebar_nav"><FontAwesomeIcon icon={faHouse} /> Dashboard</Link></li>
             <li>
-              <Link to="/executive" className="sidebar_nav">
-                <span className="sidebar_icon">
-                  <FontAwesomeIcon icon={faHouse} />
-                </span>
-                Dashboard
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                to="#"
-                className="sidebar_nav"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                <span className="sidebar_icon">
-                  <FontAwesomeIcon icon={faUserPlus} />
-                </span>
-                Leads
+              <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
+                <FontAwesomeIcon icon={faUserPlus} /> Leads
                 <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼</span>
               </Link>
-
               {isOpen && (
                 <ul className="submenu_nav">
-                  <li>
-                    <Link to="/freshlead" className="submenu_item">
-                      <span className="submenu_icon">
-                        <FontAwesomeIcon icon={faUsers} />
-                      </span>
-                      Fresh Leads
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/follow-up" className="submenu_item">
-                      <span className="submenu_icon">
-                        <FontAwesomeIcon icon={faList} />
-                      </span>
-                      Follow ups
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/customer" className="submenu_item">
-                      <span className="submenu_icon">
-                        <FontAwesomeIcon icon={faClock} />
-                      </span>
-                      Convert
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/close-leads" className="submenu_item">
-                      <span className="submenu_icon">
-                        <FontAwesomeIcon icon={faCircleXmark} />
-                      </span>
-                      Close
-                    </Link>
-                  </li>
+                  <li><Link to="/freshlead" className="sidebar_nav"><FontAwesomeIcon icon={faUsers} /> Fresh Leads</Link></li>
+                  <li><Link to="/follow-up" className="sidebar_nav"><FontAwesomeIcon icon={faList} /> Follow ups</Link></li>
+                  <li><Link to="/customer" className="sidebar_nav"><FontAwesomeIcon icon={faClock} /> Convert</Link></li>
+                  <li><Link to="/close-leads" className="sidebar_nav"><FontAwesomeIcon icon={faCircleXmark} /> Close</Link></li>
                 </ul>
               )}
             </li>
-
-            <li>
-              <Link to="#" className="sidebar_nav">
-                <span className="sidebar_icon">
-                  <FontAwesomeIcon icon={faFile} />
-                </span>
-                Task Management
-              </Link>
-            </li>
-
-            <li>
-              <Link to="#" className="sidebar_nav">
-                <span className="sidebar_icon">
-                  <FontAwesomeIcon icon={faReceipt} />
-                </span>
-                Invoice
-              </Link>
-            </li>
-
-            <li>
-              <Link to="#" className="sidebar_nav">
-                <span className="sidebar_icon">
-                  <FontAwesomeIcon icon={faGear} />
-                </span>
-                Settings
-              </Link>
-            </li>
+            <li><Link to="#" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Task Management</Link></li>
+            <li><Link to="#" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
+            <li><Link to="#" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
             <li>
               <div className="theme_toggle_wrapper">
-                <div
-                  className={`theme_toggle_btn ${isLightMode ? "light-mode-toggle" : "dark-mode-toggle"}`}
-                  onClick={() => setIsLightMode((prev) => !prev)}
-                >
+                <div className={`theme_toggle_btn ${isLightMode ? "light-mode-toggle" : "dark-mode-toggle"}`} onClick={() => setIsLightMode((prev) => !prev)}>
                   <div className="toggle-label">Light</div>
                   <div className="toggle-label">Dark</div>
                   <div className="toggle-slider"></div>
                 </div>
               </div>
             </li>
-          </b></ul>
+          </ul>
         </nav>
       </section>
 
@@ -232,8 +244,39 @@ const SidebarandNavbar = () => {
             <input className="search_input" placeholder="Search" />
           </div>
         </div>
+   
+    {/* ✅ Timer Component beside Search */}
+    <div className="compact-timer">
+          <div className="timer-item">
+            <button className="timer-btn-small" onClick={handleWorkToggle}>
+              <FaPlay />
+            </button>
+            <span className="timer-label-small">Work:</span>
+            <span className="timer-box-small">{workTime}</span>
+          </div>
+
+
+          {/* Clock in between */}
+          <div className="analog-clock">
+            <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
+            <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
+            <div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+            <div className="center-dot"></div>
+          </div>
+
+
+
+          <div className="timer-item">
+            <button className="timer-btn-small" onClick={toggleBreak}>
+              <FaPlay />
+            </button>
+            <span className="timer-label-small">Break:</span>
+            <span className="timer-box-small">{breakTime}</span>
+          </div>
+        </div>
 
         <div className="navbar_icons">
+        <div className="navbar_divider"></div>
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
           <FontAwesomeIcon className="navbar_icon" icon={faBell} />
           <FontAwesomeIcon
@@ -256,6 +299,7 @@ const SidebarandNavbar = () => {
             onClick={() => setShowTracker((prev) => !prev)}
             style={{ cursor: "pointer" }}
           />
+          
         </div>
 
         {/* User Popover */}
