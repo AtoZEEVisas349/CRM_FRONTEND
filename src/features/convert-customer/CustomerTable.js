@@ -31,4 +31,4 @@ const CustomerTable = () => (
   </div>
 );
 
-export default CustomerTable;
+export default CustomerTable;

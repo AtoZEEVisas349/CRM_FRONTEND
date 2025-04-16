@@ -63,34 +63,39 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
 
   return (
     <div 
-      className="table-container" 
-      style={{ 
-        maxHeight: tableHeight, 
-        overflowY: "auto",
-        position: "relative",
-        border: "1px solid #e0e0e0",
-        borderRadius: "10px",
-        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-        backgroundColor: "white"
-      }}
-    >
+    className="table-container responsive-table-wrapper" 
+    style={{ 
+      maxHeight: tableHeight, 
+      overflowX: "auto",      // horizontal scroll
+      overflowY: "auto",      // vertical scroll
+      position: "relative",
+      border: "1px solid #e0e0e0",
+      borderRadius: "10px",
+      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
+      backgroundColor: "white",
+      width: "100%"
+    }}
+  >
+  
+
       <table className="client-table" style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ 
-            position: "sticky", 
-            top: 0, 
-            backgroundColor: "white", 
-            zIndex: 10,
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)"
-          }}>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Add follow up</th>
-            <th>Status</th>
-            <th>Call</th>
-          </tr>
-        </thead>
+      <thead>
+  <tr style={{ 
+    position: "sticky", 
+    top: 0, 
+    backgroundColor: "#2c2c2c", // Dark background for contrast
+    zIndex: 10,
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)"
+  }}>
+    <th style={{ color: "white" }}>Name</th>
+    <th style={{ color: "white" }}>Phone</th>
+    <th style={{ color: "white" }}>Email</th>
+    <th style={{ color: "white" }}>Add follow up</th>
+    <th style={{ color: "white" }}>Status</th>
+    <th style={{ color: "white" }}>Call</th>
+  </tr>
+</thead>
+
         <tbody>
           {filteredClients.map((client, index) => {
             // Find the correct index in the original clients array for followUps
@@ -117,7 +122,7 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
                     onClick={() => handleEdit(client.name)}
                     style={{ marginLeft: "10px", cursor: "pointer" }}
                   >
-                    ✏️
+                    ✏
                   </span>
                 </td>
                 <td>⚪</td>
@@ -131,4 +136,4 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
   );
 };
 
-export default ClientTable;
+export default ClientTable;

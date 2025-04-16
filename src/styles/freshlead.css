@@ -9,7 +9,12 @@
     background-color: var(--bg-color);
     color: var(--text-color);
   }
-  
+  .fresh-leads-table thead{
+    background-color: #ccc;
+  }
+  [data-theme="dark"] .fresh-leads-table thead{
+    background-color: #111213;
+  }
   .lead-assign-container {
     display: flex;
     height: 100vh;

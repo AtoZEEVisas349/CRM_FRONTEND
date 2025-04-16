@@ -86,6 +86,8 @@ const FollowUpDetail = ({ onTextChange }) => {
   };
 
   return (
+    <div className="followup-detail-theme">
+
     <div className="followup-detail-container">
       <h2>Follow-Up Details</h2>
       <div className="follow-up-reason">
@@ -112,6 +114,8 @@ const FollowUpDetail = ({ onTextChange }) => {
                   height="20"
                   viewBox="0 0 24 24"
                   fill="none"
+                  stroke="currentColor" // <-- add this line
+
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <rect
@@ -159,7 +163,8 @@ const FollowUpDetail = ({ onTextChange }) => {
         </div>
       </div>
     </div>
+    </div>
   );
 };
 
-export default FollowUpDetail;
+export default FollowUpDetail;

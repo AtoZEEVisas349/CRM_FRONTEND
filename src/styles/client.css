@@ -1,4 +1,11 @@
 /* === BASE RESET === */
+
+.followup-detail-theme {
+  --accent-color: #4f46e5;
+  --accent-color-hover: #3730a3;
+}
+
+
 * {
   margin: 0;
   padding: 0;
@@ -286,24 +293,28 @@ select {
 .interaction-textarea {
   flex: 1;
   min-height: 100px;
-  padding: 10px;
+  padding: 10px 10px 40px 10px; /* space at bottom for mic button */
   border-radius: 8px;
   resize: vertical;
   font-size: 14px;
 }
 
 .speech-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
   background-color: var(--accent-color);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  color: white;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
   cursor: pointer;
   transition: background 0.3s ease;
+  z-index: 1;
 }
 
 .speech-btn.listening {
@@ -317,6 +328,24 @@ select {
   flex-wrap: wrap;
   gap: 15px;
 }
+
+.update-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.update-btn:hover {
+  background-color: var(--accent-color-hover);
+  transform: translateY(-2px);
+}
+
 
 .radio-container,
 .checkbox-container {
@@ -385,4 +414,22 @@ input[type="checkbox"] {
   .speech-btn {
     align-self: flex-end;
   }
+}
+
+
+.avatar-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #6d28d9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-icon svg {
+  width: 30px;
+  height: 30px;
+  stroke: white;
 }

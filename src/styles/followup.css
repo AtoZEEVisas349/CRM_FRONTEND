@@ -214,8 +214,8 @@ body {
 }
 
 .followup-tabs .active {
-  background: var(--accent-color);
-  color: #fff;
+  background: #dfdddd;
+  color: #161515;
 }
 
 .table-container {
@@ -282,4 +282,24 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-color);
+}
+
+/* Responsive adjustments for table */
+/* Keep table scrollable on small screens */
+.responsive-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.client-table {
+  min-width: 700px; /* forces horizontal scroll if screen is smaller */
+}
+
+/* Optional: fix sticky headers */
+.client-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #2c2c2c; /* match your new header background */
+  z-index: 10;
 }

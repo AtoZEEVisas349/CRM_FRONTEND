@@ -131,13 +131,37 @@ html, body {
   box-shadow: 0 4px 12px var(--shadow-light);
 }
 
-.report-card:hover {
-  transform: translateY(-5px);
-  background: var(--accent-color); /* Matches the theme */
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+.report-cards-exec {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
 }
 
+@media (max-width: 768px) {
+  .report-cards-exec {
+    flex-direction: column;
+  }
+}
+
+.report-card {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.report-card:hover {
+  transform: scale(1.05);
+  color: #fff;
+}
+.report-card-0:hover {
+  background-color: #ee984d; /* Blue */
+}
+.report-card-1:hover {
+  background-color: #6565f5; /* Green */
+}
+.report-card-2:hover {
+  background-color: #dee740; /* Orange */
+}
 .card-icon {
   position: absolute;
   top: 15px;
@@ -148,7 +172,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-color);
+  background: #52529e;
   color: white;
   font-size: 20px;
 }
@@ -157,31 +181,39 @@ html, body {
   margin-top: 50px;
 }
 
-.card-details h4,
-.card-value {
-  font-size: 16px;
-  font-weight: 500;
+.card-details h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
   color: var(--text-color);
+  letter-spacing: 0.5px;
 }
 
-.card-value {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 5px 0;
+.card-value,
+.card-value1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
 }
 
 .card-change {
-  font-size: 12px;
-  color: #c0c0c0;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.85;
+  margin-top: 4px;
+  color: var(--text-color);
 }
 
-.positive {
-  color: #10e09a;
-}
 
-.negative {
-  color: #ef4444;
-}
+  .positive {
+    color: #27ae60; /* Green */
+  }
+  
+  .negative {
+    color: #e74c3c; /* Red */
+  }
 
 /* ===== Container Blocks ===== */
 .analytics-graph,
@@ -267,17 +299,87 @@ html, body {
   transition: width 0.5s ease-in-out;
   min-width: 5%;
 }
-
-/* ===== User Popover ===== */
+/* ===== User Popover (Light & Dark Mode) ===== */
 .user_popover {
-  background: var(--card-bg);
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: var(--card-bg); /* Handles both modes */
+  color: var(--text-color);
+  border-radius: 12px;
+  padding: 16px;
+  width: 200px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.3s ease forwards;
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Avatar Circle */
+.user_avatar {
+  background-color: #5287fc;
+  color: rgb(243, 237, 237);
+  font-weight: bold;
+  font-size: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* User Info Container */
+.user_details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.user_name {
+  font-weight: 600;
+  font-size: 16px;
   color: var(--text-color);
 }
 
-.user_name,
 .user_email,
 .user_role {
-  color: var(--text-color);
+  font-size: 13px;
+  color: var(--subtle-text-color, #6b7280); /* fallback gray */
+}
+
+/* Logout Button */
+.logout_btn {
+  width: 100%;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logout_btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.03);
 }
 
 /* ===== Light Mode Card Types ===== */
@@ -295,7 +397,12 @@ html, body {
 .light-mode .card-change {
   color: #222;
 }
-.light-mode .card-icon {
-  background: #333 !important;
-  color: #fff !important;
+
+/* Nuclear option to ensure visibility */
+.report-icon {
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,1));
+}
+
+.light-mode .report-icon {
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,1)) !important;
 }

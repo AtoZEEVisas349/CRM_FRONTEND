@@ -1,3 +1,13 @@
+.generate-btn-wrapper{
+  --accent-color: #4f46e5;
+  --accent-color-hover: #3730a3;
+}
+.heading{
+  --accent-color: #4f46e5;
+  --accent-color-hover: #3730a3;
+}
+
+
 /* Main Content */
 .customer-main-content {
   margin-left: 270px;
@@ -17,14 +27,16 @@
   align-items: center;
   margin-top: 80px;
   margin-bottom: 25px;
-  background: var(--card-bg);
+  background: #f0f0f0;
   color: var(--text-color);
   border-radius: 8px;
   box-shadow: 0 2px 5px var(--shadow-light);
   transform: translateX(-50px); /* ✅ shifts it slightly left */
 }
 
-
+[data-theme="dark"] .heading h2{
+  color: #080808;
+}
 
 h2 {
   margin-left: 5px;
@@ -32,7 +44,7 @@ h2 {
 
 .button {
   font-weight: 600;
-  background-color: var(--accent-color);
+  background-color: #1297df;
   color: white;
   padding: 10px 15px;
   border-radius: 5px;
@@ -64,13 +76,28 @@ h2 {
   overflow: hidden;
   box-shadow: 0 2px 5px var(--shadow-light);
   margin: 0;
+  min-width: unset; /* remove min-width restriction */
+  max-width: 100%;
+
 }
 
 .table-head {
   font-size: 18px;
   height: 60px;
-  background: var(--accent-color);
+  background: #6bbdea;
+  color: white; /* This ensures text is visible in dark mode */
+}
+
+/* For dark mode */
+.dark-mode .table-head {
+  background: #e8ebec;
   color: white;
+}
+
+/* For light mode */
+.light-mode .table-head {
+  background: #f5f5f5;
+  color: #333;
 }
 
 .table-head th {
@@ -184,4 +211,19 @@ h2 {
   display: flex;
   justify-content: left; 
   margin-top: 30px;        
+}
+
+.card-row {
+  display: flex;
+  gap: 0px; /* ⬅ no space between cards */
+  margin-bottom: 20px;
+  padding: 0; /* ⬅ removes row padding */
+}
+
+.c-card {
+  flex: 1 1 33.33%;
+  min-width: 0; /* ⬅ allow full stretching */
+  padding: 16px; /* ⬅ keep inner content padding */
+  margin: 0;     /* ⬅ no outer margin */
+  border-radius: 0; /* optional: remove rounding if flush layout */
 }

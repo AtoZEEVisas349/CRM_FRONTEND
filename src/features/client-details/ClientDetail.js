@@ -14,12 +14,13 @@ const ClientDetail = ({ followUpText }) => {
           <div className="client-info-column">
             <div className="c-profile">
               <div className="avatar-container">
-                <div className="avatar">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-label="User Avatar">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                </div>
+              <div className="avatar-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-label="User Avatar">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+</div>
+
               </div>
 
               <div className="c-info">
@@ -80,4 +81,4 @@ const ClientDetail = ({ followUpText }) => {
   );
 };
 
-export default ClientDetail;
+export default ClientDetail;
