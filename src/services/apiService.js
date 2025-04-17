@@ -43,8 +43,6 @@ export const fetchAssignedLeads = async (executiveName) => {
       console.error("🚨 Executive name is missing!");
       throw new Error("Executive name not provided!");
     }
-    console.log("👉 executiveName:", executiveName);
-
     const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
     return response.data.leads;
   } catch (error) {

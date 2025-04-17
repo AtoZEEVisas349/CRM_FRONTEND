@@ -37,7 +37,6 @@ export const ApiProvider = ({ children }) => {
       const response = await apiService.fetchExecutiveInfo(executiveId);
   
       if (response?.data?.executive) {
-        console.log("✅ Executive Info:", response.data.executive); // Log to see if name exists
         setExecutiveInfo(response.data.executive); // Set executiveInfo
       } else {
         console.error("Executive data missing:", response.data);

@@ -8,14 +8,11 @@ function FreshLead() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  console.log("✅ FreshLead component mounted");
-
   useEffect(() => {
     const loadLeads = async () => {
       // Ensure that executiveInfo is loaded before fetching leads
       if (!executiveInfo?.username) {  // Ensure executiveInfo has username
         if (!executiveLoading) {
-          console.log("🔄 Fetching executive data...");
           await fetchExecutiveData(); // Fetch executive data if not available
         }
         return; // Exit early if username is missing
@@ -23,12 +20,9 @@ function FreshLead() {
 
       try {
         setLoading(true);
-        console.log("👉 Calling fetchAssignedLeads...");
         const data = await fetchAssignedLeads(executiveInfo.username); // Pass the executive's username
-        console.log("✅ Received leads:", data);
         setLeadsData(data);
       } catch (err) {
-        console.log("❌ Failed to fetch leads:", err);
         setError("Failed to load leads. Please try again.");
       } finally {
         setLoading(false);
