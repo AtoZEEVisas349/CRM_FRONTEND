@@ -35,14 +35,15 @@ export const fetchLeadsAPI = async () => {
 };
 
 // ✅ Function to fetch assigned leads by executive name
-export const fetchAssignedLeads = async () => {
-  try {
-    const executiveName = localStorage.getItem("executiveName");
+// In apiService.js
 
+export const fetchAssignedLeads = async (executiveName) => {
+  try {
     if (!executiveName) {
-      console.error("🚨 Executive name missing in localStorage!");
-      throw new Error("Executive name not found in localStorage!");
+      console.error("🚨 Executive name is missing!");
+      throw new Error("Executive name not provided!");
     }
+    console.log("👉 executiveName:", executiveName);
 
     const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
     return response.data.leads;
@@ -51,6 +52,8 @@ export const fetchAssignedLeads = async () => {
     throw error;
   }
 };
+
+
 
 
 // ✅ Function to fetch all executives

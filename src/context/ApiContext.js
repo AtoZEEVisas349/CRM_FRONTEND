@@ -27,17 +27,18 @@ export const ApiProvider = ({ children }) => {
     try {
       const currentUser = JSON.parse(localStorage.getItem("user"));
       const executiveId = currentUser?.id;
-
+  
       if (!executiveId) {
         console.error("No executiveId found in localStorage!");
         setExecutiveLoading(false);
         return;
       }
-
+  
       const response = await apiService.fetchExecutiveInfo(executiveId);
-
+  
       if (response?.data?.executive) {
-        setExecutiveInfo(response.data.executive);
+        console.log("✅ Executive Info:", response.data.executive); // Log to see if name exists
+        setExecutiveInfo(response.data.executive); // Set executiveInfo
       } else {
         console.error("Executive data missing:", response.data);
       }
@@ -47,6 +48,7 @@ export const ApiProvider = ({ children }) => {
       setExecutiveLoading(false);
     }
   };
+  
 
   // ✅ New: Fetch user data
   const fetchUserData = async () => {

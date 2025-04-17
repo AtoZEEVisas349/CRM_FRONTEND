@@ -17,6 +17,7 @@ import LeadAssignRoutes from "./routes/LeadAssignRoute";
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "./features/admin/ThemeContext";
 import { AuthProvider } from './context/AuthContext'; 
+import NotificationRoutes from "./routes/NotificationRoutes";
 
 
 const App = () => {
@@ -55,7 +56,7 @@ const App = () => {
             </PrivateRoute>
           } 
         />
-
+        <Route path="/notification/*" element={<PrivateRoute><NotificationRoutes/></PrivateRoute>} />
         <Route path="/admin/*" element={<PrivateRoute><AdminRoutes /></PrivateRoute>} />
         <Route path="/executive/*" element={<PrivateRoute><ExecutiveRoutes /></PrivateRoute>} />
         <Route path="/customer/*" element={<PrivateRoute><CustomerRoutes /></PrivateRoute>} />
