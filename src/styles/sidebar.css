@@ -210,10 +210,10 @@
 }
 
 
-.search_input {
+.search-input-exec {
   width: 100%;       /* ✅ take full width */
   max-width: 600px;
-  
+  border: 2px solid #3498db; /* Example: blue border */
   padding: 10px 16px;
   border-radius: 6px;
   background-color: var(--input-bg);
@@ -465,7 +465,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: 0px;
+  margin-right: 80px;
 }
 
 .timer-item {
@@ -495,7 +495,6 @@
 }
 
 .timer-label-small {
-  color: #eee;
   font-size: 15px;
 }
 

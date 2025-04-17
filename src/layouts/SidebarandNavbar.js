@@ -11,8 +11,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse, faUsers, faUserPlus, faFile, faReceipt, faGear, faList,
   faCircleXmark, faBars, faCircleQuestion, faBell, faCircleUser,
-  faRobot, faRightFromBracket, faClock // ✅ Add here
+  faRobot, faRightFromBracket, faClock,faArrowLeft // ✅ Add here
 } from "@fortawesome/free-solid-svg-icons";
+
 
 
 
@@ -143,7 +144,11 @@ const SidebarandNavbar = () => {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+  
 
+  const handleBack =()=>{
+      navigate(-1)
+  }
   return (
 <section className="sidebar_navbar" data-theme={theme}>
 <section className={`sidebar_container ${isActive ? "active" : ""}`}>
@@ -186,7 +191,10 @@ const SidebarandNavbar = () => {
       <section className="navbar">
         <div className="menu_search">
           <button className="menu_toggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
-          <div className="search_bar"><input className="search_input" placeholder="Search" /></div>
+          <div className="search_bar">
+          <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{fontSize:"22px",cursor:"pointer"}} />
+            <input className="search-input-exec" placeholder="Search" />
+            </div>
         </div>
 
         <div className="compact-timer">
@@ -198,8 +206,8 @@ const SidebarandNavbar = () => {
 
           <div className="analog-clock">
           <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
-<div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
-<div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+          <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
+          <div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
 
             <div className="center-dot"></div>
           </div>

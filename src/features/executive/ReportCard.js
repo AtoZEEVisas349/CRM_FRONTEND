@@ -4,19 +4,19 @@ import { FaUserPlus, FaClipboardCheck, FaUsers } from "react-icons/fa";
 const ReportCard = () => {
   const cards = [
     {
-      title: "Total Income",
-      value: "$348,261",
+      title: "Fresh Leads",
+      value: "348,261",
       change: "+3.85%",
       icon: <FaUserPlus />,
     },
     {
-      title: "Profit",
-      value: "$15,708.98",
+      title: "Follow-ups",
+      value: "15,708.98",
       change: "+6.41%",
       icon: <FaClipboardCheck />,
     },
     {
-      title: "Total Revenue",
+      title: "Converted Clients",
       value: "7.415.644",
       change: "-5.38%",
       icon: <FaUsers />,
@@ -31,12 +31,12 @@ const ReportCard = () => {
           <div className="card-details">
             <h4>{card.title}</h4>
             <p className="card-value1">{card.value}</p>
-            <p
+            {/* <p
               className={`card-change ${card.change.includes("-") ? "negative" : "positive"
                 }`}
             >
               {card.change} Compared to last month
-            </p>
+            </p> */}
           </div>
         </div>
       ))}
