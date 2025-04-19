@@ -2,16 +2,21 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import * as authService from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { recordStartWork,recordStopBreak,recordStopWork } from "../services/executiveService";
+import useWorkTimer from "../features/executive/useLoginTimer";
+import { useBreakTimer } from "./breakTimerContext";
 // 1. Create Context
 const AuthContext = createContext();
 
 // 2. Create Provider
+
 export const AuthProvider = ({ children }) => {
+ 
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+ 
   // Check token on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -35,19 +40,30 @@ export const AuthProvider = ({ children }) => {
       const user = response.user;
   
       localStorage.setItem("token", response.token);
-localStorage.setItem("user", JSON.stringify(user));
-localStorage.setItem("executiveId", user.id);
-
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("executiveId", user.id);
   
       setUser(user);
       toast.success("Login successful!");
-  
+      const alreadyStarted = localStorage.getItem("workStartTime");
+      if (!alreadyStarted) {
+        recordStartWork()
+          .then((res) => {
+            if (res?.activity?.startWorkTime) {
+              localStorage.setItem("workStartTime", res?.activity?.startWorkTime);
+            }
+          })
+          .catch((err) =>
+            console.warn("Start work failed after navigation:", err.message)
+          );
+      }
       // Add timeout before redirecting
       setTimeout(() => {
         const role = user.role;
         if (role === "Admin") navigate("/admin");
         else if (role === "Executive") navigate("/executive");
         else if (role === "TL") navigate("/user");
+       
       }, 5000); // 5000ms = 5 seconds
   
     } catch (err) {
@@ -103,14 +119,23 @@ const signup = async (username, email, password, role) => {
 };
 
   // Logout function
+  const [clearTimer, setClearTimer] = useState(false); // Define clearTimer state
+  const timer = useWorkTimer(clearTimer);
   const logout = async () => {
     try {
+      // setClearTimer(true);
+      await recordStopWork();
+      localStorage.removeItem("workStartTime");
+       localStorage.removeItem("breakStartTime");
+       localStorage.removeItem("accumulatedBreakTime");
       await authService.logoutUser();
+      
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("executiveId");
       setUser(null);
       navigate("/login");
+      
     } catch (error) {
       console.error("Logout failed:", error.message);
     }

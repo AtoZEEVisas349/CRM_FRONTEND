@@ -5,7 +5,8 @@ const FollowUpDetail = ({ onTextChange }) => {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening); // Added ref for isListening
-
+  const [interactionDate, setInteractionDate] = useState("");
+  const [interactionTime, setInteractionTime] = useState("");
   // Sync ref with state
   useEffect(() => {
     isListeningRef.current = isListening;
@@ -151,6 +152,48 @@ const FollowUpDetail = ({ onTextChange }) => {
               )}
             </button>
           </div>
+            <div className="interaction-datetime">
+              <h4>Interaction Schedule and Time</h4>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop:"20px" }}>
+                {/* Date Row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <label style={{ width: '60px', fontWeight: '600' }}>Date:</label>
+                  <input
+                    type="date"
+                    value={interactionDate}
+                    onChange={(e) => setInteractionDate(e.target.value)}
+                    style={{
+                      backgroundColor: '#f1f1f1',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      color: '#222',
+                      border: '1px solid #ccc',
+                      width: '160px'
+                    }}
+                  />
+                </div>
+                {/* Time Row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <label style={{ width: '60px', fontWeight: '600' }}>Time:</label>
+                  <input
+                    type="time"
+                    value={interactionTime}
+                    onChange={(e) => setInteractionTime(e.target.value)}
+                    style={{
+                      backgroundColor: '#f1f1f1',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      color: '#222',
+                      border: '1px solid #ccc',
+                      width: '160px'
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           <button
             onClick={() => {
               onTextChange(reasonDesc);

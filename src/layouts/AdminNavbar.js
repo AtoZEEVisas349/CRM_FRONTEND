@@ -40,15 +40,19 @@ function AdminNavbar() {
         {theme === 'light' ? <FaMoon /> : <FaSun />}
       </button>
 
-      {/* Other Icons */}
-      <FaPhone className="admin-logo_name icon-hover-zoom" />
+  {/* Icon Group */}
+  <div className="admin-icons-group">
+    <FaPhone className="admin-logo_name icon-hover-zoom" />
+    <FaComment className="admin-logo_name icon-hover-zoom" />
+    <FaBell className="admin-logo_name icon-hover-zoom" />
+
+    {/* User Icon and Popover Wrapper */}
+    <div className="user-icon-wrapper">
       <FaUser
         className="admin-logo_name icon-hover-zoom"
         onClick={togglePopover}
         style={{ cursor: 'pointer' }}
       />
-
-      {/* User Popover */}
       {showPopover && (
         <div className="admin_user_popover">
           {loading ? (
@@ -72,10 +76,10 @@ function AdminNavbar() {
           </button>
         </div>
       )}
-
-      <FaComment className="admin-logo_name icon-hover-zoom" />
-      <FaBell className="admin-logo_name icon-hover-zoom" />
     </div>
+  </div>
+</div>
+
   );
 }
 

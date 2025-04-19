@@ -1,14 +1,30 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // <-- Import navigation hook
 import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
+import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
+
 
 function FreshLead() {
   const { fetchAssignedLeads, executiveInfo, fetchExecutiveData, executiveLoading } = useApi();
+  const {leadtrack}=useExecutiveActivity();
   const [leadsData, setLeadsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // <-- Initialize navigator
+ 
+ useEffect(() => {
+  const userData = JSON.parse(localStorage.getItem('user')); // or get it from your auth context
+  const executiveId = userData?.id;
 
+  if (executiveId) {
+    leadtrack(executiveId);
+  } else {
+    console.error('ExecutiveId not found');
+  }
+}, []);
   useEffect(() => {
+    // fetchLeadSectionVisitsAPI();
     const loadLeads = async () => {
       // Ensure that executiveInfo is loaded before fetching leads
       if (!executiveInfo?.username) {  // Ensure executiveInfo has username
@@ -35,6 +51,11 @@ function FreshLead() {
   if (executiveLoading) {
     return <p>Loading executive data...</p>; // Loading state while executive data is being fetched
   }
+
+  // Navigation handler
+  const handleEditClient = (clientName) => {
+    navigate(`/clients/${encodeURIComponent(clientName)}`);
+  };
 
   return (
     <div className="fresh-leads-main-content">
@@ -69,7 +90,10 @@ function FreshLead() {
                     <td>{lead.phone}</td>
                     <td>{lead.email}</td>
                     <td>
-                      <button className="followup-badge">
+                      <button
+                        className="followup-badge"
+                        onClick={() => handleEditClient(lead.name)} // <-- navigate on click
+                      >
                         Add Follow Up ✏ {lead.followUp}
                       </button>
                     </td>
@@ -94,4 +118,4 @@ function FreshLead() {
   );
 }
 
-export default FreshLead;
+export default FreshLead;

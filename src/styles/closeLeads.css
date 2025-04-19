@@ -1,12 +1,23 @@
 /* Final improved closeleads.css */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 
 .close-leads-page {
   margin-top: 0; 
   align-items: center;
-  padding: 120px 0px 20px 250px;
+  padding: 100px 50px 50px 250px;
   background-color: var(--bg-color);
   min-height: 100vh;
   color: var(--text-color);
+  width: 105%;
+  
 }
 .close-leads-container{
   margin-top: 30px;

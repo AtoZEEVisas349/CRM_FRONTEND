@@ -1,3 +1,4 @@
+//apiSericce.js
 import axios from "axios";
 
 // ✅ Define API Base URL
@@ -52,7 +53,38 @@ export const fetchAssignedLeads = async (executiveName) => {
 };
 
 
+// ✅ Fetch notifications for a specific user (executive)
+export const fetchNotificationsByUser = async (userId) => {
+  try {
+    const response = await apiService.get(`/notification/user/${userId}`);
+    return response.data.notifications;
+  } catch (error) {
+    console.error(`❌ Error fetching notifications for user ${userId}:`, error);
+    throw error;
+  }
+};
 
+// ✅ Mark a notification as read
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    const response = await apiService.put(`/notification/mark-read/${notificationId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error marking notification ${notificationId} as read:`, error);
+    throw error;
+  }
+};
+
+// ✅ Delete a notification
+export const deleteNotificationById = async (notificationId) => {
+  try {
+    const response = await apiService.delete(`/notification/${notificationId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error deleting notification ${notificationId}:`, error);
+    throw error;
+  }
+};
 
 // ✅ Function to fetch all executives
 export const fetchExecutivesAPI = async () => {

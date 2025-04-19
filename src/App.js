@@ -18,6 +18,12 @@ import { useState, useEffect } from "react";
 import { ThemeProvider } from "./features/admin/ThemeContext";
 import { AuthProvider } from './context/AuthContext'; 
 import NotificationRoutes from "./routes/NotificationRoutes";
+import InvoiceRoutes from "./routes/InvoiceRoutes";
+import SettingRoutes from "./routes/SettingRoutes";
+import MyProfile from "./features/settings/MyProfile";
+import Theme from "./features/settings/Theme";
+import ChangePassword from "./features/settings/ChangePassword";
+import ScheduleRoutes from "./routes/ScheduleRoutes";
 
 
 const App = () => {
@@ -56,7 +62,15 @@ const App = () => {
             </PrivateRoute>
           } 
         />
-        <Route path="/notification/*" element={<PrivateRoute><NotificationRoutes/></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><SettingRoutes/></PrivateRoute>} >
+        <Route index element={<Navigate to="profile" replace />} />  {/* ✅ This does the redirect */}
+        <Route path="profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
+         <Route path="theme" element={<PrivateRoute><Theme /></PrivateRoute>} />
+          <Route path="change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
+        </Route>
+        <Route path="/schedule" element={<PrivateRoute><ScheduleRoutes/></PrivateRoute>} />
+        <Route path="/invoice" element={<PrivateRoute><InvoiceRoutes/></PrivateRoute>} />
+        <Route path="/notification" element={<PrivateRoute><NotificationRoutes/></PrivateRoute>} />
         <Route path="/admin/*" element={<PrivateRoute><AdminRoutes /></PrivateRoute>} />
         <Route path="/executive/*" element={<PrivateRoute><ExecutiveRoutes /></PrivateRoute>} />
         <Route path="/customer/*" element={<PrivateRoute><CustomerRoutes /></PrivateRoute>} />

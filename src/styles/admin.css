@@ -1125,71 +1125,113 @@ h1 {
   background-color: #333333; /* Dark theme background */
 }
 
-/* Admin Popover Styling */
 .admin_user_popover {
   position: absolute;
-  top: 40px;
-  right: 0;
-  padding: 10px;
-  background-color: var(--popover-bg);
-  border-radius: 5px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  top: 55px;
+  right: 0; /* aligns with user icon */
+  transform: translateX(20%) translateY(-20px); /* pull it a bit to the left */
+  z-index: 10000;
+  width: 240px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  animation: popoverSlide 0.35s ease-out forwards;
+  opacity: 0;
+}
+
+/* Animate in */
+@keyframes popoverSlide {
+  to {
+    transform: translateX(0%) translateY(0);
+    opacity: 1;
+  }
+}
+.admin_user_popover::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 24px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid white; /* fallback for glass look */
+
+  background: inherit; /* tries to use popover's backdrop */
+  filter: brightness(1.2);
+  z-index: -1;
 }
 
 .admin_user_details {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .admin_user_avatar {
-  width: 40px;
-  height: 40px;
-  background-color: var(--avatar-bg);
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--avatar-text-color);
-  font-size: 16px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-/* Logout Button Styling */
+.admin_user_name {
+  font-weight: 600;
+  color: #222121;
+  margin: 0;
+}
+.admin_user_email,
+.admin_user_role {
+  font-size: 12px;
+  color: #222121;
+  margin: 0;
+}
+/* Logout Button */
 .logout_btn {
-  background-color: var(--primary-color);
+  width: 100%;
+  padding: 10px 16px;
+  background: #ff4d4f;
   color: white;
-  padding: 8px 16px;
+  font-weight: 600;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
+  transition: background 0.3s ease;
 }
 
 .logout_btn:hover {
-  background-color: var(--primary-color-dark);
+  background: #d9363e;
 }
-
-
-
- 
- 
- /* Navbar */
- .admin-logo {
+.admin-icons-group {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 10px;
+  gap: 19px; /* spacing between icons */
+  margin-left: 20px; /* spacing between theme toggle and icons */
 }
- 
- .admin-logo_name {
-   margin: 5px 10px;
-   font-size: 20px;
-   cursor: pointer;
-   transition: color 0.03s;
-   color: #fff;
 
- }
+/* Arrow pointer */
+.admin_user_popover::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 10px solid rgba(255, 255, 255, 0.15);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+}
 
  .assign-task-container {
   position: relative;
@@ -1198,13 +1240,9 @@ h1 {
   flex-direction: column;
   margin-left: 250px;
 }
-
 .assign-task {
   margin: auto;
 }
-
-
-
  /* Mobile states */
  @media (max-width: 768px) {
   .admin-main-content {
@@ -1536,105 +1574,6 @@ h1 {
   transform: translateY(-1px);
   opacity: 0.9;
 }
-/*----------------Popover-------------------------*/
-.admin_user_popover {
-  position: absolute;
-  top: 60px;
-  right: 25px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  padding: 16px;
-  width: 190px;
-  z-index: 1000;
-  animation: popoverIn 0.4s ease forwards;
-  transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateY(-10px) scale(0.95);
-}
-
-.admin_user_popover::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 0 8px 10px;
-  border-style: solid;
-  border-color: transparent transparent #ffffff transparent;
-  filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
-  opacity: 0;
-  animation: arrowFade 0.4s ease forwards;
-}
-
-@keyframes popoverIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes arrowFade {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.admin_user_details {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.admin_user_avatar {
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, #4a90e2, #007bff);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-  margin-right: 12px;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-.admin_user_name {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: #333;
-}
-
-.admin_user_email,
-.admin_user_role {
-  margin: 1px 0;
-  font-size: 12px;
-  color: #1d1c1c;
-  line-height: 1.4;
-}
-
 
 /* ==================== */
 /* Base Styles (unchanged) */
@@ -1798,16 +1737,6 @@ body.sidebar-collapsed .admin-main-content {
   padding: 20px;
   transition: margin-left 0.3s ease;
   }
-  
-
-  /* body,
-.admin-dashboard-container {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow-x: hidden;
-} */
-  
 
   .admin-dashboard-container {
     flex-direction: column;

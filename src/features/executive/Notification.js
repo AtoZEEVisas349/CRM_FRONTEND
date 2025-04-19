@@ -1,75 +1,46 @@
-// // src/pages/NotificationPage.js
-// import React, { useEffect, useState } from "react";
-// import "../../styles/notification.css";
+import React, { useEffect } from "react";
+import { useApi } from "../../context/ApiContext"; // ✅ Import context hook
+import "../../styles/notification.css";
 
-// function Notification() {
-//   const [notifications, setNotifications] = useState([]);
+function Notification() {
+  const {
+    notifications,
+    notificationsLoading,
+    fetchNotifications,
+  } = useApi(); // ✅ Use context
 
-// //   useEffect(() => {
-// //     const getNotifications = async () => {
-// //       try {
-// //         const data = await fetchNotifications();
+  // ✅ Fetch notifications on mount
+  useEffect(() => {
+    const uid = localStorage.getItem("executiveId");
+    if (uid) fetchNotifications(uid);
+  }, [fetchNotifications]);
 
-// //         const mappedNotifications = data.map((notification) => ({
-// //           id: notification.id,
-// //           title: "📩 New Lead Assigned",
-// //           message: notification.message || "You have a new notification.",
-// //           time: new Date(notification.createdAt).toLocaleString("en-IN", {
-// //             day: "2-digit",
-// //             month: "2-digit",
-// //             year: "numeric",
-// //             hour: "2-digit",
-// //             minute: "2-digit",
-// //             second: "2-digit",
-// //             hour12: true,
-// //           }),
-// //         }));
+  return (
+    <div className="notification-container">
+      <h2>Notifications</h2>
+      {notificationsLoading ? (
+        <p className="loading-msg">Loading notifications...</p>
+      ) : notifications.length === 0 ? (
+        <p className="empty-msg">No notifications</p>
+      ) : (
+        <ul className="notification-list">
+          {notifications.map((n, index) => (
+            <li className="notification-card" key={n.id}>
+                <div className="notification-header">
+                <strong>New Lead Assigned</strong>
+                <span className="notification-time">
+                    {new Date(n.createdAt).toLocaleTimeString()}
+                </span>
+                </div>
+                <p className="notification-message">
+                You have been assigned a new lead #{index + 1}
+                </p>
+            </li>
+            ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
-// //         setNotifications(mappedNotifications);
-// //       } catch (error) {
-// //         console.error("Error fetching notifications:", error);
-// //       }
-// //     };
-
-// //     getNotifications();
-// //   }, []);
-
-// //   const handleDelete = async (id) => {
-// //     try {
-// //       await deleteNotificationAPI(id);
-// //       setNotifications((prev) => prev.filter((note) => note.id !== id));
-// //     } catch (error) {
-// //       console.error("Failed to delete notification:", error);
-// //     }
-// //   };
-
-//   return (
-//     <div className="notification-container">
-//       <h2>Notifications</h2>
-//       {notifications.length === 0 ? (
-//         <p className="empty-msg">No notifications to show</p>
-//       ) : (
-//         <ul className="notification-list">
-//           {notifications.map((note) => (
-//             <li className="notification-card" key={note.id}>
-//               <div className="notification-header">
-//                 <strong>{note.title}</strong>
-//                 <span className="notification-time">{note.time}</span>
-//               </div>
-//               <p className="notification-message">{note.message}</p>
-//               <button
-//                 className="delete-notification-btn"
-//                 onClick={() => handleDelete(note.id)}
-//                 title="Delete notification"
-//               >
-//                 🗑
-//               </button>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default Notification;
+export default Notification;

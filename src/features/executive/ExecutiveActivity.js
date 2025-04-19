@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCoffee, faPhone, faSync } from "@fortawesome/free-solid-svg-icons";
 import {
-  recordStartBreak,
-  recordStopBreak,
   startCall,
   endCall,
   getActivityStatus,
@@ -11,10 +9,24 @@ import {
 import { toast } from "react-toastify";
 import "../../styles/executiveTracker.css";
 import { useExecutiveActivity } from '../../context/ExecutiveActivityContext';
+import useWorkTimer from "./useLoginTimer";
+// import useBreakTimer from "./useTimerBreak";
+import { useApi } from "../../context/ApiContext";
+import { useBreakTimer } from "../../context/breakTimerContext";
 
 const ExecutiveActivity = () => {
   const { user } = useExecutiveActivity();
-
+  const {handleStartBreak,handleStopBreak,handleStartCall,handleEndCall}=useExecutiveActivity()
+  const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading } = useBreakTimer();
+  const timer = useWorkTimer();
+   const { executiveInfo, executiveLoading, fetchExecutiveData } = useApi();
+   useEffect(() => {
+    fetchExecutiveData(); // Call it only once on mount
+    console.log(executiveInfo)
+  }, []);
+  
+  const [callText, setCallText] = useState('Start Call');
+  
   const [status, setStatus] = useState({
     onBreak: false,
     isOnCall: false,
@@ -61,9 +73,7 @@ const ExecutiveActivity = () => {
   useEffect(() => {
     if (user?.role === "Executive") {
       fetchActivityStatus();
-
       const backendInterval = setInterval(fetchActivityStatus, 30000);
-
       const uiInterval = setInterval(() => {
         setStatus((prev) => ({
           ...prev,
@@ -80,26 +90,15 @@ const ExecutiveActivity = () => {
     }
   }, [user?.role]);
 
-  const toggleBreak = async () => {
-    try {
-      setLoading(true);
-
-      if (!status.onBreak) {
-        await recordStartBreak();
-        toast.info("Break started!");
-      } else {
-        await recordStopBreak();
-        toast.info("Break ended!");
-      }
-
-      await fetchActivityStatus();
-    } catch (error) {
-      toast.error(`Failed to ${status.onBreak ? "end" : "start"} break: ${error.message}`);
-    } finally {
-      setLoading(false);
+  const [breakText, setBreakText] = useState("Take Break");
+  const toggle= async () => {
+    if (!isBreakActive) {
+      await startBreak();
+    } else {
+      await stopBreak();
     }
   };
-
+  
   const toggleCallTracking = async () => {
     try {
       setLoading(true);
@@ -137,7 +136,17 @@ const ExecutiveActivity = () => {
     fetchActivityStatus();
     toast.info("Activity data refreshed");
   };
-
+  const toggleCall = (e) => {
+    if (callText === 'Start Call') {
+       handleStartCall();
+      setCallText('End Call');
+      // ✅ Save call status
+    } else {
+      handleEndCall();
+      setCallText('Start Call');
+        // ✅ Save call status
+    }
+  }
   return (
     <div className="activity-tracker-container">
       <div className="tracker-widget">
@@ -156,53 +165,37 @@ const ExecutiveActivity = () => {
           <div className="exec-info">
             <div className="exec-avatar">
               <span className="initial">
-                {user?.username?.charAt(0).toUpperCase() || "U"}
+                {executiveInfo?.username?.charAt(0).toUpperCase() || "U"}
               </span>
             </div>
             <div className="exec-details">
               <div className="exec-name">
-                <strong>{user?.username || "Unknown User"}</strong>
+                <strong>{executiveInfo?.username || "Unknown User"}</strong>
               </div>
               <div className="exec-id">
-                ID: <span>{user?.id || "N/A"}</span>
+                ID: <span>{executiveInfo?.id || "N/A"}</span>
               </div>
             </div>
           </div>
 
           <div className="status-badge">
             <strong>Status:</strong>{" "}
-            {status.onBreak ? "On Break" : status.isOnCall ? "On Call" : "Working"}
+            {isBreakActive ? "Break" : "Working"}
           </div>
 
           <div className="time-display">
             <div className="time-block">
               <span className="time-label">Working Time:</span>
-              <span className="time-value">{formatTime(status.workingTime)}</span>
+              <span className="time-value">{timer}</span>
             </div>
 
-            {status.onBreak && (
-              <div className="time-block break-time">
-                <span className="time-label">Break Time:</span>
-                <span className="time-value">{formatTime(status.breakTime)}</span>
-              </div>
-            )}
-
-            {status.isOnCall && (
-              <div className="time-block call-time">
-                <span className="time-label">Call Duration:</span>
-                <span className="time-value">{formatTime(status.callDuration)}</span>
-              </div>
-            )}
-
-            <div className="daily-summary">
-              <h4>Today's Summary</h4>
+<div className="daily-summary">
+              <h4 className="summary-text">Today's Summary</h4>
               <ul>
-                <li>Total Break Time: {formatTime(status.breakTime)}</li>
-                <li>Total Call Time: {formatTime(status.callDuration)}</li>
-                <li>Working Time So Far: {formatTime(status.workingTime)}</li>
+                <li>Total Break Time: {breakTimer}</li>
+                <li>Working Time So Far: {timer}</li>
               </ul>
             </div>
-
             <div className="motivation-box">
               <blockquote>"Small consistent actions lead to big results."</blockquote>
               <small>- AtoZee Motivation</small>
@@ -211,32 +204,14 @@ const ExecutiveActivity = () => {
 
           <div className="tracker-actions">
             <button
-              className={`tracker-btn ${status.onBreak ? "active" : ""}`}
-              onClick={toggleBreak}
+            className={`tracker-btn ${status.onBreak ? "active" : ""}`}
+            onClick={toggle}
               disabled={loading}
             >
-              <FontAwesomeIcon icon={faCoffee} />
-              {status.onBreak ? "End Break" : "Take Break"}
+              <FontAwesomeIcon icon={faCoffee} style={{color:"white"}}/>
+          <p style={{color:"white"}}> {isBreakActive ? "End Break" : "Take Break"}</p>    
             </button>
 
-            <button
-              className={`tracker-btn ${status.isOnCall ? "active" : ""}`}
-              onClick={toggleCallTracking}
-              disabled={loading}
-            >
-              <FontAwesomeIcon icon={faPhone} />
-              {status.isOnCall ? "End Call" : "Start Call"}
-            </button>
-          </div>
-
-          <div className="lead-input">
-            <input
-              type="text"
-              placeholder="Lead ID"
-              value={status.currentLeadId}
-              onChange={handleLeadIdChange}
-              disabled={status.isOnCall}
-            />
           </div>
         </div>
       </div>

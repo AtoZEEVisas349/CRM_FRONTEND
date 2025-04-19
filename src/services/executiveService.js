@@ -1,5 +1,4 @@
 // Revised api/executiveActivity.js - focusing on secure timestamp recording
-
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5000';
@@ -10,7 +9,7 @@ const getToken = () => localStorage.getItem('token');
 // Configure headers for API requests
 const getHeaders = () => ({
   'Content-Type': 'application/json',
-  'Authorization': `Bearer ${getToken()}`
+  'Authorization': `Bearer ${getToken()}`,
 });
 
 /**
@@ -19,15 +18,22 @@ const getHeaders = () => ({
  */
 export const recordStartWork = async () => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    console.log("📦 Payload for start work:", { executiveId: currentUser.id, executiveName: currentUser.username });
+    // Step 1: Parse the user data from localStorage
+    const userData = JSON.parse(localStorage.getItem("user") || '{}');
+    const ExecutiveId = userData?.id;
+    const executiveName = userData?.username;
+    console.log({ExecutiveId, executiveName});
+
+    const payload = {
+      ExecutiveId,
+      executiveName
+    };
+
+    console.log("📦 Payload for start work:", payload);
 
     const response = await axios.post(
-      `${API_BASE_URL}/api/executive-activities/startWork`,
-      {
-        executiveId: currentUser.id,
-        executiveName: currentUser.username
-      },
+      `${API_BASE_URL}/api/executive-activities/startWork`, // Corrected here
+      payload,
       { headers: getHeaders() }
     );
 
@@ -45,16 +51,22 @@ export const recordStartWork = async () => {
  */
 export const recordStopWork = async () => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userData = JSON.parse(localStorage.getItem("user") || '{}');
+    const ExecutiveId = userData?.id;
+    const executiveName = userData?.username;
+    console.log({ExecutiveId, executiveName});
+
+    const payload = {
+      ExecutiveId,
+      executiveName
+    };
+
     const response = await axios.post(
-      `${API_BASE_URL}/api/executive-activities/stopWork`,
-      {
-        executiveId: currentUser.id,
-        executiveName: currentUser.username
-        // No client-side timestamp - server will use its own time
-      },
+      `${API_BASE_URL}/api/executive-activities/stopWork`, // Corrected here
+      payload,
       { headers: getHeaders() }
     );
+
     return response.data;
   } catch (error) {
     console.error('Error recording stop work:', error);
@@ -68,12 +80,15 @@ export const recordStopWork = async () => {
  */
 export const recordStartBreak = async () => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userData = JSON.parse(localStorage.getItem("user") || '{}');
+    const ExecutiveId = userData?.id;
+    const executiveName = userData?.username;
+
     const response = await axios.post(
-      `${API_BASE_URL}/api/executive-activities/startBreak`,
+      `${API_BASE_URL}/api/executive-activities/startBreak`, // Corrected here
       {
-        executiveId: currentUser.id,
-        executiveName: currentUser.username
+        ExecutiveId,
+        executiveName
         // No client-side timestamp - server will use its own time
       },
       { headers: getHeaders() }
@@ -91,12 +106,15 @@ export const recordStartBreak = async () => {
  */
 export const recordStopBreak = async () => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userData = JSON.parse(localStorage.getItem("user") || '{}');
+    const ExecutiveId = userData?.id;
+    const executiveName = userData?.username;
+
     const response = await axios.post(
-      `${API_BASE_URL}/api/executive-activities/stopBreak`,
+      `${API_BASE_URL}/api/executive-activities/stopBreak`, // Corrected here
       {
-        executiveId: currentUser.id,
-        executiveName: currentUser.username
+        ExecutiveId,
+        executiveName
         // No client-side timestamp - server will use its own time
       },
       { headers: getHeaders() }
@@ -115,14 +133,15 @@ export const recordStopBreak = async () => {
  */
 export const startCall = async (leadId) => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const response = await axios.post(
-      `${API_BASE_URL}/api/executive-activities/updateCallTime`,
+      `${API_BASE_URL}/api/executive-activities/updateCallTime`, // Corrected here
       {
-        executiveId: currentUser.id,
+        ExecutiveId: currentUser.id,
         executiveName: currentUser.username,
         leadId: leadId,
-        action: 'start'
+        action: 'start',
+        callDuration: 1,
         // Server will record the timestamp
       },
       { headers: getHeaders() }
@@ -141,14 +160,15 @@ export const startCall = async (leadId) => {
  */
 export const endCall = async (leadId) => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const response = await axios.post(
-      `${API_BASE_URL}/api/executive-activities/updateCallTime`,
+      `${API_BASE_URL}/api/executive-activities/updateCallTime`, // Corrected here
       {
-        executiveId: currentUser.id,
+        ExecutiveId: currentUser.id,
         executiveName: currentUser.username,
         leadId: leadId,
-        action: 'end'
+        action: 'end',
+        callDuration: 1
         // Server will calculate duration
       },
       { headers: getHeaders() }
@@ -160,17 +180,35 @@ export const endCall = async (leadId) => {
   }
 };
 
-
 export const getActivityStatus = async () => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userData = JSON.parse(localStorage.getItem("user") || '{}');
+   
     const response = await axios.get(
-      `${API_BASE_URL}/api/executive-activities/status/${currentUser.id}`,
+      `${API_BASE_URL}/api/executive-activities/status/${userData.id}`, // Corrected here
       { headers: getHeaders() }
     );
     return response.data;
   } catch (error) {
     console.error('Error getting activity status:', error);
     throw new Error(error.response?.data?.message || 'Failed to get activity status');
+  }
+};
+
+export const leadtrackVisit = async (executiveId) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/api/executive-activities/trackLeadVisit`, // Corrected here
+      { ExecutiveId: executiveId },          // Body data
+      { headers: getHeaders() }               // Headers
+    );
+
+    console.log('Lead visit tracked:', response.data);
+  } catch (error) {
+    if (error.response) {
+      console.error('API error:', error.response.data.message);
+    } else {
+      console.error('Network error:', error.message);
+    }
   }
 };

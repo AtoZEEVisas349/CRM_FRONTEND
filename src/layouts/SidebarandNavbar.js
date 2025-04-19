@@ -1,23 +1,36 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/sidebar.css";
+import { useLocation } from "react-router-dom";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { recordStopWork } from "../services/executiveService";
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
-import { FaPlay, FaClock, FaMoon, FaSun } from "react-icons/fa";
+import { FaPlay, FaClock, FaMoon, FaSun,FaPause } from "react-icons/fa";
+import { useExecutiveActivity } from "../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse, faUsers, faUserPlus, faFile, faReceipt, faGear, faList,
   faCircleXmark, faBars, faCircleQuestion, faBell, faCircleUser,
   faRobot, faRightFromBracket, faClock,faArrowLeft // ✅ Add here
 } from "@fortawesome/free-solid-svg-icons";
-
-
+import useWorkTimer from "../features/executive/useLoginTimer";
+import { useBreakTimer } from "../context/breakTimerContext";
 
 
 const SidebarandNavbar = () => {
+  const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading ,resetBreakTimer} = useBreakTimer();
+  const timer = useWorkTimer();
+
+ 
+    const toggle = async () => {
+      if (!isBreakActive) {
+        await startBreak();
+      } else {
+        await stopBreak();
+      }
+    };
   const [isOpen, setIsOpen] = useState(() => {
     return window.location.pathname.startsWith("/freshlead") ||
            window.location.pathname.startsWith("/follow-up") ||
@@ -33,12 +46,14 @@ const SidebarandNavbar = () => {
   const navigate = useNavigate();
   const popoverRef = useRef(null);
   const userIconRef = useRef(null);
-
+  const location = useLocation();
+  const historyStackRef = useRef([]);
   const toggleSidebar = () => setIsActive(!isActive);
-
+  const {handleStopWork}=useExecutiveActivity();
   const handleLogout = async () => {
     try {
       await logout();
+      await handleStopWork();
     } catch (error) {
       console.error("Logout failed:", error.message);
     }
@@ -145,10 +160,42 @@ const SidebarandNavbar = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
   
-
-  const handleBack =()=>{
-      navigate(-1)
-  }
+  useEffect(() => {
+    const currentPath = location.pathname;
+    if (!["/login", "/signup"].includes(currentPath)) {
+      let stack = JSON.parse(sessionStorage.getItem("navStack")) || [];
+      const lastPath = stack[stack.length - 1];
+  
+      if (lastPath !== currentPath) {
+        stack.push(currentPath);
+        sessionStorage.setItem("navStack", JSON.stringify(stack));
+      }
+  
+      historyStackRef.current = stack;
+    }
+  }, [location]);
+  
+  
+  const handleBack = () => {
+    let stack = JSON.parse(sessionStorage.getItem("navStack")) || [];
+  
+    // Remove the current path
+    stack.pop();
+  
+    while (stack.length > 0) {
+      const prev = stack.pop();
+      if (prev !== "/login" && prev !== "/signup") {
+        sessionStorage.setItem("navStack", JSON.stringify(stack));
+        navigate(prev);
+        return;
+      }
+    }
+  
+    // Fallback
+    navigate("/executive");
+  };
+  
+  
   return (
 <section className="sidebar_navbar" data-theme={theme}>
 <section className={`sidebar_container ${isActive ? "active" : ""}`}>
@@ -171,9 +218,9 @@ const SidebarandNavbar = () => {
 )}
 
             </li>
-            <li><Link to="#" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Task Management</Link></li>
-            <li><Link to="#" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
-            <li><Link to="#" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
+            <li><Link to="/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
+            <li><Link to="/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
+            <li><Link to="/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
             <li>
               
             </li>
@@ -192,40 +239,51 @@ const SidebarandNavbar = () => {
         <div className="menu_search">
           <button className="menu_toggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
           <div className="search_bar">
-          <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{fontSize:"22px",cursor:"pointer"}} />
+          <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{fontSize:"20px",cursor:"pointer",
+          }} />
             <input className="search-input-exec" placeholder="Search" />
             </div>
         </div>
 
         <div className="compact-timer">
           <div className="timer-item">
-            <button className="timer-btn-small" onClick={handleWorkToggle}><FaPlay /></button>
+            <button className="timer-btn-small"><FaPause /></button>
             <span className="timer-label-small">Work:</span>
-            <span className="timer-box-small">{workTime}</span>
+            <span className="timer-box-small">{timer}</span>
           </div>
 
           <div className="analog-clock">
           <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
-          <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
-          <div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+<div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
+<div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+
 
             <div className="center-dot"></div>
           </div>
 
           <div className="timer-item">
-            <button className="timer-btn-small" onClick={toggleBreak}><FaPlay /></button>
+            <button className="timer-btn-small" onClick={toggle}>
+            {isBreakActive ? <FaPause /> : <FaPlay />}
+            </button>
             <span className="timer-label-small">Break:</span>
-            <span className="timer-box-small">{breakTime}</span>
+            <span className="timer-box-small">{breakTimer}</span>
           </div>
-        </div>
+        </div>
 
         <div className="navbar_icons">
           <div className="navbar_divider"></div>
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
-          <FontAwesomeIcon className="navbar_icon" icon={faBell} />
-          <FontAwesomeIcon ref={userIconRef} className="navbar_icon" icon={faCircleUser} onClick={handleUserIconClick} />
+          <FontAwesomeIcon
+            className="navbar_icon"
+            icon={faBell}
+            style={{ cursor: "pointer" }}
+            title="Notifications"
+            tabIndex="0"
+            onClick={() => navigate("/notification")}
+          />
           <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
           <FontAwesomeIcon className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)} />
+          <FontAwesomeIcon ref={userIconRef} className="navbar_icon" icon={faCircleUser} onClick={handleUserIconClick} />
         </div>
 
         {showUserPopover && (

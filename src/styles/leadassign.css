@@ -9,7 +9,7 @@ body, html {
   padding: 0;
   width: 100%;
   overflow-x: hidden;
-  background-color: var(--bg-color) !important; /* Force override any other backgrounds */
+  /* background-color: var(--bg-color) !important;  */
 }
 
 

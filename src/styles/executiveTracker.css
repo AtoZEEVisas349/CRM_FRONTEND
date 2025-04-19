@@ -1,9 +1,13 @@
 /* executiveTracker.css with theme-based light/dark support */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 .activity-tracker-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
 }
 
 .tracker-widget {
@@ -11,7 +15,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px var(--shadow-light);
   width: 340px;
-  height: 85vh;
+  height: 88vh;
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -29,6 +33,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: 600;
+  font-family: Inter 'sans-serif';
 }
 
 .refresh-btn {
@@ -84,7 +89,11 @@
   font-weight: 500;
   color: var(--text-color);
 }
-
+.summary-text {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Inter 'sans-serif';
+}
 .time-value {
   font-family: monospace;
   font-size: 16px;
@@ -94,14 +103,17 @@
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
+  margin-top: 40px;
 }
 
 .tracker-btn {
   flex: 1;
   padding: 8px;
-  border: none;
-  border-radius: 4px;
-  background-color: var(--input-bg);
+  border:none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgb(68, 243, 167), black);
+  /* background-color:  rgb(94, 205, 157); */
+  color: white;
   color: var(--accent-color);
   font-weight: 500;
   cursor: pointer;
@@ -166,9 +178,11 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, rgb(68, 243, 167), black);
+  /* background-color:rgb(94, 205, 157); */
   display: flex;
   align-items: center;
+  color: white;
   justify-content: center;
 }
 
@@ -190,6 +204,7 @@
 }
 
 .status-badge {
+  
   margin-bottom: 16px;
   padding: 6px 10px;
   border-radius: 6px;
@@ -227,9 +242,9 @@
 
 .motivation-box {
   margin-top: 20px;
-  background-color: rgba(255, 215, 100, 0.2);
+  background-color: rgba(97, 197, 155, 0.2);
   padding: 12px;
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #33ae73;
   border-radius: 6px;
   font-size: 13px;
   color: var(--text-color);
@@ -237,5 +252,5 @@
 
 .motivation-box blockquote {
   margin: 0;
-  font-style: italic;
+  font-style: italic;
 }

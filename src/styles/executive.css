@@ -118,6 +118,7 @@ html, body {
 }
 
 /* ===== Report Card ===== */
+[data-theme="light"]
 .report-card {
   flex: 1;
   background: var(--card-bg);
@@ -129,8 +130,27 @@ html, body {
   position: relative;
   transition: transform 0.3s ease-in-out;
   box-shadow: 0 4px 12px var(--shadow-light);
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
-
+[data-theme="dark"]
+.report-card {
+  flex: 1;
+  background: linear-gradient(135deg, #1f1f2e, #2a2a3d); /* Dark gradient */
+  color: #f0f0f0; /* Light text for contrast */
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+}
+[data-theme="dark"]
+.report-card:hover {
+  background: linear-gradient(135deg, #5f0a87, #a4508b); /* Purple gradient on hover */
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(164, 80, 139, 0.4);
+}
 .report-cards-exec {
   display: flex;
   flex-direction: row;
@@ -145,22 +165,21 @@ html, body {
   }
 }
 
-.report-card {
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
 .report-card:hover {
   transform: scale(1.05);
   color: #fff;
 }
+[data-theme="light"]
 .report-card-0:hover {
-  background-color: #ee984d; /* Blue */
+  background-color: #9fcefa; /* Blue */
 }
+[data-theme="light"]
 .report-card-1:hover {
-  background-color: #6565f5; /* Green */
+  background-color: #a9fcfc; /* Green */
 }
+[data-theme="light"]
 .report-card-2:hover {
-  background-color: #dee740; /* Orange */
+  background-color: #eda1fc; /* Orange */
 }
 .card-icon {
   position: absolute;

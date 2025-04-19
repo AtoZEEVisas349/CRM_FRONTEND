@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import * as apiService from "../services/apiService";
 import * as upload from "../services/fileUpload";
+import { useCallback } from "react"; // Add this at the top
 import * as executiveService from "../services/executiveService"
 const ApiContext = createContext();
 
@@ -159,6 +160,53 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
+  // ✅ Notifications
+const [notifications, setNotifications] = useState([]);
+const [notificationsLoading, setNotificationsLoading] = useState(false);
+
+// ✅ Fetch notifications for current user
+const fetchNotifications = useCallback(async (userId) => {
+  if (!userId) {
+    console.warn("⚠️ User ID is required to fetch notifications");
+    return;
+  }
+
+  setNotificationsLoading(true);
+  try {
+    const data = await apiService.fetchNotificationsByUser(userId);
+    setNotifications(data || []);
+  } catch (error) {
+    console.error("❌ Error fetching notifications:", error);
+  } finally {
+    setNotificationsLoading(false);
+  }
+}, []);
+
+// ✅ Mark Notification as Read
+const markNotificationReadAPI = async (notificationId) => {
+  try {
+    await apiService.markNotificationAsRead(notificationId);
+    const updated = notifications.map((n) =>
+      n.id === notificationId ? { ...n, isRead: true } : n
+    );
+    setNotifications(updated);
+  } catch (error) {
+    console.error("❌ Failed to mark notification as read", error);
+  }
+};
+
+// ✅ Delete Notification
+const deleteNotificationAPI = async (notificationId) => {
+  try {
+    await apiService.deleteNotificationById(notificationId);
+    const filtered = notifications.filter((n) => n.id !== notificationId);
+    setNotifications(filtered);
+  } catch (error) {
+    console.error("❌ Failed to delete notification", error);
+  }
+};
+
+
   //getExecutiveActivity
   const [activityData, setActivityData] = useState({
     breakTime: 0,
@@ -190,8 +238,11 @@ export const ApiProvider = ({ children }) => {
     uploadFileAPI();
     fetchExecutives();
     getExecutiveActivity();
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (currentUser?.id) {
+      fetchNotifications(currentUser.id);
+    }
   }, []);
-
   const apiFunctions = {
     // Leads
     fetchLeadsAPI: apiService.fetchLeadsAPI,
@@ -219,7 +270,14 @@ export const ApiProvider = ({ children }) => {
         executiveInfo,
         executiveLoading,
         fetchExecutiveData,
-
+        
+        //notification
+        notifications,
+        notificationsLoading,
+        fetchNotifications,
+        markNotificationReadAPI,
+        deleteNotificationAPI,
+        
         // ✅ User state
         user,
         setUser,

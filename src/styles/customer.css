@@ -10,8 +10,8 @@
 
 /* Main Content */
 .customer-main-content {
-  margin-left: 270px;
-  width: calc(100% - 270px);
+  margin-left: 180px;
+  width: calc(100% - 100px);
   padding: 20px 40px;
   box-sizing: border-box;
   background-color: var(--bg-color);
