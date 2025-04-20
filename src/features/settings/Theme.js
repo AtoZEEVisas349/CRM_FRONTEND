@@ -1,43 +1,28 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { ThemeContext } from "../admin/ThemeContext";
 
 const Theme = () => {
-  const [theme, setTheme] = useState("light");
-
-  const handleThemeChange = (e) => {
-    setTheme(e.target.value);
-    document.body.setAttribute("data-theme", e.target.value); // simple theme switcher
-  };
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   return (
     <div className="theme-settings">
       <h2>Choose Your Theme</h2>
       <div className="theme-options">
-        <label>
-          <input
-            type="radio"
-            value="light"
-            checked={theme === "light"}
-            onChange={handleThemeChange}
-          />
-          <span>Light</span>
-          <div className="theme-preview">
-            <div className="theme-circle light-theme"></div>
-            <span>🌞</span>
-          </div>
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="dark"
-            checked={theme === "dark"}
-            onChange={handleThemeChange}
-          />
-          <span>Dark</span>
-          <div className="theme-preview">
-            <div className="theme-circle dark-theme"></div>
-            <span>🌙</span>
-          </div>
-        </label>
+        <button 
+          className="theme-toggle-icon" 
+          onClick={toggleTheme}
+          style={{
+            padding: "12px 24px",
+            fontSize: "18px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px"
+          }}
+        >
+          {theme === "light" ? <FaMoon /> : <FaSun />} 
+          {theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        </button>
       </div>
     </div>
   );

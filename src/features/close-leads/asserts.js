@@ -21,6 +21,12 @@ export const asserts = [
         amount: "$2000",
         customer: "Sharon",
       },
+      {
+        title: "100 licenses New",
+        paragraph: "Sint proident adipisicing",
+        amount: "$2000",
+        customer: "Sharon",
+      },
     ],
   },
   {
@@ -33,6 +39,13 @@ export const asserts = [
         amount: "$600",
         Next_Meeting: "Sep 30, 2022",
         customer: "Zachary",
+      },
+      {
+        title: "100 licenses Returning",
+        paragraph: "Sint proident adipisicing",
+        amount: "$2000",
+        Next_Meeting: "-",
+        customer: "Kroger",
       },
       {
         title: "100 licenses Returning",
@@ -69,6 +82,13 @@ export const asserts = [
         customer: "Kroger",
       },
       {
+        title: "100 licenses Returning",
+        paragraph: "Sint proident adipisicing",
+        amount: "$2000",
+        Next_Meeting: "-",
+        customer: "Kroger",
+      },
+      {
         title: "100 licenses New",
         paragraph: "Sint proident adipisicing",
         amount: "$2000",
@@ -87,6 +107,13 @@ export const asserts = [
         amount: "$600",
         Next_Meeting: "Sep 30, 2022",
         customer: "Zachary",
+      },
+      {
+        title: "100 licenses Returning",
+        paragraph: "Sint proident adipisicing",
+        amount: "$2000",
+        Next_Meeting: "-",
+        customer: "Kroger",
       },
       {
         title: "100 licenses Returning",

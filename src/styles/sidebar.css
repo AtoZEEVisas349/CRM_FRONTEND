@@ -191,11 +191,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+[data-theme="light"]
 .navbar_icon:hover {
-  color: var(--accent-color);
   text-shadow: 0 0 5px var(--accent-color);
-  background-color: var(--accent-color);
+  background-color: #5767fa;
   color: #fff;
 }
 
@@ -205,7 +204,11 @@
   gap: 6px;
   cursor: pointer;
 }
-
+.navbar_icon:hover {
+  text-shadow: 0 0 5px var(--accent-color);
+  background-color: #5767fa;
+  color: #fff;
+}
 .navbar_user_text {
   font-size: 14px;
   font-weight: 600;

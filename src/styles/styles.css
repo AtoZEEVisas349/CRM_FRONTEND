@@ -44,16 +44,13 @@ body {
     right: -10%;
     transform: translateY(-50%);
 }
-
-
-/* Main Container */
-.container {
+/* .container {
     width: 900px;
 min-height:500px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 
 /* Form Wrapper */
 .form-container {

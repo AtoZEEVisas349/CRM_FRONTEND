@@ -221,16 +221,8 @@ const SidebarandNavbar = () => {
             <li><Link to="/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
             <li><Link to="/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
             <li><Link to="/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
-            <li>
-              
-            </li>
           </ul>
         </nav>
-        <div className="theme_toggle_wrapper">
-              <button className="theme-toggle-icon" onClick={toggleTheme}>
-                  {theme === "light" ? <FaMoon /> : <FaSun />} {theme === "light" ? "Dark" : "Light"}
-                </button>
-              </div>
       </section>
 
       

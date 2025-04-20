@@ -9,7 +9,6 @@ const CloseLeadRoutes = () => {
     <div className="close-leads-container">
       <SideandNavbar/>
       <div className="close-leads-main">
-      <NavSearch />
       <Leads />
       </div>
     </div>

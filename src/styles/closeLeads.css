@@ -1,29 +1,16 @@
-/* Final improved closeleads.css */
-html, body {
+.close-leads-page {
+  padding:30px 30px 30px 300px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   width: 100%;
-  overflow-x: hidden;
-}
-
-* {
   box-sizing: border-box;
 }
-
-
-.close-leads-page {
-  margin-top: 0; 
-  align-items: center;
-  padding: 100px 50px 50px 250px;
-  background-color: var(--bg-color);
-  min-height: 100vh;
-  color: var(--text-color);
-  width: 105%;
-  
-}
-.close-leads-container{
-  margin-top: 30px;
+html, body, #root {
+  height: 100%;
+  overflow-y: auto;
 }
 .close-leads-main{
-  margin-top: 20%;
+  margin-top: 40px;
 }
 .c-heading2 {
   display: flex;
@@ -102,7 +89,7 @@ padding-right: 20%;
   transition: all 0.2s ease;
   color: var(--text-color);
   flex: 1 1 calc(33.33% - 13.5px);
-  min-width: 320px;
+  min-width: 420px;
   max-width: 100%;
   display: flex;
   flex-direction: column;
@@ -168,23 +155,12 @@ select:hover {
   align-items: flex-start;
   flex-wrap: wrap;
   margin-bottom: 20px;
-  margin-top: 100px;       /* ⬅ Slightly increased for breathing space */
-  z-index: 1;
   background-color: var(--bg-color);
-  padding: 60px 20px 20px 20px; /* ⬅ top padding here also reduced to avoid double spacing */
-
+  padding: 20px;
 }
-
-
 .top_controls {
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.top_bar_btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .add_btn {
