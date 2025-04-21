@@ -1,126 +1,138 @@
 /* Wrapper layout around everything */
 .notification-page-wrapper {
-    display: flex;
-    flex-direction: row;
-    background-color: #f5f7fa;
-  }
-  /* Sidebar is handled inside SidebarandNavbar */
-  .notification-sidebar {
-    width: 250px;
-  }
-  /* This is the full area beside sidebar */
-  .notification-content-area {
-    flex: 1;
-    max-height: 100vh; /* Make it fit the viewport */
-    width: 2000px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    overflow-y: auto;
-    margin-left: 80px;
-  }
-  
-  /* Actual card container inside the centered area */
-  .notification-container {
-    width: 1120px;
-    min-height: 580px; /* Instead of fixed height */
-    background-color: white;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    overflow-y: auto;
-    margin-left: 170px;
-    margin-top: 60px;
-  }  
-  /* Notification content styles */
-  .notification-container h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    text-align: center;
-    color: #333;
-  }
-  
-  .notification-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .notification-card {
-    background-color: #e7e7e7;
-    border-left: 5px solid #4a90e2;
-    padding: 15px;
-    border-radius: 8px;
-    transition: box-shadow 0.2s ease-in-out;
-  }
-  
-  .notification-card:hover {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  }
-  
-  .notification-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-  
-  .notification-header strong {
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .notification-time {
-    font-size: 12px;
-    color: #999;
-  }
-  
-  .notification-message {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.4;
-  }
-  
-  .empty-msg {
-    text-align: center;
-    color: #888;
-    margin-top: 20px;
-    font-size: 16px;
-  }
-  .notification-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  flex-direction: row;
+  background-color: #f5f7fa;
+  min-height: 200px;
+}
+/* Sidebar is handled inside SidebarandNavbar */
+.notification-sidebar {
+  width: 250px;
+}
+/* This is the full area beside sidebar */
+.notification-content-area {
+  flex: 1;
+  max-height: 100vh; /* Make it fit the viewport */
+  width: 2000px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  margin-left: 80px;
+}
+
+/* Actual card container inside the centered area */
+.notification-container {
+  width: 1120px;
+  min-height: 680px; /* Instead of fixed height */
+  background-color: white;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  margin-left: 170px;
+  margin-top: 60px;
+}  
+/* Notification content styles */
+.notification-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+  color: #333;
+}
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+}
+[data-theme="dark"] .notification-content-area{
+  background-color: var(--bg-color);
+}
+[data-theme="dark"] .notification-container
+{
+     background-color: #212834;
+}
+[data-theme="dark"] .notification-container h2{
+  color: #ffff;
+}
+.notification-card {
+  background-color: #e7e7e7;
+  border-left: 5px solid #4a90e2;
+  padding: 15px;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease-in-out;
+  margin-bottom: 15px;
+}
+
+.notification-card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.notification-header strong {
+  font-size: 16px;
+  color: #333;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.notification-message {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.empty-msg {
+  text-align: center;
+  color: #888;
+  margin-top: 20px;
+  font-size: 16px;
+}
+.notification-actions {
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+margin-top: 10px;
 }
 
 .mark-read-btn,
 .delete-btn {
-  padding: 5px 10px;
-  font-size: 0.85rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s ease;
+padding: 5px 10px;
+font-size: 0.85rem;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+transition: background 0.2s ease;
 }
 
 .mark-read-btn {
-  background-color: #4caf50;
-  color: white;
+background-color: #4caf50;
+color: white;
 }
 
 .mark-read-btn:hover {
-  background-color: #43a047;
+background-color: #43a047;
 }
 
 .delete-btn {
-  background-color: #f44336;
-  color: white;
+background-color: #f44336;
+color: white;
 }
 
 .delete-btn:hover {
-  background-color: #e53935;
+background-color: #e53935;
 }
 
 /* Optional: style for read notifications */
 .notification-card.read {
-  opacity: 0.6;
+ opacity: 0.6;
 }
