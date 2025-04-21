@@ -24,6 +24,7 @@ import MyProfile from "./features/settings/MyProfile";
 import Theme from "./features/settings/Theme";
 import ChangePassword from "./features/settings/ChangePassword";
 import ScheduleRoutes from "./routes/ScheduleRoutes";
+import AdminPanelRoutes from "./routes/MonitoringRoutes";
 
 
 const App = () => {
@@ -68,6 +69,7 @@ const App = () => {
          <Route path="theme" element={<PrivateRoute><Theme /></PrivateRoute>} />
           <Route path="change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
         </Route>
+        <Route path="/monitoring/*" element={<PrivateRoute><AdminPanelRoutes /></PrivateRoute>} />
         <Route path="/schedule" element={<PrivateRoute><ScheduleRoutes/></PrivateRoute>} />
         <Route path="/invoice" element={<PrivateRoute><InvoiceRoutes/></PrivateRoute>} />
         <Route path="/notification" element={<PrivateRoute><NotificationRoutes/></PrivateRoute>} />

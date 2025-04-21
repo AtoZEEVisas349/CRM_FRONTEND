@@ -1,8 +1,7 @@
-import React, { useEffect, useState ,useContext} from "react";
-import { useApi } from "../../context/ApiContext"; // ✅ 
-// Import useApi hook
+import React, { useEffect, useState, useContext } from "react";
+import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
-
+import SidebarToggle from "../admin/SidebarToggle";
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
@@ -10,11 +9,26 @@ const TaskManagement = () => {
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
   const { theme } = useContext(ThemeContext);
+  const { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } = useApi();
 
+  // ✅ Sidebar State Tracking
+  const [sidebarState, setSidebarState] = useState(
+    localStorage.getItem("adminSidebarExpanded") !== "false" ? "expanded" : "collapsed"
+  );
 
-  const { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } = useApi(); // ✅ Destructure API functions from context
+  useEffect(() => {
+    const updateSidebarState = () => {
+      const isExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
+      setSidebarState(isExpanded ? "expanded" : "collapsed");
+    };
 
-  // ✅ Fetch Leads
+    window.addEventListener("sidebarToggle", updateSidebarState);
+    updateSidebarState();
+
+    return () => window.removeEventListener("sidebarToggle", updateSidebarState);
+  }, []);
+
+  // ✅ Data Fetch
   const fetchLeads = async () => {
     try {
       const data = await fetchLeadsAPI();
@@ -24,7 +38,6 @@ const TaskManagement = () => {
     }
   };
 
-  // ✅ Fetch Executives
   const fetchExecutives = async () => {
     try {
       const data = await fetchExecutivesAPI();
@@ -39,104 +52,87 @@ const TaskManagement = () => {
     fetchExecutives();
   }, []);
 
+  // ✅ Actions
   const handleExecutiveChange = (event) => {
     setSelectedExecutive(event.target.value);
   };
 
   const handleLeadSelection = (leadId) => {
-    setSelectedLeads((prevSelectedLeads) =>
-      prevSelectedLeads.includes(String(leadId))
-        ? prevSelectedLeads.filter((id) => id !== String(leadId))
-        : [...prevSelectedLeads, String(leadId)]
+    setSelectedLeads((prev) =>
+      prev.includes(String(leadId))
+        ? prev.filter((id) => id !== String(leadId))
+        : [...prev, String(leadId)]
     );
   };
 
   const toggleSelectAll = () => {
-    if (selectedLeads.length === leads.length) {
-      setSelectedLeads([]);
-    } else {
-      setSelectedLeads(leads.map((lead) => String(lead.id)));
-    }
+    setSelectedLeads((prev) =>
+      prev.length === leads.length ? [] : leads.map((lead) => String(lead.id))
+    );
   };
 
   const assignLeads = async () => {
-    if (!selectedExecutive) {
-      alert("Please select an executive before assigning leads.");
-      return;
-    }
+    if (!selectedExecutive) return alert("Select an executive.");
+    if (!selectedLeads.length) return alert("Select at least one lead.");
 
-    if (selectedLeads.length === 0) {
-      alert("Please select at least one lead to assign.");
-      return;
-    }
-
-    const executive = executives.find((exec) => String(exec.id) === String(selectedExecutive));
-    if (!executive) {
-      alert("Invalid executive selected.");
-      return;
-    }
+    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
+    if (!executive) return alert("Invalid executive selected.");
 
     try {
       await Promise.all(
-        selectedLeads.map(async (leadId) => {
-          await assignLeadAPI(leadId, executive.id, executive.username);
-        })
+        selectedLeads.map((leadId) =>
+          assignLeadAPI(leadId, executive.id, executive.username)
+        )
       );
-
-      alert("Leads assigned successfully!");
+      alert("Leads assigned!");
       fetchLeads();
       setSelectedLeads([]);
-    } catch (error) {
-      console.error("❌ Error assigning leads:", error);
+    } catch (err) {
+      console.error("Assign error:", err);
       alert("Failed to assign leads.");
     }
   };
 
   return (
-    <div className="leads-dashboard">
-      <div className="Logo">Lead Assign</div>
-      <div className="taskmanage-header">
-        <div className="header-actions">
-          <select value={selectedExecutive} onChange={handleExecutiveChange}>
-            <option value="">-- Select Executive --</option>
-            {executives.map((exec) => (
-              <option key={exec.id} value={String(exec.id)}>
-                {exec.username}
-              </option>
-            ))}
-          </select>
+    <>
+      <SidebarToggle />
+      <div className={`leads-dashboard ${sidebarState}`}>
+        <div className="Logo">Lead Assign</div>
+        <div className="taskmanage-header">
+          <div className="header-actions">
+            <select value={selectedExecutive} onChange={handleExecutiveChange}>
+              <option value="">-- Select Executive --</option>
+              {executives.map((exec) => (
+                <option key={exec.id} value={String(exec.id)}>
+                  {exec.username}
+                </option>
+              ))}
+            </select>
 
-          <select>
-            <option>Fresh</option>
-          </select>
-          <select>
-            <option>All</option>
-          </select>
-          <select>
-            <option>Default Sorting</option>
-          </select>
-          <div className="header-sort-filter">
-            <button className="Selection-btn" onClick={toggleSelectAll}>
-              Select/Unselect All Leads
-            </button>
-            <button className="assign-btn" onClick={assignLeads}>
-              Assign
-            </button>
-            <button className="reset" onClick={() => setSelectedLeads([])}>
-              Reset
-            </button>
+            <select><option>Fresh</option></select>
+            <select><option>All</option></select>
+            <select><option>Default Sorting</option></select>
+            <div className="header-sort-filter">
+              <button className="Selection-btn" onClick={toggleSelectAll}>
+                Select/Unselect All Leads
+              </button>
+              <button className="assign-btn" onClick={assignLeads}>
+                Assign
+              </button>
+              <button className="reset" onClick={() => setSelectedLeads([])}>
+                Reset
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="main-content">
-        <div className="leads-table">
-          <div className="leads-header">
-            <span>All customers ({leads.length})</span>
-            <span className="source-header">Source</span>
-            <span className="assign-header">Assigned To</span>
-          </div>
-          {leads.length > 0 ? (
-            leads.map((lead) => (
+        <div className="main-content">
+          <div className="leads-table">
+            <div className="leads-header">
+              <span>All customers ({leads.length})</span>
+              <span className="source-header">Source</span>
+              <span className="assign-header">Assigned To</span>
+            </div>
+            {leads.map((lead) => (
               <div key={lead.id} className="lead-row">
                 <div className="lead-details">
                   <input
@@ -168,13 +164,11 @@ const TaskManagement = () => {
                   </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <p>No leads available</p>
-          )}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

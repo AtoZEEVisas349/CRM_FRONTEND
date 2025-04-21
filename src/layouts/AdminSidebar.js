@@ -11,7 +11,8 @@ import {
   faFileInvoiceDollar,
   faCircleQuestion,
   faSliders,
-  faChartPie
+  faChartPie,
+  faUserGear
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminSidebar = () => {
@@ -65,6 +66,13 @@ const AdminSidebar = () => {
                 <span className="sidebar-label">Task Management</span>
               </Link>
             </li>
+            <li>
+              <Link to="/monitoring" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faUserGear} />
+                <span className="sidebar-label">Monitoring</span>
+              </Link>
+            </li>
+
           </ul>
 
           <p className="sidebar-section sidebar-label">Reports</p>

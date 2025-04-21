@@ -52,13 +52,14 @@ const SidebarandNavbar = () => {
   const {handleStopWork}=useExecutiveActivity();
   const handleLogout = async () => {
     try {
+      await stopBreak();
       await logout();
       await handleStopWork();
+      resetBreakTimer();
     } catch (error) {
       console.error("Logout failed:", error.message);
-    }
-  };
-
+    }
+  };
   const [workTime, setWorkTime] = useState("00:00");
   const [breakTime, setBreakTime] = useState("00:00");
   const [isWorkRunning, setIsWorkRunning] = useState(false);
