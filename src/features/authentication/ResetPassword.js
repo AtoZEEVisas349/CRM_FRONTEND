@@ -1,8 +1,6 @@
 import React, { useState ,useEffect} from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../../styles/styles.css";
+import "../../styles/signup.css";
 import { useAuth } from "../../context/AuthContext";
 
 const ResetPassword = () => {

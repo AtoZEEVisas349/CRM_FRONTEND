@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import "../../styles/styles.css";
+import "../../styles/signup.css";
 import { FaLock } from "react-icons/fa"; // Importing a lock icon
 
 

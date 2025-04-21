@@ -46,8 +46,12 @@ const Login = () => {
   return (
  
      <div className="container">
-           <ToastContainer position="top-right" autoClose={3000} />
-        <div className="left-half">  
+<ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={true}
+        closeButton
+      />        <div className="left-half">  
         <div className="image-wrapper">
       <img src={slides[currentIndex].img}
     alt="Slide"

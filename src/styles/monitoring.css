@@ -36,8 +36,8 @@
       
   .exec-box {
     background-color: #f0f0f0;
-    height: 300px; /* SAME as your current */
-    min-width: 350px; /* SAME as your current */
+    height: 200px; /* SAME as your current */
+    min-width: 300px; /* SAME as your current */
     display: flex;
     align-items: center;
     justify-content: center;

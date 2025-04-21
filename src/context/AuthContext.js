@@ -30,8 +30,9 @@ export const AuthProvider = ({ children }) => {
   // Login
   const login = async (email, password) => {
     if (!email || !password) {
-      toast.error("All fields are required.");
-      return;
+      toast.error(<div className="textToast"> All fields are required</div>,{
+        className: 'custom-toast-error',
+      });      return;
     }
   
     try {
@@ -44,8 +45,15 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("executiveId", user.id);
   
       setUser(user);
-      toast.success("Login successful!");
-      const alreadyStarted = localStorage.getItem("workStartTime");
+      toast.success(
+        <div className="toast-content">
+          <div className="textToast">Login Successful</div>
+        </div>,
+        {
+          className: 'custom-toast',
+          bodyClassName: 'custom-toast-body', 
+      }
+      );      const alreadyStarted = localStorage.getItem("workStartTime");
       if (!alreadyStarted) {
         recordStartWork()
           .then((res) => {
@@ -64,11 +72,13 @@ export const AuthProvider = ({ children }) => {
         else if (role === "Executive") navigate("/executive");
         else if (role === "TL") navigate("/user");
        
-      }, 5000); // 5000ms = 5 seconds
+      }, 2000); // 5000ms = 5 seconds
   
     } catch (err) {
-      toast.error(err.message || "Login failed");
-    } finally {
+      toast.error(<div className="textToast">{err.message || "Login Failed"}</div>,{
+        className: 'custom-toast-error',
+      });
+     }finally {
       setLoading(false);
     }
   };
@@ -77,20 +87,34 @@ export const AuthProvider = ({ children }) => {
 //signup
 const signup = async (username, email, password, role) => {
   if (!username || !email || !password || !role) {
-    toast.error("All fields are required!");
+    toast.error(<div className="textToast">All fields are required!</div>, {
+      className: 'custom-toast-error',
+      bodyClassName: 'custom-toast-body-error',
+    });
     return;
   }
 
   if (password.length < 6) {
-    toast.error("Password must be at least 6 characters long.");
-    return;
-  }
+    toast.error(<div className="textToast">Password must be at least 6 characters long.</div>, {
+      className: 'custom-toast-error',
+      bodyClassName: 'custom-toast-body-error',
+    });
+    
+    return;
+  }
 
   try {
     setLoading(true);
     const data = await authService.signupUser(username, email, password, role);
-    toast.success("Signup successful! Redirecting...");
-    localStorage.setItem("token", data.token);
+    toast.success(
+      <div className="toast-content">
+        <div className="textToast">Signup successful! Redirecting...</div>
+      </div>,
+      {
+        className: 'custom-toast',
+        bodyClassName: 'custom-toast-body',
+    }
+    );    localStorage.setItem("token", data.token);
     localStorage.setItem("userRole", data.user.role);
     localStorage.setItem(
       "currentUser",
@@ -109,11 +133,15 @@ const signup = async (username, email, password, role) => {
           ? "/login"
           : "/user";
       navigate(redirectPath);
-    }, 5000);
+    }, 2000);
   } catch (error) {
     console.error("Signup error:", error);
-    toast.error(error.message || "Signup failed");
-  } finally {
+   toast.error(<div className="textToast">{error.message || "Signup failed"}</div>,{
+        className: 'custom-toast-error',
+          bodyClassName: 'custom-toast-body-error',
+      }
+    );
+  } finally {
     setLoading(false);
   }
 };

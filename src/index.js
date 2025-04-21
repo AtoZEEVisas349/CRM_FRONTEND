@@ -10,14 +10,14 @@ import {BreakTimerProvider } from './context/breakTimerContext'; // ✅ import y
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <AuthProvider>
-      <ApiProvider>
-        <ExecutiveActivityProvider>
-        <BreakTimerProvider> {/* ✅ wrap App with ExecutiveActivityProvider */}
-          <App />
-          </BreakTimerProvider>
-        </ExecutiveActivityProvider>
-      </ApiProvider>
-    </AuthProvider>
-  </BrowserRouter>
+  <AuthProvider>
+    <ApiProvider>
+      <ExecutiveActivityProvider>
+        <BreakTimerProvider>
+            <App />
+        </BreakTimerProvider>
+      </ExecutiveActivityProvider>
+    </ApiProvider>
+  </AuthProvider>
+</BrowserRouter>
 );
