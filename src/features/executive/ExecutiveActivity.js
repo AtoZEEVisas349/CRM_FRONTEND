@@ -152,13 +152,6 @@ const ExecutiveActivity = () => {
       <div className="tracker-widget">
         <div className="tracker-header">
           <h3>Activity Tracker</h3>
-          <button
-            className="refresh-btn"
-            onClick={handleManualRefresh}
-            disabled={loading}
-          >
-            <FontAwesomeIcon icon={faSync} spin={loading} />
-          </button>
         </div>
 
         <div className="tracker-content">
@@ -169,7 +162,7 @@ const ExecutiveActivity = () => {
               </span>
             </div>
             <div className="exec-details">
-              <div className="exec-name">
+              <div className="execu-name">
                 <strong>{executiveInfo?.username || "Unknown User"}</strong>
               </div>
               <div className="exec-id">

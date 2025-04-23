@@ -1,22 +1,23 @@
 .exec-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    max-width: 80%; /* full width */
-    margin: 50px 0; /* remove auto centering */
-    padding: 0; /* remove horizontal padding */
-    box-sizing: border-box;
-    padding-left: 150px;
-  }
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Default: 3 per row */
+  gap: 40px;
+  padding: 0 40px;
+  margin: 50px auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
   
   .exec-item {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-  
+  [data-theme="dark"] .exec-name{
+    color: #f0f0f0;
+  }
   .exec-name {
-    color: white;
+    color: rgb(41, 54, 70);
     padding: 8px 16px;
     border-radius: 20px;
     font-weight: bold;
@@ -36,8 +37,8 @@
       
   .exec-box {
     background-color: #f0f0f0;
-    height: 200px; /* SAME as your current */
-    min-width: 300px; /* SAME as your current */
+    height: 300px; /* SAME as your current */
+    min-width: 350px; /* SAME as your current */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,3 +101,144 @@
     color: white;
     font-size: 14px;
   }
+
+ /* Default padding for content */
+.exec-grid {
+  transition: padding-left 0.3s ease;
+}
+
+/* When sidebar is expanded */
+body.sidebar-expanded .exec-grid {
+  padding-left: 300px; /* or whatever your sidebar width is */
+}
+
+/* When sidebar is collapsed */
+body.sidebar-collapsed .exec-grid {
+  padding-left: 100px; /* narrower content shift */
+}
+
+  
+/* TOGGLE BUTTONS */
+.media-toggle-attached {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.toggle-btn {
+  background: black;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+.toggle-btn svg {
+  color: white;
+  font-size: 14px;
+}
+
+/* === RESPONSIVE BREAKPOINTS === */
+
+/* Tablet (768px to 1024px) */
+@media screen and (max-width: 1024px) {
+  .exec-grid {
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 30px;
+  }
+
+  .exec-box {
+    height: 260px;
+  }
+
+  .exe-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+}
+
+/* Small tablet / Mobile (below 768px) */
+@media screen and (max-width: 768px) {
+  .exec-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+
+  .exec-name {
+    font-size: 16px;
+    width: auto;
+  }
+
+  .exec-box {
+    height: 250px;
+  }
+
+  .exe-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .toggle-btn {
+    padding: 6px;
+  }
+}
+
+
+/* Desktop & Large Laptop (1280px and above) */
+@media screen and (min-width: 1280px) {
+  .exec-grid {
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 40px;
+    padding: 0 60px;
+  }
+
+  .exec-box {
+    height: 320px;
+  }
+
+  .exe-avatar {
+    width: 90px;
+    height: 90px;
+    font-size: 36px;
+  }
+
+  .exec-name {
+    font-size: 20px;
+    width: 220px;
+  }
+}
+
+/* Extra Large Desktops (1600px and above) */
+@media screen and (min-width: 1600px) {
+  .exec-grid {
+    grid-template-columns: repeat(5, 1fr); 
+    padding: 0 80px;
+  }
+
+  .exec-box {
+    height: 350px;
+  }
+
+  .exe-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+  }
+
+  .exec-name {
+    font-size: 22px;
+    width: 240px;
+  }
+}

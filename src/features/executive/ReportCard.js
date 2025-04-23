@@ -1,23 +1,30 @@
 import React from "react";
 import { FaUserPlus, FaClipboardCheck, FaUsers } from "react-icons/fa";
+import { useApi } from "../../context/ApiContext";
 
 const ReportCard = () => {
+  const {
+    freshLeadsCount,
+    followUpCount,
+    convertedClientsCount,
+  } = useApi();
+
   const cards = [
     {
       title: "Fresh Leads",
-      value: "348,261",
+      value: freshLeadsCount.toLocaleString(),
       change: "+3.85%",
       icon: <FaUserPlus />,
     },
     {
       title: "Follow-ups",
-      value: "15,708.98",
+      value: followUpCount.toLocaleString(),
       change: "+6.41%",
       icon: <FaClipboardCheck />,
     },
     {
       title: "Converted Clients",
-      value: "7.415.644",
+      value: convertedClientsCount.toLocaleString(),
       change: "-5.38%",
       icon: <FaUsers />,
     },
@@ -31,12 +38,6 @@ const ReportCard = () => {
           <div className="card-details">
             <h4>{card.title}</h4>
             <p className="card-value1">{card.value}</p>
-            {/* <p
-              className={`card-change ${card.change.includes("-") ? "negative" : "positive"
-                }`}
-            >
-              {card.change} Compared to last month
-            </p> */}
           </div>
         </div>
       ))}

@@ -177,5 +177,63 @@ export const fetchLeadSectionVisits = async (executiveId) => {
     throw error;
   }
 };
+// ✅ Fetch fresh leads count for the executive
+export const fetchFreshLeadsCount = async () => {
+  try {
+    const response = await apiService.get("/executive-dashboard");
+    return response.data.data.freshLeads;
+  } catch (error) {
+    console.error("❌ Error fetching fresh leads count:", error);
+    throw error;
+  }
+};
+
+// ✅ Fetch follow-up count for the executive
+export const fetchFollowUpCount = async () => {
+  try {
+    const response = await apiService.get("/executive-dashboard/followupstats");
+    return response.data.data.followUps;
+  } catch (error) {
+    console.error("❌ Error fetching follow-up count:", error);
+    throw error;
+  }
+};
+
+// ✅ Fetch converted clients count for the executive
+export const fetchConvertedClientsCount = async () => {
+  try {
+    const response = await apiService.get("/executive-dashboard/converted");
+    return response.data.data.convertedClients;
+  } catch (error) {
+    console.error("❌ Error fetching converted clients count:", error);
+    throw error;
+  }
+};
+// ✅ Create a new lead
+export const createLeadAPI = async (leadData) => {
+  try {
+    const response = await apiService.post("/leads", leadData);  // Ensure the correct endpoint '/leads'
+    console.log("📡 Lead created successfully:", response.data);
+
+    return response.data;  // Return the created lead data
+  } catch (error) {
+    console.error("❌ Error creating lead:", error.response?.data || error.message);  // Better error logging
+    throw error;  // Re-throw the error to be handled by the calling function
+  }
+};
+
+// ✅ Create a new fresh lead
+export const createFreshLead = async (leadData) => {
+  try {
+    const response = await apiService.post("/freshleads", leadData);
+    console.log("📡 Fresh lead created:", response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating fresh lead:", error.response?.data || error.message); // ⬅️ even better error log
+    throw error;
+  }
+};
+
 
 export default apiService;

@@ -9,12 +9,35 @@ const TaskManagement = () => {
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
   const { theme } = useContext(ThemeContext);
-  const { fetchLeadsAPI, fetchExecutivesAPI, assignLeadAPI } = useApi();
+  const {
+    fetchLeadsAPI,
+    fetchExecutivesAPI,
+    assignLeadAPI,
+    createFreshLeadAPI,
+    createLeadAPI, // Import createLeadAPI here
+  } = useApi();
 
-  // ✅ Sidebar State Tracking
   const [sidebarState, setSidebarState] = useState(
     localStorage.getItem("adminSidebarExpanded") !== "false" ? "expanded" : "collapsed"
   );
+
+  // Pagination
+  const leadsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(leads.length / leadsPerPage);
+
+  const paginatedLeads = leads.slice(
+    (currentPage - 1) * leadsPerPage,
+    currentPage * leadsPerPage
+  );
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
   useEffect(() => {
     const updateSidebarState = () => {
@@ -28,7 +51,6 @@ const TaskManagement = () => {
     return () => window.removeEventListener("sidebarToggle", updateSidebarState);
   }, []);
 
-  // ✅ Data Fetch
   const fetchLeads = async () => {
     try {
       const data = await fetchLeadsAPI();
@@ -52,7 +74,6 @@ const TaskManagement = () => {
     fetchExecutives();
   }, []);
 
-  // ✅ Actions
   const handleExecutiveChange = (event) => {
     setSelectedExecutive(event.target.value);
   };
@@ -74,24 +95,75 @@ const TaskManagement = () => {
   const assignLeads = async () => {
     if (!selectedExecutive) return alert("Select an executive.");
     if (!selectedLeads.length) return alert("Select at least one lead.");
-
+  
     const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
     if (!executive) return alert("Invalid executive selected.");
-
+  
     try {
       await Promise.all(
-        selectedLeads.map((leadId) =>
-          assignLeadAPI(leadId, executive.id, executive.username)
-        )
+        selectedLeads.map(async (leadId) => {
+          const lead = leads.find((l) => String(l.id) === leadId);
+          if (!lead) return;
+  
+          // ✅ Check for clientLeadId
+          if (!lead.clientLeadId) {
+            console.warn("❌ Missing clientLeadId for lead:", lead.name);
+            return;
+          }
+  
+          if (!executive.username) {
+            console.warn("❌ Missing executive username.");
+            return;
+          }
+  
+          const leadPayload = {
+            name: lead.name,
+            email: lead.email || "defaultEmail@example.com",
+            phone: String(lead.phone),
+            source: lead.source,
+            clientLeadId: Number(lead.id),
+            assignedToExecutive: executive.username,
+          };
+  
+          console.log("✅ Lead Payload Ready:", leadPayload);
+  
+          try {
+            const createdLead = await createLeadAPI(leadPayload);
+            console.log("✅ Created lead:", createdLead);
+  
+            await assignLeadAPI(leadId, executive.id, executive.username);
+  
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+  
+            const freshLeadPayload = {
+              leadId: createdLead.id,
+              name: createdLead.name,
+              email: createdLead.email,
+              phone: String(createdLead.phone),
+              assignedTo: executive.username,
+              assignedToId: executive.id,
+              assignDate: new Date().toISOString(),
+            };
+  
+            console.log("📤 Sending to createFreshLeadAPI:", freshLeadPayload);
+  
+            try {
+              const result = await createFreshLeadAPI(freshLeadPayload);
+              console.log("✅ Fresh lead created:", result);
+            } catch (err) {
+              console.error("❌ Error creating fresh lead:", err);
+            }
+          } catch (err) {
+            console.error("❌ Error creating lead via createLeadAPI:", err);
+          }
+        })
       );
-      alert("Leads assigned!");
-      fetchLeads();
-      setSelectedLeads([]);
     } catch (err) {
-      console.error("Assign error:", err);
-      alert("Failed to assign leads.");
+      console.error("❌ Error during lead assignment process:", err);
     }
   };
+  
+  
 
   return (
     <>
@@ -132,7 +204,7 @@ const TaskManagement = () => {
               <span className="source-header">Source</span>
               <span className="assign-header">Assigned To</span>
             </div>
-            {leads.map((lead) => (
+            {paginatedLeads.map((lead) => (
               <div key={lead.id} className="lead-row">
                 <div className="lead-details">
                   <input
@@ -165,6 +237,17 @@ const TaskManagement = () => {
                 </div>
               </div>
             ))}
+
+            {/* Pagination Controls */}
+            <div className="pagination-controls">
+              <button onClick={handlePrev} disabled={currentPage === 1}>
+                Prev
+              </button>
+              <span className="page-indicator">Page {currentPage} of {totalPages}</span>
+              <button onClick={handleNext} disabled={currentPage === totalPages}>
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

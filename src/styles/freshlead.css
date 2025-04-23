@@ -10,15 +10,20 @@
     background-color: var(--bg-color);
     color: var(--text-color);
   }
-  .fresh-leads-table thead{
-    background-color: #ccc;
+  .fresh-leads-table thead {
+    background-color: #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
   }
-  [data-theme="dark"] .fresh-leads-table thead{
-    background-color: #111213;
+  
+  [data-theme="dark"] .fresh-leads-table thead {
+    background-color: #1f2937;
   }
   .lead-assign-container {
     display: flex;
     height: 100vh;
+    overflow: hidden;
     background-color: var(--bg-color);
   }
   
@@ -29,13 +34,15 @@
   .lead-content {
     flex-grow: 1;
     width: calc(100% - 250px);
-    overflow: hidden;
+    height: 100%;
+    overflow: auto; /* allows scroll instead of overflow */
     padding: 20px;
     display: flex;
     flex-direction: column;
     background-color: var(--bg-color);
     color: var(--text-color);
   }
+  
   
   .fresh-leads-table-container {
     flex-grow: 1;
@@ -45,17 +52,19 @@
   
   /* Follow-up badge style */
   .followup-badge {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 8px 12px;
-    background-color: var(--card-bg);
-    border-radius: 20px;
-    font-size: 14px;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
+    padding: 8px 14px;
+    background-color: #f3f4f6;
+    color: #111827;
+    border: 1px solid #d1d5db;
+    border-radius: 9999px;
+    font-size: 13px;
+    transition: all 0.2s ease-in-out;
   }
+  
+  .followup-badge:hover {
+    background-color: #e5e7eb;
+  }
+  
   
   /* Radio button (for status) */
   .status-radio {
@@ -64,39 +73,48 @@
     height: 16px;
     border: 2px solid var(--text-color);
     border-radius: 50%;
-    display: inline-block;
-    position: relative;
     cursor: pointer;
     background-color: transparent;
+    transition: 0.2s;
   }
   
   .status-radio:checked {
-    border-color: var(--accent-color, #007bff);
-    background-color: var(--accent-color, #007bff);
+    background-color: #2563eb;
+    border-color: #2563eb;
   }
+  
   
   .fresh-leads-table {
     width: 100%;
-    table-layout: auto;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     background-color: var(--card-bg);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    color: var(--text-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
   }
   
-  .fresh-leads-table th,
-  .fresh-leads-table td {
-    padding: 14px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    white-space: nowrap;
-    color: var(--text-color);
-  }
+ 
+.fresh-leads-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .fresh-leads-table tbody tr:hover {
+  background-color: #2d3748;
+}
+.fresh-leads-table th,
+.fresh-leads-table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
   
-  .fresh-leads-name {
-    display: flex;
-    align-items: center;
-  }
+.fresh-leads-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
   
   .freshlead-icon {
     width: 35px;
@@ -114,7 +132,59 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.3em;
-    color: var(--text-color);
+    font-size: 1rem;
+    transition: transform 0.1s ease-in-out;
+  }
+  
+  .fresh-leads-call-button:hover {
+    transform: scale(1.1);
+  }
+  
+ 
+  .fresh-lead-detail > div:first-child {
+    font-weight: 500;
+  }
+  
+  .fresh-leads-profession {
+    font-size: 12px;
+    color: gray;
+  }
+  .fresh-pagination {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0 0 10px 10px;
+    justify-content: flex-end;
+    height: 80px;
+  }
+  
+  .fresh-pagination-btn {
+    padding: 8px 10px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+
+  }
+  
+  
+  .fresh-pagination-btn:hover:not(:disabled) {
+    background-color: #1e40af;
+    transform: translateY(-1px);
+  }
+  
+  .fresh-pagination-btn:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+  }
+  
+  .fresh-pagination span {
+    font-weight: 500;
+    color: #4b5563;
   }
   

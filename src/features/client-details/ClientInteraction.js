@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const ClientInteraction = () => {
   const [contactMethod, setContactMethod] = useState("");
-  const [followUpType, setFollowUpType] = useState([]);
+  const [followUpType, setFollowUpType] = useState("");  // Change to a single value instead of an array
   const [interactionRating, setInteractionRating] = useState("");
 
   // Editable date and time state
@@ -23,7 +23,7 @@ const ClientInteraction = () => {
           <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">
-              {["call", "email", "call/email"].map((method) => (
+              {["call", "email", "whatsapp"].map((method) => (
                 <label key={method} className="radio-container">
                   <input
                     type="radio"
@@ -39,15 +39,16 @@ const ClientInteraction = () => {
 
           <div className="follow-up-type">
             <h4>Follow-Up Type</h4>
-            <div className="checkbox-group">
+            <div className="radio-group">
               {["interested", "appointment", "no-response", "converted", "not-interested", "close"].map((type) => (
-                <label key={type} className="checkbox-container">
+                <label key={type} className="radio-container">
                   <input
-                    type="checkbox"
-                    checked={followUpType.includes(type)}
-                    onChange={() => handleCheckboxChange(type, setFollowUpType, followUpType)}
+                    type="radio"
+                    name="followUpType"  // Ensure all radio buttons have the same name to make them exclusive
+                    checked={followUpType === type}
+                    onChange={() => setFollowUpType(type)}  // Set selected value to followUpType
                   />
-                  <span className="checkbox-label">{type.replace("-", " ")}</span>
+                  <span className="radio-label">{type.replace("-", " ")}</span>
                 </label>
               ))}
             </div>

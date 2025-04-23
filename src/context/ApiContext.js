@@ -187,7 +187,7 @@ const markNotificationReadAPI = async (notificationId) => {
   try {
     await apiService.markNotificationAsRead(notificationId);
     const updated = notifications.map((n) =>
-      n.id === notificationId ? { ...n, isRead: true } : n
+      n.id === notificationId ? { ...n, is_read: true } : n
     );
     setNotifications(updated);
   } catch (error) {
@@ -229,6 +229,63 @@ const deleteNotificationAPI = async (notificationId) => {
     }
   };
 
+  //Executive Dashboard cards total count
+  const [freshLeadsCount, setFreshLeadsCount] = useState(0);
+  const [followUpCount, setFollowUpCount] = useState(0);
+  const [convertedClientsCount, setConvertedClientsCount] = useState(0);
+  
+  const fetchFreshLeads = async () => {
+    try {
+      const count = await apiService.fetchFreshLeadsCount();
+      setFreshLeadsCount(count);
+    } catch (error) {
+      console.error("❌ Failed to fetch fresh leads count:", error);
+    }
+  };
+  
+  const fetchFollowUps = async () => {
+    try {
+      const count = await apiService.fetchFollowUpCount();
+      setFollowUpCount(count);
+    } catch (error) {
+      console.error("❌ Failed to fetch follow-up count:", error);
+    }
+  };
+  
+  const fetchConvertedClients = async () => {
+    try {
+      const count = await apiService.fetchConvertedClientsCount();
+      setConvertedClientsCount(count);
+    } catch (error) {
+      console.error("❌ Failed to fetch converted clients count:", error);
+    }
+  };
+  
+  const createFreshLeadAPI = async (leadData) => {
+    try {
+      console.log("📤 Creating fresh lead with data:", leadData); // ✅ Log lead data being sent
+      const response = await apiService.createFreshLead(leadData);
+      console.log("✅ Fresh lead created successfully:", response); // Optional: Log success response
+      return response;
+    } catch (error) {
+      console.error("❌ Failed to create fresh lead:", error);
+      throw error;
+    }
+  };
+  
+    // ✅ New: Create a new lead
+    const createLeadAPI = async (leadData) => {
+      try {
+        const response = await apiService.createLeadAPI(leadData);  // Calling the API service function
+        console.log("📡 Lead created successfully:", response.data);
+  
+        return response.data;  // Return the created lead data
+      } catch (error) {
+        console.error("❌ Error creating lead:", error.response?.data || error.message);  // Better error logging
+        throw error;  // Re-throw the error to be handled by the calling function
+      }
+    };
+  
   useEffect(() => {
     fetchExecutiveData();
     fetchUserData(); // ✅ Fetch user data on mount
@@ -237,6 +294,9 @@ const deleteNotificationAPI = async (notificationId) => {
     fetchLeadSectionVisitsAPI();
     uploadFileAPI();
     fetchExecutives();
+    fetchFreshLeads();
+    fetchFollowUps();
+    fetchConvertedClients();
     getExecutiveActivity();
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (currentUser?.id) {
@@ -270,7 +330,16 @@ const deleteNotificationAPI = async (notificationId) => {
         executiveInfo,
         executiveLoading,
         fetchExecutiveData,
-        
+        createFreshLeadAPI,
+        createLeadAPI,  // Expose the new function in context
+
+        freshLeadsCount,
+        followUpCount,
+        convertedClientsCount,
+        fetchFreshLeads,
+        fetchFollowUps,
+        fetchConvertedClients,
+
         //notification
         notifications,
         notificationsLoading,

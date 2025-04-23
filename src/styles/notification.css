@@ -24,14 +24,19 @@
 /* Actual card container inside the centered area */
 .notification-container {
   width: 1120px;
-  min-height: 680px; /* Instead of fixed height */
+  min-height: 680px;
   background-color: white;
   padding: 25px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow-y: auto;
   margin-left: 170px;
   margin-top: 60px;
-}  
+  
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  justify-content: space-between; /* Push pagination to bottom */
+}
+
 /* Notification content styles */
 .notification-container h2 {
   margin-bottom: 20px;
@@ -39,13 +44,13 @@
   text-align: center;
   color: #333;
 }
-
 .notification-list {
   list-style: none;
   padding: 0;
   margin: 0;
-
+  flex-grow: 1; /* Allow list to grow and push pagination down */
 }
+
 [data-theme="dark"] .notification-content-area{
   background-color: var(--bg-color);
 }
@@ -72,19 +77,63 @@
 .notification-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6px;
+  align-items: flex-start;
+}
+
+.notification-card.read {
+  background-color: #f0f2f5; /* Much lighter gray/blue */
+  color: #9ca3af; /* Dimmed text */
+  border-left: 5px solid #94a3b8; /* Lighter border to visually indicate it's read */
+}
+
+.read-checkbox input:checked {
+  accent-color: #3b82f6; /* Lighter blue for checked state */
+}
+
+.read-checkbox input:disabled {
+  cursor: not-allowed;
+}
+
+.read-checkbox {
+  font-size: 13px;
+  color: #007bff;
+}
+
+.read-checkbox input:checked + span {
+  color: #007bff;
+}
+
+.notification-message {
+  font-size: 14px;
+  color: #6b7280; /* Dim text for read notification */
+  line-height: 1.4;
 }
 
 .notification-header strong {
   font-size: 16px;
   color: #333;
 }
+.notification-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
 
 .notification-time {
   font-size: 12px;
-  color: #999;
+  color: #555;
 }
 
+.read-checkbox {
+  margin-top: 4px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.read-checkbox input {
+  margin-right: 4px;
+}
 .notification-message {
   font-size: 14px;
   color: #555;
@@ -97,42 +146,40 @@
   margin-top: 20px;
   font-size: 16px;
 }
-.notification-actions {
-display: flex;
-justify-content: flex-end;
-gap: 10px;
-margin-top: 10px;
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 5px 5px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  border-radius: 0 0 10px 10px;
 }
 
-.mark-read-btn,
-.delete-btn {
-padding: 5px 10px;
-font-size: 0.85rem;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-transition: background 0.2s ease;
+.pagination-btn {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background-color: #2563eb; /* Tailwind-style blue-600 */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.mark-read-btn {
-background-color: #4caf50;
-color: white;
+.pagination-btn:hover:not(:disabled) {
+  background-color: #1e40af; /* blue-800 */
+  transform: translateY(-1px);
 }
 
-.mark-read-btn:hover {
-background-color: #43a047;
+.pagination-btn:disabled {
+  background-color: #cbd5e1; /* slate-300 */
+  cursor: not-allowed;
 }
 
-.delete-btn {
-background-color: #f44336;
-color: white;
-}
-
-.delete-btn:hover {
-background-color: #e53935;
-}
-
-/* Optional: style for read notifications */
-.notification-card.read {
- opacity: 0.6;
+.pagination span {
+  font-weight: 400;
+  margin: 0 10px;
+  color: #4b5563; /* gray-700 */
 }

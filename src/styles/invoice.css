@@ -13,8 +13,7 @@
   box-sizing: border-box;
   padding-top: 80px;
   padding-left: 250px;
-  height: 900px;
-  overflow-x: hidden; /* Hide horizontal overflow */
+ overflow-x: hidden; /* Hide horizontal overflow */
 overflow-y: hidden;
 }
 

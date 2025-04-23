@@ -36,29 +36,6 @@
   font-family: Inter 'sans-serif';
 }
 
-.refresh-btn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
-}
-
-.refresh-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.refresh-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 .tracker-content {
   padding: 16px;
@@ -193,7 +170,7 @@
   color: var(--text-color);
 }
 
-.exec-name {
+.execu-name {
   font-weight: 600;
 }
 

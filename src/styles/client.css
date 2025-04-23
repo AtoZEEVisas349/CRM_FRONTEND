@@ -224,13 +224,20 @@
   flex: 0 0 40%;
   padding: 20px;
   background-color: var(--card-bg);
-  border-right: 1px solid var(--border-color);
+  border-right: 2px solid #ddd; /* Lighter shade for a subtle effect */
 }
 
 .follow-up-column {
   flex: 0 0 75%;
   padding: 30px;
   background-color: var(--card-bg);
+}
+.info-item {
+  margin-bottom: 12px; /* Adds vertical spacing between each field */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 15px;
 }
 
 .label,
@@ -418,20 +425,3 @@ input[type="checkbox"] {
   }
 }
 
-
-.avatar-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #6d28d9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.avatar-icon svg {
-  width: 30px;
-  height: 30px;
-  stroke: white;
-}

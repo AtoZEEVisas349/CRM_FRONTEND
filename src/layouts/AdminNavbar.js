@@ -42,7 +42,6 @@ function AdminNavbar() {
 
   {/* Icon Group */}
   <div className="admin-icons-group">
-    <FaPhone className="admin-logo_name icon-hover-zoom" />
     <FaComment className="admin-logo_name icon-hover-zoom" />
     <FaBell className="admin-logo_name icon-hover-zoom" />
 
