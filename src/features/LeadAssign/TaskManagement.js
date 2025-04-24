@@ -105,11 +105,13 @@ const TaskManagement = () => {
           const lead = leads.find((l) => String(l.id) === leadId);
           if (!lead) return;
   
-          // ✅ Check for clientLeadId
-          if (!lead.clientLeadId) {
+          const clientLeadId = lead.clientLeadId || lead.id;
+          if (!clientLeadId) {
             console.warn("❌ Missing clientLeadId for lead:", lead.name);
             return;
           }
+  
+          const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, '');
   
           if (!executive.username) {
             console.warn("❌ Missing executive username.");
@@ -119,18 +121,19 @@ const TaskManagement = () => {
           const leadPayload = {
             name: lead.name,
             email: lead.email || "defaultEmail@example.com",
-            phone: String(lead.phone),
+            phone: phone,
             source: lead.source,
-            clientLeadId: Number(lead.id),
+            clientLeadId: Number(clientLeadId),
             assignedToExecutive: executive.username,
           };
   
-          console.log("✅ Lead Payload Ready:", leadPayload);
-  
           try {
             const createdLead = await createLeadAPI(leadPayload);
-            console.log("✅ Created lead:", createdLead);
-  
+            // Check if createdLead is undefined or null
+            if (!createdLead || !createdLead.id) {
+              console.error("❌ Lead creation failed or returned invalid data.");
+              return;
+            }            
             await assignLeadAPI(leadId, executive.id, executive.username);
   
             await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -145,11 +148,8 @@ const TaskManagement = () => {
               assignDate: new Date().toISOString(),
             };
   
-            console.log("📤 Sending to createFreshLeadAPI:", freshLeadPayload);
-  
             try {
               const result = await createFreshLeadAPI(freshLeadPayload);
-              console.log("✅ Fresh lead created:", result);
             } catch (err) {
               console.error("❌ Error creating fresh lead:", err);
             }
@@ -158,6 +158,17 @@ const TaskManagement = () => {
           }
         })
       );
+      setLeads((prevLeads) =>
+        prevLeads.map((lead) =>
+          selectedLeads.includes(String(lead.id))
+            ? { ...lead, assignedToExecutive: executive.username }
+            : lead
+        )
+      );
+
+      setSelectedLeads([]); // Reset selection
+      setSelectedExecutive("");   // Reset selected executive
+      alert("Leads have been assigned successfully!");
     } catch (err) {
       console.error("❌ Error during lead assignment process:", err);
     }

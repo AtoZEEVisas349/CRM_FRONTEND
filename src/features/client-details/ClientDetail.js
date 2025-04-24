@@ -1,27 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const ClientDetail = ({ followUpText }) => {
-  const [clientInfo, setClientInfo] = useState({
-    name: "Cody Fisher",
-    email: "Cody@gmail.com",
-    phone: "999999999",
-    altPhone: "988888888",
-    education: "MCA",
-    experience: "10 years",
-    state: "Delhi",
-    dob: "1970-01-01",
-    country: "India",
-    assignDate: "01/02/2024",
-  });
+  const location = useLocation();
+  const client = location.state?.client;  // Extract the filtered client data from state
+
+  const [clientInfo, setClientInfo] = useState(client || {});  // Initialize state with the passed client data
 
   const handleChange = (field, value) => {
     setClientInfo(prev => ({ ...prev, [field]: value }));
   };
 
+  useEffect(() => {
+    if (client) {
+      setClientInfo(client);
+    }
+  }, [client]);
+
+  if (!client) {
+    return <p>No client data available.</p>;
+  }
+
   return (
     <div className="c-container">
       <div className="c-header">
-        <h2>Clients Details</h2>
+        <h2>Client Details</h2>
         <button className="c-button">×</button>
       </div>
 

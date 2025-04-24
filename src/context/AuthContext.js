@@ -43,7 +43,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("executiveId", user.id);
-  
+      console.log("Logged in token:", response.token);
+
       setUser(user);
       toast.success(
         <div className="toast-content">

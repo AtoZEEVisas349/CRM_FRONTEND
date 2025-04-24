@@ -47,7 +47,7 @@
   .fresh-leads-table-container {
     flex-grow: 1;
     overflow: auto;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 80px);
   }
   
   /* Follow-up badge style */
@@ -157,7 +157,7 @@
     border-top: 1px solid #e0e0e0;
     border-radius: 0 0 10px 10px;
     justify-content: flex-end;
-    height: 80px;
+    height: 40px;
   }
   
   .fresh-pagination-btn {

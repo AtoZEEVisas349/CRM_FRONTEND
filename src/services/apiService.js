@@ -36,21 +36,19 @@ export const fetchLeadsAPI = async () => {
 };
 
 // ✅ Function to fetch assigned leads by executive name
-// In apiService.js
-
-export const fetchAssignedLeads = async (executiveName) => {
-  try {
-    if (!executiveName) {
-      console.error("🚨 Executive name is missing!");
-      throw new Error("Executive name not provided!");
+  export const fetchAssignedLeads = async (executiveName) => {
+    try {
+      if (!executiveName) {
+        console.error("🚨 Executive name is missing!");
+        throw new Error("Executive name not provided!");
+      }
+      const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
+      return response.data.leads;
+    } catch (error) {
+      console.error("❌ Error fetching assigned leads:", error);
+      throw error;
     }
-    const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
-    return response.data.leads;
-  } catch (error) {
-    console.error("❌ Error fetching assigned leads:", error);
-    throw error;
-  }
-};
+  };
 
 
 // ✅ Fetch notifications for a specific user (executive)
@@ -136,7 +134,6 @@ export const assignLeadAPI = async (leadId, executiveId, executiveName) => {
       executiveId,
       executiveName,
     });
-    console.log(`✅ Lead ${leadId} assigned successfully:`, response.data);
     return response.data;
   } catch (error) {
     console.error(`❌ Error assigning Lead ID ${leadId}:`, error);
@@ -213,12 +210,21 @@ export const fetchConvertedClientsCount = async () => {
 export const createLeadAPI = async (leadData) => {
   try {
     const response = await apiService.post("/leads", leadData);  // Ensure the correct endpoint '/leads'
-    console.log("📡 Lead created successfully:", response.data);
-
-    return response.data;  // Return the created lead data
+    return response.data;  // Return the actual created lead data, which is inside response.data
   } catch (error) {
     console.error("❌ Error creating lead:", error.response?.data || error.message);  // Better error logging
     throw error;  // Re-throw the error to be handled by the calling function
+  }
+};
+
+// ✅ Function to fetch fresh leads for the executive
+export const fetchFreshLeads = async () => {
+  try {
+    const response = await apiService.get("/freshleads"); // Calling the fresh leads endpoint
+    return response.data;  // Return the fresh leads data
+  } catch (error) {
+    console.error("❌ Error fetching fresh leads:", error);
+    throw error;  // Re-throw the error so that the calling function can handle it
   }
 };
 
@@ -226,11 +232,29 @@ export const createLeadAPI = async (leadData) => {
 export const createFreshLead = async (leadData) => {
   try {
     const response = await apiService.post("/freshleads", leadData);
-    console.log("📡 Fresh lead created:", response.data);
-
     return response.data;
   } catch (error) {
     console.error("❌ Error creating fresh lead:", error.response?.data || error.message); // ⬅️ even better error log
+    throw error;
+  }
+};
+// ✅ Create a follow-up
+export const createFollowUp = async (followUpData) => {
+  try {
+    const response = await apiService.post("/followup/create", followUpData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating follow-up:", error.response?.data || error.message);
+    throw error;
+  }
+};
+// ✅ Get all follow-ups
+export const fetchAllFollowUps = async () => {
+  try {
+    const response = await apiService.get("/followup/");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching follow-ups:", error.response?.data || error.message);
     throw error;
   }
 };
