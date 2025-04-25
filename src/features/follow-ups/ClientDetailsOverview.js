@@ -2,18 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 
-const ClientOverview = () => {
+const ClientDetailsOverview = () => {
   const { clientId } = useParams();
   const location = useLocation();
 
   const client = location.state?.client || {};
-  const createFollowUpFlag = location.state?.createFollowUp || false;  // Getting the flag from location state
 
-  const {
-    updateFreshLeadFollowUp,
-    createFollowUp,
-    followUpLoading,
-  } = useApi();
+  const { updateFollowUp } = useApi();
 
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
@@ -26,6 +21,7 @@ const ClientOverview = () => {
 
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
+
   const clientFields = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
@@ -51,87 +47,44 @@ const ClientOverview = () => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
 
+  const capitalize = (text) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
   const handleTextUpdate = () => {
-    // Prepare the data object to be sent for update (only followUpDate and followUpStatus)
+    console.log("clientInfo:", clientInfo); // 👈 Add this line here to inspect the data
+
     const updatedData = {
-      followUpStatus: followUpType, // Send follow-up status
-      followUpDate: interactionDate, // Send follow-up date
+      connect_via: capitalize(contactMethod),
+      follow_up_type: followUpType,
+      interaction_rating: capitalize(interactionRating),
+      reason_for_follow_up: reasonDesc,
+      follow_up_date: interactionDate,
+      follow_up_time: interactionTime,
+      fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.leadId || clientInfo.id, // pick correct key
     };
-  
-    // Ensure followUpId is available, fallback to freshLeadId or id
-    const followUpId = clientInfo.followUpId || clientInfo.freshLeadId || clientInfo.id;
-  
-    // If followUpId is still undefined, show an error
+    console.log("Sending update for followUpId:", clientInfo.followUpId);
+console.log("Payload:", updatedData);
+
+    const followUpId = clientInfo.followUpId || clientInfo.id;
+
     if (!followUpId) {
-      console.error("Follow-up ID is missing.");
       alert("Follow-up ID is missing. Please check the client data.");
       return;
     }
-  
-    // Call the API to update the follow-up
-    updateFreshLeadFollowUp(followUpId, updatedData)
+
+    updateFollowUp(followUpId, updatedData)
       .then((response) => {
         console.log("Follow-up updated successfully:", response);
         alert("Follow-up updated successfully!");
-  
-        // Update the client info based on the API response, including the updated follow-up details
-        setClientInfo((prevClientInfo) => ({
-          ...prevClientInfo,
-          followUpStatus: updatedData.followUpStatus,
-          followUpDate: updatedData.followUpDate,
-        }));
       })
       .catch((error) => {
         console.error("Error updating Follow-up:", error);
         alert("Failed to update follow-up.");
       });
   };
-  
-  const handleCreateFollowUp = () => {
-    // This function will be for creating a new follow-up
-    if (
-      !contactMethod ||
-      !followUpType ||
-      !interactionRating ||
-      !reasonDesc ||
-      !interactionDate ||
-      !interactionTime
-    ) {
-      alert("Please fill out all required fields before creating follow-up.");
-      return;
-    }
-  
-    // Create the follow-up data with the correct field names
-    const newFollowUpData = {
-      connect_via: contactMethod, // Map to 'connect_via' field
-      follow_up_type: followUpType, // Map to 'follow_up_type' field
-      interaction_rating: interactionRating, // Map to 'interaction_rating' field
-      reason_for_follow_up: reasonDesc, // Map to 'reason_for_follow_up' field
-      follow_up_date: interactionDate, // Map to 'follow_up_date' field
-      follow_up_time: interactionTime, // Map to 'follow_up_time' field
-      fresh_lead_id: clientInfo.freshLeadId || clientInfo.id, // Use 'fresh_lead_id' or fallback to 'id'
-    };
-  
-    // Make the API call to create the follow-up
-    createFollowUp(newFollowUpData)
-      .then((response) => {
-        console.log("Follow-up created successfully:", response);
-        alert("Follow-up created!");
-        
-        // Reset form fields after successful creation
-        setReasonDesc("");
-        setContactMethod("");
-        setFollowUpType("");
-        setInteractionRating("");
-        setInteractionDate("");
-        setInteractionTime("");
-      })
-      .catch((error) => {
-        console.error("Error creating Follow-up:", error);
-        alert("Failed to create follow-up.");
-      });
-  };
-  
+
   const toggleListening = () => {
     if (!recognitionRef.current) return alert("Speech recognition not supported");
     isListening ? stopListening() : recognitionRef.current.start();
@@ -173,7 +126,6 @@ const ClientOverview = () => {
               </div>
             </div>
 
-            {/* Follow-Up Text Preview */}
             <div className="follow-up-column">
               <div className="last-follow-up">
                 <h3>Last Follow-up</h3>
@@ -209,7 +161,14 @@ const ClientOverview = () => {
           <div className="follow-up-type">
             <h4>Follow-Up Type</h4>
             <div className="radio-group">
-              {[ "interested", "appointment", "no-response", "converted", "not-interested", "close", ].map((type) => (
+              {[
+                "interested",
+                "appointment",
+                "no-response",
+                "converted",
+                "not-interested",
+                "close",
+              ].map((type) => (
                 <label key={type} className="radio-container">
                   <input
                     type="radio"
@@ -265,7 +224,7 @@ const ClientOverview = () => {
                   onClick={toggleListening}
                   aria-label={isListening ? "Stop recording" : "Start recording"}
                 >
-                  {isListening ? "⏹️" : "🎤"}
+                  {isListening ? "⏹" : "🎤"}
                 </button>
               </div>
 
@@ -291,17 +250,22 @@ const ClientOverview = () => {
                 </div>
               </div>
 
-              <div className="client-btn">
-                <button className="update-btn" onClick={handleTextUpdate} disabled={followUpLoading}>
-                  Update FreshLead
+              <div className="button-group" style={{ marginTop: "20px" }}>
+                <button
+                  onClick={handleTextUpdate}
+                  className="update-btn"
+                  style={{
+                    backgroundColor: "#2196F3",
+                    color: "white",
+                    padding: "10px 20px",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Update Follow-Up
                 </button>
-                {createFollowUpFlag && (
-                  <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
-                    Create Follow-Up
-                  </button>
-                )}
               </div>
-
             </div>
           </div>
         </div>
@@ -310,4 +274,4 @@ const ClientOverview = () => {
   );
 };
 
-export default ClientOverview;
+export default ClientDetailsOverview;

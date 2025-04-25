@@ -3,6 +3,7 @@ import React from "react";
 import "../styles/client.css";
 import SideandNavbar from "../layouts/SidebarandNavbar";
 import ClientOverview from "../features/client-details/ClientOverview";
+import ClientDetailsOverview from "../features/follow-ups/ClientDetailsOverview";
 import { Routes, Route } from "react-router-dom";
 
 const ClientRoutes = () => {
@@ -13,10 +14,11 @@ const ClientRoutes = () => {
         <Routes>
           {/* Use absolute path for nested routes */}
           <Route path=":clientId" element={<ClientOverview />} />
+          <Route path=":clientId/details" element={<ClientDetailsOverview />} />
         </Routes>
       </div>
     </div>
   );
 };
 
-export default ClientRoutes;
+export default ClientRoutes;

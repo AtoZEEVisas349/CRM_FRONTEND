@@ -50,21 +50,24 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
 
   // Navigate to follow-up detail
   const handleEdit = (client) => {
+    // Create a leadData object with client and followUpId
     const leadData = {
-      ...client.freshLead,
-      followUpId: client.id, // Attach follow-up ID manually
+      ...client.freshLead,  // Spread the data of freshLead object
+      followUpId: client.id, // Attach the follow-up ID manually
     };
   
-    console.log("Navigating with client:", leadData); // should now show full info
+    console.log("Navigating with client:", leadData); // Log to verify the payload being sent
   
-    navigate(`/clients/${encodeURIComponent(client.id)}`, {
+    // Navigate to the ClientDetailsOverview page
+    navigate(`/clients/${encodeURIComponent(client.id)}/details`, {
       state: {
-        client: leadData, // Pass the merged object
+        client: leadData,  // Pass the merged object
         createFollowUp: false,
-        from: "followup",
+        from: "followup",  // You can use this to differentiate where you're coming from
       },
     });
   };
+  
   
 
   // Dynamic status badge color
