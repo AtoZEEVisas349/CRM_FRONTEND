@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // ✅ Define API Base URL
-const API_BASE_URL = "http://localhost:5000/api"; 
+const API_BASE_URL = "http://localhost:5000/api";
 
 // Create an Axios instance with base settings
 const apiService = axios.create({
@@ -36,20 +36,21 @@ export const fetchLeadsAPI = async () => {
 };
 
 // ✅ Function to fetch assigned leads by executive name
-  export const fetchAssignedLeads = async (executiveName) => {
-    try {
-      if (!executiveName) {
-        console.error("🚨 Executive name is missing!");
-        throw new Error("Executive name not provided!");
-      }
-      const response = await apiService.get(`/client-leads/executive?executiveName=${executiveName}`);
-      return response.data.leads;
-    } catch (error) {
-      console.error("❌ Error fetching assigned leads:", error);
-      throw error;
+export const fetchAssignedLeads = async (executiveName) => {
+  try {
+    if (!executiveName) {
+      console.error("🚨 Executive name is missing!");
+      throw new Error("Executive name not provided!");
     }
-  };
-
+    const response = await apiService.get(
+      `/client-leads/executive?executiveName=${executiveName}`
+    );
+    return response.data.leads;
+  } catch (error) {
+    console.error("❌ Error fetching assigned leads:", error);
+    throw error;
+  }
+};
 
 // ✅ Fetch notifications for a specific user (executive)
 export const fetchNotificationsByUser = async (userId) => {
@@ -65,10 +66,15 @@ export const fetchNotificationsByUser = async (userId) => {
 // ✅ Mark a notification as read
 export const markNotificationAsRead = async (notificationId) => {
   try {
-    const response = await apiService.put(`/notification/mark-read/${notificationId}`);
+    const response = await apiService.put(
+      `/notification/mark-read/${notificationId}`
+    );
     return response.data;
   } catch (error) {
-    console.error(`❌ Error marking notification ${notificationId} as read:`, error);
+    console.error(
+      `❌ Error marking notification ${notificationId} as read:`,
+      error
+    );
     throw error;
   }
 };
@@ -115,11 +121,10 @@ export const fetchOnlineExecutives = async () => {
   }
 };
 
-
 // ✅ Fetch admin profile
 export const fetchAdminProfile = async () => {
   try {
-    const response = await apiService.get('/admin/profile');
+    const response = await apiService.get("/admin/profile");
     return response.data;
   } catch (error) {
     console.error("Error fetching admin profile:", error);
@@ -130,10 +135,13 @@ export const fetchAdminProfile = async () => {
 // ✅ Function to assign leads to an executive
 export const assignLeadAPI = async (leadId, executiveId, executiveName) => {
   try {
-    const response = await apiService.put(`/client-leads/assign-executive/${leadId}`, {
-      executiveId,
-      executiveName,
-    });
+    const response = await apiService.put(
+      `/client-leads/assign-executive/${leadId}`,
+      {
+        executiveId,
+        executiveName,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error(`❌ Error assigning Lead ID ${leadId}:`, error);
@@ -156,10 +164,15 @@ export const fetchAllExecutivesActivities = async () => {
 // ✅ Fetch activity data for a single executive
 export const fetchExecutiveActivity = async (executiveId) => {
   try {
-    const response = await apiService.get(`/executive-activities/${executiveId}`);
+    const response = await apiService.get(
+      `/executive-activities/${executiveId}`
+    );
     return response.data;
   } catch (error) {
-    console.error(`❌ Error fetching activity data for executive ${executiveId}:`, error);
+    console.error(
+      `❌ Error fetching activity data for executive ${executiveId}:`,
+      error
+    );
     throw error;
   }
 };
@@ -167,10 +180,15 @@ export const fetchExecutiveActivity = async (executiveId) => {
 // ✅ Fetch lead section visits for a single executive
 export const fetchLeadSectionVisits = async (executiveId) => {
   try {
-    const response = await apiService.get(`/executive-activities/${executiveId}`);
+    const response = await apiService.get(
+      `/executive-activities/${executiveId}`
+    );
     return response.data.leadSectionVisits;
   } catch (error) {
-    console.error(`❌ Error fetching lead section visits for executive ${executiveId}:`, error);
+    console.error(
+      `❌ Error fetching lead section visits for executive ${executiveId}:`,
+      error
+    );
     throw error;
   }
 };
@@ -209,11 +227,14 @@ export const fetchConvertedClientsCount = async () => {
 // ✅ Create a new lead
 export const createLeadAPI = async (leadData) => {
   try {
-    const response = await apiService.post("/leads", leadData);  // Ensure the correct endpoint '/leads'
-    return response.data;  // Return the actual created lead data, which is inside response.data
+    const response = await apiService.post("/leads", leadData); // Ensure the correct endpoint '/leads'
+    return response.data; // Return the actual created lead data, which is inside response.data
   } catch (error) {
-    console.error("❌ Error creating lead:", error.response?.data || error.message);  // Better error logging
-    throw error;  // Re-throw the error to be handled by the calling function
+    console.error(
+      "❌ Error creating lead:",
+      error.response?.data || error.message
+    ); // Better error logging
+    throw error; // Re-throw the error to be handled by the calling function
   }
 };
 
@@ -221,10 +242,10 @@ export const createLeadAPI = async (leadData) => {
 export const fetchFreshLeads = async () => {
   try {
     const response = await apiService.get("/freshleads"); // Calling the fresh leads endpoint
-    return response.data;  // Return the fresh leads data
+    return response.data; // Return the fresh leads data
   } catch (error) {
     console.error("❌ Error fetching fresh leads:", error);
-    throw error;  // Re-throw the error so that the calling function can handle it
+    throw error; // Re-throw the error so that the calling function can handle it
   }
 };
 
@@ -234,7 +255,10 @@ export const createFreshLead = async (leadData) => {
     const response = await apiService.post("/freshleads", leadData);
     return response.data;
   } catch (error) {
-    console.error("❌ Error creating fresh lead:", error.response?.data || error.message); // ⬅️ even better error log
+    console.error(
+      "❌ Error creating fresh lead:",
+      error.response?.data || error.message
+    ); // ⬅️ even better error log
     throw error;
   }
 };
@@ -244,7 +268,10 @@ export const createFollowUp = async (followUpData) => {
     const response = await apiService.post("/followup/create", followUpData);
     return response.data;
   } catch (error) {
-    console.error("❌ Error creating follow-up:", error.response?.data || error.message);
+    console.error(
+      "❌ Error creating follow-up:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -254,30 +281,74 @@ export const fetchAllFollowUps = async () => {
     const response = await apiService.get("/followup/");
     return response.data;
   } catch (error) {
-    console.error("❌ Error fetching follow-ups:", error.response?.data || error.message);
+    console.error(
+      "❌ Error fetching follow-ups:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
 // ✅ Update a follow-up inside a fresh lead
 export const updateFreshLeadFollowUp = async (followUpId, updatedData) => {
   try {
-    const response = await apiService.put(`/freshleads/update-followup/${followUpId}`, updatedData);
+    const response = await apiService.put(
+      `/freshleads/update-followup/${followUpId}`,
+      updatedData
+    );
     return response.data;
   } catch (error) {
-    console.error(`❌ Error updating follow-up ID ${followUpId}:`, error.response?.data || error.message);
+    console.error(
+      `❌ Error updating follow-up ID ${followUpId}:`,
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
 // ✅ Update a follow-up by ID
 export const updateFollowUp = async (followUpId, updatedData) => {
   try {
-    const response = await apiService.put(`/followup/${followUpId}`, updatedData);
+    const response = await apiService.put(
+      `/followup/${followUpId}`,
+      updatedData
+    );
     return response.data;
   } catch (error) {
-    console.error(`❌ Error updating follow-up ID ${followUpId}:`, error.response?.data || error.message);
+    console.error(
+      `❌ Error updating follow-up ID ${followUpId}:`,
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
 
+export const createFollowUpHistory = async (historyData) => {
+  try {
+    const response = await apiService.post(
+      "/followuphistory/create",
+      historyData
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "❌ Error creating follow-up history:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+// ✅ Fetch all follow-up histories for an executive
+export const fetchFollowUpHistories = async () => {
+  try {
+    const response = await apiService.get("/followuphistory/");
+    return response.data;
+  } catch (error) {
+    console.error(
+      "❌ Error fetching follow-up histories:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 export default apiService;
