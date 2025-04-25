@@ -1,34 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext"; // Adjust path if needed
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 const ClientTable = ({ filter = "All Follow Ups" }) => {
-  const { followUps, fetchAllFollowUps, followUpLoading } = useApi();
-  const clients = Array.isArray(followUps) ? followUps : []; // Ensure followUps is an array
-
+  const { followUps, getAllFollowUps, followUpLoading } = useApi();
+  const clients = Array.isArray(followUps?.data) ? followUps.data : [];
+  const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [tableHeight, setTableHeight] = useState("500px");
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAllFollowUps(); // Centralized fetch
-  }, [fetchAllFollowUps]); // Only call this once when the component mounts
+    getAllFollowUps(); // Fetch on mount
+  }, []);
 
-  // Log followUps to check if data is available
-  console.log("Fetched FollowUps:", followUps);
-
-  // Apply filter for "Interested" or "Non-Interested" only
-  const filteredClients = clients.filter(client => {
+  // Filter clients based on follow_up_type
+  const filteredClients = clients.filter((client) => {
+    const type = client.follow_up_type?.toLowerCase().trim();
+    const submitted = client.is_followup_submitted;
+  
     if (filter === "Interested") {
-      return client.follow_up_type === "interested"; // Filter for interested clients
-    } else if (filter === "Non-Interested") {
-      return client.follow_up_type !== "interested"; // Filter for non-interested clients
+      return submitted && type === "interested";
+    } else if (filter === "Not Interested") {
+      return submitted && type === "non-interested";
+    } else {
+      // "All Follow Ups"
+      return !submitted || type === "";
     }
-    // If filter is "All Follow Ups", show all follow ups
-    return true;
   });
+  
 
-  console.log("Filtered Clients:", filteredClients); // Log filtered result
-
+  // Responsive height calculation
   useEffect(() => {
     const updateTableHeight = () => {
       const windowHeight = window.innerHeight;
@@ -45,8 +48,37 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
     return () => window.removeEventListener("resize", updateTableHeight);
   }, []);
 
-  const handleEdit = (clientName) => {
-    navigate(`/clients/${encodeURIComponent(clientName)}`);
+  // Navigate to follow-up detail
+  const handleEdit = (client) => {
+    const leadData = {
+      ...client.freshLead,
+      followUpId: client.id, // Attach follow-up ID manually
+    };
+  
+    console.log("Navigating with client:", leadData); // should now show full info
+  
+    navigate(`/clients/${encodeURIComponent(client.id)}`, {
+      state: {
+        client: leadData, // Pass the merged object
+        createFollowUp: false,
+        from: "followup",
+      },
+    });
+  };
+  
+
+  // Dynamic status badge color
+  const getStatusColor = (status) => {
+    switch ((status || "").toLowerCase()) {
+      case "follow-up":
+        return "#e0f7fa"; // light blue
+      case "converted":
+        return "#c8e6c9"; // light green
+      case "not interested":
+        return "#ffcdd2"; // light red
+      default:
+        return "#f0f0f0"; // neutral gray
+    }
   };
 
   return (
@@ -112,7 +144,7 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
                     </div>
                     <div>
                       <strong>{client.freshLead?.name || "No Name"}</strong>
-                      <p className="client-profession" style={{ margin: 0, fontSize: 12, color: "#777" }}>
+                      <p style={{ margin: 0, fontSize: 12, color: "#777" }}>
                         {client.freshLead?.profession || "No Profession"}
                       </p>
                     </div>
@@ -123,18 +155,84 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
                 </td>
                 <td>{client.freshLead?.email || "N/A"}</td>
                 <td>
-                  <span className="followup-badge">{client.follow_up_type}</span>
+                <span
+                  className="followup-badge"
+                  style={{
+                    padding: "4px 8px",
+                    borderRadius: "12px",
+                    backgroundColor: "#f0f0f0",
+                    fontSize: "12px",
+                    color: "#555",
+                    marginLeft: "50px",
+                  }}
+                >
+                  {client.is_followup_submitted ? client.follow_up_type : ""}
+                </span>
                   <span
                     className="edit-icon"
-                    onClick={() => handleEdit(client.freshLead?.name)}
+                    onClick={() => handleEdit(client)}
                     style={{ marginLeft: "10px", cursor: "pointer" }}
                   >
                     ✏
                   </span>
                 </td>
-                <td>⚪</td>
-                <td>📞</td>
-              </tr>
+                <td>
+                  <span
+                    style={{
+                      padding: "5px 10px",
+                      borderRadius: "20px",
+                      backgroundColor: getStatusColor(client.clientLeadStatus),
+                      fontSize: "12px",
+                      fontWeight: "500",
+                      color: "#333",
+                      textTransform: "capitalize"
+                    }}
+                  >
+                    {client.clientLeadStatus || "N/A"}
+                  </span>
+                </td>
+                <td className="call-cell">
+                        <button
+                          className="call-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActivePopoverIndex(
+                              activePopoverIndex === index ? null : index
+                            );
+                          }}
+                        >
+                          📞
+                        </button>
+                        {activePopoverIndex === index && (
+                          <div
+                            className="popover"
+                            // ref={(el) => (popoverRefs.current[index] = el)}
+                          >
+                            <button className="popover-option">
+                              <FontAwesomeIcon
+                                icon={faWhatsapp}
+                                style={{
+                                  color: "#25D366",
+                                  marginRight: "6px",
+                                  fontSize: "18px",
+                                }}
+                              />
+                              WhatsApp
+                            </button>
+                            <button className="popover-option">
+                              <FontAwesomeIcon
+                                icon={faPhone}
+                                style={{
+                                  color: "#25D366",
+                                  marginRight: "6px",
+                                  fontSize: "16px",
+                                }}
+                              />
+                              Normal Call
+                            </button>
+                          </div>
+                        )}
+             </td>              </tr>
             ))
           )}
         </tbody>

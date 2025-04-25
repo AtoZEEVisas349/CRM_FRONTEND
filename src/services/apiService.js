@@ -258,6 +258,26 @@ export const fetchAllFollowUps = async () => {
     throw error;
   }
 };
+// ✅ Update a follow-up inside a fresh lead
+export const updateFreshLeadFollowUp = async (followUpId, updatedData) => {
+  try {
+    const response = await apiService.put(`/freshleads/update-followup/${followUpId}`, updatedData);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error updating follow-up ID ${followUpId}:`, error.response?.data || error.message);
+    throw error;
+  }
+};
+// ✅ Update a follow-up by ID
+export const updateFollowUp = async (followUpId, updatedData) => {
+  try {
+    const response = await apiService.put(`/followup/${followUpId}`, updatedData);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error updating follow-up ID ${followUpId}:`, error.response?.data || error.message);
+    throw error;
+  }
+};
 
 
 export default apiService;

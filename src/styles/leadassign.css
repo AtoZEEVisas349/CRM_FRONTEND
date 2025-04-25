@@ -1,4 +1,7 @@
-/* LeadsDashboard.css */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -8,28 +11,45 @@ body, html {
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
   overflow-x: hidden;
-  /* background-color: var(--bg-color) !important;  */
 }
 
+.scroll-container {
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-left: 50px;
+}
 
 .leads-dashboard {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  margin-left: 200px;
+  flex: 1;
   padding: 20px;
-  min-height: 100vh;
-  width: 90%;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   background-color: #f4f4f4;
+  padding-top: 100px;
+  min-height: min-content;
 }
-.container-icon{
+
+.container-icon {
   background-color: grey;
   border-radius: 250px;
-  margin-left: 35px;
   padding: 6px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
 }
-.Logo{
+
+.Logo {
   font-weight: bolder;
   margin-left: 20px;
   margin-top: 10px;
@@ -39,8 +59,8 @@ body, html {
 .taskmanage-header {
   padding: 10px 20px;
   border-bottom: 1px solid #ddd;
-  margin-left: 20px;
-  width: 74.5vw;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-actions {
@@ -49,7 +69,7 @@ body, html {
   grid-gap: 10px;
 }
 
-.header-actions select{
+.header-actions select {
   width: 36vw;
   padding: 5px 10px;
   margin: 5px 0;
@@ -58,20 +78,24 @@ body, html {
 .main-content {
   display: flex;
   flex: 1;
+  min-height: 0;
+  overflow: visible;
+  width: 100%;
 }
-
 .leads-table {
-  flex: 3;
-  padding: 20px;
   overflow-y: auto;
+  flex-grow: 1;
+  max-height: calc(100vh - 200px); /* Adjust based on your header and paddings */
 }
 
 .leads-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-weight: bold;
   color: black;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
 }
 
 .source-header {
@@ -85,76 +109,109 @@ body, html {
 
 .lead-row {
   border: 1px solid #ddd;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+  overflow: visible;
+}
+
+.lead-checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0 auto; /* Center horizontally */
+  align-self: center; /* Center vertically */
+  display: block; /* Ensure it's treated as a block element */
 }
 
 .lead-details {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: white;
+  display: grid;
+  grid-template-columns: 30px 40px minmax(300px, 1fr) 120px 120px auto;
+  align-items: stretch;
+  gap: 15px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 80px; 
+
 }
 
 .lead-info {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  gap: 8px;
+  min-width: 300px;
 }
-.f-lead-content{
-  margin-right: 250px;
-}
+
 .lead-info span {
-  margin-bottom: 5px;
-  margin-left: 30px;
-  width: 100%;
+  font-size: 14px;
   color: #28282B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lead-source {
-  flex: 0 0 100px;
-  text-align: center;
-  margin-right: 20px;
-  color: black;
+  padding: 5px 10px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 14px;
+  align-self: center;
 }
 
 .lead-assign {
-  flex: 0 0 100px;
+  display: flex;
+  align-items: center; /* Vertical center */
+  justify-content: center; /* Horizontal center */
+  height: 100%;
+  min-height: 40px; /* Minimum height for the container */
   text-align: center;
-  margin-right: 20px;
-  color: #252525;
 }
+
+
+
+.lead-info span {
+  display: flex;
+  align-items: center;  /* Vertical center */
+  min-height: 40px;    /* Minimum height to center within */
+  padding: 8px 0;      /* Vertical padding */
+}
+
+
+
 
 .lead-actions {
   display: flex;
-  gap: 5px;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-self: center;
 }
 
-.lead-actions button {
-  padding: 5px 10px;
-  font-size: 12px;
-}
-.header-sort-filter button{
+.header-sort-filter button {
   padding: 8px;
   border: 2px solid #007bff;
   color: #007bff;
-  margin-left: 5px; 
+  margin-left: 5px;
   border-radius: 3px;
   cursor: pointer;
 }
-.header-sort-filter button:hover{
+
+.header-sort-filter button:hover {
   border-color: #011c38;
   color: #011c38;
 }
-.header-sort-filter .reset{
- border-color: #007bff;
- color: #007bff;
+
+.header-sort-filter .reset {
+  border-color: #007bff;
+  color: #007bff;
 }
 
-.edit { background-color: #007bff; color: white; border-radius: 5px; border-color: #f0f0f0;}
-.delete { background-color: #dc3545; color: white; border-radius: 5px; border-color: #f0f0f0; }
-.follow-up { background-color: #ffc107; color: black; border-radius: 5px; border-color: #f0f0f0;}
-.whatsapp { background-color: #28a745; color: white; border-radius: 5px; border-color: #f0f0f0;}
+.edit { background-color: #007bff; color: white; border-radius: 5px; border: none; padding: 8px 12px; }
+.delete { background-color: #dc3545; color: white; border-radius: 5px; border: none; padding: 8px 12px; }
+.follow-up { background-color: #ffc107; color: black; border-radius: 5px; border: none; padding: 8px 12px; }
+.whatsapp { background-color: #28a745; color: white; border-radius: 5px; border: none; padding: 8px 12px; }
 
+/* Dark Mode */
 [data-theme="dark"] .leads-dashboard {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -179,60 +236,101 @@ body, html {
   color: var(--text-color);
 }
 
+/* Pagination */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto 40px;
+  gap: 20px;
+  padding: 12px 0;
+  font-size: 16px;
+}
+
+.pagination-controls button {
+  padding: 10px 25px;
+  font-weight: bold;
+  background-color: #4f52bb;
+  border: none;
+  color: white;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .leads-dashboard {
-    margin-left: 0;
-    width: 100%;
     padding: 10px;
+    width: 100%;
+    max-width: 100%;
+    padding-top: 80px;
   }
 
-  .taskmanage-header {
-    flex-direction: column;
-    width: 100%;
-    margin-left: 0;
+  .scroll-container {
+    padding-left: 20px;
   }
 
   .header-actions {
-    grid-template-columns: 1fr; /* stack filters */
-    width: 100%;
+    grid-template-columns: 1fr;
   }
 
   .header-actions select {
     width: 100%;
   }
 
-  .header-sort-filter {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .leads-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
   .lead-details {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
-  .lead-info span {
-    margin-left: 0;
-  }
-
-  .lead-source,
-  .lead-assign {
-    margin: 5px 0;
-    text-align: left;
+  .lead-info {
+    min-width: 100%;
   }
 
   .lead-actions {
-    flex-wrap: wrap;
-    gap: 5px;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .Logo {
+    font-size: large;
+    margin-left: 10px;
   }
 
   .lead-actions button {
-    width:100%;
-}}
+    width: 100%;
+  }
+}
+
+.leads-dashboard.expanded {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+.leads-dashboard.collapsed {
+  margin-left: 80px;
+  transition: margin-left 0.3s ease;
+}
+
+.leads-dashboard.expanded {
+  margin-left: 200px;
+  transition: margin-left 0.3s ease;
+}
+
+.leads-dashboard.collapsed {
+  margin-left: 70px;
+  transition: margin-left 0.3s ease;
+}

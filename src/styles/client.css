@@ -425,3 +425,17 @@ input[type="checkbox"] {
   }
 }
 
+.create-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.create-btn:hover {
+  background-color: #45a049;
+}

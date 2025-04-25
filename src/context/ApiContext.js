@@ -279,6 +279,16 @@ const fetchFreshLeadsAPI = async () => {
   }
 };
 
+// ✅ Update Fresh Lead FollowUp
+const updateFreshLeadFollowUp = async (leadId, updatedData) => {
+  try {
+    const response = await apiService.updateFreshLeadFollowUp(leadId, updatedData);
+    return response;
+  } catch (error) {
+    console.error("❌ Error updating fresh lead follow-up:", error);
+    throw error;
+  }
+};
 
   
   const createFreshLeadAPI = async (leadData) => {
@@ -312,19 +322,17 @@ const fetchFreshLeadsAPI = async () => {
   const [followUps, setFollowUps] = useState([]);
   const [followUpLoading, setFollowUpLoading] = useState(false);
   
-  const fetchAllFollowUps = useCallback(async () => {
+  const getAllFollowUps = async () => {
     setFollowUpLoading(true);
     try {
-      const response = await fetchFollowUps();  // Fetch the follow-ups from your API
-      if (response && response.data) {
-        setFollowUps(response.data);  // Set the fetched data
-      }
+      const data = await apiService.fetchAllFollowUps();
+      setFollowUps(data);
     } catch (error) {
-      console.error("Error fetching follow-ups:", error);
+      console.error("❌ Failed to fetch follow-ups in context:", error);
     } finally {
       setFollowUpLoading(false);
     }
-  }, []);
+  };
   
 
   // ✅ Create a follow-up
@@ -337,6 +345,16 @@ const fetchFreshLeadsAPI = async () => {
       throw error;
     }
   };
+// ✅ Update Follow-Up
+const updateFollowUp = async (followUpId, updatedData) => {
+  try {
+    const response = await apiService.updateFollowUp(followUpId, updatedData);
+    return response;
+  } catch (error) {
+    console.error("❌ Error updating follow-up:", error);
+    throw error;
+  }
+};
 
   useEffect(() => {
     fetchExecutiveData();
@@ -347,8 +365,8 @@ const fetchFreshLeadsAPI = async () => {
     fetchExecutives();
     fetchFreshLeads();
     fetchFollowUps();
+    getAllFollowUps();
     fetchConvertedClients();
-    fetchAllFollowUps();
     getExecutiveActivity();
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (currentUser?.id) {
@@ -368,7 +386,6 @@ const fetchFreshLeadsAPI = async () => {
     fetchFollowUps, 
     createFollowUp, 
     fetchFreshLeadsAPI,
-    fetchAllFollowUps,
 
     // Executive Activity
     // fetchAllExecutivesActivities: apiService.fetchAllExecutivesActivities,
@@ -388,6 +405,13 @@ const fetchFreshLeadsAPI = async () => {
         fetchExecutiveData,
         createFreshLeadAPI,
         createLeadAPI,  // Expose the new function in context
+        
+        updateFreshLeadFollowUp,
+
+        followUps,
+        followUpLoading,
+        getAllFollowUps,
+        updateFollowUp,
 
         freshLeadsCount,
         followUpCount,
@@ -396,7 +420,6 @@ const fetchFreshLeadsAPI = async () => {
         fetchFollowUps,
         fetchConvertedClients,
         
-        fetchAllFollowUps,
         freshLeads,
         freshLeadsLoading,
         fetchFreshLeadsAPI,

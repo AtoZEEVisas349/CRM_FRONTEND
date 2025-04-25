@@ -55,11 +55,11 @@ const App = () => {
           } 
         />
 
-        <Route 
+          <Route 
           path="/clients/*" 
           element={
             <PrivateRoute>
-              <ClientRoutes followUpText={followUpText} />
+              <ClientRoutes />
             </PrivateRoute>
           } 
         />

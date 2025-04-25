@@ -1,21 +1,19 @@
 // --- ClientRoutes.js ---
-import React, { useState } from "react";
-import ClientDetail from '../features/client-details/ClientDetail.js';
-import ClientInteraction from '../features/client-details/ClientInteraction.js';
-import FollowUpDetail from '../features/client-details/FollowupDetail.js';
+import React from "react";
 import "../styles/client.css";
 import SideandNavbar from "../layouts/SidebarandNavbar";
+import ClientOverview from "../features/client-details/ClientOverview";
+import { Routes, Route } from "react-router-dom";
 
-const ClientRoutes = ({ followUpText }) => {
-  const [lastFollowUp, setLastFollowUp] = useState(followUpText);
-
+const ClientRoutes = () => {
   return (
     <div className="client-app-container">
       <SideandNavbar />
       <div className="client-main-content">
-        <ClientDetail followUpText={lastFollowUp} />
-        <ClientInteraction />
-        <FollowUpDetail onTextChange={(text) => setLastFollowUp(text)} />
+        <Routes>
+          {/* Use absolute path for nested routes */}
+          <Route path=":clientId" element={<ClientOverview />} />
+        </Routes>
       </div>
     </div>
   );
