@@ -1,0 +1,291 @@
+/* --- Responsive Fixes for Admin Settings --- */
+
+.admin-settings {
+    width: 100%;
+    padding: 2rem 3rem;
+    background: var(--bg-color, #f9fafb);
+    color: var(--text-color, #111827);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .admin-settings h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  .settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .settings-tabs button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .settings-tabs button.active {
+    background: #6366f1;
+    color: #fff;
+  }
+  
+  .settings-card {
+    background: #fff;
+    padding: 2.5rem 3rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .profile-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 3rem;
+    row-gap: 2rem;
+    width: 100%;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .form-group.full {
+    grid-column: span 2;
+  }
+  
+  .form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    padding: 0.6rem 0.9rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #f9fafb;
+    width: 100%;
+  }
+  
+  .form-group input[type="checkbox"],
+  .form-group input[type="radio"] {
+    width: auto;
+    margin-right: 0.5rem;
+  }
+  
+  .form-group small {
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  
+  .profile-pic .pic-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .profile-pic img {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+    object-fit: cover;
+  }
+  
+  .pic-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .pic-actions button {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .save-btn-wrapper {
+    width: 100%;
+    text-align: right;
+  }
+  
+  .save-btn {
+    padding: 0.6rem 1.2rem;
+    background-color: #6366f1;
+    color: #fff;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .section-block {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .team-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .team-list li {
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .billing-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  
+  .billing-table th,
+  .billing-table td {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+  }
+  
+  .billing-table th {
+    background: #f9fafb;
+    font-weight: 600;
+  }
+  
+  .integration-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .integration-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    align-items: center;
+  }
+  
+  .primary-btn {
+    background-color: #6366f1;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .mini-btn {
+    background-color: #e5e7eb;
+    color: #111827;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 1024px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    .form-group.full {
+      grid-column: span 1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .settings-tabs {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .settings-tabs button {
+      flex: 1 1 45%;
+      text-align: center;
+    }
+    .settings-card {
+      padding: 1.5rem;
+    }
+    .admin-settings {
+      padding: 1.5rem 1rem;
+    }
+  }
+  
+  
+  .settings-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Spacing between icon and heading */
+    margin-bottom: 1.5rem;
+    justify-content: flex-start; /* 👈 Ensures left alignment */
+  }
+  /* Optional: Add style to make toggle icon larger and clickable */
+  .sidebar-toggle-btn {
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+  
+
+  .settings-header {
+    display: flex;
+    align-items: center; /* Vertically center toggle and text */
+    gap: 0.75rem;         /* Space between toggle and title */
+    margin-bottom: 1.5rem;
+    justify-content: flex-start;
+  }
+  
+  .settings-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    line-height: 1; /* Align better with icon */
+  }
+  
+  .sidebar-toggle-btn {
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}

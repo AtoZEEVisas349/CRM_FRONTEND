@@ -9,9 +9,7 @@ const SettingRoutes = () => {
   return (
     <div className="settings-page-wrapper">
       <SidebarandNavbar />
-      {/* SettingsLayout already wraps sidebar and <Outlet /> */}
-      <SettingsLayout /> 
-      
+      <SettingsLayout />  
     </div>
   );
 };

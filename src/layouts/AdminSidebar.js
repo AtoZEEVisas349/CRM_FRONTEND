@@ -78,20 +78,18 @@ const AdminSidebar = () => {
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
             <li>
-              <Link to="#" className="admin-aside-link">
+              <Link to="/admin/executive-details" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faUserTie} />
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="#" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faFileInvoiceDollar} />
                 <span className="sidebar-label">Invoice</span>
               </Link>
-            </li>
+            </li> */}
           </ul>
-
-          <p className="sidebar-section sidebar-label">Settings</p>
           <ul>
             <li>
               <Link to="#" className="admin-aside-link">
@@ -100,10 +98,10 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
-              <Link to="#" className="admin-aside-link">
+            <Link to="/admin/settings" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faSliders} />
                 <span className="sidebar-label">Settings</span>
-              </Link>
+              </Link>
             </li>
           </ul>
         </nav>

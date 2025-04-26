@@ -351,4 +351,26 @@ export const fetchFollowUpHistories = async () => {
   }
 };
 
+// ✅ Fetch user settings (GET)
+export const fetchUserSettings = async () => {
+  try {
+    const response = await apiService.get("/settings"); // GET request to fetch settings
+    return response.data; // Return the settings data from the response
+  } catch (error) {
+    console.error("❌ Error fetching user settings:", error);
+    throw error; // Re-throw the error to be handled by the calling function
+  }
+};
+
+// ✅ Update user settings (PUT)
+export const updateUserSettings = async (updatedSettings) => {
+  try {
+    const response = await apiService.put("/settings", updatedSettings); // PUT request to update settings
+    return response.data; // Return the updated settings data
+  } catch (error) {
+    console.error("❌ Error updating user settings:", error);
+    throw error; // Re-throw the error so that the calling function can handle it
+  }
+};
+
 export default apiService;

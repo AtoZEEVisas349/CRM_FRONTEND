@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import AssignTask from "../features/admin/AssignTask";
 import ExecutiveDetails from "../features/admin/ExecutiveDetails";
+import AdminSettings from "../features/admin-settings/AdminSettings";
 
 const AdminRoutes = () => {
   return (
@@ -10,6 +11,7 @@ const AdminRoutes = () => {
       <Route path="/" element={<AdminLayout />}>
         <Route path="assign-task" element={<AssignTask />} />
         <Route path="executive-details" element={<ExecutiveDetails />} />
+        <Route path="settings" element={<AdminSettings />} />
       </Route>
     </Routes>
   );

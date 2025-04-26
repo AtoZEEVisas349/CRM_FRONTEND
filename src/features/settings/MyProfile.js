@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useApi } from "../../context/ApiContext";
 
 const MyProfile = () => {
   const [editingSections, setEditingSections] = useState({
@@ -7,18 +8,36 @@ const MyProfile = () => {
     address: false,
   });
 
-  const [profile, setProfile] = useState({
-    firstName: "Rafiqul",
-    lastName: "Rahman",
-    email: "rafiqurrahman51@gmail.com",
-    phone: "+09 345 346 46",
-    bio: "Team Manager",
-    country: "United Kingdom",
-    cityState: "Leeds, East London",
-    postalCode: "ERT 2354",
-    taxId: "AS45645756",
-    profileImage: "https://via.placeholder.com/100",
-  });
+  const [profile, setProfile] = useState({}); // Initialize as an empty object
+
+  const { fetchSettings } = useApi();
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const settings = await fetchSettings();
+      if (settings) {
+        // Map API response keys to UI keys
+        const mappedProfile = {
+          firstName: settings.firstname || "Not set",
+          lastName: settings.lastname || "Not set",
+          email: settings.email || "Not set",
+          phone: settings.phone || "Not set",
+          profileImage: settings.profile_picture || "https://via.placeholder.com/100",
+          cityState: `${settings.city || ""}${settings.state ? `, ${settings.state}` : ""}` || "Not set",
+          country: settings.country || "Not set",
+          postalCode: settings.postal_code || "Not set",
+          taxId: settings.tax_id || "Not set",
+          bio: settings.bio || "No bio provided",
+        };
+        
+        setProfile(mappedProfile);
+      }
+    };
+    loadSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,12 +72,12 @@ const MyProfile = () => {
         <input
           type="text"
           name={name}
-          value={profile[name]}
+          value={profile[name] || ""}  // Use empty string if the field is not available
           onChange={handleChange}
           className="field-input"
         />
       ) : (
-        <span className="field-value">{profile[name]}</span>
+        <span className="field-value">{profile[name] || "Not Available"}</span>  // Show a fallback text if the field is missing
       )}
     </div>
   );
@@ -85,14 +104,14 @@ const MyProfile = () => {
                 <input
                   type="text"
                   name="profileImage"
-                  value={profile.profileImage}
+                  value={profile.profileImage || ""}  // Use empty string if profileImage is not available
                   onChange={handleChange}
                   className="field-input"
                   style={{ width: "100px" }}
                 />
               ) : (
                 <img
-                  src={profile.profileImage}
+                  src={profile.profileImage || "https://via.placeholder.com/100"}  // Show a default image if not available
                   alt="Profile"
                   className="profile-image"
                 />
@@ -103,28 +122,28 @@ const MyProfile = () => {
                     <input
                       type="text"
                       name="firstName"
-                      value={profile.firstName}
+                      value={profile.firstName || ""}
                       onChange={handleChange}
                       className="field-input"
                     />
                     <input
                       type="text"
                       name="lastName"
-                      value={profile.lastName}
+                      value={profile.lastName || ""}
                       onChange={handleChange}
                       className="field-input"
                     />
                     <input
                       type="text"
                       name="bio"
-                      value={profile.bio}
+                      value={profile.bio || ""}
                       onChange={handleChange}
                       className="field-input"
                     />
                     <input
                       type="text"
                       name="cityState"
-                      value={profile.cityState}
+                      value={profile.cityState || ""}
                       onChange={handleChange}
                       className="field-input"
                     />

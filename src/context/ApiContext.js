@@ -388,6 +388,29 @@ export const ApiProvider = ({ children }) => {
       setFollowUpHistoriesLoading(false);
     }
   };
+  const [userSettings, setUserSettings] = useState(null); // State to hold settings
+
+// Fetch user settings
+const fetchSettings = async () => {
+  try {
+    const settings = await apiService.fetchUserSettings();  // Use the correct function from apiService
+    console.log("User Settings:", settings);
+    setUserSettings(settings); // Update state with fetched settings
+  } catch (error) {
+    console.error("Error fetching user settings:", error);
+  }
+};
+
+// Update user settings
+const updateSettings = async (updatedSettings) => {
+  try {
+    const updated = await apiService.updateUserSettings(updatedSettings);  // Use the correct function from apiService
+    console.log("Settings Updated:", updated);
+    setUserSettings(updated); // Update state with updated settings
+  } catch (error) {
+    console.error("Error updating user settings:", error);
+  }
+};
 
   // ✅ Effect to fetch initial data
   useEffect(() => {
@@ -435,7 +458,9 @@ export const ApiProvider = ({ children }) => {
       value={{
         // ✅ API functions
         ...apiFunctions,
-
+        userSettings,
+        fetchSettings,
+        updateSettings,
         // ✅ Executive Info State
         executiveInfo,
         executiveLoading,

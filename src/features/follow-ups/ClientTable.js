@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useApi } from "../../context/ApiContext"; // Adjust path if needed
+import { useApi } from "../../context/ApiContext"; 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+
 const ClientTable = ({ filter = "All Follow Ups" }) => {
   const { followUps, getAllFollowUps, followUpLoading } = useApi();
   const clients = Array.isArray(followUps?.data) ? followUps.data : [];
@@ -15,23 +16,18 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
     getAllFollowUps(); // Fetch on mount
   }, []);
 
-  // Filter clients based on follow_up_type
-  const filteredClients = clients.filter((client) => {
-    const type = client.follow_up_type?.toLowerCase().trim();
-    const submitted = client.is_followup_submitted;
-  
-    if (filter === "Interested") {
-      return submitted && type === "interested";
-    } else if (filter === "Not Interested") {
-      return submitted && type === "non-interested";
-    } else {
-      // "All Follow Ups"
-      return !submitted || type === "";
-    }
-  });
-  
+// Filter clients based on follow_up_type
+const filteredClients = clients.filter((client) => {
+  const type = (client.follow_up_type || "").toLowerCase().trim();
 
-  // Responsive height calculation
+  if (filter === "Interested") {
+    return type === "interested"; // only match by type
+  } else if (filter === "Not Interested") {
+    return type === "not interested";
+  } else {
+    return true; // All Follow Ups
+  }
+});
   useEffect(() => {
     const updateTableHeight = () => {
       const windowHeight = window.innerHeight;
@@ -50,25 +46,21 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
 
   // Navigate to follow-up detail
   const handleEdit = (client) => {
-    // Create a leadData object with client and followUpId
+    const freshLeadId = client.freshLead?.id || client.id;
     const leadData = {
-      ...client.freshLead,  // Spread the data of freshLead object
-      followUpId: client.id, // Attach the follow-up ID manually
+      ...client.freshLead,
+      fresh_lead_id: freshLeadId,
+      followUpId: client.id,
     };
-  
-    console.log("Navigating with client:", leadData); // Log to verify the payload being sent
-  
-    // Navigate to the ClientDetailsOverview page
+
     navigate(`/clients/${encodeURIComponent(client.id)}/details`, {
       state: {
-        client: leadData,  // Pass the merged object
+        client: leadData,
         createFollowUp: false,
-        from: "followup",  // You can use this to differentiate where you're coming from
+        from: "followup",
       },
     });
   };
-  
-  
 
   // Dynamic status badge color
   const getStatusColor = (status) => {
@@ -158,19 +150,22 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
                 </td>
                 <td>{client.freshLead?.email || "N/A"}</td>
                 <td>
-                <span
-                  className="followup-badge"
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: "12px",
-                    backgroundColor: "#f0f0f0",
-                    fontSize: "12px",
-                    color: "#555",
-                    marginLeft: "50px",
-                  }}
-                >
-                  {client.is_followup_submitted ? client.follow_up_type : ""}
-                </span>
+                  <span
+                    className="followup-badge"
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      backgroundColor: "#f0f0f0",
+                      fontSize: "12px",
+                      color: "#555",
+                      marginLeft:"10px",
+                    }}
+                  >
+                    {(filter === "Interested" && (client.follow_up_type || "").toLowerCase() === "interested") ||
+                    (filter === "Not Interested" && (client.follow_up_type || "").toLowerCase() === "not interested")
+                      ? client.follow_up_type
+                      : ""}
+                  </span>
                   <span
                     className="edit-icon"
                     onClick={() => handleEdit(client)}
@@ -188,54 +183,52 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
                       fontSize: "12px",
                       fontWeight: "500",
                       color: "#333",
-                      textTransform: "capitalize"
+                      textTransform: "capitalize",
                     }}
                   >
                     {client.clientLeadStatus || "N/A"}
                   </span>
                 </td>
                 <td className="call-cell">
-                        <button
-                          className="call-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActivePopoverIndex(
-                              activePopoverIndex === index ? null : index
-                            );
+                  <button
+                    className="call-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActivePopoverIndex(
+                        activePopoverIndex === index ? null : index
+                      );
+                    }}
+                  >
+                    📞
+                  </button>
+                  {activePopoverIndex === index && (
+                    <div className="popover">
+                      <button className="popover-option">
+                        <FontAwesomeIcon
+                          icon={faWhatsapp}
+                          style={{
+                            color: "#25D366",
+                            marginRight: "6px",
+                            fontSize: "18px",
                           }}
-                        >
-                          📞
-                        </button>
-                        {activePopoverIndex === index && (
-                          <div
-                            className="popover"
-                            // ref={(el) => (popoverRefs.current[index] = el)}
-                          >
-                            <button className="popover-option">
-                              <FontAwesomeIcon
-                                icon={faWhatsapp}
-                                style={{
-                                  color: "#25D366",
-                                  marginRight: "6px",
-                                  fontSize: "18px",
-                                }}
-                              />
-                              WhatsApp
-                            </button>
-                            <button className="popover-option">
-                              <FontAwesomeIcon
-                                icon={faPhone}
-                                style={{
-                                  color: "#25D366",
-                                  marginRight: "6px",
-                                  fontSize: "16px",
-                                }}
-                              />
-                              Normal Call
-                            </button>
-                          </div>
-                        )}
-             </td>              </tr>
+                        />
+                        WhatsApp
+                      </button>
+                      <button className="popover-option">
+                        <FontAwesomeIcon
+                          icon={faPhone}
+                          style={{
+                            color: "#25D366",
+                            marginRight: "6px",
+                            fontSize: "16px",
+                          }}
+                        />
+                        Normal Call
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
             ))
           )}
         </tbody>

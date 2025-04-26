@@ -7,6 +7,7 @@ const ClientDetailsOverview = () => {
   const location = useLocation();
 
   const client = location.state?.client || {};
+  console.log("Client from location.state:", client);
 
   const { updateFollowUp } = useApi();
 
@@ -34,11 +35,21 @@ const ClientDetailsOverview = () => {
     { key: "country", label: "Country" },
     { key: "assignDate", label: "Assign Date" },
   ];
-
   useEffect(() => {
-    if (client) setClientInfo(client);
+    console.log("Client data received in overview:", client); // Inspect the full client object
+    if (client) {
+      const freshLeadId = client.freshLead && client.freshLead.id ? client.freshLead.id : client.fresh_lead_id || client.id;
+      const normalizedClient = {
+        ...client,
+        fresh_lead_id: freshLeadId,
+        followUpId: client.followUpId || client.id, // Ensure followUpId is set properly
+      };
+      console.log("Normalized client:", normalizedClient); // Log normalized client for debugging
+      setClientInfo(normalizedClient);
+    }
   }, [client]);
-
+  
+  
   useEffect(() => {
     isListeningRef.current = isListening;
   }, [isListening]);
@@ -53,8 +64,8 @@ const ClientDetailsOverview = () => {
   };
 
   const handleTextUpdate = () => {
-    console.log("clientInfo:", clientInfo); // 👈 Add this line here to inspect the data
-
+    console.log("clientInfo:", clientInfo);
+  
     const updatedData = {
       connect_via: capitalize(contactMethod),
       follow_up_type: followUpType,
@@ -62,18 +73,19 @@ const ClientDetailsOverview = () => {
       reason_for_follow_up: reasonDesc,
       follow_up_date: interactionDate,
       follow_up_time: interactionTime,
-      fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.leadId || clientInfo.id, // pick correct key
+      fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.leadId || clientInfo.id, // Ensure fresh_lead_id is included
     };
-    console.log("Sending update for followUpId:", clientInfo.followUpId);
-console.log("Payload:", updatedData);
-
+  
     const followUpId = clientInfo.followUpId || clientInfo.id;
-
-    if (!followUpId) {
-      alert("Follow-up ID is missing. Please check the client data.");
+  
+    if (!followUpId || !updatedData.fresh_lead_id) {
+      alert("Missing follow-up ID or fresh lead ID.");
       return;
     }
-
+  
+    console.log("Sending update for followUpId:", followUpId);
+    console.log("Payload:", updatedData);
+  
     updateFollowUp(followUpId, updatedData)
       .then((response) => {
         console.log("Follow-up updated successfully:", response);
@@ -83,7 +95,8 @@ console.log("Payload:", updatedData);
         console.error("Error updating Follow-up:", error);
         alert("Failed to update follow-up.");
       });
-  };
+  };  
+  
 
   const toggleListening = () => {
     if (!recognitionRef.current) return alert("Speech recognition not supported");

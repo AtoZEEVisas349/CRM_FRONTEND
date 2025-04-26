@@ -5,7 +5,8 @@ import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
 
 const FollowUpRoutes = () => {
-    const [activeTab, setActiveTab] = useState("All Follow Ups");
+  const [activeTab, setActiveTab] = useState("All Follow Ups");
+
   return (
     <div className="follow-app-container">
       <SidebarandNavbar />
