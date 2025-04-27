@@ -16,18 +16,23 @@ const ClientTable = ({ filter = "All Follow Ups" }) => {
     getAllFollowUps(); // Fetch on mount
   }, []);
 
-// Filter clients based on follow_up_type
 const filteredClients = clients.filter((client) => {
   const type = (client.follow_up_type || "").toLowerCase().trim();
+  const status = (client.clientLeadStatus || "").toLowerCase().trim();
 
-  if (filter === "Interested") {
-    return type === "interested"; // only match by type
-  } else if (filter === "Not Interested") {
-    return type === "not interested";
-  } else {
-    return true; // All Follow Ups
+  if (status === "follow-up") {
+    if (filter === "Interested") {
+      return type === "interested"; // Filter by "Interested" type
+    } else if (filter === "Not Interested") {
+      return type === "not interested"; // Filter by "Not Interested" type
+    } else {
+      return true; 
+    }
   }
+
+  return false; 
 });
+
   useEffect(() => {
     const updateTableHeight = () => {
       const windowHeight = window.innerHeight;
@@ -44,15 +49,19 @@ const filteredClients = clients.filter((client) => {
     return () => window.removeEventListener("resize", updateTableHeight);
   }, []);
 
-  // Navigate to follow-up detail
   const handleEdit = (client) => {
-    const freshLeadId = client.freshLead?.id || client.id;
+    const freshLeadId = client.freshLead?.id || client.fresh_lead_id;  
+        if (!freshLeadId) {
+      console.error("Fresh Lead ID is missing or incorrect");
+      return;
+    }
+  
     const leadData = {
       ...client.freshLead,
-      fresh_lead_id: freshLeadId,
+      fresh_lead_id: freshLeadId, 
       followUpId: client.id,
     };
-
+  
     navigate(`/clients/${encodeURIComponent(client.id)}/details`, {
       state: {
         client: leadData,
@@ -60,10 +69,9 @@ const filteredClients = clients.filter((client) => {
         from: "followup",
       },
     });
-  };
-
-  // Dynamic status badge color
-  const getStatusColor = (status) => {
+  };  
+  
+    const getStatusColor = (status) => {
     switch ((status || "").toLowerCase()) {
       case "follow-up":
         return "#e0f7fa"; // light blue

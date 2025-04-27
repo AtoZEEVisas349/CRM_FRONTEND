@@ -1,10 +1,6 @@
-//apiSericce.js
 import axios from "axios";
-
-// ✅ Define API Base URL
 const API_BASE_URL = "http://localhost:5000/api";
 
-// Create an Axios instance with base settings
 const apiService = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -227,25 +223,25 @@ export const fetchConvertedClientsCount = async () => {
 // ✅ Create a new lead
 export const createLeadAPI = async (leadData) => {
   try {
-    const response = await apiService.post("/leads", leadData); // Ensure the correct endpoint '/leads'
-    return response.data; // Return the actual created lead data, which is inside response.data
+    const response = await apiService.post("/leads", leadData); 
+    return response.data; 
   } catch (error) {
     console.error(
       "❌ Error creating lead:",
       error.response?.data || error.message
-    ); // Better error logging
-    throw error; // Re-throw the error to be handled by the calling function
+    ); 
+    throw error; 
   }
 };
 
 // ✅ Function to fetch fresh leads for the executive
 export const fetchFreshLeads = async () => {
   try {
-    const response = await apiService.get("/freshleads"); // Calling the fresh leads endpoint
-    return response.data; // Return the fresh leads data
+    const response = await apiService.get("/freshleads"); 
+    return response.data; 
   } catch (error) {
     console.error("❌ Error fetching fresh leads:", error);
-    throw error; // Re-throw the error so that the calling function can handle it
+    throw error; 
   }
 };
 
@@ -258,7 +254,7 @@ export const createFreshLead = async (leadData) => {
     console.error(
       "❌ Error creating fresh lead:",
       error.response?.data || error.message
-    ); // ⬅️ even better error log
+    ); 
     throw error;
   }
 };
@@ -354,22 +350,84 @@ export const fetchFollowUpHistories = async () => {
 // ✅ Fetch user settings (GET)
 export const fetchUserSettings = async () => {
   try {
-    const response = await apiService.get("/settings"); // GET request to fetch settings
-    return response.data; // Return the settings data from the response
+    const response = await apiService.get("/settings"); 
+    return response.data; 
   } catch (error) {
     console.error("❌ Error fetching user settings:", error);
-    throw error; // Re-throw the error to be handled by the calling function
+    throw error; 
   }
 };
 
 // ✅ Update user settings (PUT)
 export const updateUserSettings = async (updatedSettings) => {
   try {
-    const response = await apiService.put("/settings", updatedSettings); // PUT request to update settings
-    return response.data; // Return the updated settings data
+    const response = await apiService.put("/settings", updatedSettings); 
+    return response.data; 
   } catch (error) {
     console.error("❌ Error updating user settings:", error);
-    throw error; // Re-throw the error so that the calling function can handle it
+    throw error; 
+  }
+};
+export const fetchMeetings = async () => {
+  try {
+    const response = await apiService.get("/meetings");
+ 
+    return response.data.meetings;
+  } catch (error) {
+    console.error("❌ Error fetching meetings:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const createMeetingAPI = (meetingData) =>
+  apiService.post("/meetings", meetingData).then(res => res.data);
+
+// ✅ Create a new converted client (using fresh_lead_id)
+export const createConvertedClient = async (convertedData) => {
+  try {
+    const response = await apiService.post("/converted", convertedData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating converted client:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const fetchConvertedClients = async () => {
+  try {
+    const response = await apiService.get('/converted/exec'); 
+    return response.data; 
+  } catch (error) {
+    console.error("Error fetching converted clients:", error.response?.data || error.message);
+    throw error;
+  }
+};
+// ✅ Function to create a Close Lead (POST)
+export const createCloseLead = async (closeLeadData) => {
+  try {
+    const response = await apiService.post("/close-leads/", {
+      ...closeLeadData,
+      clientLead: closeLeadData.clientLead, 
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating close lead:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Function to fetch all close leads
+export const fetchAllCloseLeads = async () => {
+  try {
+    const response = await apiService.get("/close-leads/", {
+      params: {
+        include: ['ClientLead'], // If you need to send this via query params (based on your backend design)
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching all close leads:", error.response?.data || error.message);
+    throw error;
   }
 };
 

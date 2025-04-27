@@ -57,11 +57,9 @@ function FreshLead() {
           setError("Invalid data format received for leads.");
           return;
         }
-
-        // ✅ Filter out leads with status 'Follow-Up'
         const filteredLeads = leads.filter(
-          (lead) => lead.clientLead?.status !== "Follow-Up"
-        );        
+          (lead) => lead.clientLead?.status === "Assigned" 
+        );         
 
         setLeadsData(filteredLeads);
       } catch (err) {
@@ -105,9 +103,8 @@ function FreshLead() {
   
     navigate(`/clients/${encodeURIComponent(lead.name)}`, {
       state: { client: clientData, createFollowUp: true, clientId: clientData.id },
-    });    
+    });
   };
-  
 
   if (executiveLoading) return <p>Loading executive data...</p>;
 
@@ -154,11 +151,11 @@ function FreshLead() {
                         </button>
                       </td>
                       <td>
-                        <input
-                          type="radio"
-                          name={`leadStatus-${index}`}
-                          className="status-radio"
-                        />
+                      <input
+                      type="radio"
+                      name={`leadStatus-${index}`}  // Ensure no other interference with this string
+                      className="status-radio"
+                    />
                       </td>
                       <td className="call-cell">
                         <button
@@ -241,4 +238,4 @@ function FreshLead() {
   );
 }
 
-export default FreshLead;
+export default FreshLead;

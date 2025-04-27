@@ -1,133 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faClock as farClock,
+  faClock as farClockRegular,
   faSyncAlt,
   faEllipsisV,
   faPlus,
   faChevronDown
 } from "@fortawesome/free-solid-svg-icons";
-import { faClock as farClockRegular } from "@fortawesome/free-regular-svg-icons";
 import { ThemeProvider } from "../admin/ThemeContext";
+import { useApi } from "../../context/ApiContext";
+
+
+const isSameDay = (d1, d2) =>
+  d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
+
 const ScheduleMeeting = () => {
+  const { fetchMeetings } = useApi();
+  const [meetings, setMeetings] = useState([]);
   const [activeFilter, setActiveFilter] = useState("today");
   const [scrolled, setScrolled] = useState(false);
 
-  // Sample meeting data
-  const meetings = [
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: true
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-    {
-      id: 1,
-      title: "Week Launch",
-      time: "10:00 am",
-      endTime: "11:20 am",
-      duration: "1.20 hrs",
-      tags: ["Marketing"],
-      attendees: [
-        "https://storage.googleapis.com/a1aa/image/a0216252-f326-472a-944c-97f7f24b64af.jpg",
-        "https://storage.googleapis.com/a1aa/image/7a1f2eda-982f-4aeb-5847-4f99eb1d382e.jpg",
-        "https://storage.googleapis.com/a1aa/image/5233d893-6522-4596-1e67-df1d191337fc.jpg"
-      ],
-      highlighted: false
-    },
-  ];
+  // Load and filter meetings
+  const loadMeetings = async () => {
+    try {
+      const all = await fetchMeetings();
+      const now = new Date();
+      const filtered = all.filter((m) => {
+        const d = new Date(m.startTime);
+        if (activeFilter === "today") {
+          return isSameDay(d, now);
+        }
+        if (activeFilter === "week") {
+          const weekAgo = new Date(now);
+          weekAgo.setDate(now.getDate() - 7);
+          return d >= weekAgo && d <= now;
+        }
+        if (activeFilter === "month") {
+          return (
+            d.getFullYear() === now.getFullYear() &&
+            d.getMonth() === now.getMonth()
+          );
+        }
+        return true;
+      });
+      setMeetings(filtered);
+    } catch (error) {
+      console.error("Error loading meetings:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadMeetings();
+  }, [activeFilter]);
 
   const handleScroll = (e) => {
     setScrolled(e.target.scrollTop > 10);
@@ -136,94 +62,83 @@ const ScheduleMeeting = () => {
   return (
     <div className="task-management-container">
       <div className="task-management-wrapper">
-        {/* Sticky Header Section */}
         <header className={`content-header ${scrolled ? "scrolled" : ""}`}>
-          <div className="header-top">
+        <div className="header-top">
             <div className="header-left">
               <h2 className="meetings-title">Your Meetings</h2>
               <div className="date-section">
-                <p className="day-name">Thursday</p>
-                <p className="current-date">15 November</p>
+                <p className="day-name">
+                  {new Date().toLocaleDateString(undefined, { weekday: 'long' })}
+                </p>
+                <p className="current-date">
+                  {new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}
+                </p>
                 <FontAwesomeIcon icon={faChevronDown} className="date-dropdown" />
               </div>
             </div>
-            
+
             <div className="filter-controls">
-              <button 
-                className={activeFilter === "today" ? "active-filter" : ""}
-                onClick={() => setActiveFilter("today")}
-              >
-                Today
-              </button>
-              <button 
-                className={activeFilter === "week" ? "active-filter" : ""}
-                onClick={() => setActiveFilter("week")}
-              >
-                Week
-              </button>
-              <button 
-                className={activeFilter === "month" ? "active-filter" : ""}
-                onClick={() => setActiveFilter("month")}
-              >
-                Month
-              </button>
-              <button className="refresh-button">
+              {['today','week','month'].map((key) => (
+                <button
+                  key={key}
+                  className={activeFilter === key ? 'active-filter' : ''}
+                  onClick={() => setActiveFilter(key)}
+                >
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </button>
+              ))}
+              <button className="refresh-button" onClick={loadMeetings}>
                 <FontAwesomeIcon icon={faSyncAlt} />
               </button>
             </div>
           </div>
         </header>
 
-        {/* Scrollable Content Section */}
-        <div 
-          className="meetings-content" 
-          onScroll={handleScroll}
-        >
+        <div className="meetings-content" onScroll={handleScroll}>
           <ul className="meetings-list">
-            {meetings.map((meeting) => (
-              <li 
-                key={meeting.id} 
-                className={`meeting-item ${
-                  meeting.highlighted ? "highlighted-meeting" : ""
-                }`}
-              >
-                <div className="meeting-time">
-                  <p className="start-time">{meeting.time}</p>
-                  <p className="end-time">{meeting.endTime}</p>
-                </div>
-                <div className="meeting-duration">
-                  <FontAwesomeIcon icon={farClockRegular} />
-                  <span>{meeting.duration}</span>
-                </div>
+            {meetings.map((meeting) => {
+              const start = new Date(meeting.startTime);
+              const end = meeting.endTime ? new Date(meeting.endTime) : null;
+              return (
+                <li key={meeting.id} className={`meeting-item ${meeting.highlighted ? 'highlighted-meeting' : ''}`}>
 
-                <div className="meeting-details">
-                  <p className="meeting-title">{meeting.title}</p>
-                  <div className="meeting-tags">
-                    {meeting.tags.map((tag) => (
-                      <span key={tag} className="meeting-tag">{tag}</span>
-                    ))}
+                  <div className="meeting-time">
+                    <p className="start-time">
+                      {start.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                    {end && (
+                      <p className="end-time">
+                        {end.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    )}
                   </div>
-                </div>
 
-                <div className="meeting-attendees">
-                  {meeting.attendees.map((avatar, idx) => (
-                    <img 
-                      key={idx} 
-                      alt="Attendee" 
-                      className="attendee-thumbnail" 
-                      src={avatar} 
-                    />
-                  ))}
-                  <button className="add-attendee">
-                    <FontAwesomeIcon icon={faPlus} />
+                  <div className="meeting-duration">
+                    <FontAwesomeIcon icon={farClockRegular} />
+                    <span>
+                    {meeting.duration || (((end || start) - start) / 3600000 + " hrs")}
+                    </span>
+                  </div>
+
+                  <div className="meeting-details">
+                    <p className="meeting-title">{meeting.clientName}</p>
+                    <div className="meeting-tags">
+                      <span className="meeting-tag">{meeting.reasonForFollowup}</span>
+                    </div>
+                  </div>
+
+                  <div className="meeting-attendees">
+                    <button className="add-attendee">
+                      <FontAwesomeIcon icon={faPlus} />
+                    </button>
+                  </div>
+
+                  <button className="meeting-options">
+                    <FontAwesomeIcon icon={faEllipsisV} />
                   </button>
-                </div>
-
-                <button className="meeting-options">
-                  <FontAwesomeIcon icon={faEllipsisV} />
-                </button>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
@@ -237,4 +152,4 @@ const ScheduleMeetingWithTheme = () => (
   </ThemeProvider>
 );
 
- export default ScheduleMeeting;
+export default ScheduleMeetingWithTheme;

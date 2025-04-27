@@ -18,17 +18,24 @@ const MyProfile = () => {
       if (settings) {
         // Map API response keys to UI keys
         const mappedProfile = {
-          firstName: settings.firstname || "Not set",
-          lastName: settings.lastname || "Not set",
-          email: settings.email || "Not set",
-          phone: settings.phone || "Not set",
+          firstName: settings.firstname?.trim() || "First Name",
+          lastName: settings.lastname?.trim() || "Last Name",
+          username: settings.username?.trim() || "Not set",
+          email: settings.email?.trim() || "Not set",
+          phone: settings.phone?.trim() || "Not set",
           profileImage: settings.profile_picture || "https://via.placeholder.com/100",
-          cityState: `${settings.city || ""}${settings.state ? `, ${settings.state}` : ""}` || "Not set",
-          country: settings.country || "Not set",
-          postalCode: settings.postal_code || "Not set",
-          taxId: settings.tax_id || "Not set",
-          bio: settings.bio || "No bio provided",
-        };
+          cityState: (settings.city && settings.state) 
+            ? `${settings.city}, ${settings.state}` 
+            : settings.city 
+              ? settings.city 
+              : settings.state 
+                ? settings.state 
+                : "Not set",
+          country: settings.country?.trim() || "Not set",
+          postalCode: settings.postal_code?.trim() || "Not set",
+          taxId: settings.tax_id?.trim() || "Not set",
+          role: settings.role?.trim() || "No role specified",
+        };        
         
         setProfile(mappedProfile);
       }
@@ -117,44 +124,50 @@ const MyProfile = () => {
                 />
               )}
               <div>
-                {editingSections.header ? (
-                  <>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={profile.firstName || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                    />
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={profile.lastName || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                    />
-                    <input
-                      type="text"
-                      name="bio"
-                      value={profile.bio || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                    />
-                    <input
-                      type="text"
-                      name="cityState"
-                      value={profile.cityState || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <h3>{profile.firstName} {profile.lastName}</h3>
-                    <p>{profile.bio}</p>
-                    <p>{profile.cityState}</p>
-                  </>
-                )}
+              {editingSections.header ? (
+  <>
+    <input
+      type="text"
+      name="firstName"
+      value={profile.firstName || ""}
+      onChange={handleChange}
+      className="field-input"
+      placeholder="First Name"
+    />
+    <input
+      type="text"
+      name="lastName"
+      value={profile.lastName || ""}
+      onChange={handleChange}
+      className="field-input"
+      placeholder="Last Name"
+    />
+    <input
+      type="text"
+      name="username"
+      value={profile.username || ""}
+      onChange={handleChange}
+      className="field-input"
+      placeholder="Username"
+    />
+    <input
+      type="text"
+      name="role"
+      value={profile.role || ""}
+      onChange={handleChange}
+      className="field-input"
+      placeholder="Role"
+    />
+  </>
+) : (
+  <>
+    <h3>{profile.firstName || "First Name"} {profile.lastName || "Last Name"}</h3>
+    <p><strong>Username:</strong> {profile.username || "Not set"}</p>
+    <p><strong>Role:</strong> {profile.role || "No role specified"}</p>
+    <p>{profile.cityState || "Not set"}</p>
+  </>
+)}
+
               </div>
             </div>
           </div>

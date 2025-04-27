@@ -7,9 +7,7 @@ const ClientDetailsOverview = () => {
   const location = useLocation();
 
   const client = location.state?.client || {};
-  console.log("Client from location.state:", client);
-
-  const { updateFollowUp } = useApi();
+  const { updateFollowUp, createConvertedClientAPI, createCloseLeadAPI } = useApi(); 
 
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
@@ -36,15 +34,13 @@ const ClientDetailsOverview = () => {
     { key: "assignDate", label: "Assign Date" },
   ];
   useEffect(() => {
-    console.log("Client data received in overview:", client); // Inspect the full client object
     if (client) {
       const freshLeadId = client.freshLead && client.freshLead.id ? client.freshLead.id : client.fresh_lead_id || client.id;
       const normalizedClient = {
         ...client,
         fresh_lead_id: freshLeadId,
-        followUpId: client.followUpId || client.id, // Ensure followUpId is set properly
+        followUpId: client.followUpId || client.id, 
       };
-      console.log("Normalized client:", normalizedClient); // Log normalized client for debugging
       setClientInfo(normalizedClient);
     }
   }, [client]);
@@ -63,9 +59,7 @@ const ClientDetailsOverview = () => {
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
 
-  const handleTextUpdate = () => {
-    console.log("clientInfo:", clientInfo);
-  
+  const handleTextUpdate = () => {  
     const updatedData = {
       connect_via: capitalize(contactMethod),
       follow_up_type: followUpType,
@@ -81,14 +75,9 @@ const ClientDetailsOverview = () => {
     if (!followUpId || !updatedData.fresh_lead_id) {
       alert("Missing follow-up ID or fresh lead ID.");
       return;
-    }
-  
-    console.log("Sending update for followUpId:", followUpId);
-    console.log("Payload:", updatedData);
-  
+    }  
     updateFollowUp(followUpId, updatedData)
       .then((response) => {
-        console.log("Follow-up updated successfully:", response);
         alert("Follow-up updated successfully!");
       })
       .catch((error) => {
@@ -97,6 +86,39 @@ const ClientDetailsOverview = () => {
       });
   };  
   
+  const handleConvertedOrClose = async () => {
+    if (followUpType === "converted") {
+      try {
+        if (!clientInfo.fresh_lead_id) {
+          alert("Fresh Lead ID is missing. Please ensure the lead exists.");
+          return;
+        }        
+        const convertedPayload = {
+          fresh_lead_id: clientInfo.fresh_lead_id,
+        };
+  
+        const response = await createConvertedClientAPI(convertedPayload);
+        alert("Converted client created successfully!");
+      } catch (error) {
+        console.error("❌ Error creating converted client:", error);
+        alert("Failed to create converted client. Ensure the lead exists.");
+      }
+    }  else if (followUpType === "close") {
+      try {
+        if (!clientInfo.fresh_lead_id) {
+          alert("Fresh Lead ID is missing. Please ensure the lead exists.");
+          return;
+        }
+
+        const closeLeadPayload = { fresh_lead_id: clientInfo.fresh_lead_id };
+        const response = await createCloseLeadAPI(closeLeadPayload); 
+        alert("Close lead created successfully!");
+      } catch (error) {
+        console.error("❌ Error creating close lead:", error);
+        alert("Failed to create close lead.");
+      }
+    }
+  };  
 
   const toggleListening = () => {
     if (!recognitionRef.current) return alert("Speech recognition not supported");
@@ -278,6 +300,23 @@ const ClientDetailsOverview = () => {
                 >
                   Update Follow-Up
                 </button>
+                {(followUpType === "converted" || followUpType === "close") && (
+                    <button
+                      onClick={handleConvertedOrClose}
+                      className="converted-btn"
+                      style={{
+                        marginTop: "10px",
+                        backgroundColor: "#4CAF50",
+                        color: "white",
+                        padding: "10px 20px",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {followUpType === "converted" ? "Create Converted" : "Create Close"}
+                    </button>
+                  )}
               </div>
             </div>
           </div>

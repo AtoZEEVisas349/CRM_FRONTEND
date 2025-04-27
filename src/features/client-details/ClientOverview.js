@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 
@@ -7,25 +7,46 @@ const ClientOverview = () => {
   const location = useLocation();
 
   const client = location.state?.client || {};
-  const createFollowUpFlag = location.state?.createFollowUp || false;  
+  const createFollowUpFlag = location.state?.createFollowUp || false;
 
   const {
     updateFreshLeadFollowUp,
     createFollowUp,
     followUpLoading,
+    createMeetingAPI,
+    fetchMeetings,
+    fetchFreshLeads,
+    refreshMeetings,
+    executiveInfo,
   } = useApi();
 
+  // Initialize date/time strings before state
+  const now = new Date();
+  const todayStr = now.toISOString().split("T")[0];
+  const currentTimeStr = now.toTimeString().slice(0, 5);
+
+  // State hooks
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
   const [interactionRating, setInteractionRating] = useState("");
   const [reasonDesc, setReasonDesc] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [interactionDate, setInteractionDate] = useState("");
-  const [interactionTime, setInteractionTime] = useState("");
+  const [interactionDate, setInteractionDate] = useState(todayStr);
+  const [interactionTime, setInteractionTime] = useState(currentTimeStr);
 
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
+
+  const minDate = useMemo(() => todayStr, []);
+  const maxDate = useMemo(() => {
+    const d = new Date(now);
+    d.setFullYear(d.getFullYear() + 5);
+    return d.toISOString().split("T")[0];
+  }, []);
+
+  const minTime = interactionDate === minDate ? currentTimeStr : "00:00";
+
   const clientFields = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
@@ -51,37 +72,58 @@ const ClientOverview = () => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleTextUpdate = () => {
-    const updatedData = {
-      followUpStatus: followUpType, // Send follow-up status
-      followUpDate: interactionDate, // Send follow-up date
-    };
-  
-    const followUpId = clientInfo.followUpId || clientInfo.freshLeadId || clientInfo.id;
-  
-    if (!followUpId) {
-      console.error("Follow-up ID is missing.");
-      alert("Follow-up ID is missing. Please check the client data.");
-      return;
+  const handleTextUpdate = async () => {
+    if (!followUpType || !interactionDate || !interactionTime) {
+      return alert("Please select a follow-up type, date and time before updating.");
     }
-  
-    updateFreshLeadFollowUp(followUpId, updatedData)
-      .then((response) => {
-        console.log("Follow-up updated successfully:", response);
-        alert("Follow-up updated successfully!");
-  
-        setClientInfo((prevClientInfo) => ({
-          ...prevClientInfo,
-          followUpStatus: updatedData.followUpStatus,
-          followUpDate: updatedData.followUpDate,
-        }));
-      })
-      .catch((error) => {
-        console.error("Error updating Follow-up:", error);
-        alert("Failed to update follow-up.");
-      });
+
+    const followUpId = clientInfo.followUpId || clientInfo.freshLeadId || clientInfo.id;
+    if (!followUpId) {
+      console.error("Missing follow-up ID on clientInfo:", clientInfo);
+      return alert("Unable to find the record to update. Please reload and try again.");
+    }
+
+    try {
+      if (followUpType === "appointment") {
+        const meetingPayload = {
+          clientName: clientInfo.name,
+          clientEmail: clientInfo.email,
+          clientPhone: clientInfo.phone,
+          reasonForFollowup: reasonDesc,
+          startTime: new Date(`${interactionDate}T${interactionTime}`),
+          endTime: null,
+          executiveId: executiveInfo?.id,
+          clientLeadId: clientInfo.id,
+        };
+
+        await createMeetingAPI(meetingPayload);
+        alert("✅ Appointment created and lead moved to Meeting");
+
+        await fetchFreshLeads();
+        await fetchMeetings();
+        await refreshMeetings();
+      } else {
+        const updatedData = {
+          followUpStatus: followUpType,
+          followUpDate: interactionDate,
+        };
+
+        await updateFreshLeadFollowUp(followUpId, updatedData);
+        alert("✅ Follow-up status updated");
+
+        await fetchFreshLeads();
+      }
+
+      setFollowUpType("");
+      setInteractionDate("");
+      setInteractionTime("");
+      setReasonDesc("");
+    } catch (error) {
+      console.error("Error in handleTextUpdate:", error);
+      alert("❌ Something went wrong. Please try again.");
+    }
   };
-  
+
   const handleCreateFollowUp = () => {
     if (
       !contactMethod ||
@@ -94,25 +136,21 @@ const ClientOverview = () => {
       alert("Please fill out all required fields before creating follow-up.");
       return;
     }
-  
-    // Create the follow-up data with the correct field names
+
     const newFollowUpData = {
-      connect_via: contactMethod, 
-      follow_up_type: followUpType, 
-      interaction_rating: interactionRating, 
-      reason_for_follow_up: reasonDesc, 
-      follow_up_date: interactionDate, 
-      follow_up_time: interactionTime, 
+      connect_via: contactMethod,
+      follow_up_type: followUpType,
+      interaction_rating: interactionRating,
+      reason_for_follow_up: reasonDesc,
+      follow_up_date: interactionDate,
+      follow_up_time: interactionTime,
       fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
     };
-  
-    // Make the API call to create the follow-up
+
     createFollowUp(newFollowUpData)
       .then((response) => {
         console.log("Follow-up created successfully:", response);
         alert("Follow-up created!");
-        
-        // Reset form fields after successful creation
         setReasonDesc("");
         setContactMethod("");
         setFollowUpType("");
@@ -125,7 +163,7 @@ const ClientOverview = () => {
         alert("Failed to create follow-up.");
       });
   };
-  
+
   const toggleListening = () => {
     if (!recognitionRef.current) return alert("Speech recognition not supported");
     isListening ? stopListening() : recognitionRef.current.start();
@@ -203,7 +241,7 @@ const ClientOverview = () => {
           <div className="follow-up-type">
             <h4>Follow-Up Type</h4>
             <div className="radio-group">
-              {[ "interested", "appointment", "no response", "converted", "not interested", "close", ].map((type) => (
+              {["interested", "appointment", "no response", "converted", "not interested", "close"].map((type) => (
                 <label key={type} className="radio-container">
                   <input
                     type="radio"
@@ -259,7 +297,7 @@ const ClientOverview = () => {
                   onClick={toggleListening}
                   aria-label={isListening ? "Stop recording" : "Start recording"}
                 >
-                  {isListening ? "⏹️" : "🎤"}
+                  {isListening ? "⏹" : "🎤"}
                 </button>
               </div>
 
@@ -271,6 +309,8 @@ const ClientOverview = () => {
                     <input
                       type="date"
                       value={interactionDate}
+                      min={minDate}
+                      max={maxDate}
                       onChange={(e) => setInteractionDate(e.target.value)}
                     />
                   </div>
@@ -279,6 +319,7 @@ const ClientOverview = () => {
                     <input
                       type="time"
                       value={interactionTime}
+                      min={minTime}
                       onChange={(e) => setInteractionTime(e.target.value)}
                     />
                   </div>
@@ -304,4 +345,4 @@ const ClientOverview = () => {
   );
 };
 
-export default ClientOverview;
+export default ClientOverview;

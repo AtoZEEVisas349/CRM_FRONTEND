@@ -1,34 +1,73 @@
-import React from "react";
-import CustomerRow from "./CustomerRow";
+import React, { useEffect, useState } from "react";
+import { useApi } from "../../context/ApiContext"; 
 
-const customers = [
-  { name: "John Hill", email: "ryoung@yahoo.com", phone: "(717) 817-8593", tags: ["Lead", "Long-Term"], lastContacted: "Jul 22, 2022" },
-  { name: "Jerry Clark", email: "real.sarahjohnson@yahoo.com", phone: "(610) 818-9038", tags: ["Lead"], lastContacted: "Jul 22, 2022" },
-  { name: "John Hill", email: "ryoung@yahoo.com", phone: "(717) 817-8593", tags: ["Lead", "Long-Term"], lastContacted: "Jul 22, 2022" },
-  { name: "John Hill", email: "ryoung@yahoo.com", phone: "(717) 817-8593", tags: ["Lead", "Long-Term"], lastContacted: "Jul 22, 2022" },
-  { name: "John Hill", email: "ryoung@yahoo.com", phone: "(717) 817-8593", tags: ["Lead", "Long-Term"], lastContacted: "Jul 22, 2022" },
-];
+const CustomerTable = () => {
+  const { convertedClients, fetchConvertedClientsAPI, convertedClientsLoading } = useApi(); 
+  const [customers, setCustomers] = useState([]); 
+  const [isDataFetched, setIsDataFetched] = useState(false); 
 
-const CustomerTable = () => (
-  <div className="table-container">
-    <table className="table">
-      <thead className="table-head">
-        <tr>
-          <th>All Customers ({customers.length})</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Tags</th>
-          <th>Last Contacted</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody className="table-body">
-        {customers.map((customer, index) => (
-          <CustomerRow key={index} customer={customer} />
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
+  useEffect(() => {
+    const fetchClients = async () => {
+      if (!isDataFetched) { 
+        const clients = await fetchConvertedClientsAPI(); 
+        setIsDataFetched(true); 
+      }
+    };
+    fetchClients();
+  }, [isDataFetched, fetchConvertedClientsAPI]); 
 
-export default CustomerTable;
+  useEffect(() => {
+    if (Array.isArray(convertedClients)) {
+      setCustomers(convertedClients); 
+    }
+  }, [convertedClients]); 
+
+  const customerCount = Array.isArray(customers) ? customers.length : 0;
+
+  return (
+    <div className="table-container">
+      <table className="table">
+        <thead className="table-head">
+          <tr>
+            <th>All Customers ({customerCount})</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Last Contacted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody className="table-body">
+          {convertedClientsLoading ? (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                Loading...
+              </td>
+            </tr>
+          ) : customers.length > 0 ? (
+            customers.map((customer, index) => (
+              <tr key={index}>
+                <td className="name">
+                  <input type="checkbox" className="checkbox" />
+                  <i className="fa-solid fa-circle-user"></i>
+                  <p>{customer.name || "N/A"}</p> {/* Fallback for name */}
+                </td>
+                <td>{customer.email || "N/A"}</td> {/* Fallback for email */}
+                <td>{customer.phone || "N/A"}</td> {/* Fallback for phone */}
+                <td>{customer.last_contacted || "N/A"}</td> {/* Fallback for lastContacted */}
+                <td><i className="fa-solid fa-ellipsis"></i></td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                No customers available.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default CustomerTable;

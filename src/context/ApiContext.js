@@ -237,30 +237,44 @@ export const ApiProvider = ({ children }) => {
 
   const fetchFreshLeads = async () => {
     try {
-      const count = await apiService.fetchFreshLeadsCount();
-      setFreshLeadsCount(count);
+      const response = await apiService.fetchFreshLeads();
+      const data = response.data;   
+      const assignedLeads = data.filter(lead => lead.clientLead?.status === "Assigned");
+        setFreshLeadsCount(assignedLeads.length); 
     } catch (error) {
-      console.error("❌ Failed to fetch fresh leads count:", error);
+      console.error("❌ Failed to fetch fresh leads:", error);
     }
-  };
+  };   
 
   const fetchFollowUps = async () => {
     try {
-      const count = await apiService.fetchFollowUpCount();
-      setFollowUpCount(count);
+      const response = await apiService.fetchAllFollowUps(); // <-- Corrected here
+      const data = response.data;
+  
+      const followUpLeads = data.filter(lead => lead.clientLeadStatus === "Follow-Up");
+  
+      console.log("Filtered Follow-Up Leads:", followUpLeads);
+  
+      setFollowUpCount(followUpLeads.length);
     } catch (error) {
-      console.error("❌ Failed to fetch follow-up count:", error);
+      console.error("❌ Failed to fetch follow-up leads:", error);
     }
   };
-
+  
   const fetchConvertedClients = async () => {
     try {
-      const count = await apiService.fetchConvertedClientsCount();
-      setConvertedClientsCount(count);
+      const response = await apiService.fetchConvertedClients(); 
+      const data = response.data;
+  
+      const convertedClients = data.filter(lead => lead.status === "Converted");
+  
+      console.log("Filtered Converted Clients:", convertedClients);
+  
+      setConvertedClientsCount(convertedClients.length); 
     } catch (error) {
-      console.error("❌ Failed to fetch converted clients count:", error);
+      console.error("❌ Failed to fetch converted clients:", error);
     }
-  };
+  };  
 
   // ✅ Fetch Fresh Leads API
   const [freshLeads, setFreshLeads] = useState([]);
@@ -388,14 +402,14 @@ export const ApiProvider = ({ children }) => {
       setFollowUpHistoriesLoading(false);
     }
   };
-  const [userSettings, setUserSettings] = useState(null); // State to hold settings
+  const [userSettings, setUserSettings] = useState(null); 
 
 // Fetch user settings
 const fetchSettings = async () => {
   try {
-    const settings = await apiService.fetchUserSettings();  // Use the correct function from apiService
+    const settings = await apiService.fetchUserSettings();  
     console.log("User Settings:", settings);
-    setUserSettings(settings); // Update state with fetched settings
+    setUserSettings(settings); 
   } catch (error) {
     console.error("Error fetching user settings:", error);
   }
@@ -404,13 +418,84 @@ const fetchSettings = async () => {
 // Update user settings
 const updateSettings = async (updatedSettings) => {
   try {
-    const updated = await apiService.updateUserSettings(updatedSettings);  // Use the correct function from apiService
+    const updated = await apiService.updateUserSettings(updatedSettings); 
     console.log("Settings Updated:", updated);
-    setUserSettings(updated); // Update state with updated settings
+    setUserSettings(updated); 
   } catch (error) {
     console.error("Error updating user settings:", error);
   }
 };
+const [meetings, setMeetings] = useState([]);
+
+const refreshMeetings = async () => {
+  const all = await apiService.fetchMeetings();  
+  setMeetings(all);
+  return all; 
+}
+
+const [convertedClients, setConvertedClients] = useState([]);
+const [convertedClientsLoading, setConvertedClientsLoading] = useState(false);
+// Create a new converted client
+const createConvertedClientAPI = async (convertedData) => {
+  try {
+    const response = await apiService.createConvertedClient(convertedData);
+    setConvertedClients((prev) => [...prev, response]);  // Add new one to list
+    return response;
+  } catch (error) {
+    console.error("❌ Error creating converted client:", error);
+    throw error;
+  }
+};
+
+// Fetch all converted clients
+const fetchConvertedClientsAPI = async () => {
+  setConvertedClientsLoading(true);
+  try {
+    const response = await apiService.fetchConvertedClients(); 
+    if (response && response.data && Array.isArray(response.data)) {
+      setConvertedClients(response.data); 
+    } else {
+      console.error("❌ No data found in the response");
+      setConvertedClients([]); 
+    }
+  } catch (error) {
+    console.error("❌ Error fetching converted clients:", error);
+    setConvertedClients([]); 
+  } finally {
+    setConvertedClientsLoading(false);
+  }
+};
+
+ // Add state for Close Leads
+ const [closeLeads, setCloseLeads] = useState([]);
+ const [closeLeadsLoading, setCloseLeadsLoading] = useState(false);
+ const [closeLeadsError, setCloseLeadsError] = useState(null);
+
+ // ✅ Function to create Close Lead (POST)
+ const createCloseLeadAPI = async (closeLeadData) => {
+   try {
+     const response = await apiService.createCloseLead(closeLeadData); 
+     return response;
+   } catch (error) {
+     console.error("❌ Error creating close lead:", error);
+     throw error;
+   }
+ };
+
+ // ✅ Function to get all Close Leads (GET)
+ const fetchAllCloseLeadsAPI = async () => {
+   setCloseLeadsLoading(true);
+   setCloseLeadsError(null);
+   try {
+     const data = await apiService.fetchAllCloseLeads();
+     setCloseLeads(data || []); 
+   } catch (error) {
+     console.error("❌ Error fetching close leads:", error);
+     setCloseLeadsError(error); 
+   } finally {
+     setCloseLeadsLoading(false);
+   }
+ };
 
   // ✅ Effect to fetch initial data
   useEffect(() => {
@@ -421,11 +506,12 @@ const updateSettings = async (updatedSettings) => {
     fetchLeadSectionVisitsAPI();
     fetchExecutives();
     fetchFreshLeads();
+    fetchAllCloseLeadsAPI();
     fetchFollowUps();
     getAllFollowUps();
     fetchConvertedClients();
     getExecutiveActivity();
-    fetchFollowUpHistoriesAPI(); // ✅ Fetch follow-up histories on mount
+    fetchFollowUpHistoriesAPI(); 
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (currentUser?.id) {
       fetchNotifications(currentUser.id);
@@ -447,10 +533,22 @@ const updateSettings = async (updatedSettings) => {
     fetchFollowUps,
     createFollowUp,
     fetchFreshLeadsAPI,
+    
+    createCloseLeadAPI,
+    fetchAllCloseLeadsAPI,
 
+    createConvertedClientAPI,
+    fetchConvertedClientsAPI,
     // Follow-up Histories
     createFollowUpHistoryAPI,
     fetchFollowUpHistoriesAPI,
+    // Meetings
+ createMeetingAPI: apiService.createMeetingAPI, 
+ fetchMeetings:    apiService.fetchMeetings,
+
+ meetings,
+ refreshMeetings
+
   };
 
   return (
@@ -475,6 +573,10 @@ const updateSettings = async (updatedSettings) => {
         getAllFollowUps,
         updateFollowUp,
 
+        closeLeads, // Add the state for Close Leads
+        closeLeadsLoading,
+        closeLeadsError,
+        
         // ✅ Dashboard Counts
         freshLeadsCount,
         followUpCount,
@@ -482,7 +584,8 @@ const updateSettings = async (updatedSettings) => {
         fetchFreshLeads,
         fetchFollowUps,
         fetchConvertedClients,
-
+        convertedClients,        
+        convertedClientsLoading,
         // ✅ Fresh Leads
         freshLeads,
         freshLeadsLoading,
