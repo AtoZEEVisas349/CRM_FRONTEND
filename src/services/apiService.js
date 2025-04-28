@@ -419,16 +419,13 @@ export const createCloseLead = async (closeLeadData) => {
 // Function to fetch all close leads
 export const fetchAllCloseLeads = async () => {
   try {
-    const response = await apiService.get("/close-leads/", {
-      params: {
-        include: ['ClientLead'], // If you need to send this via query params (based on your backend design)
-      }
-    });
+    const response = await apiService.get("/close-leads/"); // 👉 No params
     return response.data;
   } catch (error) {
     console.error("❌ Error fetching all close leads:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 export default apiService;

@@ -251,10 +251,7 @@ export const ApiProvider = ({ children }) => {
       const response = await apiService.fetchAllFollowUps(); // <-- Corrected here
       const data = response.data;
   
-      const followUpLeads = data.filter(lead => lead.clientLeadStatus === "Follow-Up");
-  
-      console.log("Filtered Follow-Up Leads:", followUpLeads);
-  
+      const followUpLeads = data.filter(lead => lead.clientLeadStatus === "Follow-Up");  
       setFollowUpCount(followUpLeads.length);
     } catch (error) {
       console.error("❌ Failed to fetch follow-up leads:", error);
@@ -266,10 +263,7 @@ export const ApiProvider = ({ children }) => {
       const response = await apiService.fetchConvertedClients(); 
       const data = response.data;
   
-      const convertedClients = data.filter(lead => lead.status === "Converted");
-  
-      console.log("Filtered Converted Clients:", convertedClients);
-  
+      const convertedClients = data.filter(lead => lead.status === "Converted");  
       setConvertedClientsCount(convertedClients.length); 
     } catch (error) {
       console.error("❌ Failed to fetch converted clients:", error);
@@ -466,7 +460,6 @@ const fetchConvertedClientsAPI = async () => {
   }
 };
 
- // Add state for Close Leads
  const [closeLeads, setCloseLeads] = useState([]);
  const [closeLeadsLoading, setCloseLeadsLoading] = useState(false);
  const [closeLeadsError, setCloseLeadsError] = useState(null);

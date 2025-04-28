@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 
 const MyProfile = () => {
@@ -8,43 +8,44 @@ const MyProfile = () => {
     address: false,
   });
 
-  const [profile, setProfile] = useState({}); // Initialize as an empty object
-
+  const [profile, setProfile] = useState({});
   const { fetchSettings } = useApi();
+
+  // Use useRef to prevent re-fetching
+  const hasFetched = useRef(false);
 
   useEffect(() => {
     const loadSettings = async () => {
-      const settings = await fetchSettings();
-      if (settings) {
-        // Map API response keys to UI keys
-        const mappedProfile = {
-          firstName: settings.firstname?.trim() || "First Name",
-          lastName: settings.lastname?.trim() || "Last Name",
-          username: settings.username?.trim() || "Not set",
-          email: settings.email?.trim() || "Not set",
-          phone: settings.phone?.trim() || "Not set",
-          profileImage: settings.profile_picture || "https://via.placeholder.com/100",
-          cityState: (settings.city && settings.state) 
-            ? `${settings.city}, ${settings.state}` 
-            : settings.city 
-              ? settings.city 
-              : settings.state 
-                ? settings.state 
-                : "Not set",
-          country: settings.country?.trim() || "Not set",
-          postalCode: settings.postal_code?.trim() || "Not set",
-          taxId: settings.tax_id?.trim() || "Not set",
-          role: settings.role?.trim() || "No role specified",
-        };        
-        
-        setProfile(mappedProfile);
+      if (!hasFetched.current) {
+        const settings = await fetchSettings();
+        console.log("Fetched settings:", settings);  // Log the response
+        if (settings) {
+          const mappedProfile = {
+            firstName: settings.firstname?.trim() || "First Name",
+            lastName: settings.lastname?.trim() || "Last Name",
+            username: settings.username?.trim() || "Not set",
+            email: settings.email?.trim() || "Not set",
+            phone: settings.phone?.trim() || "Not set",
+            profileImage: settings.profile_picture || "https://via.placeholder.com/100",
+            cityState: (settings.city && settings.state)
+              ? `${settings.city}, ${settings.state}`
+              : settings.city
+                ? settings.city
+                : settings.state
+                  ? settings.state
+                  : "Not set",
+            country: settings.country?.trim() || "Not set",
+            postalCode: settings.postal_code?.trim() || "Not set",
+            taxId: settings.tax_id?.trim() || "Not set",
+            role: settings.role?.trim() || "No role specified",
+          };          
+          setProfile(mappedProfile);
+        }
+        hasFetched.current = true; // Mark the data as fetched
       }
     };
     loadSettings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
-  
+  }, [fetchSettings]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,12 +80,12 @@ const MyProfile = () => {
         <input
           type="text"
           name={name}
-          value={profile[name] || ""}  // Use empty string if the field is not available
+          value={profile[name] || ""}
           onChange={handleChange}
           className="field-input"
         />
       ) : (
-        <span className="field-value">{profile[name] || "Not Available"}</span>  // Show a fallback text if the field is missing
+        <span className="field-value">{profile[name] || "Not Available"}</span>
       )}
     </div>
   );
@@ -93,7 +94,6 @@ const MyProfile = () => {
     <div className="my-profile">
       <h2>My Profile</h2>
       <div className="profile-section">
-
         {/* Profile Header */}
         <div className="profile-box">
           <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -111,63 +111,62 @@ const MyProfile = () => {
                 <input
                   type="text"
                   name="profileImage"
-                  value={profile.profileImage || ""}  // Use empty string if profileImage is not available
+                  value={profile.profileImage || ""}
                   onChange={handleChange}
                   className="field-input"
                   style={{ width: "100px" }}
                 />
               ) : (
                 <img
-                  src={profile.profileImage || "https://via.placeholder.com/100"}  // Show a default image if not available
+                  src={profile.profileImage || "https://via.placeholder.com/100"}
                   alt="Profile"
                   className="profile-image"
                 />
               )}
               <div>
-              {editingSections.header ? (
-  <>
-    <input
-      type="text"
-      name="firstName"
-      value={profile.firstName || ""}
-      onChange={handleChange}
-      className="field-input"
-      placeholder="First Name"
-    />
-    <input
-      type="text"
-      name="lastName"
-      value={profile.lastName || ""}
-      onChange={handleChange}
-      className="field-input"
-      placeholder="Last Name"
-    />
-    <input
-      type="text"
-      name="username"
-      value={profile.username || ""}
-      onChange={handleChange}
-      className="field-input"
-      placeholder="Username"
-    />
-    <input
-      type="text"
-      name="role"
-      value={profile.role || ""}
-      onChange={handleChange}
-      className="field-input"
-      placeholder="Role"
-    />
-  </>
-) : (
-  <>
-    <h3>{profile.firstName || "First Name"} {profile.lastName || "Last Name"}</h3>
-    <p><strong>Username:</strong> {profile.username || "Not set"}</p>
-    <p><strong>Role:</strong> {profile.role || "No role specified"}</p>
-    <p>{profile.cityState || "Not set"}</p>
-  </>
-)}
-
+                {editingSections.header ? (
+                  <>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={profile.firstName || ""}
+                      onChange={handleChange}
+                      className="field-input"
+                      placeholder="First Name"
+                    />
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={profile.lastName || ""}
+                      onChange={handleChange}
+                      className="field-input"
+                      placeholder="Last Name"
+                    />
+                    <input
+                      type="text"
+                      name="username"
+                      value={profile.username || ""}
+                      onChange={handleChange}
+                      className="field-input"
+                      placeholder="Username"
+                    />
+                    <input
+                      type="text"
+                      name="role"
+                      value={profile.role || ""}
+                      onChange={handleChange}
+                      className="field-input"
+                      placeholder="Role"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <h3>{profile.firstName || "First Name"} {profile.lastName || "Last Name"}</h3>
+                    <p><strong>Username:</strong> {profile.username || "Not set"}</p>
+                    <p><strong>Role:</strong> {profile.role || "No role specified"}</p>
+                    <p>{profile.cityState || "Not set"}</p>
+                  </>
+                )}
               </div>
             </div>
           </div>

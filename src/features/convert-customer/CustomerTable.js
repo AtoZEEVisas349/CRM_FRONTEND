@@ -23,7 +23,6 @@ const CustomerTable = () => {
   }, [convertedClients]); 
 
   const customerCount = Array.isArray(customers) ? customers.length : 0;
-
   return (
     <div className="table-container">
       <table className="table">
@@ -49,11 +48,11 @@ const CustomerTable = () => {
                 <td className="name">
                   <input type="checkbox" className="checkbox" />
                   <i className="fa-solid fa-circle-user"></i>
-                  <p>{customer.name || "N/A"}</p> {/* Fallback for name */}
+                  <p>{customer.name || "N/A"}</p> 
                 </td>
-                <td>{customer.email || "N/A"}</td> {/* Fallback for email */}
-                <td>{customer.phone || "N/A"}</td> {/* Fallback for phone */}
-                <td>{customer.last_contacted || "N/A"}</td> {/* Fallback for lastContacted */}
+                <td>{customer.email || "N/A"}</td> 
+                <td>{customer.phone || "N/A"}</td> 
+                <td>{customer.last_contacted || "N/A"}</td> 
                 <td><i className="fa-solid fa-ellipsis"></i></td>
               </tr>
             ))
@@ -69,5 +68,4 @@ const CustomerTable = () => {
     </div>
   );
 };
-
 export default CustomerTable;

@@ -82,7 +82,6 @@ const ClientOverview = () => {
       console.error("Missing follow-up ID on clientInfo:", clientInfo);
       return alert("Unable to find the record to update. Please reload and try again.");
     }
-
     try {
       if (followUpType === "appointment") {
         const meetingPayload = {
@@ -90,19 +89,18 @@ const ClientOverview = () => {
           clientEmail: clientInfo.email,
           clientPhone: clientInfo.phone,
           reasonForFollowup: reasonDesc,
-          startTime: new Date(`${interactionDate}T${interactionTime}`),
+          startTime: new Date(`${interactionDate}T${interactionTime}`).toISOString(),
           endTime: null,
-          executiveId: executiveInfo?.id,
-          clientLeadId: clientInfo.id,
+          fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
         };
-
         await createMeetingAPI(meetingPayload);
         alert("✅ Appointment created and lead moved to Meeting");
-
+      
         await fetchFreshLeads();
         await fetchMeetings();
         await refreshMeetings();
-      } else {
+      }
+       else {
         const updatedData = {
           followUpStatus: followUpType,
           followUpDate: interactionDate,
@@ -177,7 +175,6 @@ const ClientOverview = () => {
 
   return (
     <div className="client-overview-wrapper">
-      {/* Client Details */}
       <div className="c-container">
         <div className="c-header">
           <h2>Client Details</h2>
@@ -205,7 +202,6 @@ const ClientOverview = () => {
               </div>
             </div>
 
-            {/* Follow-Up Text Preview */}
             <div className="follow-up-column">
               <div className="last-follow-up">
                 <h3>Last Follow-up</h3>
@@ -216,7 +212,6 @@ const ClientOverview = () => {
         </div>
       </div>
 
-      {/* Client Interaction */}
       <div className="client-interaction-container">
         <div className="interaction-form">
           <div className="connected-via">
@@ -276,7 +271,6 @@ const ClientOverview = () => {
         </div>
       </div>
 
-      {/* Follow-Up Detail */}
       <div className="followup-detail-theme">
         <div className="followup-detail-container">
           <h2>Follow-Up Details</h2>
@@ -336,7 +330,6 @@ const ClientOverview = () => {
                   </button>
                 )}
               </div>
-
             </div>
           </div>
         </div>

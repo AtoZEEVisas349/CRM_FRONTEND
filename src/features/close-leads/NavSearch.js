@@ -10,7 +10,6 @@ const NavSearch = () => {
   return (
     <div className="top_bar">
       <h1 className="c-heading">CloseLeads</h1>
-
       <div className="top_controls">
         <div className="top_bar_btn">
           <button className="add_btn">+ New</button>
