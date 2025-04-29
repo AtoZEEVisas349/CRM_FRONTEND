@@ -41,12 +41,14 @@ const ExecutiveList = ({ onSelectExecutive }) => {
       ) : (
         <ul className="executive-list">
           {executives.map((exec) => (
-            <li
-              key={exec.id}
-              className="executive-item"
-              onClick={() => onSelectExecutive(exec)}
-              style={{ cursor: "pointer" }}
-            >
+           <li
+           key={exec.id}
+           className="executive-item"
+           onClick={() => {
+             onSelectExecutive(exec);
+           }}
+           style={{ cursor: "pointer" }}
+         >
               <div className="executive-info" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <span
                   className={`status-dot ${isExecutiveOnline(exec.id) ? "online" : "offline"}`}

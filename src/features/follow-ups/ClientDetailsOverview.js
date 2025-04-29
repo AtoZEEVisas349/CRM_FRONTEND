@@ -3,12 +3,12 @@ import { useLocation, useParams } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 
 const ClientDetailsOverview = () => {
-  const { clientId } = useParams();
+  const { id } = useParams();
   const location = useLocation();
-
+  const { followUpHistories, fetchFollowUpHistoriesAPI, updateFollowUp, createConvertedClientAPI, createCloseLeadAPI } = useApi();
+  
   const client = location.state?.client || {};
-  const { updateFollowUp, createConvertedClientAPI, createCloseLeadAPI } = useApi(); 
-
+  
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -17,6 +17,8 @@ const ClientDetailsOverview = () => {
   const [isListening, setIsListening] = useState(false);
   const [interactionDate, setInteractionDate] = useState("");
   const [interactionTime, setInteractionTime] = useState("");
+  const [histories, setHistories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
@@ -33,18 +35,72 @@ const ClientDetailsOverview = () => {
     { key: "country", label: "Country" },
     { key: "assignDate", label: "Assign Date" },
   ];
+  
   useEffect(() => {
     if (client) {
-      const freshLeadId = client.freshLead && client.freshLead.id ? client.freshLead.id : client.fresh_lead_id || client.id;
+      const freshLeadId = client.freshLead && client.freshLead.id 
+        ? client.freshLead.id 
+        : client.fresh_lead_id || client.id;
+        
       const normalizedClient = {
         ...client,
         fresh_lead_id: freshLeadId,
         followUpId: client.followUpId || client.id, 
       };
       setClientInfo(normalizedClient);
+      
+      // Fetch follow-up histories when client info is set
+      loadFollowUpHistories(freshLeadId);
     }
   }, [client]);
   
+  // Function to fetch follow-up histories
+  const loadFollowUpHistories = async (freshLeadId) => {
+    if (!freshLeadId) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetchFollowUpHistoriesAPI(freshLeadId);
+      console.log("Follow-up histories:", response);
+      
+      if (response && Array.isArray(response)) {
+        setHistories(response);
+        
+        // If we have histories, populate the form with the latest one
+        if (response.length > 0) {
+          const latestHistory = response[0]; // Assuming the API returns the latest first
+          populateFormWithHistory(latestHistory);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching follow-up histories:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Helper function to populate form fields with history data
+  const populateFormWithHistory = (history) => {
+    if (!history) return;
+    
+    // Convert contact method to lowercase for checkbox matching
+    const method = history.connect_via ? history.connect_via.toLowerCase() : "";
+    setContactMethod(method);
+    
+    // Set follow-up type (handle hyphenated values)
+    setFollowUpType(history.follow_up_type || "");
+    
+    // Convert interaction rating to lowercase for checkbox matching
+    const rating = history.interaction_rating ? history.interaction_rating.toLowerCase() : "";
+    setInteractionRating(rating);
+    
+    // Set description
+    setReasonDesc(history.reason_for_follow_up || "");
+    
+    // Set date and time
+    setInteractionDate(history.follow_up_date || "");
+    setInteractionTime(history.follow_up_time || "");
+  };
   
   useEffect(() => {
     isListeningRef.current = isListening;
@@ -76,9 +132,12 @@ const ClientDetailsOverview = () => {
       alert("Missing follow-up ID or fresh lead ID.");
       return;
     }  
+    
     updateFollowUp(followUpId, updatedData)
       .then((response) => {
         alert("Follow-up updated successfully!");
+        // Refresh histories after update
+        loadFollowUpHistories(updatedData.fresh_lead_id);
       })
       .catch((error) => {
         console.error("Error updating Follow-up:", error);
@@ -99,11 +158,13 @@ const ClientDetailsOverview = () => {
   
         const response = await createConvertedClientAPI(convertedPayload);
         alert("Converted client created successfully!");
+        // Refresh histories after creating converted client
+        loadFollowUpHistories(clientInfo.fresh_lead_id);
       } catch (error) {
         console.error("❌ Error creating converted client:", error);
         alert("Failed to create converted client. Ensure the lead exists.");
       }
-    }  else if (followUpType === "close") {
+    } else if (followUpType === "close") {
       try {
         if (!clientInfo.fresh_lead_id) {
           alert("Fresh Lead ID is missing. Please ensure the lead exists.");
@@ -113,6 +174,8 @@ const ClientDetailsOverview = () => {
         const closeLeadPayload = { fresh_lead_id: clientInfo.fresh_lead_id };
         const response = await createCloseLeadAPI(closeLeadPayload); 
         alert("Close lead created successfully!");
+        // Refresh histories after creating close lead
+        loadFollowUpHistories(clientInfo.fresh_lead_id);
       } catch (error) {
         console.error("❌ Error creating close lead:", error);
         alert("Failed to create close lead.");
@@ -164,8 +227,28 @@ const ClientDetailsOverview = () => {
             <div className="follow-up-column">
               <div className="last-follow-up">
                 <h3>Last Follow-up</h3>
-                <p>{reasonDesc || "No follow-up text yet."}</p>
+                {isLoading ? (
+                  <p>Loading follow-up history...</p>
+                ) : histories.length > 0 ? (
+                  <p>{histories[0].reason_for_follow_up || "No description available."}</p>
+                ) : (
+                  <p>No follow-up history available.</p>
+                )}
               </div>
+              
+              {histories.length > 0 && (
+                <div className="follow-up-history-summary">
+                  <h4>Previous Follow-ups</h4>
+                  <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {histories.slice(1).map((history, index) => (
+                      <div key={index} className="history-item" style={{ marginBottom: "10px", padding: "5px", borderBottom: "1px solid #eee" }}>
+                        <p><strong>{new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}</strong></p>
+                        <p>{history.reason_for_follow_up}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -301,22 +384,22 @@ const ClientDetailsOverview = () => {
                   Update Follow-Up
                 </button>
                 {(followUpType === "converted" || followUpType === "close") && (
-                    <button
-                      onClick={handleConvertedOrClose}
-                      className="converted-btn"
-                      style={{
-                        marginTop: "10px",
-                        backgroundColor: "#4CAF50",
-                        color: "white",
-                        padding: "10px 20px",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {followUpType === "converted" ? "Create Converted" : "Create Close"}
-                    </button>
-                  )}
+                  <button
+                    onClick={handleConvertedOrClose}
+                    className="converted-btn"
+                    style={{
+                      marginTop: "10px",
+                      backgroundColor: "#4CAF50",
+                      color: "white",
+                      padding: "10px 20px",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {followUpType === "converted" ? "Create Converted" : "Create Close"}
+                  </button>
+                )}
               </div>
             </div>
           </div>

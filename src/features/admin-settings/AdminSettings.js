@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/adminsettings.css";
-import { FaBars } from "react-icons/fa";
+import { FaBars } from "react-icons/fa"; // optional if SidebarToggle uses FaBars
+import SidebarToggle from "../admin/SidebarToggle";
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -26,12 +27,6 @@ const AdminSettings = () => {
     window.addEventListener("sidebarToggle", handleSidebarToggle);
     return () => window.removeEventListener("sidebarToggle", handleSidebarToggle);
   }, []);
-
-  const handleToggleSidebar = () => {
-    const isExpanded = localStorage.getItem("adminSidebarExpanded") !== "false";
-    localStorage.setItem("adminSidebarExpanded", (!isExpanded).toString());
-    window.dispatchEvent(new Event("sidebarToggle"));
-  };
 
   const tabs = [
     "profile", "password", "security",
@@ -203,10 +198,13 @@ const AdminSettings = () => {
 
   return (
     <div className="admin-settings">
+      {/* Here is the Sidebar Toggle Button */}
+      <SidebarToggle />
+
       <div className="settings-header">
-        <FaBars className="sidebar-toggle-btn" onClick={handleToggleSidebar} />
         <h2>Settings</h2>
       </div>
+
       <div className="settings-tabs">
         {tabs.map((tab) => (
           <button
@@ -218,9 +216,10 @@ const AdminSettings = () => {
           </button>
         ))}
       </div>
+
       <div className="settings-card">{renderTabContent()}</div>
     </div>
   );
 };
 
-export default AdminSettings;
+export default AdminSettings;

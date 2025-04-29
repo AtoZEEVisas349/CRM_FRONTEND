@@ -250,7 +250,6 @@ export const ApiProvider = ({ children }) => {
     try {
       const response = await apiService.fetchAllFollowUps(); // <-- Corrected here
       const data = response.data;
-  
       const followUpLeads = data.filter(lead => lead.clientLeadStatus === "Follow-Up");  
       setFollowUpCount(followUpLeads.length);
     } catch (error) {
@@ -420,12 +419,24 @@ const updateSettings = async (updatedSettings) => {
   }
 };
 const [meetings, setMeetings] = useState([]);
+const [meetingsLoading, setMeetingsLoading] = useState(false);
+
 
 const refreshMeetings = async () => {
   const all = await apiService.fetchMeetings();  
   setMeetings(all);
   return all; 
 }
+const adminMeeting = async () => {
+  try {
+    const meetings = await apiService.adminMeeting();  // This is already the array
+    return meetings;  // Return directly
+  } catch (error) {
+    console.error("❌ Error fetching meetings:", error);
+    return [];
+  }
+};
+
 
 const [convertedClients, setConvertedClients] = useState([]);
 const [convertedClientsLoading, setConvertedClientsLoading] = useState(false);
@@ -489,6 +500,23 @@ const fetchConvertedClientsAPI = async () => {
      setCloseLeadsLoading(false);
    }
  };
+
+ const [executiveDashboardData, setExecutiveDashboardData] = useState([]);
+ const [executiveDashboardLoading, setExecutiveDashboardLoading] = useState(false);
+
+  const fetchExecutiveDashboardData = async () => {
+    setExecutiveDashboardLoading(true);
+    try {
+      const data = await apiService.fetchAdminExecutiveDashboard(); // already defined in your services
+      setExecutiveDashboardData(data || []);
+      return data || [];
+    } catch (error) {
+      console.error("❌ Error fetching executive dashboard data:", error);
+      return [];
+    } finally {
+      setExecutiveDashboardLoading(false);
+    }
+  };
 
   // ✅ Effect to fetch initial data
   useEffect(() => {
@@ -560,6 +588,11 @@ const fetchConvertedClientsAPI = async () => {
         createLeadAPI,
         updateFreshLeadFollowUp,
 
+        executiveDashboardData,
+        executiveDashboardLoading,
+        fetchExecutiveDashboardData,
+
+        adminMeeting,
         // ✅ Follow-ups
         followUps,
         followUpLoading,

@@ -17,7 +17,8 @@ body, html {
 }
 
 .scroll-container {
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -28,13 +29,15 @@ body, html {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 20px;
+  /* padding: 20px; */
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   background-color: #f4f4f4;
-  padding-top: 100px;
+  padding-top: 25px;
   min-height: min-content;
+  padding-left: 1px;
+  margin-left: 10px;
 }
 
 .container-icon {
@@ -55,6 +58,9 @@ body, html {
   margin-top: 10px;
   font-size: x-large;
 }
+.taskmanage-header{
+  padding-left: 10px;
+}
 
 .taskmanage-header {
   padding: 10px 20px;
@@ -62,17 +68,23 @@ body, html {
   width: 100%;
   box-sizing: border-box;
 }
+.taskmanage-header{
+  /* margin-left: 1px; */
+  padding-left: 1px;
+  margin-right: 3000px;
+}
 
 .header-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
+  padding-left: 1px;
 }
 
 .header-actions select {
   width: 36vw;
   padding: 5px 10px;
-  margin: 5px 0;
+  margin: 5px 0 10px 1px;
 }
 
 .main-content {
@@ -82,10 +94,13 @@ body, html {
   overflow: visible;
   width: 100%;
 }
+
 .leads-table {
   overflow-y: auto;
   flex-grow: 1;
-  max-height: calc(100vh - 200px); /* Adjust based on your header and paddings */
+  max-height: calc(100vh - 220px); /* Adjusted to make space for pagination */
+  display: flex;
+  flex-direction: column;
 }
 
 .leads-header {
@@ -235,16 +250,24 @@ body, html {
 [data-theme="dark"] .leads-header span {
   color: var(--text-color);
 }
+[data-theme="dark"] .pagination-controls {
+  background-color: var(--bg-color);
+}
 
 /* Pagination */
 .pagination-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px auto 40px;
+  margin: 20px auto;
   gap: 20px;
   padding: 12px 0;
   font-size: 16px;
+  position: sticky;
+  bottom: 0;
+  background-color: #f4f4f4;
+  width: 100%;
+  z-index: 10;
 }
 
 .pagination-controls button {
@@ -269,68 +292,142 @@ body, html {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .leads-dashboard {
-    padding: 10px;
-    width: 100%;
-    max-width: 100%;
-    padding-top: 80px;
+@media (max-width: 1200px) {
+  .assign-header {
+    margin-right: 200px;
   }
-
-  .scroll-container {
-    padding-left: 20px;
-  }
-
-  .header-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .header-actions select {
-    width: 100%;
-  }
-
+  
   .lead-details {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .lead-info {
-    min-width: 100%;
-  }
-
-  .lead-actions {
-    justify-content: center;
-    width: 100%;
+    grid-template-columns: 30px 40px minmax(250px, 1fr) 100px 100px auto;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 992px) {
+  .scroll-container {
+    padding-left: 20px;
+  }
+  
+  .assign-header {
+    margin-right: 150px;
+  }
+  
+  .lead-details {
+    grid-template-columns: 30px 40px minmax(200px, 1fr) 100px 100px auto;
+    gap: 10px;
+    padding: 15px;
+  }
+  
+  .lead-info {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .leads-dashboard {
+    padding: 15px;
+    padding-top: 80px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .header-actions {
+    grid-template-columns: 1fr;
+  }
+  
+  .source-header, .assign-header {
+    display: none;
+  }
+  
+  .leads-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .lead-details {
+    grid-template-columns: 30px 40px 1fr;
+  }
+  
+  .lead-source, .lead-assign, .lead-actions {
+    grid-column: span 3;
+  }
+  
+  .lead-actions {
+    justify-content: center;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 576px) {
   .Logo {
     font-size: large;
     margin-left: 10px;
   }
-
+  
+  .lead-details {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .lead-info {
+    min-width: 100%;
+  }
+  
+  .lead-source, .lead-assign {
+    grid-column: span 1;
+    justify-self: start;
+  }
+  
+  .lead-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
   .lead-actions button {
     width: 100%;
   }
+  
+  .pagination-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
-.leads-dashboard.expanded {
-  margin-left: 250px;
+/* Sidebar States */
+.leads-dashboard {
+  margin-left: 250px; /* Default expanded state */
   transition: margin-left 0.3s ease;
+  width: calc(100% - 250px); /* Take remaining width */
+  min-height: 100vh;
+  padding-top: 20px;
 }
 
+/* When sidebar collapsed */
 .leads-dashboard.collapsed {
-  margin-left: 80px;
-  transition: margin-left 0.3s ease;
+  margin-left: 0px;
+  width: calc(100% - 60px);
+  transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-.leads-dashboard.expanded {
-  margin-left: 200px;
-  transition: margin-left 0.3s ease;
+
+/* Ensure scroll container fills the space */
+.scroll-container {
+  width: 100%;
+  padding-left: 0; /* Remove fixed padding */
 }
 
-.leads-dashboard.collapsed {
-  margin-left: 70px;
-  transition: margin-left 0.3s ease;
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .leads-dashboard {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+}
+
+@media (max-width: 768px) {
+  .leads-dashboard,
+  .leads-dashboard.expanded,
+  .leads-dashboard.collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
 }

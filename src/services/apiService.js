@@ -370,9 +370,9 @@ export const updateUserSettings = async (updatedSettings) => {
 };
 export const fetchMeetings = async () => {
   try {
-    const response = await apiService.get("/meetings");
- 
-    return response.data.meetings;
+    const response = await apiService.get("/meetings/exec");
+    console.log("⚡ FULL response:", response.data);
+    return response.data.data; // 👈 access `data` inside `data`
   } catch (error) {
     console.error("❌ Error fetching meetings:", error.response?.data || error.message);
     throw error;
@@ -427,5 +427,30 @@ export const fetchAllCloseLeads = async () => {
   }
 };
 
+export const adminMeeting = async () => {
+  try {
+    const response = await apiService.get("/meetings");
+    if (response && response.data && response.data.meetings) {
+      return response.data.meetings;  // Ensure we are returning meetings data
+    } else {
+      console.error("Error: Meetings data is not available in the correct format:", response.data);
+      return [];  // Return an empty array if data is not valid
+    }
+  } catch (error) {
+    console.error("❌ Error fetching admin meetings:", error.response?.data || error.message);
+    throw error;  // Ensure errors are thrown to handle them in the component
+  }
+};
+
+// ✅ Fetch executive activity summary for admin dashboard
+export const fetchAdminExecutiveDashboard = async () => {
+  try {
+    const response = await apiService.get("/executive-activities/adminDashboard");
+    return response.data.executives; // returns array of executives with activity data
+  } catch (error) {
+    console.error("❌ Error fetching admin executive dashboard data:", error);
+    throw error;
+  }
+};
 
 export default apiService;

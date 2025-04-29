@@ -14,14 +14,15 @@ const TaskManagement = () => {
     fetchExecutivesAPI,
     assignLeadAPI,
     createFreshLeadAPI,
-    createLeadAPI, // Import createLeadAPI here
+    createLeadAPI,
   } = useApi();
 
+  // Sidebar state management
   const [sidebarState, setSidebarState] = useState(
-    localStorage.getItem("adminSidebarExpanded") !== "false" ? "expanded" : "collapsed"
+    localStorage.getItem("adminSidebarExpanded") === "true" ? "expanded" : "collapsed"
   );
 
-  // Pagination
+  // Pagination state
   const leadsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(leads.length / leadsPerPage);
@@ -31,14 +32,7 @@ const TaskManagement = () => {
     currentPage * leadsPerPage
   );
 
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
+  // Sidebar state synchronization
   useEffect(() => {
     const updateSidebarState = () => {
       const isExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
@@ -46,11 +40,12 @@ const TaskManagement = () => {
     };
 
     window.addEventListener("sidebarToggle", updateSidebarState);
-    updateSidebarState();
+    updateSidebarState(); // Initialize on mount
 
     return () => window.removeEventListener("sidebarToggle", updateSidebarState);
   }, []);
 
+  // Fetch data
   const fetchLeads = async () => {
     try {
       const data = await fetchLeadsAPI();
@@ -74,6 +69,16 @@ const TaskManagement = () => {
     fetchExecutives();
   }, []);
 
+  // Pagination handlers
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Lead selection handlers
   const handleExecutiveChange = (event) => {
     setSelectedExecutive(event.target.value);
   };
@@ -92,32 +97,33 @@ const TaskManagement = () => {
     );
   };
 
+  // Lead assignment function
   const assignLeads = async () => {
     if (!selectedExecutive) return alert("Select an executive.");
     if (!selectedLeads.length) return alert("Select at least one lead.");
-  
+
     const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
     if (!executive) return alert("Invalid executive selected.");
-  
+
     try {
       await Promise.all(
         selectedLeads.map(async (leadId) => {
           const lead = leads.find((l) => String(l.id) === leadId);
           if (!lead) return;
-  
+
           const clientLeadId = lead.clientLeadId || lead.id;
           if (!clientLeadId) {
             console.warn("❌ Missing clientLeadId for lead:", lead.name);
             return;
           }
-  
+
           const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, '');
-  
+
           if (!executive.username) {
             console.warn("❌ Missing executive username.");
             return;
           }
-  
+
           const leadPayload = {
             name: lead.name,
             email: lead.email || "defaultEmail@example.com",
@@ -126,18 +132,17 @@ const TaskManagement = () => {
             clientLeadId: Number(clientLeadId),
             assignedToExecutive: executive.username,
           };
-  
+
           try {
             const createdLead = await createLeadAPI(leadPayload);
-            // Check if createdLead is undefined or null
             if (!createdLead || !createdLead.id) {
               console.error("❌ Lead creation failed or returned invalid data.");
               return;
             }            
             await assignLeadAPI(leadId, executive.id, executive.username);
-  
+
             await new Promise((resolve) => setTimeout(resolve, 2000));
-  
+
             const freshLeadPayload = {
               leadId: createdLead.id,
               name: createdLead.name,
@@ -147,9 +152,9 @@ const TaskManagement = () => {
               assignedToId: executive.id,
               assignDate: new Date().toISOString(),
             };
-  
+
             try {
-              const result = await createFreshLeadAPI(freshLeadPayload);
+              await createFreshLeadAPI(freshLeadPayload);
             } catch (err) {
               console.error("❌ Error creating fresh lead:", err);
             }
@@ -158,6 +163,7 @@ const TaskManagement = () => {
           }
         })
       );
+
       setLeads((prevLeads) =>
         prevLeads.map((lead) =>
           selectedLeads.includes(String(lead.id))
@@ -166,20 +172,18 @@ const TaskManagement = () => {
         )
       );
 
-      setSelectedLeads([]); // Reset selection
-      setSelectedExecutive("");   // Reset selected executive
+      setSelectedLeads([]);
+      setSelectedExecutive("");
       alert("Leads have been assigned successfully!");
     } catch (err) {
       console.error("❌ Error during lead assignment process:", err);
     }
   };
-  
-  
 
   return (
     <>
       <SidebarToggle />
-      <div className={`leads-dashboard ${sidebarState}`}>
+      <div className={`leads-dashboard ${sidebarState}`} data-theme={theme}>
         <div className="Logo">Lead Assign</div>
         <div className="taskmanage-header">
           <div className="header-actions">
@@ -249,16 +253,20 @@ const TaskManagement = () => {
               </div>
             ))}
 
-            {/* Pagination Controls */}
-            <div className="pagination-controls">
-              <button onClick={handlePrev} disabled={currentPage === 1}>
-                Prev
-              </button>
-              <span className="page-indicator">Page {currentPage} of {totalPages}</span>
-              <button onClick={handleNext} disabled={currentPage === totalPages}>
-                Next
-              </button>
-            </div>
+            {/* Pagination Controls - Now properly visible */}
+            {leads.length > leadsPerPage && (
+              <div className="pagination-controls">
+                <button onClick={handlePrev} disabled={currentPage === 1}>
+                  Prev
+                </button>
+                <span className="page-indicator">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button onClick={handleNext} disabled={currentPage === totalPages}>
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

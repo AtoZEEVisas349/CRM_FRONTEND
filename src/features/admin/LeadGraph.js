@@ -3,9 +3,6 @@ import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useApi } from "../../context/ApiContext";
 const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
-  console.log("LeadGraph - selectedExecutiveId:", selectedExecutiveId);
-  console.log("LeadGraph - executiveName:", executiveName);
-
   // const [visitData, setVisitData] = useState([]);
   const { visitData, fetchLeadSectionVisitsAPI, visitLoading } = useApi();
 

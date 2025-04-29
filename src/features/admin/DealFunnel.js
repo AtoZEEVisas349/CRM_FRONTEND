@@ -1,40 +1,54 @@
-// RealTimeDealFunnel.js
+// src/components/DealFunnel.js
+
 import React, { useEffect, useState } from "react";
-import {
-  FunnelChart,
-  Funnel,
-  Tooltip,
-  ResponsiveContainer,
-  LabelList,
-} from "recharts";
+import { FunnelChart, Funnel, Tooltip, ResponsiveContainer } from "recharts";
 import { motion } from "framer-motion";
-import axios from "axios"; // install axios if not present
+import axios from "axios";
+import io from "socket.io-client";
 
 const DealFunnel = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    const socket = io("http://localhost:5000");
+    socket.on("lead_status_update", fetchData);
+
+    // initial load
     fetchData();
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/deal-funnel");
-      const rawData = response.data;
-      console.log("🔥 Deal Funnel Response:", response.data);
-      const total = rawData[0]?.value || 1;
-      const enrichedData = rawData.map((item) => ({
+      const res = await axios.get(
+        "http://localhost:5000/api/client-leads/dealfunnel"
+      );
+      const { statusCounts, totalLeads } = res.data.data;
+
+      // build array dynamically
+      const transformed = Object.entries(statusCounts).map(
+        ([name, value]) => ({ name, value })
+      );
+
+      // add percent
+      const enriched = transformed.map((item) => ({
         ...item,
-        percent: ((item.value / total) * 100).toFixed(1) + "%",
+        percent: totalLeads
+          ? ((item.value / totalLeads) * 100).toFixed(1) + "%"
+          : "0%",
       }));
 
-      setData(enrichedData);
-    } catch (error) {
-      console.error("Error fetching deal funnel data:", error);
+      setData(enriched);
+    } catch (err) {
+      console.error("Error fetching deal funnel data:", err);
     }
   };
 
   return (
+    <>
     <motion.div
       className="chart-container"
       initial={{ opacity: 0, y: 40 }}
@@ -47,18 +61,22 @@ const DealFunnel = () => {
           <FunnelChart>
             <Tooltip
               content={({ payload }) => {
-                if (!payload || !payload.length) return null;
-                const { name, value } = payload[0].payload;
+                if (!payload?.length) return null;
+                const { name, value, percent } = payload[0].payload;
                 return (
-                  <div style={{
-                    background: "#1e293b",
-                    padding: "10px",
-                    borderRadius: "6px",
-                    color: "#fff"
-                  }}>
-                    <b>{name}</b><br />
-                    Count: {value}<br />
-                    
+                  <div
+                    style={{
+                      background: "#1e293b",
+                      padding: "10px",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  >
+                    <b>{name}</b>
+                    <br />
+                    Count: {value}
+                   
+                    Percentage: {percent}
                   </div>
                 );
               }}
@@ -70,15 +88,7 @@ const DealFunnel = () => {
               fill="url(#colorFunnel)"
               stroke="white"
               animationDuration={1200}
-            >
-             <LabelList
-    position="right"
-    fill="white"
-    stroke="none"
-    dataKey="value"
-    formatter={(value) => `${value}`} // ✅ Correct here
-  />
-            </Funnel>
+            />
             <defs>
               <linearGradient id="colorFunnel" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#6EE7B7" />
@@ -87,41 +97,50 @@ const DealFunnel = () => {
             </defs>
           </FunnelChart>
         </ResponsiveContainer>
+
         <p style={{ marginTop: "10px" }}>
-          <b>Total:</b> {data.reduce((acc, d) => acc + d.value, 0)}
+          <b>Total Leads:</b> {data.reduce((sum, d) => sum + d.value, 0)}
         </p>
       </div>
 
-      <div
-        className="chart-data"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          visible: {
-            transition: {
-              staggerChildren: 0.2,
-            },
-          },
-        }}
-      >
-        {data.map((item, index) => (
+      <div className="chart-data">
+        {data.map((item, idx) => (
           <motion.p
-            key={index}
-            variants={{
-              hidden: { opacity: 0, x: -20 },
-              visible: { opacity: 1, x: 0 },
-            }}
+            key={idx}
+            className="chart-row"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
           >
             <span className="chart-label">
-              <span className="dot"></span>
+              <span
+                className="dot"
+                style={{ backgroundColor: getStatusColor(item.name) }}
+              />
               <b>{item.name}:</b>
             </span>
-            <span>{item.value} ({item.percent})</span>
+            <div className="chart-values-container">
+            <div className="chart-value">{item.value}</div>
+            <div className="chart-percent">{item.percent}</div>
+            </div>
           </motion.p>
+        
         ))}
       </div>
     </motion.div>
+  </>
   );
+};
+
+const getStatusColor = (status) => {
+  const colors = {
+    New: "#3498db",
+    Assigned: "#f39c12",
+    "Follow-Up": "#9b59b6",
+    Converted: "#2ecc71",
+    Closed: "#34495e",
+    Rejected: "#e74c3c",
+  };
+  return colors[status] || "#95a5a6";
 };
 
 export default DealFunnel;

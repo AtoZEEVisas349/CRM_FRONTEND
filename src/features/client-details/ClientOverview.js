@@ -18,6 +18,7 @@ const ClientOverview = () => {
     fetchFreshLeads,
     refreshMeetings,
     executiveInfo,
+    createFollowUpHistoryAPI, // Added createFollowUpHistoryAPI
   } = useApi();
 
   // Initialize date/time strings before state
@@ -134,7 +135,7 @@ const ClientOverview = () => {
       alert("Please fill out all required fields before creating follow-up.");
       return;
     }
-
+  
     const newFollowUpData = {
       connect_via: contactMethod,
       follow_up_type: followUpType,
@@ -144,21 +145,65 @@ const ClientOverview = () => {
       follow_up_time: interactionTime,
       fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
     };
-
+  
     createFollowUp(newFollowUpData)
       .then((response) => {
-        console.log("Follow-up created successfully:", response);
-        alert("Follow-up created!");
+        // Log the full response to see its structure
+        console.log("Full follow-up response:", response);
+        
+        // Try different paths to get the ID
+        let followUpId = null;
+        
+        // Check various possible paths to the ID
+        if (response && response.id) {
+          followUpId = response.id;
+        } else if (response && response.followUp && response.followUp.id) {
+          followUpId = response.followUp.id;
+        } else if (response && response.data && response.data.id) {
+          followUpId = response.data.id;
+        } else if (response && response.data && response.data.followUp && response.data.followUp.id) {
+          followUpId = response.data.followUp.id;
+        }
+        
+        console.log("Extracted follow-up ID:", followUpId);
+        
+        if (!followUpId) {
+          console.error("Failed to get follow-up ID from response:", response);
+          throw new Error("Missing follow-up ID in response");
+        }
+        
+        // Create follow-up history with the same data but including the follow-up ID
+        const followUpHistoryData = {
+          follow_up_id: followUpId,
+          connect_via: contactMethod,
+          follow_up_type: followUpType,
+          interaction_rating: interactionRating,
+          reason_for_follow_up: reasonDesc,
+          follow_up_date: interactionDate,
+          follow_up_time: interactionTime,
+          fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
+        };
+        
+        console.log("Creating follow-up history with data:", followUpHistoryData);
+        
+        // Return the promise so we can chain then/catch
+        return createFollowUpHistoryAPI(followUpHistoryData);
+      })
+      .then((historyResponse) => {
+        console.log("Follow-up history created successfully:", historyResponse);
+        alert("Follow-up and history created successfully!");
+        
+        // Reset form fields
         setReasonDesc("");
         setContactMethod("");
         setFollowUpType("");
         setInteractionRating("");
-        setInteractionDate("");
-        setInteractionTime("");
+        setInteractionDate(todayStr);
+        setInteractionTime(currentTimeStr);
       })
       .catch((error) => {
-        console.error("Error creating Follow-up:", error);
-        alert("Failed to create follow-up.");
+        console.error("Error creating Follow-up or history:", error);
+        alert("Failed to create follow-up or history. Please try again.");
       });
   };
 

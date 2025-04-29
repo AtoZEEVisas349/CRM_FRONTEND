@@ -1,5 +1,6 @@
 import React, { useState} from "react";
 import img2 from '../../assets/img3.jpg'
+import SidebarToggle from "./SidebarToggle";
 
 
 const ExecutiveDetails = () => {
@@ -100,6 +101,9 @@ const ExecutiveDetails = () => {
       
 
   return (
+    <div style={{ display: 'flex' }}>
+      {/* Sidebar Toggle */}
+      <SidebarToggle />
   <div  >
     <h1 style={{textAlign:"center",padding:"20px"
     }}>Executive Details</h1>
@@ -172,6 +176,7 @@ const ExecutiveDetails = () => {
         <span>Page 1 of 5</span>
         <span className="invoice-page-nav">Next »</span>
       </div>
+    </div>
     </div>
   );
 };

@@ -1,119 +1,115 @@
 .exec-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Default: 3 per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 40px;
   padding: 0 40px;
   margin: 50px auto;
   max-width: 100%;
   box-sizing: border-box;
-}
-  
-  .exec-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  [data-theme="dark"] .exec-name{
-    color: #f0f0f0;
-  }
-  .exec-name {
-    color: rgb(41, 54, 70);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
-    text-align: center;
-    font-size: 18px;
-    box-shadow: 0px 4px 10px rgba(168, 85, 247, 0.4);
-    width: 200px; /* Optional: control width of the name tag */
-  }
-    .admi-container {
-        background-color: var(--bg-color);
-        width: 100vw;       /* full viewport width */
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;  /* avoids horizontal scroll */
-      }
-      
-  .exec-box {
-    background-color: #f0f0f0;
-    height: 300px; /* SAME as your current */
-    min-width: 350px; /* SAME as your current */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px 0px 0px 0px;
-    font-weight: bold;
-    font-size: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-   /* SAME */
-  }
-  .exe-avatar {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #4f46e5, #3b82f6); /* bluish gradient */
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    font-weight: bold;
-    color:white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  .exec-box-wrapper {
-    background-color: #f0f0f0;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    min-width: 300px;
-    border: 2px solid #5e5d5d;
-  }  
-  
-  /* Icons Area - attached at bottom */
-
-  .toggle-btn {
-    background:black;
-    border-radius: 50%;
-    padding: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .toggle-btn:hover {
-    transform: scale(1.1);
-  }
-  
-  .toggle-btn svg {
-    color: white;
-    font-size: 14px;
-  }
-
- /* Default padding for content */
-.exec-grid {
   transition: padding-left 0.3s ease;
 }
 
-/* When sidebar is expanded */
-body.sidebar-expanded .exec-grid {
-  padding-left: 300px; /* or whatever your sidebar width is */
+.exec-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* When sidebar is collapsed */
-body.sidebar-collapsed .exec-grid {
-  padding-left: 100px; /* narrower content shift */
+/* Dark mode colors */
+[data-theme="dark"] {
+  --exec-bg: #2d3748;
+  --exec-box-bg: #525050;
+  --exec-text: #f0f0f0;
+  --exec-shadow: rgba(0, 0, 0, 0.3);
+  --toggle-area-bg: #2d3748;
+  --toggle-btn-bg: #4a5568;
 }
 
-  
-/* TOGGLE BUTTONS */
+/* Light mode colors */
+[data-theme="light"] {
+  --exec-bg: #ffffff;
+  --exec-box-bg: #99c6e6;
+  --exec-text: rgb(41, 54, 70);
+  --exec-shadow: rgba(0, 0, 0, 0.1);
+  --toggle-area-bg: #e0e0e0;
+  --toggle-btn-bg: #1a202c;
+}
+
+.exec-name {
+  color: var(--exec-text);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 18px;
+  box-shadow: 0px 4px 10px rgba(168, 85, 247, 0.4);
+  width: 200px;
+  background-color: var(--exec-bg);
+}
+
+.admi-container {
+  background-color: var(--bg-color);
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+.exec-box {
+  background-color: var(--exec-box-bg);
+  height: 300px;
+  min-width: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px 0px 0px 0px;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: 0 4px 10px var(--exec-shadow);
+  color: var(--exec-text);
+}
+
+.exe-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 8px var(--exec-shadow);
+}
+
+.exec-box-wrapper {
+  background-color: var(--exec-box-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px var(--exec-shadow);
+  width: 100%;
+  min-width: 300px;
+}
+
 .media-toggle-attached {
   display: flex;
   justify-content: center;
   gap: 15px;
-  background-color: #cac9c9;
+  background-color: var(--toggle-area-bg);
   padding: 10px;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--exec-shadow);
+}
+
+.toggle-btn {
+  background: var(--toggle-btn-bg);
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 2px 6px var(--exec-shadow);
 }
 
 .toggle-btn:hover {
@@ -125,20 +121,51 @@ body.sidebar-collapsed .exec-grid {
   font-size: 14px;
 }
 
-/* === RESPONSIVE BREAKPOINTS === */
+/* Sidebar adjustments */
+body.sidebar-expanded .exec-grid {
+  padding-left: 300px;
+}
 
-/* Tablet (768px to 1024px) */
-@media screen and (max-width: 1024px) {
+body.sidebar-collapsed .exec-grid {
+  padding-left: 100px;
+}
+
+/* Responsive breakpoints */
+@media screen and (max-width: 1200px) {
   .exec-grid {
     grid-template-columns: repeat(2, 1fr);
-
     gap: 30px;
+    padding: 0 30px;
   }
-
+  
   .exec-box {
-    height: 260px;
+    height: 280px;
+    min-width: 280px;
   }
+}
 
+@media screen and (max-width: 768px) {
+  .exec-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 0 20px;
+  }
+  
+  body.sidebar-expanded .exec-grid,
+  body.sidebar-collapsed .exec-grid {
+    padding-left: 20px;
+  }
+  
+  .exec-box {
+    height: 250px;
+    min-width: 250px;
+  }
+  
+  .exec-name {
+    font-size: 16px;
+    width: 180px;
+  }
+  
   .exe-avatar {
     width: 70px;
     height: 70px;
@@ -146,78 +173,36 @@ body.sidebar-collapsed .exec-grid {
   }
 }
 
-/* Small tablet / Mobile (below 768px) */
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 1600px) {
   .exec-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 0 10px;
-  }
-
-  .exec-name {
-    font-size: 16px;
-    width: auto;
-  }
-
-  .exec-box {
-    height: 250px;
-  }
-
-  .exe-avatar {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-
-  .toggle-btn {
-    padding: 6px;
-  }
-}
-
-
-/* Desktop & Large Laptop (1280px and above) */
-@media screen and (min-width: 1280px) {
-  .exec-grid {
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 40px;
+    grid-template-columns: repeat(4, 1fr);
     padding: 0 60px;
   }
-
+  
   .exec-box {
     height: 320px;
   }
-
+  
   .exe-avatar {
     width: 90px;
     height: 90px;
     font-size: 36px;
   }
-
-  .exec-name {
-    font-size: 20px;
-    width: 220px;
-  }
 }
 
-/* Extra Large Desktops (1600px and above) */
-@media screen and (min-width: 1600px) {
+@media screen and (min-width: 2000px) {
   .exec-grid {
-    grid-template-columns: repeat(5, 1fr); 
+    grid-template-columns: repeat(5, 1fr);
     padding: 0 80px;
   }
-
+  
   .exec-box {
     height: 350px;
   }
-
+  
   .exe-avatar {
     width: 100px;
     height: 100px;
     font-size: 40px;
-  }
-
-  .exec-name {
-    font-size: 22px;
-    width: 240px;
   }
 }

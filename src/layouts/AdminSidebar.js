@@ -91,8 +91,8 @@ const AdminSidebar = () => {
             </li> */}
           </ul>
           <ul>
-            <li>
-              <Link to="#" className="admin-aside-link">
+          <li>
+              <Link to="help-support" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faCircleQuestion} />
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
