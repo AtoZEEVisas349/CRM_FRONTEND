@@ -77,7 +77,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
   }, [activityData]);
 
   const activities = [
-    { name: "Break Time", value: activityData.breakTime, icon: <FaCoffee />, color: "#8b5cf6" },
+    { name: "Break Time", value: convertTime(activityData.breakTime), icon: <FaCoffee />, color: "#8b5cf6" },
     { name: "Work Time", value: convertTime(activityData.workTime), icon: <FaBriefcase />, color: "#6d28d9" },
     { name: "Daily Call Time", value: activityData.callTime || "No Data", icon: <FaPhone />, color: "#a78bfa" },
   ];

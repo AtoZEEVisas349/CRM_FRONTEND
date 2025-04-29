@@ -1722,8 +1722,7 @@ body.sidebar-collapsed .assign-task-container {
   color: var(--section-title-color);
   font-size: 24px;
   margin-bottom: 20px;
-  text-align: center;
-  padding: 20px 0;
+  text-align: left;
 }
 
 .executive-name {
@@ -1733,6 +1732,8 @@ body.sidebar-collapsed .assign-task-container {
   -webkit-text-fill-color: transparent;
   font-size: 18px;
   position: relative;
+  display: flex;               /* Make the text a flex container */
+  justify-content: flex-end;   /* Align content to the end (right) */
   transition: all 0.3s ease;
 }
 
