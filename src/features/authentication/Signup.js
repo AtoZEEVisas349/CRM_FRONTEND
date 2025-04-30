@@ -43,6 +43,7 @@ const Signup = () => {
 
 
   return (
+    <div className="main-container">
     <div className="container">
 <ToastContainer
         position="top-right"
@@ -117,6 +118,7 @@ const Signup = () => {
           </form>
       </div>
     </div>
+  </div>
   </div>
   );
 };

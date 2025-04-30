@@ -4,18 +4,16 @@
     margin:0 ;
     padding: 0 ;
 }
-
-body {
+.main-container{
   margin: 0 !important;
   padding: 0 !important;
   width: 100%;
   background: rgb(68, 40, 76) !important;
-  font-family: 'Inter', sans-serif; 
+  height:100vh !important
 }
 
 .container {
   display: flex;
-  height: 70vh ;
    width: 100vw !important; 
    padding:40px !important;
 }

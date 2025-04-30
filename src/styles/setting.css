@@ -571,4 +571,39 @@ cursor: pointer;
     transform: rotate(25deg) translateX(100%);
   }
 }
-
+@media (min-width: 1024px) and (max-width: 1220px) {
+  .settings-sidebar{
+    width:234px;
+  }
+.my-profile{
+  width:fit-content !important;
+}
+}
+@media (min-width: 1220px) and (max-width: 1330px) {
+  .settings-sidebar{
+    width:234px;
+  }
+.my-profile{
+  width:62vw !important;
+}
+}
+@media (min-width: 1330px) and (max-width: 1440px) {
+  .settings-sidebar{
+    width:205px;
+  }
+.my-profile{
+  width:69vw;
+}
+}
+@media (min-width: 700px) and (max-width: 991px) {
+.settings-page-wrapper {
+margin-left:0px;
+}
+settings-sidebar {
+  width:205px;
+}
+.my-profile{
+  width:fit-content !important;
+  padding:20px;
+}
+}

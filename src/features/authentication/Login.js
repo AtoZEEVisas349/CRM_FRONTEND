@@ -44,7 +44,7 @@ const Login = () => {
     };
 
   return (
- 
+ <div className="main-container">
      <div className="container">
 <ToastContainer
         position="top-right"
@@ -108,6 +108,7 @@ const Login = () => {
          </form>
           </div>
         </div>  
+      </div>
       </div>
   );
 };

@@ -1,4 +1,6 @@
+/* Schedule */
 /* Base Styles */
+
 .task-management-container {
   font-family: 'Inter', sans-serif;
   background-color: #f3f7f6;
@@ -25,7 +27,7 @@ margin-left: 220px;
   position: sticky;
   top: 0;
   background: white;
-  z-index: 100;
+  /* z-index: 100; */
   padding: 20px 32px;
   transition: all 0.3s ease;
   border-bottom: 1px solid transparent;
@@ -327,7 +329,7 @@ margin-left: 220px;
   }
   
   .meeting-item {
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     height: auto;
     padding: 20px;
   }
@@ -452,9 +454,15 @@ margin-left: 220px;
   color: white;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 481px) and (max-width: 991px) {
+  .task-management-container {
+    margin-left: 0px;
+    width: 100%;
+
+  }
   .task-management-wrapper {
     padding: 0px 50px 20px 50px;
+    z-index: 0;
   }
   
   .meetings-title {
@@ -478,30 +486,50 @@ margin-left: 220px;
     justify-content: flex-end;
     margin-top: 0;
   }
+  .content-header {
+    margin-top:60px;
+  }
 }
 
 /* Desktop Breakpoint (1024px) */
 @media (min-width: 1024px) {
   .task-management-container {
-    padding-top: 60px;
+    padding-top: 40px;
   }
   
     .meetings-title {
-    font-size: 28px; /* Restore original size */
+    font-size: 28px;
   }
   
   .meeting-item {
-    padding: 24px; /* Restore original padding */
+    padding: 24px; 
+  }
+  .header-top {
+    width: 88%;
+  }
+  .content-header{
+    margin-top: 30px !important;
+    margin-left:10px;
   }
 }
 
 /* Large Desktop Breakpoint (1440px) */
 @media (min-width: 1440px) {
+  .content-header{
+    margin-top: 30px;
+   
+  }
+  /* .task-management-wrapper {
+    padding: 0px 100px 20px 400px; 
+  } */
+}
+@media (min-width: 1500px) {
   .task-management-wrapper {
-    padding: 0px 100px 20px 400px; /* Restore original padding */
+    width: 100vw;
+    margin-right: -46px;
+    /* optional, as needed */
   }
 }
-
 /* Extra Small Devices (below 400px) */
 @media (max-width: 400px) {
   .filter-controls button {
@@ -510,6 +538,6 @@ margin-left: 220px;
   }
   
   .meeting-tag {
-    padding: 4px 10px; /* Smaller tags */
-  }
+    padding: 4px 10px; /* Smaller tags */
+}
 }

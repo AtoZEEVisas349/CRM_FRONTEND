@@ -1,20 +1,22 @@
+/* Invoice */
 /* Layout Wrapper */
 .invoice-container {
   display: flex;
-  width: 1500px;
+  width: calc(100% +123px);
   background-color: #f7f7f7;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .invoice-main {
-  margin-left: 50px; /* Sidebar width */
-  width: 1300px;
+  margin: 10px; /* Sidebar width */
+  width: 100%;
   box-sizing: border-box;
   padding-top: 80px;
   padding-left: 250px;
  overflow-x: hidden; /* Hide horizontal overflow */
 overflow-y: hidden;
+height:100vh;
 }
 
 /* -------- InvoiceHeader -------- */
@@ -66,12 +68,17 @@ overflow-y: hidden;
   background: linear-gradient(135deg, #ffffff, #e7ebee);
   padding: 3rem;
   border-radius: 12px;
-  display: flex;
+  /* display: flex; */
   gap: 1rem;
   align-items: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* gap: 20px; */
+  /* padding: 20px; */
 }
 
 .invoice-card:hover {
@@ -295,4 +302,29 @@ background-color: #2d3748;
 color: #ffffff;
 }
 
+@media (min-width: 481px) and (max-width: 991px) {
+  .invoice-main{
+    padding-left:5px !important;
+  }
+  .invoice-card{
+    flex-direction: column;
+    width: 100%;
+  }
+  .invoice-stats {
+    display: block;
+  }
+  .invoice-card {
+    margin-bottom: 20px;
+  }
+  .invoice-main {
+    width:100%;
+    margin:12px;
+    overflow: auto;
+  }
+  .invoice-container {
+    width:100%;
+  }
+}
+@media  (max-width:1024){
 
+}

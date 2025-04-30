@@ -1,3 +1,4 @@
+/* client */
 /* === BASE RESET === */
 
 .followup-detail-theme {
@@ -184,7 +185,7 @@
 .c-container {
   background-color: var(--card-bg);
   width: 100%;
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   border-radius: 4px;
   box-shadow: 0 2px 8px var(--shadow-light);
@@ -464,4 +465,10 @@ button:disabled {
   background-color: #e0e0e0;
   color: #b0b0b0;
   cursor: not-allowed;
+}
+@media (min-width: 700px) and (max-width: 991px) {
+  .client-main-content {
+    left: 0px;
+    width:100%;
+}
 }

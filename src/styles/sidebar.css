@@ -1,4 +1,5 @@
 /* Sidebar Navbar */
+
 .sidebar_nav {
   padding: 12px 20px;
   display: flex;
@@ -19,6 +20,17 @@
 .sidebar_heading {
   padding: 20px;
 }
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
 
 .sidebar_heading h1 {
   font-size: 28px;
@@ -131,7 +143,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  /* gap: 3px; */
   height: 70px;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(10px);
@@ -154,10 +166,11 @@
   cursor: pointer;
   position: absolute;
   top: 35px;
-  left: 25px;
+  left: 0px;
   background: none;
   border: none;
   color: var(--accent-color);
+  z-index: 10;
 }
 
 .search_bar {
@@ -166,7 +179,7 @@
   gap: 10px;
   flex: 1;
   margin-left: 15px;
-  max-width: 100%; /* ✅ allow full width */
+  width: 50%; 
 }
 .search-input-exec {
   max-width: 400px;
@@ -406,46 +419,140 @@
 .dark-mode-toggle .toggle-label:last-child {
   color: black;
 }
-
+.menuToggle{
+  display: none;
+}
 /* Responsive */
-@media (max-width: 768px) {
+@media (min-width: 481px) and (max-width: 991px) {
   .sidebar_container {
-    transform: translateX(-100%);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 250px;
+    height: 100vh;
     transition: transform 0.3s ease-in-out;
     z-index: 1000;
+    transform: translateX(-100%);
+    z-index: 5;
   }
 
   .sidebar_container.active {
     transform: translateX(0);
+    z-index: 5;
+    margin-right:250px;
   }
 
   .navbar {
     margin-left: 0;
-    width: 100%;
+    width: 100vw;
+    left:0;
+    position: fixed;
   }
 
  
 
   .menu_toggle {
     display: block;
+    top:4px;
+    padding: 9px;
   }
 
   .search_bar {
     margin-left: 40px;
+    font-size:10px;
+  }
+  .sidebar_crm {
+    margin: 4px 0;
+    padding-left: 40%;
+    font-size: 14px;
+    color: #aaa;
+  }
+  .sidebar_heading {
+margin-top:0px;
+  }
+  .navbar {
+    padding-left:37px;
+    padding: 20px;
+   /* gap: 3px; */
+    height: 70px;
+    width:100%;
+    background: rgba(255, 255, 255, 0.75);
+    position: sticky;
+    top: 0;
+    z-index: 4;
+  }
+  .search_bar {
+    margin-left: 0px;
+    width: 30%; 
+    margin-right: 20px;
+  }
+  .compact-timer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 157px !important;
+  }
+    .search-input-exec {
+      max-width: 130px;
+  }
+  .timer-box-small{
+    font-size: 15px !important;
+  }
+  .navbar_icons{
+  display: flex;
+  font-size: 15px !important;
+  gap:0px !important;
+}
+.menu_toggle{
+  top:9;
+  padding: 9px;
+ 
+}
+.menuToggle{
+  display: block;
+  top:36 !important;
+  margin: 20px;
+  background:#F3E5F5;
+  border:none;
+  padding: 3px;
+  font-size: 15px;
+ 
+}
+.sidebar_heading h1 {
+  margin: -31px;
+}
+}
+@media (max-width: 1024px) {
+  .search_bar {
+    margin-left: 0px;
+    width: 30%; 
+    margin-right: 20px;
+  }
+  .compact-timer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 157px !important;
+  }
+    .search-input-exec {
+      max-width: 130px;
+  }
+  .timer-box-small{
+    font-size: 15px !important;
+  }
+  .navbar_icons{
+    display: flex;
+    font-size: 19px;
+    gap:0px;
   }
 }
-
+@media (min-width:1025) and (max-width: 1440px) {
+  .timer-box-small{
+    font-size: 15px !important;
+  }
+}
 /* === Compact Timer Style Next to Search === */
 .compact-timer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-right: 80px;
+  gap: 5px;
+  margin-left: 80px;
 }
 
 .timer-item {
@@ -481,9 +588,9 @@
 .timer-box-small {
   background: #29657b;
   color: white;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border-radius: 4px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   min-width: 40px;
   text-align: center;
@@ -676,6 +783,5 @@
   transition: transform 0.2s ease;
 }
 .notification_wrapper:hover .notification_badge {
-  transform: scale(1.1);
+  transform: scale(1.1);
 }
-

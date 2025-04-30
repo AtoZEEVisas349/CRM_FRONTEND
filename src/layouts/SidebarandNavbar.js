@@ -5,67 +5,42 @@ import { useLocation } from "react-router-dom";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { recordStopWork } from "../services/executiveService";
 import { useApi } from "../context/ApiContext";
-import { useAuth } from "../context/AuthContext"; // Importing useAuth
+import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
-import { FaPlay, FaClock, FaMoon, FaSun, FaPause } from "react-icons/fa";
+import { FaPlay, FaClock, FaMoon, FaSun,FaPause } from "react-icons/fa";
 import { useExecutiveActivity } from "../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse, faUsers, faUserPlus, faFile, faReceipt, faGear, faList,
   faCircleXmark, faBars, faCircleQuestion, faBell, faCircleUser,
-  faRobot, faRightFromBracket, faClock, faArrowLeft
+  faRobot, faRightFromBracket, faClock,faArrowLeft // ✅ Add here
 } from "@fortawesome/free-solid-svg-icons";
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "../context/breakTimerContext";
 
+
 const SidebarandNavbar = () => {
-  const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading, resetBreakTimer } = useBreakTimer();
+  const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading ,resetBreakTimer} = useBreakTimer();
   const timer = useWorkTimer();
 
-  const { notifications, fetchNotifications } = useApi();
-  const [unreadLeadCount, setUnreadLeadCount] = useState(0);
-
-  const { authUser, logout } = useAuth(); // Destructure logout from useAuth
-
-  const localStorageUser = JSON.parse(localStorage.getItem("user"));
-
-  useEffect(() => {
-    if (!notifications || notifications.length === 0) {
-      console.log("No notifications available.");
-      return;
-    }
-  
-    const filterUnreadLeads = () => {
-      const unreadLeads = notifications.filter(
-        (n) =>
-          n.message.includes("You have been assigned a new lead") && !n.is_read && n.userId === localStorageUser?.id
-      );
-      setUnreadLeadCount(unreadLeads.length);
-    };
-  
-    filterUnreadLeads();
-  }, [notifications, localStorageUser]);
-  
-  
-
-  const toggle = async () => {
-    if (!isBreakActive) {
-      await startBreak();
-    } else {
-      await stopBreak();
-    }
-  };
-
+ 
+    const toggle = async () => {
+      if (!isBreakActive) {
+        await startBreak();
+      } else {
+        await stopBreak();
+      }
+    };
   const [isOpen, setIsOpen] = useState(() => {
     return window.location.pathname.startsWith("/freshlead") ||
            window.location.pathname.startsWith("/follow-up") ||
            window.location.pathname.startsWith("/customer") ||
            window.location.pathname.startsWith("/close-leads");
   });
-
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
+  const { user, logout } = useAuth();
   const { executiveInfo, executiveLoading, fetchExecutiveData } = useApi();
   const { theme, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -74,19 +49,17 @@ const SidebarandNavbar = () => {
   const location = useLocation();
   const historyStackRef = useRef([]);
   const toggleSidebar = () => setIsActive(!isActive);
-  const { handleStopWork } = useExecutiveActivity();
-
+  const {handleStopWork}=useExecutiveActivity();
   const handleLogout = async () => {
     try {
       await stopBreak();
-      await logout();  // Call the logout function from useAuth
+      await logout();
       await handleStopWork();
       resetBreakTimer();
     } catch (error) {
       console.error("Logout failed:", error.message);
-    }
-  };
-
+    }
+  };
   const [workTime, setWorkTime] = useState("00:00");
   const [breakTime, setBreakTime] = useState("00:00");
   const [isWorkRunning, setIsWorkRunning] = useState(false);
@@ -127,7 +100,7 @@ const SidebarandNavbar = () => {
         time--;
         const min = String(Math.floor(time / 60)).padStart(2, "0");
         const sec = String(time % 60).padStart(2, "0");
-        setBreakTime(`${min}:${sec}`);
+        setBreakTime(`${min}:${sec}`); // ✅ Correct
         if (time <= 0) {
           clearInterval(breakIntervalRef.current);
           setIsBreakRunning(false);
@@ -176,18 +149,18 @@ const SidebarandNavbar = () => {
       }
       const sidebar = document.querySelector(".sidebar_container");
       const menuToggle = document.querySelector(".menu_toggle");
-      const isClickInsideSidebar = sidebar?.contains(event.target);
-      const isClickOnMenuToggle = menuToggle?.contains(event.target);
-      const isClickOnSubmenu = event.target.closest(".submenu_nav");
+     const isClickInsideSidebar = sidebar?.contains(event.target);
+  const isClickOnMenuToggle = menuToggle?.contains(event.target);
+  const isClickOnSubmenu = event.target.closest(".submenu_nav");
 
-      if (!isClickInsideSidebar && !isClickOnMenuToggle && !isClickOnSubmenu) {
-        setIsActive(false);
-      }
-    };
+  if (!isClickInsideSidebar && !isClickOnMenuToggle && !isClickOnSubmenu) {
+    setIsActive(false);
+  }
+};
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
+  
   useEffect(() => {
     const currentPath = location.pathname;
     if (!["/login", "/signup"].includes(currentPath)) {
@@ -202,6 +175,7 @@ const SidebarandNavbar = () => {
       historyStackRef.current = stack;
     }
   }, [location]);
+  
   
   const handleBack = () => {
     let stack = JSON.parse(sessionStorage.getItem("navStack")) || [];
@@ -226,6 +200,7 @@ const SidebarandNavbar = () => {
   return (
 <section className="sidebar_navbar" data-theme={theme}>
 <section className={`sidebar_container ${isActive ? "active" : ""}`}>
+<button className="menuToggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
         <div className="sidebar_heading"><h1>AtoZeeVisas</h1></div>
         <div><h3 className="sidebar_crm">CRM</h3></div>
         <nav className="navbar_container">
@@ -292,21 +267,14 @@ const SidebarandNavbar = () => {
         <div className="navbar_icons">
           <div className="navbar_divider"></div>
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
-           {/* Bell icon with badge */}
-          <div className="notification_wrapper">
-            <FontAwesomeIcon
-              className="navbar_icon"
-              icon={faBell}
-              title="Notifications"
-              tabIndex="0"
-              onClick={() => navigate("/notification")}
-            />
-            {unreadLeadCount > 0 && (
-              <span className="notification_badge">
-                {unreadLeadCount}
-              </span>
-            )}
-          </div>
+          <FontAwesomeIcon
+            className="navbar_icon"
+            icon={faBell}
+            style={{ cursor: "pointer" }}
+            title="Notifications"
+            tabIndex="0"
+            onClick={() => navigate("/notification")}
+          />
           <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
           <FontAwesomeIcon className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)} />
           <FontAwesomeIcon ref={userIconRef} className="navbar_icon" icon={faCircleUser} onClick={handleUserIconClick} />

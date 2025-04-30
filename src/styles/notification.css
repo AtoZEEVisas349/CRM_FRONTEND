@@ -1,3 +1,4 @@
+/* notification */
 /* Wrapper layout around everything */
 .notification-page-wrapper {
   display: flex;
@@ -23,7 +24,7 @@
 
 /* Actual card container inside the centered area */
 .notification-container {
-  width: 1120px;
+  width: 100vw;
   min-height: 680px;
   background-color: white;
   padding: 25px;
@@ -182,4 +183,12 @@
   font-weight: 400;
   margin: 0 10px;
   color: #4b5563; /* gray-700 */
+}
+@media (min-width: 481px) and (max-width: 991px) {
+  .notification-container {
+    margin-left:0px;
+  }
+  .notification-content-area {
+    margin-left: 0px;
+}
 }

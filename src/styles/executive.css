@@ -1,3 +1,4 @@
+/* executive */
 html, body {
   overflow-x: hidden;
   width: 100%;
@@ -63,7 +64,23 @@ html, body {
   color: var(--text-color);
   border-bottom: 1px solid var(--border-color);
 }
-
+@media (min-width: 481px) and (max-width: 991px) {
+  .navbar {
+    padding: 20px;
+    height: 70px;
+    width:100%;
+    background: rgba(255, 255, 255, 0.75);
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    left:0px;
+    padding-left: 42px;
+  }
+  .executive-main-content{
+    margin-left:10px !important;
+    width:100% !important;
+  }
+}
 .search-container {
   background: var(--input-bg);
   border-radius: 8px;
@@ -163,6 +180,16 @@ html, body {
   .report-cards-exec {
     flex-direction: column;
   }
+  .sidebar_container {
+    height: 100vh;
+    transition: transform 0.3s ease-in-out;
+    width:250px;
+  }
+
+  .sidebar_container.active {
+    transform: translateX(0);
+  }
+
 }
 
 .report-card:hover {
