@@ -607,3 +607,20 @@ settings-sidebar {
   padding:20px;
 }
 }
+.field-input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius:5px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  margin: 3px;
+  width: 100%;
+  pointer-events: auto;
+}
+
+.field-input:focus {
+  outline: none;
+  border-bottom: 1px solid #888; /* Optional: subtle indication of edit */
+  border-color: #007bff;
+}

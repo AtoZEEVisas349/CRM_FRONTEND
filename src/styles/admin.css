@@ -663,8 +663,8 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin: 8px 0;
-  font-size: 19px;
-  gap: 76px; 
+  font-size: 17px;
+  gap: 46px; 
 }
 
 .dot {
@@ -762,11 +762,16 @@ h1 {
  }
  .meetings-container {
   background: #0f172a;
-   padding: 10px;
-   border-radius: 10px;
-   flex: 1;
-   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
- }
+  padding: 10px;
+  border-radius: 10px;
+  flex: 1;
+  
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  max-height: 360px; /* 👈 Enough height for ~3 cards */
+  overflow-y: auto;   /* 👈 Enables scrolling */
+  scroll-behavior: smooth;
+}
  
  .meeting-card {
   background: #1e1e2e;
@@ -803,16 +808,17 @@ h1 {
 .card-hover-2:hover {
   background-color: #67c96f; /* Light green */
 }
-
+.card-hover-3:hover {
+  background-color: #678ec9; /* Light green */
+}
+.card-hover-4:hover {
+  background-color: #b4c967; /* Light green */
+}
 /* Optional: consistent animation */
 .meeting-card:hover {
   transform: scale(1.02);
   transition: all 0.3s ease;
 }
-
-/* 🎯 Custom title color for special meeting */
-/* 🎯 TITLE STYLES */
-
 /* Third card: External Meeting title */
 .meeting-title-special {
   color: #1e293b; /* Light mode */
@@ -843,10 +849,7 @@ h1 {
 [data-theme="dark"] .meeting-time-dark-only {
   color: #f5f5f5;
 }
-
-
-
- .badge {
+.badge {
    background: #4a90e2;
    color: white;
    padding: 5px 10px;
@@ -860,7 +863,6 @@ h1 {
    margin: 0;
    font-size: 16px;
    font-weight: bold;
-   color: #333;
  }
  
  .meeting-details p {
@@ -877,7 +879,7 @@ h1 {
 
  .meeting-icons .icon {
    font-size: 18px;
-   color: #555;
+   color: #c9c2ec;
    cursor: pointer;
    transition: color 0.3s ease-in-out;
  }

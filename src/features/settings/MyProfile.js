@@ -7,68 +7,126 @@ const MyProfile = () => {
     personal: false,
     address: false,
   });
-
+  const { fetchSettings,userSettings,updateSettings,setUserSettings } = useApi();
   const [profile, setProfile] = useState({});
-  const { fetchSettings } = useApi();
-
+ 
+console.log(userSettings)
   // Use useRef to prevent re-fetching
   const hasFetched = useRef(false);
 
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      fetchSettings(); // triggers context update
+      hasFetched.current = true;
+    }
+  }, []);
+
+  
   useEffect(() => {
     const loadSettings = async () => {
-      if (!hasFetched.current) {
-        const settings = await fetchSettings();
-        console.log("Fetched settings:", settings);  // Log the response
-        if (settings) {
+      // if (!hasFetched.current) {
+      //    await fetchSettings();
+        console.log("Fetched settings:", userSettings?.user?.username);  // Log the response
+        if (userSettings) {
+          console.log("Fetched settings:", userSettings?.user?.username); 
           const mappedProfile = {
-            firstName: settings.firstname?.trim() || "First Name",
-            lastName: settings.lastname?.trim() || "Last Name",
-            username: settings.username?.trim() || "Not set",
-            email: settings.email?.trim() || "Not set",
-            phone: settings.phone?.trim() || "Not set",
-            profileImage: settings.profile_picture || "https://via.placeholder.com/100",
-            cityState: (settings.city && settings.state)
-              ? `${settings.city}, ${settings.state}`
-              : settings.city
-                ? settings.city
-                : settings.state
-                  ? settings.state
+            firstname: userSettings?.user?.firstname?.trim() || "First Name",
+            lastname: userSettings?.user?.lastname?.trim() || "",
+            username: userSettings?.user?.username?.trim() || "Not set",
+            email: userSettings?.user?.email?.trim() || "Not set",
+            phone: userSettings?.user?.phone?.trim() || "Not set",
+            profile_picture: userSettings.profile_picture || "https://via.placeholder.com/100",
+            city: (userSettings.city && userSettings.state)
+              ? `${userSettings.city}, ${userSettings.state}`
+              : userSettings.city
+                ? userSettings.city
+                : userSettings.state
+                  ? userSettings.state
                   : "Not set",
-            country: settings.country?.trim() || "Not set",
-            postalCode: settings.postal_code?.trim() || "Not set",
-            taxId: settings.tax_id?.trim() || "Not set",
-            role: settings.role?.trim() || "No role specified",
+            country: userSettings?.user.country?.trim() || "Not set",
+            postal_code: userSettings.postal_code?.trim() || "Not set",
+            tax_id: userSettings.tax_id?.trim() || "Not set",
+            role: userSettings?.user?.role?.trim() || "No role specified",
           };          
           setProfile(mappedProfile);
         }
-        hasFetched.current = true; // Mark the data as fetched
-      }
+      //   hasFetched.current = true; // Mark the data as fetched
+      // }
     };
     loadSettings();
-  }, [fetchSettings]);
+  }, [fetchSettings,userSettings]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const toggleSection = (section) => {
+  //   setEditingSections((prev) => ({
+  //     ...prev,
+  //     [section]: !prev[section],
+  //   }));
+  // };
   const toggleSection = (section) => {
-    setEditingSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
-
-  const isEditing = Object.values(editingSections).some(Boolean);
-
-  const handleSaveAll = () => {
-    console.log("Saved profile:", profile);
-    setEditingSections({
-      header: false,
-      personal: false,
-      address: false,
+    setEditingSections((prev) => {
+      const newEditingState = { ...prev, [section]: !prev[section] };
+  
+      // If we're switching to edit mode, sync profile from userSettings
+      if (!prev[section]) {
+        setProfile({
+          firstname: userSettings?.user?.firstname || "",
+          lastname: userSettings?.user?.lastname || "",
+          username: userSettings?.user?.username || "",
+          email: userSettings?.user?.email || "",
+          role: userSettings?.user?.role || "",
+          phone: userSettings?.user?.phone || "",
+          country: userSettings?.user?.country || "",
+          tax_id: userSettings?.user?.tax_id || "",
+          city: userSettings?.user?.city || "",
+          state: userSettings?.user?.state || "",
+          postal_code: userSettings?.user?.postal_code || "",
+        });
+      }
+  
+      return newEditingState;
     });
   };
+  
+  const isEditing = Object.values(editingSections).some(Boolean);
+
+  // const handleSaveAll =async () => {
+  //   console.log("Saved profile:", profile);
+  //   setEditingSections({
+  //     header: false,
+  //     personal: false,
+  //     address: false,
+  //   });
+  //    updateSettings(profile);
+  //   setUserSettings(profile)
+   
+    
+  // };
+  const handleSaveAll = async () => {
+    console.log("Saved profile:", profile);
+  
+    try {
+      const updated = await updateSettings(profile);  // ✅ wait for API call to finish
+  
+      if (updated) {
+        setUserSettings(updated); // ✅ set updated user from response (not local profile)
+      }
+  
+      setEditingSections({
+        header: false,
+        personal: false,
+        address: false,
+      });
+    } catch (error) {
+      console.error("Error saving profile:", error);
+    }
+  };
+  
 
   const renderField = (label, name, span = false) => (
     <div
@@ -102,74 +160,80 @@ const MyProfile = () => {
               className="edit-btn"
               onClick={() => toggleSection("header")}
             >
-              {editingSections.header ? "Cancel ❌" : "Edit ✏️"}
+              {editingSections.header ? "Cancel ❌" : "Edit ✏"}
             </button>
           </div>
           <div className="profile-header">
-            <div className="left" style={{ display: "flex", gap: "16px" }}>
-              {editingSections.header ? (
-                <input
-                  type="text"
-                  name="profileImage"
-                  value={profile.profileImage || ""}
-                  onChange={handleChange}
-                  className="field-input"
-                  style={{ width: "100px" }}
-                />
-              ) : (
-                <img
-                  src={profile.profileImage || "https://via.placeholder.com/100"}
-                  alt="Profile"
-                  className="profile-image"
-                />
-              )}
-              <div>
-                {editingSections.header ? (
-                  <>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={profile.firstName || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                      placeholder="First Name"
-                    />
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={profile.lastName || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                      placeholder="Last Name"
-                    />
-                    <input
-                      type="text"
-                      name="username"
-                      value={profile.username || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                      placeholder="Username"
-                    />
-                    <input
-                      type="text"
-                      name="role"
-                      value={profile.role || ""}
-                      onChange={handleChange}
-                      className="field-input"
-                      placeholder="Role"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <h3>{profile.firstName || "First Name"} {profile.lastName || "Last Name"}</h3>
-                    <p><strong>Username:</strong> {profile.username || "Not set"}</p>
-                    <p><strong>Role:</strong> {profile.role || "No role specified"}</p>
-                    <p>{profile.cityState || "Not set"}</p>
-                  </>
-                )}
-              </div>
-            </div>
+       
+  <div className="left" style={{ display: "flex", gap: "16px" }}>
+  {editingSections.header ? (
+    <input
+      type="text"
+      name="profileImage"
+      value={profile.profileImage || ""}
+      onChange={handleChange}
+      className="field-input"
+      style={{ width: "100px" }}
+    />
+  ) : (
+    <img
+      src={profile.profileImage || "https://via.placeholder.com/100"}
+      alt="Profile"
+      className="profile-image"
+    />
+  )}
+  <div>
+    {editingSections.header ? (
+      <>
+        <input
+          type="text"
+          name="firstname"
+          value={profile.firstname || ""}
+          onChange={handleChange}
+          className="field-input"
+          placeholder="First Name"
+        />
+        <input
+          type="text"
+          name="lastname"
+          value={profile.lastname  || ""}
+          onChange={handleChange}
+          className="field-input"
+          placeholder="Last Name"
+        />
+        <input
+          type="text"
+          name="username"
+          value={profile?.username || ""}
+          onChange={handleChange}
+          className="field-input"
+          placeholder="Username"
+        />
+        <input
+          type="text"
+          name="role"
+          value={profile.role  || ""}
+          onChange={handleChange}
+          className="field-input"
+          placeholder="Role"
+        />
+      </>
+    ) : (
+      <>
+        <h3>{userSettings?.user?.firstname  || "First Name"} {userSettings?.user?.lastname|| ""}</h3>
+        <p><strong>Username:</strong> {userSettings?.user?.username || "Not set"}</p>
+        <p><strong>Role:</strong> {userSettings?.user?.role || "No role specified"}</p>
+        <p>{profile.cityState || "Not set"}</p>
+      </>
+    )}
+  </div>
+</div>
+          
+            
+          
+            
           </div>
+          
         </div>
 
         {/* Personal Information */}
@@ -180,11 +244,11 @@ const MyProfile = () => {
               className="edit-btn"
               onClick={() => toggleSection("personal")}
             >
-              {editingSections.personal ? "Cancel ❌" : "Edit ✏️"}
+              {editingSections.personal ? "Cancel ❌" : "Edit ✏"}
             </button>
           </div>
           <div className="profile-fields">
-            {renderField("Email address", "email")}
+            {renderField( "Email Address",  "email")}
             {renderField("Phone", "phone")}
           </div>
         </div>
@@ -197,14 +261,14 @@ const MyProfile = () => {
               className="edit-btn"
               onClick={() => toggleSection("address")}
             >
-              {editingSections.address ? "Cancel ❌" : "Edit ✏️"}
+              {editingSections.address ? "Cancel ❌" : "Edit ✏"}
             </button>
           </div>
           <div className="profile-fields">
             {renderField("Country", "country")}
-            {renderField("City/State", "cityState")}
-            {renderField("Postal Code", "postalCode")}
-            {renderField("TAX ID", "taxId")}
+            {renderField("City/State", "city")}
+            {renderField("Postal Code", "postal_code")}
+            {renderField("TAX ID", "tax_id")}
           </div>
         </div>
 
@@ -219,4 +283,4 @@ const MyProfile = () => {
   );
 };
 
-export default MyProfile;
+export default MyProfile;

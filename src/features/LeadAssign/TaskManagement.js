@@ -8,6 +8,7 @@ const TaskManagement = () => {
   const [executives, setExecutives] = useState([]);
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
+  const [expandedLeads, setExpandedLeads] = useState({});
   const { theme } = useContext(ThemeContext);
   const {
     fetchLeadsAPI,
@@ -90,7 +91,13 @@ const TaskManagement = () => {
         : [...prev, String(leadId)]
     );
   };
-
+  const toggleExpandLead = (leadId) => {
+    setExpandedLeads((prev) => ({
+      ...prev,
+      [leadId]: !prev[leadId],
+    }));
+  };
+  
   const toggleSelectAll = () => {
     setSelectedLeads((prev) =>
       prev.length === leads.length ? [] : leads.map((lead) => String(lead.id))
@@ -230,16 +237,27 @@ const TaskManagement = () => {
                   />
                   <span className="container-icon">👤</span>
                   <div className="lead-info">
-                    <span>Name: {lead.name}</span>
-                    <span>Email: {lead.email}</span>
-                    <span>Phone No: {lead.phone}</span>
-                    <span>Education: {lead.education}</span>
-                    <span>Experience: {lead.experience}</span>
-                    <span>State: {lead.state}</span>
-                    <span>Country: {lead.country}</span>
-                    <span>DOB: {lead.dob || "N/A"}</span>
-                    <span>Lead Assign Date: {lead.leadAssignDate || "N/A"}</span>
-                    <span>Country Preference: {lead.countryPreference || "N/A"}</span>
+                  <span>Name: {lead.name}</span>
+                  <span>Email: {lead.email}</span>
+                  <span>Phone No: {lead.phone}</span>
+                  <span>Education: {lead.education}</span>
+                  {expandedLeads[lead.id] && (
+                    <>
+                      <span>Experience: {lead.experience}</span>
+                      <span>State: {lead.state}</span>
+                      <span>Country: {lead.country}</span>
+                      <span>DOB: {lead.dob || "N/A"}</span>
+                      <span>Lead Assign Date: {lead.leadAssignDate || "N/A"}</span>
+                      <span>Country Preference: {lead.countryPreference || "N/A"}</span>
+                    </>
+                  )}
+                  <button
+                    className="see-more-btn"
+                    onClick={() => toggleExpandLead(lead.id)}
+                    style={{ marginTop: "5px", color: "#007bff", background: "none", border: "none", cursor: "pointer" }}
+                  >
+                    {expandedLeads[lead.id] ? "See less..." : "See more..."}
+                  </button>
                   </div>
                   <div className="lead-source">{lead.source}</div>
                   <div className="lead-assign">{lead.assignedToExecutive || "Unassigned"}</div>
