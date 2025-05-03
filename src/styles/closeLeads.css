@@ -32,11 +32,10 @@ padding-right: 20%;
 
 .country_container {
   margin-top: 10px;
-  margin-bottom: 30px;
 }
 
 .country_cards {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 /* Unique hover colors for each country */
@@ -63,7 +62,7 @@ padding-right: 20%;
 .country_name {
   background-color: white;
   color: black;
-  padding: 14px 20px;
+  padding: 6px 15px;
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
@@ -99,7 +98,9 @@ padding-right: 20%;
   display: flex;
   flex-direction: column;
 }
-
+.fresh_lead_details{
+  font-size: 14px;
+}
 .c-card:nth-child(1):hover {
   transform: scale(1.02);
   background: #d3ef45; /* Blue */

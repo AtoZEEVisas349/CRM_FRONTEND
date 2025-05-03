@@ -100,6 +100,7 @@ body, html {
   max-height: calc(100vh - 220px); /* Adjusted to make space for pagination */
   display: flex;
   flex-direction: column;
+position: relative;
 }
 
 .leads-header {
@@ -242,36 +243,60 @@ body, html {
 [data-theme="dark"] .pagination-controls {
   background-color: var(--bg-color);
 }
-
-/* Pagination */
 .pagination-controls {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  margin: 20px auto;
-  gap: 20px;
-  padding: 12px 0;
-  font-size: 16px;
+  padding: 12px 24px;
+  width: 100%;
+  background-color: #fff;
   position: sticky;
   bottom: 0;
-  background-color: #f4f4f4;
-  width: 100%;
-  z-index: 10;
+  z-index: 100;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.03);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+}
+
+.pagination-controls span {
+  font-size: 14px;
+  color: #444;
 }
 
 .pagination-controls button {
-  padding: 10px 25px;
-  font-weight: bold;
+  min-width: 60px;
+  padding: 8px 16px;
   background-color: #4f52bb;
-  border: none;
   color: white;
-  border-radius: 50px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #4f52bb;
 }
 
 .pagination-controls button:disabled {
-  background-color: #a0a0a0;
+  background-color: #d6d6d6;
+  color: #888;
   cursor: not-allowed;
+}
+
+.pagination-controls .page-info {
+  font-weight: 500;
+  color: #333;
+}
+.page-indicator {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  min-width: 120px;
+  text-align: center;
 }
 
 .page-indicator {
@@ -418,5 +443,5 @@ body, html {
   .leads-dashboard.collapsed {
     margin-left: 0;
     width: 100%;
-  }
+ }
 }

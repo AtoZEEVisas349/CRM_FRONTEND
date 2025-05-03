@@ -5,6 +5,7 @@ import AssignTask from "../features/admin/AssignTask";
 import ExecutiveDetails from "../features/admin/ExecutiveDetails";
 import AdminSettings from "../features/admin-settings/AdminSettings";
 import ContactUs from "../features/admin/ContactUs";
+import Cast from "../features/admin/Cast";
 
 const AdminRoutes = () => {
   return (

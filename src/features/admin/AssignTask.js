@@ -14,6 +14,8 @@ const AssignTask = () => {
   const { theme } = useContext(ThemeContext);
   const { uploadFileAPI } = useApi();
 
+  const isSidebarExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -50,8 +52,9 @@ const AssignTask = () => {
   };
 
   return (
-    <div className="assign-task-container" data-theme={theme}>
-      <SidebarToggle />
+    
+<div className={`assign-task-container ${isSidebarExpanded ? "sidebar-expanded" : "sidebar-collapsed"}`} data-theme={theme}>
+<SidebarToggle />
       <div className="assign-task-content">
         <div className="background-text">AtoZeeVisas</div>
         <div className="assign-task-glass-card">

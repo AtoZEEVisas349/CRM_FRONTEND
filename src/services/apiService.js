@@ -21,10 +21,10 @@ apiService.interceptors.request.use(
 );
 
 // ✅ Function to fetch all leads
-export const fetchLeadsAPI = async () => {
+export const fetchLeadsAPI = async (limit = 10, offset = 0) => {
   try {
-    const response = await apiService.get("/client-leads/getClients");
-    return response.data.leads;
+    const response = await apiService.get(`/client-leads/getClients?limit=${limit}&offset=${offset}`);
+    return response.data; // Return the full response (including leads and pagination metadata)
   } catch (error) {
     console.error("❌ Error fetching leads:", error);
     throw error;

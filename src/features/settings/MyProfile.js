@@ -9,70 +9,47 @@ const MyProfile = () => {
   });
   const { fetchSettings,userSettings,updateSettings,setUserSettings } = useApi();
   const [profile, setProfile] = useState({});
- 
-console.log(userSettings)
-  // Use useRef to prevent re-fetching
-  const hasFetched = useRef(false);
-
+   const hasFetched = useRef(false);
 
   useEffect(() => {
     if (!hasFetched.current) {
-      fetchSettings(); // triggers context update
-      hasFetched.current = true;
+      fetchSettings(); 
+      hasFetched.current = true; 
     }
-  }, []);
+  }, [userSettings]);
 
-  
   useEffect(() => {
-    const loadSettings = async () => {
-      // if (!hasFetched.current) {
-      //    await fetchSettings();
-        console.log("Fetched settings:", userSettings?.user?.username);  // Log the response
-        if (userSettings) {
-          console.log("Fetched settings:", userSettings?.user?.username); 
-          const mappedProfile = {
-            firstname: userSettings?.user?.firstname?.trim() || "First Name",
-            lastname: userSettings?.user?.lastname?.trim() || "",
-            username: userSettings?.user?.username?.trim() || "Not set",
-            email: userSettings?.user?.email?.trim() || "Not set",
-            phone: userSettings?.user?.phone?.trim() || "Not set",
-            profile_picture: userSettings.profile_picture || "https://via.placeholder.com/100",
-            city: (userSettings.city && userSettings.state)
-              ? `${userSettings.city}, ${userSettings.state}`
-              : userSettings.city
-                ? userSettings.city
-                : userSettings.state
-                  ? userSettings.state
-                  : "Not set",
-            country: userSettings?.user.country?.trim() || "Not set",
-            postal_code: userSettings.postal_code?.trim() || "Not set",
-            tax_id: userSettings.tax_id?.trim() || "Not set",
-            role: userSettings?.user?.role?.trim() || "No role specified",
-          };          
-          setProfile(mappedProfile);
-        }
-      //   hasFetched.current = true; // Mark the data as fetched
-      // }
-    };
-    loadSettings();
-  }, [fetchSettings,userSettings]);
+    if (userSettings) {
+      const mappedProfile = {
+        firstname: userSettings?.user?.firstname ? userSettings.user.firstname.trim() : "First Name",
+        lastname: userSettings?.user?.lastname ? userSettings.user.lastname.trim() : "",
+        username: userSettings?.user?.username ? userSettings.user.username.trim() : "Not set",
+        email: userSettings?.user?.email ? userSettings.user.email.trim() : "Not set",
+        phone: userSettings?.user?.phone ? userSettings.user.phone.trim() : "Not set",
+        profile_picture: userSettings.profile_picture || "https://via.placeholder.com/100",
+        city: (userSettings?.user.city && userSettings?.user.state)
+          ? `${userSettings.user.city}, ${userSettings.user.state}`
+          : userSettings?.user.city
+            ? userSettings.user.city
+            : userSettings?.user.state
+              ? userSettings.user.state
+              : "Not set",
+              country: userSettings?.user?.country ? userSettings.user.country.trim() : "Not set",
+              postal_code: userSettings?.user?.postal_code ? userSettings.user.postal_code.trim() : "Not set",
+              tax_id: userSettings?.user?.tax_id ? userSettings.user.tax_id.trim() : "Not set",
+              role: userSettings?.user?.role ? userSettings.user.role.trim() : "No role specified",
+            };      
+            setProfile(mappedProfile);
+          }
+        }, [userSettings]);
+        const handleChange = (e) => {
+          const { name, value } = e.target;
+          setProfile((prev) => ({ ...prev, [name]: value }));
+        };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // const toggleSection = (section) => {
-  //   setEditingSections((prev) => ({
-  //     ...prev,
-  //     [section]: !prev[section],
-  //   }));
-  // };
-  const toggleSection = (section) => {
-    setEditingSections((prev) => {
+    const toggleSection = (section) => {
+     setEditingSections((prev) => {
       const newEditingState = { ...prev, [section]: !prev[section] };
-  
-      // If we're switching to edit mode, sync profile from userSettings
       if (!prev[section]) {
         setProfile({
           firstname: userSettings?.user?.firstname || "",
@@ -82,41 +59,25 @@ console.log(userSettings)
           role: userSettings?.user?.role || "",
           phone: userSettings?.user?.phone || "",
           country: userSettings?.user?.country || "",
+          role: userSettings?.user?.role || "",
           tax_id: userSettings?.user?.tax_id || "",
           city: userSettings?.user?.city || "",
           state: userSettings?.user?.state || "",
           postal_code: userSettings?.user?.postal_code || "",
         });
       }
-  
       return newEditingState;
     });
   };
   
   const isEditing = Object.values(editingSections).some(Boolean);
-
-  // const handleSaveAll =async () => {
-  //   console.log("Saved profile:", profile);
-  //   setEditingSections({
-  //     header: false,
-  //     personal: false,
-  //     address: false,
-  //   });
-  //    updateSettings(profile);
-  //   setUserSettings(profile)
-   
-    
-  // };
-  const handleSaveAll = async () => {
-    console.log("Saved profile:", profile);
-  
+  const handleSaveAll = async () => {  
     try {
       const updated = await updateSettings(profile);  // ✅ wait for API call to finish
   
       if (updated) {
         setUserSettings(updated); // ✅ set updated user from response (not local profile)
       }
-  
       setEditingSections({
         header: false,
         personal: false,
@@ -126,7 +87,6 @@ console.log(userSettings)
       console.error("Error saving profile:", error);
     }
   };
-  
 
   const renderField = (label, name, span = false) => (
     <div
@@ -217,21 +177,25 @@ console.log(userSettings)
           className="field-input"
           placeholder="Role"
         />
+         <input
+          type="text"
+          name="city"
+          value={profile.city  || ""}
+          onChange={handleChange}
+          className="field-input"
+          placeholder="City"
+        />
       </>
     ) : (
       <>
         <h3>{userSettings?.user?.firstname  || "First Name"} {userSettings?.user?.lastname|| ""}</h3>
         <p><strong>Username:</strong> {userSettings?.user?.username || "Not set"}</p>
         <p><strong>Role:</strong> {userSettings?.user?.role || "No role specified"}</p>
-        <p>{profile.cityState || "Not set"}</p>
+        <p><strong>City:</strong>{userSettings?.user?.city || "Not set"}</p>
       </>
     )}
   </div>
-</div>
-          
-            
-          
-            
+</div>      
           </div>
           
         </div>

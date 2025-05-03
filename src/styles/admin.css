@@ -1249,12 +1249,19 @@ h1 {
   position: relative;
   flex: 1;
   display: flex;
-  justify-content: center;
+  transition: margin-left 0.3s ease;
+  justify-content: flex-start;
   align-items: center;
   padding: 20px;
   z-index: 1;
 }
+.assign-task-container.sidebar-expanded .assign-task-content {
+  margin-left: 250px; /* or your actual expanded sidebar width */
+}
 
+.assign-task-container.sidebar-collapsed .assign-task-content {
+  margin-left: 60px; /* or your collapsed sidebar width */
+}
 .background-text {
   position: absolute;
   top: 50%;
@@ -1573,7 +1580,6 @@ body.sidebar-collapsed .assign-task-container {
   margin-right: 10px;
 }
 
-/* Responsive Progress Bar */
 .activity-progress {
   height: 12px;
   background: #2d2d69;
@@ -1582,13 +1588,10 @@ body.sidebar-collapsed .assign-task-container {
   width: 100%; /* Takes full width of the container */
   max-width: 90vw; /* Responsive to screen size */
 }
-
-/* Dynamic Fill */
 .progress-fill {
   height: 100%;
   border-radius: 8px;
   transition: width 0.5s ease-in-out;
-  min-width: 5%; /* Ensures visibility even at small values */
 }
 .lead-sec-graph {
   background-color: var(--executive-bg);

@@ -103,6 +103,12 @@ const AdminSidebar = () => {
                 <span className="sidebar-label">Settings</span>
               </Link>
             </li>
+            {/* <li>
+            <Link to="/admin/cast" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faSliders} />
+                <span className="sidebar-label">Cast</span>
+              </Link>
+            </li> */}
           </ul>
         </nav>
       </aside>
