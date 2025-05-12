@@ -677,3 +677,28 @@ background:#f3daf3 ;
     }[data-theme="blue"] .theme-settings {
   background:rgb(202, 202, 247) ;
   }
+  [data-theme="brown"] .settings-sidebar{
+    background: #d9cac4;
+  }
+  [data-theme="brown"] .my-profile{
+    background: #d9cac4;
+  }
+  [data-theme="brown"] .change-password{
+    background: #d9cac4;
+  }
+  [data-theme="brown"] .change-password h2::after  {
+    background:rgb(118, 70, 25);  
+  }
+  [data-theme="brown"] .password-form button  {
+    background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+    box-shadow: 0 5px 18px rgba(113, 174, 161, 0.3); 
+  }
+  [data-theme="brown"] .password-form button:hover  {
+    background: rgb(125, 188, 187);
+  }
+  [data-theme="brown"] .password-form .password-icon {
+    color:#754632;
+  }
+  [data-theme="brown"] .theme-settings{
+      background-color: #d9cac4;
+  }

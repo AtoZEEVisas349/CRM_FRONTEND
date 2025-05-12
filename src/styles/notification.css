@@ -207,3 +207,10 @@
   background: rgb(186, 186, 232); 
   height:100vh;
 }
+[data-theme="brown"] .notification-container{
+  background: #d9cac4;
+}
+[data-theme="brown"]
+.notification-card {
+  border-left: 5px solid #2e7a70; 
+}

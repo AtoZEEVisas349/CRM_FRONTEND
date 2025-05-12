@@ -335,3 +335,19 @@ h2 {
 [data-theme="blue"]  .heading {
   background: rgb(186, 186, 232);
 }
+[data-theme="brown"] .customer-main-content {
+  --bg-color: #d9cac4;
+  height:100vh;
+}
+[data-theme="brown"] .button{
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+[data-theme="brown"] .table-head{
+  background: rgb(151, 103, 74);
+} 
+[data-theme="brown"]  .heading {
+  background: #d9cac4;
+}
+[data-theme="brown"] .button:hover{
+  background:  rgb(125, 188, 187);
+}

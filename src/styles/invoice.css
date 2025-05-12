@@ -330,18 +330,26 @@ color: #ffffff;
 [data-theme="red"] .invoice-main {
   background-color:  #f3daf3;
   --text-color: #3c6ba9;
-}[data-theme="red"] .invoice-actions button {
+}
+[data-theme="red"] .invoice-actions button {
   background-color: #8a2b6c;
-}[data-theme="red"] .invoice-card {
-  background: linear-gradient(135deg, #df8cc5, white);
+}
+[data-theme="red"] .invoice-card {
+  background: linear-gradient(135deg, #de9bc8,#ae6497, rgb(49, 60, 142));
 }
 [data-theme="red"] .invoice-card:hover {
   background: #df8cc5;
 }
-
 [data-theme="red"] .invoice-card-icon{
-  color: #451238;
+  color: white;
 }
+
+[data-theme="red"] .invoice-card-label {
+      color:white;
+    }
+[data-theme="red"] .invoice-card-value {
+      color:white;
+    }
 [data-theme="red"] .invoice-table thead {
   background: #c8c8f4;
   color: #0d2f57 !important;
@@ -376,3 +384,36 @@ color: #ffffff;
     [data-theme="blue"] .invoice-card:hover .invoice-card-icon{
       color: white;
     }
+    [data-theme="brown"] .invoice-main{
+      background-color: #d9cac4;
+    }
+    [data-theme="brown"] .invoice-actions button {
+      background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+    }
+    [data-theme="brown"] .invoice-card {
+      background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+      color: white;
+    }
+    [data-theme="brown"] .invoice-card:hover {
+      background:linear-gradient(135deg,#754632,rgb(248, 247, 245));
+    }
+    [data-theme="brown"] .invoice-card:hover .invoice-card-icon{
+      color: white;
+    }
+    [data-theme="brown"] .invoice-card-icon{
+      color: white;
+    }
+    [data-theme="brown"] .invoice-table thead {
+      background:rgb(151, 103, 74);
+      padding: 0px;
+      color:white;
+    }
+      [data-theme="brown"] .invoice-table th {
+        color:white;
+      }
+     [data-theme="brown"] .invoice-card-label {
+          color:white;
+        }
+     [data-theme="brown"] .invoice-card-value {
+          color:white;
+        }

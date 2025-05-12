@@ -503,3 +503,13 @@ h1, h2, h3, h4, h5, h6 {
 }[data-theme="blue"] .client-table thead th {
   background:rgb(114, 114, 214);
 }
+[data-theme="brown"] .follow-app-container {
+  --bg-color: #d9cac4;
+}
+[data-theme="brown"] .client-table thead th {
+  background-color: rgb(151, 103, 74);
+  color :white;
+}
+[data-theme="brown"] .followup-tabs .active {
+background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}

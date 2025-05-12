@@ -452,43 +452,46 @@ html, body {
 .light-mode .report-icon {
   filter: drop-shadow(0 2px 2px rgba(0,0,0,1)) !important;
 }
-[data-theme="red"]
-.report-card {
-  flex: 1;
-  background: linear-gradient(135deg, #df8cc5, white);
-  color: white; /* Light text for contrast */
-  padding: 20px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  transition: transform 0.3s ease-in-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+[data-theme="red"] .executive-app-container {
+  --bg-color: #dfdaf3;
  
 }
 [data-theme="red"]
-.report-card:hover {
-  background:#df8cc5;
-}[data-theme="red"] .executive-app-container {
-   --bg-color: #f3daf3;
-  --text-color: #3c6ba9;
-}[data-theme="red"] .navbar_icon{
-  color:white;
-}
-[data-theme="red"] .logout_btn {
-  background: linear-gradient(135deg, #a3446a, #7e387d);
-}
-[data-theme="red"] .user_avatar  {
-  background:rgb(216, 137, 173);
-}
-[data-theme="red"].news{
-  background: white;
+.report-card {
+ flex: 1;
+ background: linear-gradient(135deg, #de9bc8,#ae6497, rgb(49, 60, 142));
+ color: white; /* Light text for contrast */
+ padding: 20px;
+ border-radius: 12px;
+ display: flex;
+ flex-direction: column;
+ position: relative;
+ transition: transform 0.3s ease-in-out;
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
 }
 [data-theme="red"] .latest-news{
-  --text-color: #3c6ba9;
+ color: white;
+ margin-bottom: 10px;
 }
-[data-theme="red"] .card-value1{
-  color: #3c6ba9;
+[data-theme="red"] .card-details h4 {
+ color:white;
+}
+[data-theme="red"] .card-value, .card-value1 {
+ --text-color:white;
+}
+[data-theme="red"] 
+.news  {
+ background:linear-gradient(135deg,#de9bc8,#ae6497,rgb(31, 31, 109));
+}
+[data-theme="red"] .navbar_icon{
+ color:white;
+}
+[data-theme="red"] .logout_btn {
+ background: linear-gradient(135deg, #a3446a, #7e387d);
+}
+[data-theme="red"] .user_avatar  {
+ background:rgb(216, 137, 173);
 }
 [data-theme="blue"] .executive-app-container {
   --bg-color: rgb(202, 202, 247);
@@ -528,4 +531,47 @@ html, body {
 }
 [data-theme="blue"] .latest-news{
   color: white;
+}
+[data-theme="brown"] .executive-app-container {
+  --bg-color: #d9cac4;
+}
+[data-theme="brown"] .card-details h4 {
+  color:white;
+}
+[data-theme="brown"] .card-value, .card-value1 {
+  --text-color:white;
+}
+[data-theme="brown"] .latest-news{
+  color: white;
+  margin-bottom: 10px;
+}
+[data-theme="brown"] .navbar_icon{
+  color:white;
+}
+[data-theme="brown"]
+.report-card {
+  flex: 1;
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+  color: #f0f0f0; /* Light text for contrast */
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+ 
+}
+[data-theme="brown"] 
+.card-icon  {
+  background:rgb(102, 148, 138) ;
+}
+[data-theme="brown"] 
+.news  {
+background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
+[data-theme="brown"] .logout_btn {
+   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+[data-theme="brown"] .user_avatar  {
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }

@@ -271,3 +271,14 @@
   font-size: 13px;
   color: var(--text-color);
 }
+[data-theme="brown"] .tracker-header{
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+[data-theme="brown"] .tracker-header h3 {
+  color:white;
+}
+[data-theme="brown"] .tracker-btn {
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+[data-theme="brown"] .exec-avatar{
+background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}

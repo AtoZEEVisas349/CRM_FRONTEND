@@ -321,3 +321,15 @@ select:hover {
   color: white;
   background: linear-gradient(135deg, #080567, grey);
 }
+[data-theme="brown"] .close-leads-page{
+  --bg-color: #d9cac4;
+  height:100vh;
+}
+
+ [data-theme="brown"] .top_bar{
+    --bg-color: #d9cac4;
+  }
+[data-theme="brown"] .add_btn{
+  color: white;
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}

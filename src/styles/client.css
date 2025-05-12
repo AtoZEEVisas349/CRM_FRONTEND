@@ -511,3 +511,18 @@ background: rgb(141, 38, 141);
               }[data-theme="blue"] .client-main-content{
         --bg-color: rgb(186, 186, 232);
       }}
+      [data-theme="brown"] .client-main-content{
+        --bg-color: #d9cac4;
+      }
+      [data-theme="brown"] .update-btn{
+      background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+      }
+      [data-theme="brown"] .create-btn{
+      background: #754632;
+       }
+      [data-theme="brown"] .update-btn:hover .update-btn{
+      background:rgb(125, 188, 187) ;
+      }
+      [data-theme="brown"] .create-btn:hover .create-btn{
+      background: #af8b7c;
+      }

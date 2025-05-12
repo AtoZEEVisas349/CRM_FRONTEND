@@ -593,3 +593,10 @@ margin-left: 220px;
   color: white;
   transform: scale(1.05);
 }
+[data-theme="brown"] .task-management-wrapper{
+  background-color: #d9cac4;
+ 
+}
+[data-theme="brown"] .content-header{
+  background-color: #d9cac4;
+}

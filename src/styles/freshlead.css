@@ -400,3 +400,10 @@ gap: 10px;
 [data-theme="blue"] .fresh-pagination{
   background-color: rgb(186, 186, 232);
 }
+[data-theme="brown"] .fresh-leads-main-content {
+  --bg-color: #d9cac4;
+}
+[data-theme="brown"] .fresh-leads-table thead {
+  background-color: rgb(151, 103, 74);
+  color :white;
+}
