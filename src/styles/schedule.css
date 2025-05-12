@@ -1,0 +1,595 @@
+/* Schedule */
+/* Base Styles */
+
+.task-management-container {
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f7f6;
+  min-height: 100vh;
+  padding: 0;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 40px;
+margin-left: 220px;
+}
+
+.task-management-wrapper {
+  background-color: #ffffff;
+  width: 1200px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Sticky Header */
+.content-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  /* z-index: 100; */
+  padding: 20px 32px;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.content-header.scrolled {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e6f0ef;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.meetings-title {
+  font-size: 28px;
+  font-weight: 700;
+  /* color: #1a2e35; */
+  margin: 0;
+}
+
+/* Date Section */
+.date-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fdfc;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.date-section:hover {
+  background: #e6f0ef;
+}
+
+.day-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a6f6f;
+  margin: 0;
+}
+
+.current-date {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a2e35;
+  margin: 0;
+}
+
+.date-dropdown {
+  color: #a2d9d6;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-controls button {
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #7f9b9a;
+  padding: 8px 20px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  background: #f8fdfc;
+}
+
+.filter-controls button:hover {
+  color: #1ea593;
+  background: #e6f0ef;
+}
+
+.filter-controls button.active-filter {
+  background: linear-gradient(135deg, #1ea593, #2bc4b2);
+  color: white;
+  box-shadow: 0 4px 12px rgba(30, 165, 147, 0.25);
+}
+
+.refresh-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f8fdfc;
+  cursor: pointer;
+  color: #7f9b9a;
+  font-size: 16px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refresh-button:hover {
+  color: white;
+  background: #1ea593;
+  transform: rotate(120deg);
+}
+
+/* Scrollable Content */
+.meetings-content {
+  overflow-y: auto;
+  padding: 0 32px 32px;
+  flex-grow: 1;
+}
+
+/* Meetings List */
+.meetings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Meeting Item */
+.meeting-item {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: all 0.3s ease;
+}
+
+.meeting-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.meeting-item.highlighted-meeting {
+  border-left: 5px solid #f20f0f;
+  background-color: #f8fdfc;
+}
+
+/* Meeting Time */
+.meeting-time {
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.start-time {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a2e35;
+  margin: 0;
+}
+
+.end-time {
+  font-size: 14px;
+  font-weight: 500;
+  color: #7f9b9a;
+  margin: 4px 0 0;
+}
+
+/* Meeting Duration */
+.meeting-duration {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #7f9b9a;
+  min-width: 80px;
+}
+
+.meeting-duration svg {
+  color: #a2d9d6;
+  font-size: 16px;
+}
+
+/* Meeting Details */
+.meeting-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 300px;
+}
+
+.meeting-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a2e35;
+  margin: 0;
+}
+
+.meeting-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.meeting-tag {
+  background-color: #f0f7f6;
+  color: #1ea593;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #d1e7e5;
+}
+
+/* Attendees */
+.meeting-attendees {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+  justify-content: flex-end;
+}
+
+.attendee-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.attendee-thumbnail:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.add-attendee {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0f7f6, #e6f0ef);
+  color: #1ea593;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-attendee:hover {
+  background: linear-gradient(135deg, #1ea593, #2bc4b2);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Options Menu */
+.meeting-options {
+  border: none;
+  background: #f8fdfc;
+  cursor: pointer;
+  color: #b3c5c4;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.meeting-options:hover {
+  color: white;
+  background: #1ea593;
+  transform: rotate(90deg);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .task-management-wrapper {
+    border-radius: 0;
+  }
+  
+  .meeting-item {
+    /* flex-wrap: wrap; */
+    height: auto;
+    padding: 20px;
+  }
+  
+  .meeting-details {
+    min-width: 100%;
+    order: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-header {
+    padding: 16px;
+  }
+  
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  .date-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filter-controls {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .meetings-content {
+    padding: 0 16px 16px;
+  }
+  
+  .meeting-item {
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .meeting-time {
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .meeting-attendees {
+    margin-left: auto;
+  }
+}
+
+/* Light Mode */
+[data-theme="light"] .task-management-container {
+  background-color: #f3f7f6;
+  color: #090a0a;
+}
+
+[data-theme="light"] .task-management-wrapper {
+  background-color: #ffffff;
+}
+
+[data-theme="light"] .meeting-item {
+  background-color: white;
+  color: #090a0a;
+}
+
+[data-theme="light"] .meeting-title,
+[data-theme="light"] .start-time {
+  color: #090a0a;
+}
+[data-theme="dark"] .meeting-title{
+  background-color: #1a202c;
+  color: white;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .task-management-container {
+  background-color:#1a202c;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .task-management-wrapper {
+  background-color: #1a202c;
+}
+
+[data-theme="dark"] .meeting-item {
+  background-color: #008B8B;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .meeting-title,
+[data-theme="dark"] .start-time {
+  color: #f0f0f0;
+  background-color: #008B8B;
+}
+
+[data-theme="dark"] .end-time,
+[data-theme="dark"] .meeting-duration {
+  color: #a2d9d6;
+}
+
+[data-theme="dark"] .content-header {
+  background: #1a202c;
+  border-bottom-color: #1a202c;
+}
+
+[data-theme="dark"] .filter-controls button {
+  background: #1a202c;
+  color: #e0eae9;
+}
+
+[data-theme="dark"] .filter-controls button.active-filter {
+  background: linear-gradient(135deg, #ed04bb, #2bc4b2);
+  color: white;
+}
+
+@media (min-width: 481px) and (max-width: 991px) {
+  .task-management-container {
+    margin-left: 0px;
+    width: 100%;
+
+  }
+  .task-management-wrapper {
+    padding: 0px 50px 20px 50px;
+    z-index: 0;
+  }
+  
+  .meetings-title {
+    font-size: 26px;
+  }
+  
+  .meeting-item {
+    flex-wrap: nowrap;
+  }
+  
+  .meeting-time {
+    width: 100px;
+  }
+  
+  .meeting-duration {
+    width: 80px;
+  }
+  
+  .meeting-attendees {
+    width: auto;
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+  .content-header {
+    margin-top:60px;
+  }
+}
+
+/* Desktop Breakpoint (1024px) */
+@media (min-width: 1024px) {
+  .task-management-container {
+    padding-top: 40px;
+  }
+  
+    .meetings-title {
+    font-size: 28px;
+  }
+  
+  .meeting-item {
+    padding: 24px; 
+  }
+  .header-top {
+    width: 88%;
+  }
+  .content-header{
+    margin-top: 30px !important;
+    margin-left:10px;
+  }
+}
+
+/* Large Desktop Breakpoint (1440px) */
+@media (min-width: 1440px) {
+  .content-header{
+    margin-top: 30px;
+   
+  }
+  /* .task-management-wrapper {
+    padding: 0px 100px 20px 400px; 
+  } */
+}
+@media (min-width: 1500px) {
+  .task-management-wrapper {
+    width: 100vw;
+    margin-right: -46px;
+    /* optional, as needed */
+  }
+}
+/* Extra Small Devices (below 400px) */
+@media (max-width: 400px) {
+  .filter-controls button {
+    padding: 8px 12px; /* Smaller buttons */
+    font-size: 12px;
+  }
+  
+  .meeting-tag {
+    padding: 4px 10px; /* Smaller tags */
+}
+}
+[data-theme="red"] .task-management-wrapper {
+  background-color: #f3daf3;
+  --text-color: #3c6ba9;
+}[data-theme="red"] .day-name {
+  color: #983197;
+}[data-theme="red"] .filter-controls button.active-filter {
+  background:  linear-gradient(135deg, #983197, #a953a7);
+  box-shadow: 0 4px 12px rgba(164, 90, 156, 0.25);
+}
+[data-theme="red"] .filter-controls button:hover {
+  color: #983197;
+  background: #e8b5e1;
+}
+[data-theme="red"] .meeting-tag{
+  color: #983197;
+  background: #e8b5e1;
+} 
+[data-theme="red"] .add-attendee{
+  color: #983197;
+  background: #e8b5e1;
+}
+[data-theme="red"] .add-attendee:hover{
+  background: linear-gradient(135deg, #983197, #ea99e8);
+  color: white;
+  transform: scale(1.05);
+}
+[data-theme="red"] .content-header{
+  background: #e8b5e1;
+}
+[data-theme="blue"] .task-management-wrapper{
+  background-color: rgb(186, 186, 232);;
+}[data-theme="blue"] .content-header {
+  background-color: rgb(186, 186, 232);;
+}[data-theme="blue"] .day-name {
+  color: #3b3198;
+}[data-theme="blue"] .filter-controls button.active-filter {
+  background:  linear-gradient(135deg, #403198, #b9b4e1);
+  box-shadow: 0 4px 12px rgba(143, 143, 224, 0.25);
+}[data-theme="blue"] .filter-controls button:hover {
+  color: #3b3198;
+  background: #9b96c6;
+}[data-theme="blue"] .meeting-tag{
+  color: #4e38a7;
+  background: #b8b5e8;
+}[data-theme="blue"] .add-attendee{
+  color: #4e38a7;
+  background: #b8b5e8;
+}[data-theme="blue"] .add-attendee:hover{
+  background: linear-gradient(135deg, #3d3198, #c0bbec);
+  color: white;
+  transform: scale(1.05);
+}

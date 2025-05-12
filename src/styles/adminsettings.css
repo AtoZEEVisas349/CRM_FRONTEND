@@ -1,0 +1,456 @@
+
+:root {
+  /* Light Theme Defaults */
+  --bg-color: #f9fafb;
+  --card-bg: #ffffff;
+  --text-color: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --secondary-color: #818cf8;
+  --accent-color: #8b5cf6;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+  
+  /* Component Specific */
+  --input-bg: #f9fafb;
+  --input-border: #d1d5db;
+  --input-focus: #a5b4fc;
+  --tab-inactive: #f3f4f6;
+  --tab-active: #6366f1;
+  --btn-text: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --table-header: #f9fafb;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Overrides */
+  --bg-color: #1f2937;
+  --card-bg: #111827;
+  --text-color: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --primary-color: #818cf8;
+  --primary-hover: #6366f1;
+  --secondary-color: #a78bfa;
+  --accent-color: #c084fc;
+  
+  /* Component Specific */
+  --input-bg: #1f2937;
+  --input-border: #4b5563;
+  --input-focus: #818cf8;
+  --tab-inactive: #374151;
+  --tab-active: #818cf8;
+  --btn-text: #f9fafb;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --table-header: #1f2937;
+}
+
+/* BASE STYLES */
+.admin-settings {
+  width: 100%;
+  padding: 2rem 3rem;
+  background: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  
+}
+
+/* Sidebar State Adjustments */
+body.sidebar-expanded .admin-settings {
+  margin-left: 150px;
+  width: calc(100% - 250px);
+  padding-left: 0 /* Reduced from 3rem */
+}
+
+body.sidebar-collapsed .admin-settings {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+  padding-left: 1.5rem; /* Reduced from 3rem */
+}
+
+/* ==================== */
+/* HEADER STYLES */
+/* ==================== */
+.settings-header {
+  padding-left: 0; /* Remove extra padding */
+  margin-left: -0.5rem; 
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+
+
+/* ==================== */
+/* TAB NAVIGATION */
+/* ==================== */
+.settings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.settings-tabs button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  background: var(--tab-inactive);
+  color: var(--text-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.settings-tabs button:hover {
+  background: var(--primary-color);
+  color: var(--btn-text);
+}
+
+.settings-tabs button.active {
+  background: var(--tab-active);
+  color: var(--btn-text);
+}
+
+/* ==================== */
+/* MAIN CONTENT CARD */
+/* ==================== */
+.settings-card {
+  background: var(--card-bg);
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.settings-card h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* ==================== */
+/* FORM STYLES */
+/* ==================== */
+.profile-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 3rem;
+  row-gap: 2rem;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group.full {
+  grid-column: span 2;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  background: var(--input-bg);
+  color: var(--text-color);
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group small {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Profile Picture Section */
+.profile-pic .pic-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-pic img {
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.pic-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.pic-actions button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  background: var(--border-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pic-actions button:hover {
+  background: var(--primary-color);
+  color: var(--btn-text);
+}
+
+/* ==================== */
+/* BUTTON STYLES */
+/* ==================== */
+.save-btn, 
+.primary-btn {
+  background-color: var(--primary-color);
+  color: var(--btn-text);
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.save-btn:hover,
+.primary-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.mini-btn {
+  background-color: var(--border-color);
+  color: var(--text-color);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mini-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--btn-text);
+}
+
+/* ==================== */
+/* SECTION BLOCKS */
+/* ==================== */
+.section-block {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Lists */
+.team-list,
+.integration-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.team-list li,
+.integration-list li {
+  padding: 0.8rem 0;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Tables */
+.billing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.billing-table th,
+.billing-table td {
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  text-align: left;
+  color: var(--text-color);
+}
+
+.billing-table th {
+  background: var(--table-header);
+  font-weight: 600;
+}
+
+/* ==================== */
+/* RESPONSIVE ADJUSTMENTS */
+/* ==================== */
+@media (max-width: 1200px) {
+  .admin-settings {
+    padding: 2rem;
+  }
+  
+  .settings-card {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  body.sidebar-expanded .admin-settings {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding-left: 0.1rem; /* reduced from 1.5rem */
+    padding-right: 1.5rem; /* keep right padding normal */
+  }
+  
+
+  body.sidebar-collapsed .admin-settings {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+    padding-left: 1rem; /* reasonable */
+    padding-right: 1rem;
+  }
+  
+  
+  
+  .sidebar-toggle-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+    padding: 0.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-settings {
+    padding: 1.5rem;
+  }
+  
+  .settings-card {
+    padding: 1.5rem;
+  }
+  
+  .settings-tabs {
+    gap: 0.5rem;
+  }
+  
+  .settings-tabs button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    flex: 1 1 120px;
+  }
+  
+  .profile-pic .pic-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .pic-actions {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-settings {
+    padding: 1rem;
+  }
+  
+  .settings-card {
+    padding: 1rem;
+  }
+  
+  .settings-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .settings-card h3 {
+    font-size: 1.2rem;
+  }
+  
+  .pic-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .pic-actions button {
+    width: 100%;
+  }
+  
+  .billing-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

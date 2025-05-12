@@ -1,0 +1,337 @@
+/* customer */
+.generate-btn-wrapper{
+  --accent-color: #4f46e5;
+  --accent-color-hover: #3730a3;
+}
+.heading{
+  --accent-color: #4f46e5;
+  --accent-color-hover: #3730a3;
+}
+
+
+/* Main Content */
+.customer-main-content {
+  margin-left: 200px;
+  width: calc(100%-200px);
+  height: 100vh;
+  /* padding: 20px 40px 0px 100px; */
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: margin-left 0.3s ease-in-out;
+  padding-left: 80px;
+  padding-top: 20px;
+  padding-right: 50px;
+}
+
+.heading {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 80px;
+  margin-bottom: 25px;
+  background: #f0f0f0;
+  color: var(--text-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-light);
+  transform: translateX(-50px); /* ✅ shifts it slightly left */
+}
+
+[data-theme="dark"] .heading h2{
+  color: #080808;
+}
+
+h2 {
+  margin-left: 5px;
+}
+
+.button {
+  font-weight: 600;
+  background-color: #1297df;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+}
+
+.button:hover {
+  background: #005bb5;
+}
+
+/* Table */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 0;
+  margin: 0;
+}
+.table {
+  width: 100%;
+   table-layout: auto;
+  border-collapse: collapse; 
+  /* min-width: 1000px; */ 
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  overflow: auto;
+  box-shadow: 0 2px 5px var(--shadow-light);
+  margin: 0;
+  /* min-width: unset;
+  max-width: 100%; */
+
+}
+
+/* .table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  min-width: 1000px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px var(--shadow-light);
+  margin: 0;
+  min-width: unset;
+
+} */
+
+.table-head {
+  font-size: 18px;
+  height: 30px;
+  background: #6bbdea;
+  color: white; /* This ensures text is visible in dark mode */
+}
+
+/* For dark mode */
+.dark-mode .table-head {
+  background: #e8ebec;
+  color: white;
+}
+
+/* For light mode */
+.light-mode .table-head {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.table-head th {
+  padding: 15px;
+  text-align: left;
+}
+
+.table-body {
+  text-align: left;
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+.table-body tr {
+  transition: background 0.3s;
+}
+
+.table-body tr:hover {
+  background: var(--badge-bg);
+}
+
+.table-body td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+  color: var(--text-color);
+}
+
+/* Name cell */
+.name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* Tags */
+.tag {
+  background: var(--accent-color);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+/* Search Bar */
+.search-bar {
+  width: 100%;
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-color);
+  outline: none;
+  margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .customer-main-content {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+    height: fit content;
+  }
+
+  .table-body td {
+    font-size: 16px;
+    padding:23px 1px 23px 1px;
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .table-body td {
+    font-size: 16px;
+  }
+}
+
+.content-container {
+  width: 100%;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+
+.section {
+  width: 100%;
+  padding: 0 0 10px 0;
+}
+
+.generate-btn-wrapper {
+  display: flex;
+  justify-content: left; 
+  margin-top: 30px;        
+}
+
+.card-row {
+  display: flex;
+  gap: 0px; /* ⬅ no space between cards */
+  margin-bottom: 20px;
+  padding: 0; /* ⬅ removes row padding */
+}
+
+.c-card {
+  flex: 1 1 33.33%;
+  min-width: 0; /* ⬅ allow full stretching */
+  padding: 16px; /* ⬅ keep inner content padding */
+  margin: 0;     /* ⬅ no outer margin */
+  border-radius: 0; /* optional: remove rounding if flush layout */
+}
+@media (min-width: 1024px) and (max-width: 1430px)  {
+  .customer-main-content {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+    height: fit-content;
+  }
+
+  .table-body td {
+    
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1000px)  {
+  .customer-main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 15px 2px 2px 2px;
+    height:fit-content;
+  }
+
+  .heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .table {
+    /* display: block; */
+    overflow-x: auto;
+    border-collapse: collapse;
+    /* white-space: nowrap; */
+  }
+
+  .table-body td {
+    font-size: 14px;
+  }
+  .table-head th{
+    padding: 3px;
+    text-align: center;
+  }
+  .search-bar {
+    margin-top: 26px;
+}
+.button{
+  margin-top:25px;
+  margin-left:5px;
+}
+}
+[data-theme="red"] .customer-main-content{
+  --bg-color: #f3daf3;
+ --text-color: #3c6ba9;
+ height:100vh;
+}[data-theme="red"] .button{
+  font-weight: 600;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+  background: linear-gradient(135deg, #a3446a, #ea99e8);
+}
+[data-theme="red"] .heading{
+  background-color: #f3daf3;
+}
+[data-theme="red"] .button:hover{
+  background-color: #a4b9ef ;
+}[data-theme="red"] .table-head{
+  background: #c8c8f4;
+  color: #0d2f57;
+}
+[data-theme="blue"] .customer-main-content{
+  --bg-color: rgb(186, 186, 232); 
+  height:100vh;
+}[data-theme="blue"] .button{
+  background: linear-gradient(135deg, #080567, grey);
+}
+[data-theme="blue"] .button:hover{
+  background-color: #a88c38 ;
+}[data-theme="blue"] .table-head{
+  background: rgb(114, 114, 214);
+ 
+}  
+[data-theme="blue"]  .heading {
+  background: rgb(186, 186, 232);
+}
