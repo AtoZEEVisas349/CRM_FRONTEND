@@ -10,8 +10,8 @@ import {
 
 function AdminNavbar() {
   const [showPopover, setShowPopover] = useState(false);
-  const { theme, toggleTheme } = useContext(ThemeContext);
   const { logout } = useAuth();
+  const { changeTheme,theme } = useContext(ThemeContext); 
   const { adminProfile, loading, fetchAdmin } = useApi(); // ✅ Using context API
 
   const togglePopover = async () => {
@@ -28,17 +28,22 @@ function AdminNavbar() {
       console.error('Logout failed:', error);
     }
   };
+  
+  const isLight = theme === "light";
 
+  const handleToggle = () => {
+    changeTheme(isLight ? "dark" : "light");
+  };
   return (
     <div className="header-icons" style={{ position: 'relative' }}>
       {/* Theme Toggle */}
       <button
+      onClick={handleToggle}
+      aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
         className="theme-toggle"
-        onClick={toggleTheme}
-        aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-      >
-        {theme === 'light' ? <FaMoon /> : <FaSun />}
-      </button>
+    >
+      {isLight ? <FaMoon /> : <FaSun />}
+    </button>
 
   {/* Icon Group */}
   <div className="admin-icons-group">
@@ -70,7 +75,7 @@ function AdminNavbar() {
               </div>
             )
           )}
-          <button className="logout_btn" onClick={handleLogout}>
+          <button className="admin-logout_btn" onClick={handleLogout}>
             Logout
           </button>
         </div>

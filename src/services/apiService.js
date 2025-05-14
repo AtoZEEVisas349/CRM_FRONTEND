@@ -459,5 +459,24 @@ export const fetchAdminExecutiveDashboard = async () => {
     throw error;
   }
 };
-
+// ✅ Fetch revenue chart data
+export const fetchRevenueChartData = async () => {
+  try {
+    const response = await apiService.get("/revenuechart/revenue-data");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching revenue chart data:", error);
+    throw error;
+  }
+};
+// Function to fetch all opportunities
+export const fetchOpportunities = async () => {
+  try {
+    const response = await apiService.get("/opportunities");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching opportunities:", error);
+    throw error;
+  }
+};
 export default apiService;

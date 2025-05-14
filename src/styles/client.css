@@ -480,6 +480,33 @@ button:disabled {
     width:100%;
 }
 }
+  .sendEmail-btn {
+    font-size: 12px;
+    padding: 8px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: #ffffff;
+  }
+  
+  .sendEmail-btn:hover {
+    background-color: #0563c6;
+  }
+  
+  .sendEmail-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+/*----------------------------------Pink-------------------------*/
 [data-theme="red"] .client-main-content{
   --bg-color: #fae9f3;
  --text-color: #3c6ba9;
@@ -488,41 +515,121 @@ button:disabled {
 background: rgb(141, 38, 141);
 }
 
-  [data-theme="red"] .update-btn:hover{
-    background:rgb(225, 128, 225) ;
-    }
-    [data-theme="red"] .create-btn:hover{
-      background: rgb(114, 101, 218);
-      }
-      [data-theme="blue"] .client-main-content{
-        --bg-color: rgb(186, 186, 232);
-      [data-theme="blue"] .update-btn{
-        background: linear-gradient(135deg, #080567, grey);
-        }
-        [data-theme="blue"] .create-btn{
-          background: rgb(152, 156, 108);
-          }
-         
-          [data-theme="blue"] .update-btn:hover{
-            background:rgb(112, 95, 112) ;
-            }
-            [data-theme="blue"] .create-btn:hover{
-              background: rgb(156, 147, 225);
-              }[data-theme="blue"] .client-main-content{
-        --bg-color: rgb(186, 186, 232);
-      }}
-      [data-theme="brown"] .client-main-content{
-        --bg-color: #d9cac4;
-      }
-      [data-theme="brown"] .update-btn{
-      background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
-      }
-      [data-theme="brown"] .create-btn{
-      background: #754632;
-       }
-      [data-theme="brown"] .update-btn:hover .update-btn{
-      background:rgb(125, 188, 187) ;
-      }
-      [data-theme="brown"] .create-btn:hover .create-btn{
-      background: #af8b7c;
-      }
+[data-theme="red"] .update-btn:hover{
+background:rgb(225, 128, 225) ;
+}
+[data-theme="red"] .create-btn:hover{
+background: rgb(114, 101, 218);
+}
+
+/*----------------------------------Blue-------------------------*/
+[data-theme="blue"] .client-main-content{
+--bg-color: rgb(186, 186, 232);}
+[data-theme="blue"] .update-btn{
+background: linear-gradient(135deg, #080567, grey);
+}
+[data-theme="blue"] .create-btn{
+background: rgb(152, 156, 108);
+}
+
+[data-theme="blue"] .update-btn:hover{
+background:rgb(112, 95, 112) ;
+}
+[data-theme="blue"] .create-btn:hover{
+background: rgb(156, 147, 225);
+}[data-theme="blue"] .client-main-content{
+--bg-color: rgb(186, 186, 232);
+}
+
+/*----------------------------------Brown-------------------------*/
+[data-theme="brown"] .client-main-content{
+  --bg-color: #d9cac4;
+}
+[data-theme="brown"] .update-btn{
+background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+[data-theme="brown"] .create-btn{
+background: #754632;
+  }
+[data-theme="brown"] .update-btn:hover .update-btn{
+background:rgb(125, 188, 187) ;
+}
+[data-theme="brown"] .create-btn:hover .create-btn{
+background: #af8b7c;
+}
+
+/*----------------------------------Green-------------------------*/
+/* Follow-up detail theme */
+[data-theme="green"] .followup-detail-theme {
+  --accent-color: #2e7d32;
+  --accent-color-hover: #1b5e20;
+}
+[data-theme="green"] .client-main-content{
+  --bg-color: #81cc84;
+}
+/* Client details container */
+[data-theme="green"] .c-container {
+  background: white;
+  border: 1px solid #c8e6c9;
+}
+
+/* Client info fields - ensure black text */
+[data-theme="green"] .info-item .label,
+[data-theme="green"] .info-item .value,
+[data-theme="green"] .c-info-column {
+  color: #000000 !important;
+}
+
+/* Headers and titles */
+[data-theme="green"] .c-header,
+[data-theme="green"] .client-interaction-container h4,
+[data-theme="green"] .followup-detail-container h2,
+[data-theme="green"] .followup-detail-container h3,
+[data-theme="green"] .followup-detail-container h4 {
+  color: black !important;
+}
+
+/* Interaction containers */
+[data-theme="green"] .client-interaction-container,
+[data-theme="green"] .followup-detail-container {
+  background: white;
+  border: 1px solid #c8e6c9;
+  color: #000000;
+}
+
+/* Form elements */
+[data-theme="green"] .interaction-form label,
+[data-theme="green"] .radio-label,
+[data-theme="green"] .interaction-field label {
+  color: #000000 !important;
+}
+
+/* Text areas and inputs */
+[data-theme="green"] .interaction-textarea,
+[data-theme="green"] input[type="date"],
+[data-theme="green"] input[type="time"] {
+  background: white;
+  border: 1px solid #c8e6c9;
+  color: #000000;
+}
+
+/* Buttons */
+[data-theme="green"] .update-btn {
+  background-color: #2e7d32;
+  color: white;
+}
+
+[data-theme="green"] .converted-btn {
+  background-color: #43a047;
+  color: white;
+}
+
+/* History items */
+[data-theme="green"] .history-item p {
+  color: #000000 !important;
+}
+
+/* Last follow-up text */
+[data-theme="green"] .last-follow-up p {
+  color: #000000 !important;
+}

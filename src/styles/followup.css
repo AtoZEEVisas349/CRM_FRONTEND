@@ -486,6 +486,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #f3f3f3;
 }
 
+/*----------------------------------Pink--------------------------*/
 [data-theme="red"] .follow-app-container{
   --bg-color: #f3daf3;
  --text-color: #3c6ba9;
@@ -498,11 +499,15 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme="red"].last-followup h5{
   color: #0d2f57; 
 }
+/*----------------------------------Blue--------------------------*/
+
 [data-theme="blue"] .follow-app-container{
   --bg-color: rgb(186, 186, 232); 
 }[data-theme="blue"] .client-table thead th {
   background:rgb(114, 114, 214);
 }
+/*----------------------------------Brown--------------------------*/
+
 [data-theme="brown"] .follow-app-container {
   --bg-color: #d9cac4;
 }
@@ -512,4 +517,88 @@ h1, h2, h3, h4, h5, h6 {
 }
 [data-theme="brown"] .followup-tabs .active {
 background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+
+/*----------------------------------Green--------------------------*/
+[data-theme="green"] .follow-app-container {
+  background: #c6e7c8; /* Light green background */
+  color: #333;
+}
+
+/* Sidebar */
+[data-theme="green"] .sidebar_container { /* Light green background */
+  color: white;
+}
+
+/* Main content */
+[data-theme="green"] .follow-main-content {
+  background-color: #c6e7c8; /* Light green background */
+  color: #333;
+}
+
+[data-theme="green"] p {
+ color: #000000;
+}
+
+[data-theme="green"] h3 {
+  color: #000000;
+ }
+
+ [data-theme="green"] .lead-badge {
+  color: #000000;
+ }
+
+/* Cards and containers */
+[data-theme="green"] .client-details,
+[data-theme="green"] .client-table-wrapper,
+[data-theme="green"] .client-table {
+  background: white;
+  border: 1px solid #c8e6c9;
+}
+
+/* Table styles */
+[data-theme="green"] .client-table th {
+  background-color: #2e7d32; /* Dark green for headers */
+  color: white;
+}
+
+[data-theme="green"] .client-table td {
+  background-color: white;
+  color: #333;
+  border-color: #e0e0e0;
+}
+
+[data-theme="green"] .client-table tr:hover {
+  background-color: #e8f5e9 !important;
+}
+/* Tabs */
+[data-theme="green"] .followup-tabs button {
+  background-color: white;
+  color: #333;
+  border: 1px solid #c8e6c9;
+}
+
+[data-theme="green"] .followup-tabs .active {
+  background-color: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+/* Status badge */
+[data-theme="green"] .status-badge {
+  background-color: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+/* User icon background */
+[data-theme="green"] .user-icon-bg {
+  background-color: #e8f5e9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  [data-theme="green"] .follow-main-content {
+    background: #e8f5e9;
+  }
 }

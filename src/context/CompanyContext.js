@@ -20,16 +20,18 @@ export const CompanyProvider = ({ children }) => {
 
   // Fetch companies
   const fetchCompanies = async () => {
+    setLoading(true);
+    setError(null); // ✅ Reset any previous error
+  
     try {
-      setLoading(true);
       const res = await getCompaniesForMaster();
       setCompanies(res.companies || []);
     } catch (err) {
-      setError(err.error || "Failed to fetch companies");
+      setError(err?.error || "Failed to fetch companies");
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   // Create company
   const addCompany = async (companyData) => {

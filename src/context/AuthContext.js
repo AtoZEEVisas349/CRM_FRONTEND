@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import * as authService from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ThemeContext } from '../features/admin/ThemeContext';
 import { recordStartWork,recordStopBreak,recordStopWork } from "../services/executiveService";
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "./breakTimerContext";
@@ -16,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
- 
+  const { forceLightTheme } = useContext(ThemeContext);
   // Check token on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -118,6 +119,8 @@ const signup = async (username, email, password, role) => {
     }
     );    localStorage.setItem("token", data.token);
     localStorage.setItem("userRole", data.user.role);
+    localStorage.setItem('theme', 'light');
+    forceLightTheme();
     localStorage.setItem(
       "currentUser",
       JSON.stringify({

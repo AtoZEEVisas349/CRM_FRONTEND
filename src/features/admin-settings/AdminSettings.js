@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/adminsettings.css";
-import { FaBars } from "react-icons/fa"; // optional if SidebarToggle uses FaBars
+import { FaBars } from "react-icons/fa"; 
 import SidebarToggle from "../admin/SidebarToggle";
 
 const AdminSettings = () => {

@@ -1120,18 +1120,18 @@ h1 {
 }
 
 .light {
-  background-color: #ffffff; /* Light theme background */
+  background-color: #ffffff; 
 }
 
 .dark {
-  background-color: #333333; /* Dark theme background */
+  background-color: #333333; 
 }
 
 .admin_user_popover {
   position: absolute;
   top: 55px;
-  right: 0; /* aligns with user icon */
-  transform: translateX(20%) translateY(-20px); /* pull it a bit to the left */
+  right: 0; 
+  transform: translateX(20%) translateY(-20px); 
   z-index: 10000;
   width: 240px;
   padding: 16px;
@@ -1144,7 +1144,6 @@ h1 {
   opacity: 0;
 }
 
-/* Animate in */
 @keyframes popoverSlide {
   to {
     transform: translateX(0%) translateY(0);
@@ -1160,9 +1159,8 @@ h1 {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid white; /* fallback for glass look */
-
-  background: inherit; /* tries to use popover's backdrop */
+  border-bottom: 10px solid white; 
+  background: inherit; 
   filter: brightness(1.2);
   z-index: -1;
 }
@@ -1186,7 +1184,6 @@ h1 {
   font-size: 20px;
   font-weight: bold;
 }
-
 .admin_user_name {
   font-weight: 600;
   color: #222121;
@@ -1198,8 +1195,7 @@ h1 {
   color: #222121;
   margin: 0;
 }
-/* Logout Button */
-.logout_btn {
+.admin-logout_btn {
   width: 100%;
   padding: 10px 16px;
   background: #ff4d4f;
@@ -1211,7 +1207,7 @@ h1 {
   transition: background 0.3s ease;
 }
 
-.logout_btn:hover {
+.admin-logout_btn:hover {
   background: #d9363e;
 }
 .admin-icons-group {

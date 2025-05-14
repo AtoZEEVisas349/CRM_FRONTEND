@@ -231,10 +231,10 @@
   margin: 0;
   font-style: italic;
 }
+/*------------------------------------Pink-------------------------------*/
+
 [data-theme="red"] .tracker-widget  {
   background:#f3daf3;
-}[data-theme="red"] .tracker-header  {
-  background: linear-gradient(135deg, #b96889, #ea99e8);
 }[data-theme="red"] .motivation-box  {
   border-left: 4px solid #ae33a6;
   margin-top: 20px;
@@ -251,6 +251,10 @@
 }[data-theme="red"] .tracker-btn {
   background: linear-gradient(135deg, #a3446a, #7e387d);
 }
+[data-theme="red"] .tracker-header h3{
+  color: white;
+}
+/*------------------------------------Blue-------------------------------*/
 [data-theme="blue"] .tracker-widget  {
   background:rgb(229, 229, 248);
   color:black;
@@ -271,6 +275,8 @@
   font-size: 13px;
   color: var(--text-color);
 }
+/*------------------------------------Brown-------------------------------*/
+
 [data-theme="brown"] .tracker-header{
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
@@ -281,4 +287,62 @@
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
 [data-theme="brown"] .exec-avatar{
-background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
+background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+
+/*------------------------------------Green-------------------------------*/
+[data-theme="green"] .tracker-widget {
+  border: 1px solid #c8e6c9; /* Light green border */
+  box-shadow: 0 4px 12px rgba(0,100,0,0.1); /* Green tinted shadow */
+  background-color: #c6e7c8; /* Light green background */
+}
+
+[data-theme="green"] .tracker-header {
+  background-color: #4CAF50 !important; /* Green header */
+}
+
+[data-theme="green"] .time-block {
+  background-color: white !important; /* Very light green for time blocks */
+  color: #101010 !important; /* Dark green text */
+}
+
+[data-theme="green"] .tracker-btn {
+  background: linear-gradient(160deg, #6eef6b, #2b4584);
+  color: white !important;
+  border: none !important;
+}
+[data-theme="green"] .tracker-header h3{
+  color: white;
+}
+[data-theme="green"] .tracker-btn:hover:not(:disabled) {
+  background: #388E3C !important; /* Darker green on hover */
+}
+
+[data-theme="green"] .exec-avatar {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32) !important; /* Green gradient */
+}
+
+[data-theme="green"] .status-badge {
+  background-color: white !important; /* Light green background */
+  color: #020902 !important; /* Dark green text */
+  border: 1px solid #c8e6c9 !important;
+}
+
+[data-theme="green"] .daily-summary {
+  background-color: white !important; /* Light green background */
+  color: #2e7d32 !important; /* Dark green text */
+    border-left: 4px solid #4CAF50 !important; /* Green border */
+
+}
+
+[data-theme="green"] .motivation-box {
+  background-color: white !important; /* Light green with opacity */
+  border-left: 4px solid #4CAF50 !important; /* Green border */
+  color: #090909 !important; /* Dark green text */
+}
+
+[data-theme="green"] .lead-input input {
+  background-color: white !important;
+  border: 1px solid #c8e6c9 !important;
+  color: #2e7d32 !important;
+}

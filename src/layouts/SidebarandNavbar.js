@@ -53,7 +53,6 @@ const SidebarandNavbar = () => {
     try {
       await stopBreak();
       await logout();
-      await handleStopWork();
       resetBreakTimer();
     } catch (error) {
       console.error("Logout failed:", error.message);

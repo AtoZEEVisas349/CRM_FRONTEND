@@ -541,6 +541,7 @@ margin-left: 220px;
     padding: 4px 10px; /* Smaller tags */
 }
 }
+/*---------------------------------Pink-------------------------------*/
 [data-theme="red"] .task-management-wrapper {
   background-color: #f3daf3;
   --text-color: #3c6ba9;
@@ -570,6 +571,8 @@ margin-left: 220px;
 [data-theme="red"] .content-header{
   background: #e8b5e1;
 }
+
+/*---------------------------------Blue-------------------------------*/
 [data-theme="blue"] .task-management-wrapper{
   background-color: rgb(186, 186, 232);;
 }[data-theme="blue"] .content-header {
@@ -593,10 +596,109 @@ margin-left: 220px;
   color: white;
   transform: scale(1.05);
 }
+
+/*---------------------------------Brown-------------------------------*/
 [data-theme="brown"] .task-management-wrapper{
   background-color: #d9cac4;
  
 }
 [data-theme="brown"] .content-header{
   background-color: #d9cac4;
+}
+
+/*---------------------------------Green-------------------------------*/
+/* Green Theme for Schedule Page */
+[data-theme="green"] .task-management-container {
+  background: #cbdccd; /* Light green background */
+}
+
+/* Main content wrapper */
+[data-theme="green"] .task-management-wrapper {
+  background: #c6e7c8; /* Light green background */
+  border: 1px solid #c8e6c9;
+}
+
+/* Header */
+[data-theme="green"] .content-header {
+  border-bottom: 1px solid #c8e6c9;
+  background: #c6e7c8; /* Light green background */
+}
+
+/* Title */
+[data-theme="green"] .meetings-title {
+  color: black; /* Dark green text */
+  
+}
+
+/* Date section */
+[data-theme="green"] .date-section {
+  background: white;
+  border: 1px solid #c8e6c9;
+  color: #333;
+}
+
+/* Filter buttons */
+[data-theme="green"] .filter-controls button {
+  background: linear-gradient(160deg, #5ccf5a, #2b4584);
+  border: 1px solid #c8e6c9;
+  color: #333;
+}
+
+[data-theme="green"] .filter-controls button.active-filter {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20); /* Dark green gradient */
+  color: white;
+}
+
+/* Meeting cards */
+[data-theme="green"] .meeting-item {
+  background: white !important;
+  border: 1px solid #c8e6c9;
+  color: #333;
+}
+/* Meeting times */
+[data-theme="green"] .start-time {
+  color: #333;
+}
+
+[data-theme="green"] .end-time {
+  color: #666;
+}
+
+/* Tags */
+[data-theme="green"] .meeting-tag {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+/* Buttons */
+[data-theme="green"] .refresh-button,
+[data-theme="green"] .meeting-options,
+[data-theme="green"] .add-attendee {
+  background: #2e7d32; /* Dark green */
+  color: white;
+}
+
+[data-theme="green"] .refresh-button:hover,
+[data-theme="green"] .meeting-options:hover,
+[data-theme="green"] .add-attendee:hover {
+  background: #1b5e20; /* Darker green */
+}
+
+/* Highlighted meeting */
+[data-theme="green"] .meeting-item.highlighted-meeting {
+  border-left: 5px solid #2e7d32;
+  background: #e8f5e9 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  [data-theme="green"] .content-header {
+    padding: 16px;
+  }
+  
+  [data-theme="green"] .meeting-item {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
 }

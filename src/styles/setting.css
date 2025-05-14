@@ -624,6 +624,7 @@ settings-sidebar {
   border-bottom: 1px solid #888; /* Optional: subtle indication of edit */
   border-color: #007bff;
 }
+/*-------------------------------------Pink--------------------------*/
 [data-theme="red"] .settings-sidebar{
   background: #ecc5ec;
 }[data-theme="red"] .my-profile{
@@ -652,6 +653,8 @@ background:#f3daf3 ;
 [data-theme="red"] .profile-image {
   border:3px solid #3c6ba9;
 }
+
+/*-------------------------------------Blue--------------------------*/
 [data-theme="blue"] .my-profile{
   background: rgb(202, 202, 247);  
 }[data-theme="blue"] .change-password  {
@@ -665,10 +668,8 @@ background:#f3daf3 ;
   
 }
 [data-theme="blue"] .password-form button:hover  {
- 
   background: rgb(83, 70, 155);
 }
-
 [data-theme="blue"] .password-form .password-icon {
   color:#080567;
 } [data-theme="blue"] .settings-sidebar {
@@ -677,6 +678,8 @@ background:#f3daf3 ;
     }[data-theme="blue"] .theme-settings {
   background:rgb(202, 202, 247) ;
   }
+
+/*-------------------------------------Brown--------------------------*/
   [data-theme="brown"] .settings-sidebar{
     background: #d9cac4;
   }
@@ -702,3 +705,96 @@ background:#f3daf3 ;
   [data-theme="brown"] .theme-settings{
       background-color: #d9cac4;
   }
+
+/*-------------------------------------Green--------------------------*/
+[data-theme="green"] .settings-page-wrapper {
+  background: #c6e7c8; /* Light green background */
+}
+
+/* Sidebar */
+[data-theme="green"] .settings-sidebar {
+  background: #c6e7c8; /* Light green background */
+  border-right: 1px solid #c8e6c9;
+  box-shadow: 8px 0 8px rgba(0, 0, 0, 0.03);
+  border: 5px solid #c8e6c9;
+}
+
+[data-theme="green"] .settings-sidebar a {
+  color: #333;
+  background-color: #f8fdfc;
+  border: 1px solid #c8e6c9;
+}
+
+[data-theme="green"] .settings-sidebar a:hover {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+[data-theme="green"] .settings-sidebar a.active {
+  background-color: #2e7d32; /* Dark green */
+  color: white;
+  border: none;
+}
+
+/* Profile Section */
+[data-theme="green"] .my-profile {
+  background: #c6e7c8; /* Light green background */
+  border: 1px solid #c8e6c9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="green"] .profile-header {
+  background: white;
+  border: 1px solid #c8e6c9;
+}
+
+[data-theme="green"] .profile-header h3 {
+  color: #2e7d32; /* Dark green */
+}
+
+[data-theme="green"] .profile-box {
+  background: white;
+  border: 1px solid #c8e6c9;
+}
+
+[data-theme="green"] .field-value {
+  color: #333;
+}
+
+/* Change Password */
+[data-theme="green"] .change-password {
+  background: #c6e7c8; /* Light green background */
+  border: 1px solid #c8e6c9;
+}
+
+[data-theme="green"] .password-form input {
+  background: white;
+  border: 1px solid #c8e6c9;
+  color: #333;
+}
+
+[data-theme="green"] .password-form button {
+  background: linear-gradient(160deg, #5ccf5a, #2b4584);
+  color: white;
+}
+
+[data-theme="green"] .password-form button:hover {
+  background: linear-gradient(160deg, #4bb848, #223a70);
+}
+
+/* Theme Selector */
+[data-theme="green"] .theme-settings {
+  background: #c6e7c8; /* Light green background */
+  border: 1px solid #c8e6c9;
+}
+
+[data-theme="green"] .theme-toggle-btn {
+  background: #2e7d32;
+  color: white;
+}
+
+/* Save Button */
+[data-theme="green"] .save-btn {
+  background: linear-gradient(135deg, #4CAF50, #2e7d32);
+  color: white;
+}

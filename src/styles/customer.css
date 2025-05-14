@@ -297,6 +297,8 @@ h2 {
   margin-left:5px;
 }
 }
+
+/*-------------------------------------Pink------------------------*/
 [data-theme="red"] .customer-main-content{
   --bg-color: #f3daf3;
  --text-color: #3c6ba9;
@@ -320,6 +322,8 @@ h2 {
   background: #c8c8f4;
   color: #0d2f57;
 }
+
+/*-------------------------------------Blue------------------------*/
 [data-theme="blue"] .customer-main-content{
   --bg-color: rgb(186, 186, 232); 
   height:100vh;
@@ -335,6 +339,8 @@ h2 {
 [data-theme="blue"]  .heading {
   background: rgb(186, 186, 232);
 }
+
+/*-------------------------------------Brown------------------------*/
 [data-theme="brown"] .customer-main-content {
   --bg-color: #d9cac4;
   height:100vh;
@@ -350,4 +356,78 @@ h2 {
 }
 [data-theme="brown"] .button:hover{
   background:  rgb(125, 188, 187);
+}
+
+/*-------------------------------------Green------------------------*/
+[data-theme="green"] .customer-main-content {
+  background: #c6e7c8;
+}
+[data-theme="green"] .heading h2 {
+  color: rgb(6, 5, 5) !important;
+}
+
+/* Button with gradient */
+[data-theme="green"] .button{
+  background: linear-gradient(160deg, #5ccf5a, #2b4584) !important;
+  color: white !important;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+[data-theme="green"] .button:hover {
+  background: linear-gradient(160deg, #4bb848, #223a70) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Table */
+[data-theme="green"] .table {
+  background: white !important;
+  border: 1px solid #c8e6c9 !important;
+}
+
+/* Table header */
+[data-theme="green"] .table-head {
+  background-color: #2e7d32 !important;
+  color: white !important;
+}
+
+/* Table body */
+[data-theme="green"] .table-body tr {
+  color: #000000 !important;
+}
+
+[data-theme="green"] .table-body tr:hover {
+  background-color: #e8f5e9 !important;
+}
+
+[data-theme="green"] .table-body td {
+  border-bottom: 1px solid #c8e6c9 !important;
+  color: #000000 !important;
+}
+
+/* Search bar */
+[data-theme="green"] .search-bar {
+  background: white !important;
+  border: 1px solid #c8e6c9 !important;
+  color: #000000 !important;
+}
+
+/* Tags */
+[data-theme="green"] .tag {
+  background-color: #2e7d32 !important;
+  color: white !important;
+}
+
+/* Checkbox */
+[data-theme="green"] .checkbox {
+  accent-color: #2e7d32 !important;
+}
+
+/* Cards */
+[data-theme="green"] .c-card {
+  background: white !important;
+  border: 1px solid #c8e6c9 !important;
+  color: #000000 !important;
 }

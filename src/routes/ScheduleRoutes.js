@@ -1,5 +1,4 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
 import SidebarandNavbar from '../layouts/SidebarandNavbar';
 import ScheduleMeeting from '../features/schedule-meet/ScheduleMeeting';
 import schedule from '../styles/schedule.css'

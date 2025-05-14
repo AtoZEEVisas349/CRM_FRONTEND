@@ -452,6 +452,8 @@ html, body {
 .light-mode .report-icon {
   filter: drop-shadow(0 2px 2px rgba(0,0,0,1)) !important;
 }
+/*-------------------------------Pink----------------------------------*/
+
 [data-theme="red"] .executive-app-container {
   --bg-color: #dfdaf3;
  
@@ -493,6 +495,8 @@ html, body {
 [data-theme="red"] .user_avatar  {
  background:rgb(216, 137, 173);
 }
+/*-------------------------------Blue----------------------------------*/
+
 [data-theme="blue"] .executive-app-container {
   --bg-color: rgb(202, 202, 247);
 }[data-theme="blue"] .navbar_icon{
@@ -532,6 +536,8 @@ html, body {
 [data-theme="blue"] .latest-news{
   color: white;
 }
+/*-------------------------------Brown----------------------------------*/
+
 [data-theme="brown"] .executive-app-container {
   --bg-color: #d9cac4;
 }
@@ -574,4 +580,79 @@ background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
 }
 [data-theme="brown"] .user_avatar  {
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+/*-------------------------------Green----------------------------------*/
+[data-theme="green"] .executive-app-container,
+[data-theme="green"] .executive-main-content {
+  background-color: #c6e7c8; /* Light green background */
+}
+
+[data-theme="green"] .report-card {
+  background: linear-gradient(160deg, #6eef6b, #2b4584);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 16px rgba(0, 255, 128, 0.08);
+  color: #ffffff; /* Changed from var() for better contrast */
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 180px;
+  position: relative; /* Added for icon positioning */
+  overflow: hidden; /* Ensures rounded corners clip content */
+}
+
+[data-theme="green"] .report-card .card-icon {
+  background-color: #42047e;
+}
+[data-theme="green"] .card-details {
+  margin-top: 60px; /* Increased to prevent icon overlap */
+  position: relative;
+  z-index: 1;
+}
+
+/* Hover Effects */
+[data-theme="green"] .report-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(65, 248, 126, 0.3);
+}
+
+[data-theme="green"] .report-card:hover .card-icon {
+  transform: scale(1.1);
+  background-color: #c5e4c6;
+  color: #337232;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+[data-theme="green"] .analytics-graph,
+[data-theme="green"] .executive-activity,
+[data-theme="green"] .lead-section-graph,
+[data-theme="green"] .map-container,
+[data-theme="green"] .news {
+  background-color: white;
+  border: 1px solid rgba(80, 249, 137, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 255, 128, 0.1);
+}
+[data-theme="green"] .transaction-table th {
+  background-color: rgba(77, 255, 136, 0.08);
+}
+
+[data-theme="green"] .transaction-table tr:nth-child(even) {
+  background-color: rgba(77, 255, 136, 0.03);
+}
+[data-theme="green"] .progress-fill {
+  background-color: #4dff88;
+}
+
+/* Search Input */
+[data-theme="green"] .search-container {
+  border: 1px solid #4dff88;
+  background-color: #f1faf9;
+}
+
+/* News Container Background */
+[data-theme="green"] .news-container {
+  background: linear-gradient(160deg, #5fc85d, #2b4584);
 }

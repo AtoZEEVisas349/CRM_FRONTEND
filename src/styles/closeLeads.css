@@ -275,12 +275,13 @@ select:hover {
     width:90vw;
 }
 }
+
+/*-------------------------------------Pink-----------------------------*/
 [data-theme="red"] .close-leads-page{
   --bg-color: #f3daf3;
  --text-color: #3c6ba9;
  height:100vh;
 }[data-theme="red"] .country_name{
-  
   color: black;
   padding: 6px 10px;
   border-radius: 8px;
@@ -294,10 +295,11 @@ select:hover {
    border:1px solid #a4a9eb;
    border-left:5px solid #7e2f7d; 
 }[data-theme="red"] .add_btn{
-  
   color: white;
   background: linear-gradient(135deg, #a3446a, #ea99e8);
 }
+
+/*-------------------------------------Blue-----------------------------*/
 [data-theme="blue"] .close-leads-page {
   background-color: rgb(186, 186, 232);
   height:100vh;
@@ -321,6 +323,8 @@ select:hover {
   color: white;
   background: linear-gradient(135deg, #080567, grey);
 }
+
+/*-------------------------------------Brown-----------------------------*/
 [data-theme="brown"] .close-leads-page{
   --bg-color: #d9cac4;
   height:100vh;
@@ -332,4 +336,64 @@ select:hover {
 [data-theme="brown"] .add_btn{
   color: white;
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+
+/*-------------------------------------Green-----------------------------*/
+[data-theme="green"] .close-leads-page {
+  background-color: #e8f5e9 !important; /* Light green background */
+  min-height: 100vh; /* Ensure it covers full viewport height */
+}
+[data-theme="green"] .leads_page_wrapper {
+  background-color: transparent !important; 
+}
+[data-theme="green"] .top_bar{
+  --bg-color: #e8f5e9 ;
+}
+/* Rest of your existing green theme styles... */
+[data-theme="green"] .country_name {
+  background: white !important;
+  color: #333 !important;
+  border-left: 5px solid #4CAF50 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+[data-theme="green"] .c-card {
+  background: white !important;
+  color: #333 !important;
+  border: 1px solid #c8e6c9 !important;
+}
+[data-theme="green"] .text {
+  color: #555 !important; /* Slightly darker text for better readability */
+}
+
+[data-theme="green"] .name {
+  color: #2e7d32 !important; /* Dark green for headings */
+}
+
+[data-theme="green"] .add_btn {
+  background: #4CAF50 !important; /* Solid green button */
+  color: white !important;
+}
+
+[data-theme="green"] .add_btn:hover {
+  background: #388E3C !important; /* Darker green on hover */
+}
+
+[data-theme="green"] .search_input,
+[data-theme="green"] select {
+  background: white !important;
+  border: 1px solid #c8e6c9 !important;
+  color: #333 !important;
+}
+
+[data-theme="green"] .filter_icon {
+  color: #4CAF50 !important;
+}
+
+[data-theme="green"] .table_icon:hover {
+  background-color: #e8f5e9 !important; /* Light green hover */
+}
+
+[data-theme="green"] .Total_leads {
+  color: black !important; /* Dark green for total count */
 }

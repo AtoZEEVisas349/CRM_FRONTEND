@@ -7,7 +7,8 @@ import {
   startCall,
   endCall,
   getActivityStatus,
-  leadtrackVisit
+  leadtrackVisit,
+  sendEmail
 } from '../services/executiveService';
 
 // Create Context
@@ -155,6 +156,24 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
+  const handleSendEmail = async ({
+    templateId,
+    executiveName,
+    executiveEmail,
+    clientEmail,
+    emailBody,
+    emailSubject,
+  }) => {
+    return await sendEmail({
+      templateId,
+      executiveName,
+      executiveEmail,
+      clientEmail,
+      emailBody,
+      emailSubject,
+    });
+  };
+
   return (
     <ExecutiveActivityContext.Provider
       value={{
@@ -169,6 +188,8 @@ export const ExecutiveActivityProvider = ({ children }) => {
         handleStopBreak,
         handleStartCall,
         handleEndCall,
+        handleSendEmail,
+        sendEmail,
         leadtrack
       }}
     >

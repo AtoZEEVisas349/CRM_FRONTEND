@@ -192,6 +192,7 @@
     margin-left: 0px;
 }
 }
+/*-------------------------------Pink-------------------------*/
 [data-theme="red"]
 .notification-container  {
   background: #ecc5ec;
@@ -199,6 +200,8 @@
 .notification-card {
   border-left: 5px solid #7a2e6f;
 }
+
+/*-------------------------------Blue-------------------------*/
 [data-theme="blue"]
 .notification-card {
   border-left: 5px solid #382e7a;
@@ -207,10 +210,33 @@
   background: rgb(186, 186, 232); 
   height:100vh;
 }
+
+/*-------------------------------Brown---------------------------*/
 [data-theme="brown"] .notification-container{
   background: #d9cac4;
 }
 [data-theme="brown"]
 .notification-card {
   border-left: 5px solid #2e7a70; 
+}
+/*-------------------------------Green------------------*/
+[data-theme="green"] .notification-container {
+  background: #c6e7c8; /* Light green background */
+  border-left: 5px solid #4CAF50; /* Green border to match theme */
+}
+
+[data-theme="green"] .notification-card {
+  background-color: white;
+  border-left: 5px solid #4CAF50; /* Green border */
+}
+
+[data-theme="green"] .notification-card.read {
+  background-color: #f5f5f5; /* Light gray for read notifications */
+  border-left: 5px solid #81C784; /* Lighter green border for read */
+}
+
+[data-theme="green"] .pagination-btn {
+  background: linear-gradient(160deg, #5ccf5a, #2b4584);
+}
+[data-theme="green"] .pagination-btn:hover:not(:disabled) {
 }

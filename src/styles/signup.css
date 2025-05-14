@@ -287,7 +287,6 @@ color: #333;
       top: 50%;             
       transform: translateY(-50%);
 }
-/*--------------------------------- Forget and Reset---------------------------*/
 .auth-container {
   display: flex;
   justify-content: center;

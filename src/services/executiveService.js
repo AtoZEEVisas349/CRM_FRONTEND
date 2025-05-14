@@ -189,3 +189,32 @@ export const leadtrackVisit = async (executiveId) => {
     }
   }
 };
+export const sendEmail = async ({
+  templateId,
+  executiveName,
+  executiveEmail,
+  clientEmail,
+  emailBody,
+  emailSubject,
+}) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/api/email/send-email`,
+      {
+        templateId,
+        executiveName,
+        executiveEmail,
+        clientEmail,
+        emailBody,
+        emailSubject,
+      },
+      {
+        headers: getHeaders(), // ✅ Add this line
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to send email:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Failed to send email');
+  }
+};

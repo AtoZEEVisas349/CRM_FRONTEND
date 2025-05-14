@@ -10,72 +10,83 @@ const themes = {
   green: '#4dff88',
   brown: '#f4ccbb',
 };
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
-document.body.style.backgroundColor = themes[savedTheme] || '#ffffff';
+
+const THEME_KEYS = {
+  admin: 'adminTheme',
+  executive: 'executiveTheme',
+};
 
 export const ThemeProvider = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user?.role?.toLowerCase() || 'executive';
+
   const [theme, setTheme] = useState('light');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    // Load theme from localStorage
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const roleKey = THEME_KEYS[role] || 'theme';
+    const savedTheme = localStorage.getItem(roleKey) || 'light';
     setTheme(savedTheme);
     applyTheme(savedTheme);
 
-    // Load sidebar state from localStorage
     const savedSidebarState = localStorage.getItem('sidebarOpen') !== 'false';
     setSidebarOpen(savedSidebarState);
-    document.body.classList.toggle('sidebar-open', savedSidebarState);
-  }, []);
+    // document.body.classList.toggle('sidebar-open', savedSidebarState);
+  }, [role]);
 
   const applyTheme = (themeKey) => {
     const color = themes[themeKey];
-    if (color) {
-      document.body.style.backgroundColor = color;
-    }
+    document.documentElement.setAttribute('data-theme', themeKey);
+    // document.body.style.backgroundColor = color || themes.light;
   };
+
   const changeTheme = (themeKey) => {
     if (!themes[themeKey]) return;
     setTheme(themeKey);
-    localStorage.setItem('theme', themeKey);
-  
-    // This is where it goes 👇
-    document.documentElement.setAttribute('data-theme', themeKey);
+    const roleKey = THEME_KEYS[role] || 'theme';
+    localStorage.setItem(roleKey, themeKey);
+    applyTheme(themeKey);
   };
-  
 
   const toggleSidebar = () => {
     const newState = !sidebarOpen;
     setSidebarOpen(newState);
     localStorage.setItem('sidebarOpen', newState.toString());
-    document.body.classList.toggle('sidebar-open', newState);
+    // document.body.classList.toggle('sidebar-open', newState);
 
     window.dispatchEvent(new CustomEvent('sidebarToggle', {
       detail: { open: newState }
     }));
   };
+
+  const forceLightTheme = () => {
+    changeTheme('light');
+  };
+
   const resetTheme = () => {
-    localStorage.clear(); // Clear all saved data
-  
-    // Reset theme to light
-    setTheme('light');
-    document.documentElement.setAttribute('theme', 'light');
-    document.body.style.backgroundColor = themes['light'];
-  
-  }
-    
-  
+    const roleKey = THEME_KEYS[role] || 'theme';
+    localStorage.removeItem(roleKey);
+    changeTheme('light');
+  };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    changeTheme(newTheme);
+  };
+
   return (
-    <ThemeContext.Provider value={{
-      theme,
-      changeTheme,   // For selecting specific themes
-      themes,        // Object of all theme colors
-      sidebarOpen,
-      toggleSidebar,
-      resetTheme
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        changeTheme,
+        toggleTheme,
+        themes,
+        sidebarOpen,
+        toggleSidebar,
+        resetTheme,
+        forceLightTheme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

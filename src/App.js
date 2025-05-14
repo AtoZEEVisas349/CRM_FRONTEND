@@ -29,6 +29,9 @@ import ChangePassword from "./features/settings/ChangePassword";
 import ScheduleRoutes from "./routes/ScheduleRoutes";
 import AdminPanelRoutes from "./routes/MonitoringRoutes";
 import MasterRoutes from "./routes/MasterRoutes";
+import ProcessRoutes from "./routes/ProcessRoutes";
+import ClientLogin from "./features/process-client/ClientLogin";
+import ClientSignup from "./features/process-client/ClientSignup";
 
 
 const App = () => {
@@ -52,6 +55,8 @@ const App = () => {
         {/* Public master routes - login & signup */}
         <Route path="/master/loginmaster" element={<LoginMaster />} />
         <Route path="/master/signupmaster" element={<SignupMaster />} />
+        <Route path="/process/client/login" element={<ClientLogin />} />
+       <Route path="/process/client/signup" element={<ClientSignup />} />
         <Route 
           path="/follow-up/*" 
           element={
@@ -69,6 +74,8 @@ const App = () => {
             </PrivateRoute>
           } 
         />
+        <Route path="/process/*" element={<PrivateRoute><ProcessRoutes /></PrivateRoute>} />
+
         <Route path="/settings" element={<PrivateRoute><SettingRoutes/></PrivateRoute>} >
         <Route index element={<Navigate to="profile" replace />} />  {/* ✅ This does the redirect */}
         <Route path="profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />

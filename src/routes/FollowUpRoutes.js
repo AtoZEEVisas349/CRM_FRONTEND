@@ -6,14 +6,14 @@ import "../styles/followup.css";
 
 const FollowUpRoutes = () => {
   const [activeTab, setActiveTab] = useState("All Follow Ups");
+  const [selectedClient, setSelectedClient] = useState(null);
 
   return (
     <div className="follow-app-container">
       <SidebarandNavbar />
       <div className="follow-main-content">
         <h2>Client List</h2>
-        <ClientDetails />
-        {/* Follow-up Tabs */}
+        <ClientDetails selectedClient={selectedClient} onClose={() => setSelectedClient(null)} />
         <div className="followup-tabs">
           {["All Follow Ups", "Interested", "Not Interested"].map((tab) => (
             <button
@@ -25,7 +25,7 @@ const FollowUpRoutes = () => {
             </button>
           ))}
         </div>
-        <ClientTable filter={activeTab} />
+        <ClientTable filter={activeTab} onSelectClient={setSelectedClient} />
       </div>
     </div>
   );

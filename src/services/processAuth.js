@@ -1,0 +1,65 @@
+import { Navigate } from "react-router-dom";
+import React from "react";
+
+const API_BASE_URL = "http://localhost:5000/api";
+const BASE_HEADERS = {
+    "Content-Type": "application/json",
+    "x-company-id": "2",
+  };
+  
+
+/*------------------------------LOGIN---------------------------*/
+export const loginUser = async (email, password) => {
+    const tryLogin = async (userType) => {
+      const res = await fetch(`${API_BASE_URL}/${userType}/login`, {
+        method: "POST",
+        headers: BASE_HEADERS,
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (!res.ok) throw await res.json();
+      const data = await res.json();
+      return { ...data, type: userType };
+    };
+  
+    try {
+      return await tryLogin("customer"); // try customer first
+    } catch (err1) {
+      try {
+        return await tryLogin("processperson"); // fallback to processperson
+      } catch (err2) {
+        const errorMessage =
+          err2?.message || err1?.message || "Login failed for both user types.";
+        throw new Error(errorMessage);
+      }
+    }
+  };
+
+/*------------------------------SIGNUP---------------------------*/
+export const signupUser = async (fullName, email, password, userType = "customer") => {
+    const res = await fetch(`${API_BASE_URL}/${userType}/signup`, {
+      method: "POST",
+      headers: BASE_HEADERS,
+      credentials: "include",
+      body: JSON.stringify({ fullName, email, password }),
+    });
+  
+    const responseBody = await res.json();
+    if (!res.ok) {
+      console.error("Signup API error details:", responseBody);
+      throw new Error(responseBody.error || "Signup failed");
+    }
+  
+    return responseBody;
+  };
+
+
+  export const isAuthenticated = () => {
+    return !!localStorage.getItem("token");
+  };
+  
+  export const PrivateRoute = ({ children }) => {
+    return isAuthenticated() ? children : <Navigate to="/process/client/login" replace />;
+  };
+  

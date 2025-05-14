@@ -36,7 +36,7 @@ const DashboardCards = () => {
   return (
     <div className="dashboard-top-container">
       <div className="dashboard-logout-bar">
-        <button className="logout-btn" onClick={logout}>
+        <button className="master-logout-btn" onClick={logout}>
           <FaSignOutAlt style={{ marginRight: '6px' }} />
           Logout
         </button>

@@ -7,7 +7,6 @@ import * as executiveService from "../services/executiveService";
 const ApiContext = createContext();
 
 export const ApiProvider = ({ children }) => {
-  // ✅ Existing state
   const [executiveInfo, setExecutiveInfo] = useState(null);
   const [executiveLoading, setExecutiveLoading] = useState(false);
 
@@ -517,7 +516,38 @@ const fetchConvertedClientsAPI = async () => {
       setExecutiveDashboardLoading(false);
     }
   };
+const [opportunities, setOpportunities] = useState([]);
+const [opportunitiesLoading, setOpportunitiesLoading] = useState(false);
 
+  const fetchOpportunitiesData = async () => {
+    setOpportunitiesLoading(true);
+    try {
+      const data = await apiService.fetchOpportunities();
+      setOpportunities(data);
+    } catch (error) {
+      console.error("❌ Error fetching opportunities:", error);
+    } finally {
+      setOpportunitiesLoading(false);
+    }
+  };
+
+  // ✅ Revenue Chart Data State
+const [revenueChartData, setRevenueChartData] = useState([]);
+const [revenueChartLoading, setRevenueChartLoading] = useState(false);
+
+const fetchRevenueChartDataAPI = async () => {
+  setRevenueChartLoading(true);
+  try {
+    const data = await apiService.fetchRevenueChartData();
+    setRevenueChartData(data || []);
+    return data || [];
+  } catch (error) {
+    console.error("❌ Error fetching revenue chart data:", error);
+    return [];
+  } finally {
+    setRevenueChartLoading(false);
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -624,6 +654,9 @@ const fetchConvertedClientsAPI = async () => {
         markNotificationReadAPI,
         deleteNotificationAPI,
 
+        revenueChartData,
+        revenueChartLoading,
+        fetchRevenueChartDataAPI,
         // ✅ User state
         user,
         setUser,
@@ -658,6 +691,10 @@ const fetchConvertedClientsAPI = async () => {
         // ✅ Executive Activity
         activityData,
         getExecutiveActivity,
+
+        opportunities,
+        opportunitiesLoading,
+        fetchOpportunitiesData,
 
         // ✅ Follow-up Histories
         followUpHistories,

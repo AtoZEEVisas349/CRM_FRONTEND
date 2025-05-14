@@ -8,8 +8,14 @@ const MasterDashboard = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetchCompanies();
-  }, []);
+    fetchCompanies(); // Initial fetch
+  
+    const interval = setInterval(() => {
+      fetchCompanies();
+    }, 2000); // Every 2 seconds
+  
+    return () => clearInterval(interval); // Cleanup
+  }, []);  
 
   return (
     <>
@@ -21,8 +27,10 @@ const MasterDashboard = () => {
           </button>
         </div>
 
-        {loading && <p>Loading companies...</p>}
-        {error && <p className="error-text">{error}</p>}
+        {error && companies.length === 0 && (
+  <p className="error-text">{error}</p>
+)}
+
 
         {!loading && companies.length > 0 ? (
           <table className="company-table">
