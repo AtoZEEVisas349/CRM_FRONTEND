@@ -18,7 +18,7 @@ apiService.interceptors.request.use(
       delete config.headers.Authorization; // Remove malformed header
     }    
     // 🔥 Add x-company-id (hardcoded or from localStorage)
-    config.headers["x-company-id"] = "38156c301-ac2c-40f5-8bf8-ea21b05a60c6"; // Hardcoded
+    config.headers["x-company-id"] = "8156c301-ac2c-40f5-8bf8-ea21b05a60c6"; // Hardcoded
     // Or use:
     // config.headers["x-company-id"] = localStorage.getItem("Company-Id") || "1";
 
@@ -66,7 +66,8 @@ export const fetchNotificationsByUser = async ({ userId, userRole }) => {
   } catch (error) {
     console.error(`❌ Error fetching notifications for user ${userId}:`, error);
     throw error;
-  }};
+  }
+};
 export const createCopyNotification = async ({ userId, userRole, message }) => {
   try {
     const response = await apiService.post("/notification/copy-event", {
