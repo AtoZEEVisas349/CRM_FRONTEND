@@ -9,7 +9,8 @@ import {BreakTimerProvider } from './context/breakTimerContext'; // ✅ import y
 import { MasterProvider } from './context/MasterContext';
 import { CompanyProvider } from './context/CompanyContext';
 import { ThemeProvider } from './features/admin/ThemeContext';
-import { ProcessProvider } from './context/ProcessContext';
+import { ProcessProvider } from './context/ProcessAuthContext';
+import { ProcessServiceProvider } from './context/ProcessServiceContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -23,7 +24,9 @@ root.render(
         <MasterProvider>
           <CompanyProvider>
             <ProcessProvider>
+              <ProcessServiceProvider>
             <App />
+            </ProcessServiceProvider>
             </ProcessProvider>
             </CompanyProvider>
             </MasterProvider>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, signupUser } from "../services/processAuth";
+import { loginUser, signupUser,logoutUser } from "../services/processAuth";
 
 const ProcessContext = createContext();
 
@@ -17,23 +17,28 @@ export const ProcessProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await loginUser(email, password);
-      setUser(data.customer || data.person);
   
-      // ✅ Save token so PrivateRoute works
+      // Combine user info with user type
+      const userPayload = {
+        ...(data.customer || data.person),
+        type: data.type, // ✅ Ensure type is saved for UI checks
+      };
+  
+      setUser(userPayload);
+  
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
   
-      localStorage.setItem("user", JSON.stringify(data.customer || data.person));
+      localStorage.setItem("user", JSON.stringify(userPayload));
+  
       return data;
     } catch (error) {
       throw error;
     } finally {
       setLoading(false);
     }
-  };
-  
-  
+  };  
 
   const signup = async (fullName, email, password, userType) => {
     setLoading(true);
@@ -47,12 +52,19 @@ export const ProcessProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    // Optional: add backend logout endpoint if needed
-    setUser(null);
-    localStorage.removeItem("user");
+  const logout = async () => {
+    try {
+      const userType = user?.type || "customer";
+      await logoutUser(userType);
+    } catch (error) {
+      console.error("Logout failed:", error.message);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
   };
-
+  
   return (
     <ProcessContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}

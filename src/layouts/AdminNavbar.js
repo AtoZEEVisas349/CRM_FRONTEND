@@ -75,7 +75,7 @@ function AdminNavbar() {
               </div>
             )
           )}
-          <button className="admin-logout_btn" onClick={handleLogout}>
+          <button className="logout_btn" onClick={handleLogout}>
             Logout
           </button>
         </div>

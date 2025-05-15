@@ -380,147 +380,160 @@ body {
   
 /*----------------------- Road Map -------------------------*/
 .page-wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* ------------------ Roadmap Section ------------------ */
-  .roadmap-container {
-    width: 100%;
-    max-width: 1300px;
-    padding: 20px 0;
-    position: relative;
-  }
-  
-  .roadmap-container h1 {
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  /* ------------------ Image and Button Wrapper ------------------ */
-  .process-image-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 1200px;
-    height: 420px; /* Add this fixed height */
-    margin: 0 auto;
-  }
-  
-  .roadmap-image {
-    width: 100%;
-    height: 100%; /* Match the wrapper height */
-    object-fit: contain;
-    border-radius: 10px;
-  }
-  
-  .icon-container {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-  }
-    .hex-button {
-    width: 45px;
-    height: 45px;
-    clip-path: polygon(
-      50% 0%,
-      93% 25%,
-      93% 75%,
-      50% 100%,
-      7% 75%,
-      7% 25%
-    );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0;
-    transition: transform 0.2s ease;
-  }
-  
-  .hex-button:hover {
-    transform: scale(1.05);
-  }
-  
-  .hex-icon-0 { background-color: #f2a900; }
-  .hex-icon-1 { background-color: #e74c3c; }
-  .hex-icon-2 { background-color: #2ecc71; }
-  .hex-icon-3 { background-color: #3498db; }
-  .hex-icon-4 { background-color: #9b59b6; }
-  .hex-icon-5 { background-color: #e67e22; }
-  .hex-icon-6 { background-color: #1abc9c; }
-  .hex-icon-7 { background-color: #ccd61d; }
-  .hex-icon-8 { background-color: #ef1a93; }
-  
-  .hex-text {
-    text-align: center;
-    font-size: 13px;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
-  
-  /* ------------------ Comment Input Popup ------------------ */
-  .input-popup {
-    position: fixed;
-    top: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 999;
-    width: 300px;
-  }
-  
-  .input-popup textarea {
-    width: 100%;
-    height: 80px;
-    margin-bottom: 10px;
-    padding: 8px;
-    resize: none;
-    font-size: 14px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-  
-  .input-popup button {
-    padding: 8px 16px;
-    background-color: #ffa500;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-  }
-  
-  .input-popup button:hover {
-    background-color: #e69500;
-  }
-  
-  /* ------------------ Comment Boxes ------------------ */
-  .comment-box {
-    position: absolute;
-    width: 160px;
-    border-radius: 8px;
-    font-size: 13px;
-    background: #fff;
-    padding: 8px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    text-align: left;
-    font-weight: 500;
-    border-left: 4px solid;
-  }
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roadmap-container {
+  width: 100%;
+  max-width: 1300px;
+  padding: 20px 0;
+  position: relative;
+}
+
+.roadmap-container h1 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.process-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 420px;
+  margin: 0 auto;
+}
+
+.roadmap-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.icon-container {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.hex-button {
+  width: 45px;
+  height: 45px;
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.hex-button:hover {
+  transform: scale(1.05);
+}
+
+.hex-icon-0 { background-color: #f2a900; }
+.hex-icon-1 { background-color: #e74c3c; }
+.hex-icon-2 { background-color: #2ecc71; }
+.hex-icon-3 { background-color: #3498db; }
+.hex-icon-4 { background-color: #9b59b6; }
+.hex-icon-5 { background-color: #e67e22; }
+.hex-icon-6 { background-color: #1abc9c; }
+.hex-icon-7 { background-color: #ccd61d; }
+.hex-icon-8 { background-color: #ef1a93; }
+
+.hex-text {
+  text-align: center;
+  font-size: 13px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.comment-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  background: #fff;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  text-align: left;
+  border-left: 4px solid;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  transition: max-height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+.comment-box.collapsed {
+  max-height: 98px; /* ~2 lines + some margin for See more */
+}
+
+.comment-box.expanded {
+  max-height: 500px;
+}
+
+
+.input-popup {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  width: 300px;
+}
+
+.input-popup textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+  padding: 8px;
+  resize: none;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.input-popup button {
+  padding: 8px 16px;
+  background-color: #ffa500;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.input-popup button:hover {
+  background-color: #e69500;
+}
+
+.table-section {
+  width: 100%;
+  padding: 30px;
+  background: #fff;
+  min-height: 300px;
+} 
   
   .comment-box-0 { top: -95px; left: -50px; border-color: #f2a900; }
   .comment-box-1 { top: 50px; left: -40px; border-color: #e74c3c; }
@@ -532,13 +545,6 @@ body {
   .comment-box-7 { top: 50px; left: -40px; border-color: #ccd61d; }
   .comment-box-8 { top: -100px; left: -50px; border-color: #ef1a93; }
   
-  /* ------------------ Table Section (Bottom) ------------------ */
-  .table-section {
-    width: 100%;
-    padding: 30px;
-    background: #fff;
-    min-height: 300px;
-  }
   
 /*------------------------Login-Signup--------------------*/
 .process-auth-wrapper {
@@ -605,4 +611,110 @@ body {
     font-size: 13px;
     color: #666;
   }
-  
+ /* ------------------------------ Modern Navbar ------------------------------ */
+.process-navbar {
+  background: linear-gradient(90deg, #1E3C72, #2A5298);
+  height: 54px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  border-radius: 5px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Title */
+.process-navbar-logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+/* Navigation Links */
+.process-nav-links,
+.process-nav-links-mobile {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.process-nav-links li a,
+.process-nav-links-mobile li a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.process-nav-links li a:hover,
+.process-nav-links-mobile li a:hover {
+  color: #ffe082;
+}
+
+/* Logout Button */
+.process-logout-btn {
+  background-color: #ff4d4d;
+  border: none;
+  padding: 8px 16px;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.process-logout-btn:hover {
+  background-color: #c62828;
+}
+
+/* Mobile Menu Icon (Hamburger) */
+.process-mobile-menu-icon {
+  display: none;
+  font-size: 1.8rem;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Responsive - Mobile Styles */
+@media screen and (max-width: 768px) {
+  .process-nav-links {
+    display: none;
+  }
+
+  .process-mobile-menu-icon {
+    display: block;
+  }
+
+  .process-nav-links-mobile {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    position: absolute;
+    top: 64px;
+    right: 0;
+    width: 100%;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 998;
+  }
+
+  .process-nav-links-mobile li a {
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  .process-nav-links-mobile .process-logout-btn {
+    align-self: flex-start;
+    margin-top: 1rem;
+  }
+}

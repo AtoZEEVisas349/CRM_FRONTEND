@@ -1195,21 +1195,7 @@ h1 {
   color: #222121;
   margin: 0;
 }
-.admin-logout_btn {
-  width: 100%;
-  padding: 10px 16px;
-  background: #ff4d4f;
-  color: white;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
 
-.admin-logout_btn:hover {
-  background: #d9363e;
-}
 .admin-icons-group {
   display: flex;
   align-items: center;

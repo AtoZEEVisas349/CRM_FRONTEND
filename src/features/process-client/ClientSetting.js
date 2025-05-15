@@ -1,19 +1,94 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaEdit, FaRegCopy } from 'react-icons/fa';
-
+import { useProcessService } from '../../context/ProcessServiceContext';
 const ClientSetting = () => {
   const [profileImage, setProfileImage] = useState(null);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    username: '',
-    profession: '',
-    location: '',
-    bio: '',
-    email: '',
-    password: '',
-    updates: false,
-    profileView: false,
-  });
+    
+  const{profile,getprofile,handleProfileSettings,profiles}=useProcessService();
+   
+  const [detailsExist, setDetailsExist] = useState(false);
+ const [formData, setFormData] = useState({
+  customerId: '',
+  dob: '',
+  id: '',
+  nationality: '',
+  passportNumber: '',
+  phone: '',
+  updatedAt: '',
+  createdAt: '',
+});
+useEffect(() => {
+  if (profiles) {
+    setFormData({
+      customerId: profiles.customerId || '',
+      dob: profiles.dob || '',
+      id: profiles.id || '',
+      nationality: profiles.nationality || '',
+      passportNumber: profiles.passportNumber || '',
+      phone: profiles.phone || '',
+      updatedAt: profiles.updatedAt || '',
+      createdAt: profiles.createdAt || '',
+    });
+  }
+}, [profiles]);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      await getprofile();
+    };
+  
+    fetchProfile();
+    console.log(profiles,"abc")
+  }, []);
+  
+  // const handleSubmit = async () => {
+  //   try {
+  //     await profile(formData);
+  //     alert("Signup successful!");
+
+  //     // ✅ Redirect to login after 2 seconds
+      
+  //   } catch (error) {
+  //     alert(error.message);
+  //   }
+  // };
+  //  const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     await handleProfileSettings(formData);
+  //     alert('Customer details created successfully');
+  //   } catch (err) {
+  //     alert(err.error || 'Failed to create details');
+  //   }
+  // };
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (detailsExist) {
+        // Always PUT if detailsExist is true
+        await handleProfileSettings(formData);
+        alert('Customer details updated successfully');
+      } else {
+        try {
+          await profile(formData);
+          alert('Customer details created successfully');
+          setDetailsExist(true); // Now mark as exist
+        } catch (err) {
+          // Check if error is 'Customer details already exist', then switch to PUT
+          if (err.error === 'Customer details already exist') {
+            await handleProfileSettings(formData);
+            alert('Customer details updated successfully');
+            setDetailsExist(true);
+          } else {
+            throw err;
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Submit error:', err);
+      alert(err.error || err.message || 'Operation failed');
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -31,11 +106,11 @@ const ClientSetting = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Saved successfully!');
-    console.log('Saved data:', formData);
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   alert('Saved successfully!');
+  //   console.log('Saved data:', formData);
+  // };
 
   const handleCopyLink = () => {
     const link = "https://www.portfoliolink.com";
@@ -103,26 +178,48 @@ const ClientSetting = () => {
               <h4>Profile</h4>
               <div className="process-row">
                 <div className="process-field">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                  />
+                  <label>Nationality</label>
+                 <input
+  type="text"
+  name="nationality"
+  value={formData.nationality}
+  onChange={handleChange}
+  placeholder="Enter Nationality"
+/>
                 </div>
                 <div className="process-field">
-                  <label>Username</label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    placeholder="Your username"
-                  />
+                  <label>Phone</label>
+                 <input
+  type="text"
+  name="phone"
+  value={formData.phone}
+  onChange={handleChange}
+  placeholder="Enter your phone"
+/>
                 </div>
               </div>
+               <div className="process-row">
+                 <div className="process-field">
+                  <label>DOB</label>
+                 <input
+                   type="text"
+  name="dob"
+  value={formData.dob}
+  onChange={handleChange}
+  placeholder="Enter your DOB"
+/>
+                </div>
+                   <div className="process-field">
+                  <label>Passport Number</label>
+               <input
+  type="text"
+  name="passportNumber"
+  value={formData.passportNumber}
+  onChange={handleChange}
+  placeholder="Enter Passport Number"
+/></div>
+                </div>
+              
 
               <div className="process-field">
                 <label>Profession</label>
@@ -160,19 +257,19 @@ const ClientSetting = () => {
                 <div className="process-field">
                   <label>Email</label>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="number"
+                    // name="phone"
+                    // value={profiles.phone}
                     onChange={handleChange}
-                    placeholder="example@email.com"
+                   
                   />
                 </div>
                 <div className="process-field">
                   <label>Password</label>
                   <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
+                    type="number"
+                    // name="dob"
+                    // value={profiles.dob}
                     onChange={handleChange}
                     placeholder="password"
                   />

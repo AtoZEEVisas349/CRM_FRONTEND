@@ -558,8 +558,6 @@ const fetchRevenueChartDataAPI = async () => {
     fetchExecutives();
     fetchFreshLeads();
     fetchAllCloseLeadsAPI();
-    fetchFollowUps();
-    getAllFollowUps();
     fetchConvertedClients();
     getExecutiveActivity();
     fetchFollowUpHistoriesAPI(); 
@@ -569,6 +567,17 @@ const fetchRevenueChartDataAPI = async () => {
     }
   }, []);
 
+  useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+  
+    if (token && currentUser?.username) {
+      fetchFollowUps();     // ✅ moved here safely
+      getAllFollowUps();    // ✅ moved here safely
+    } else {
+      console.warn("⛔ Token or user info missing. Skipping follow-up fetch.");
+    }
+  }, []);
   // ✅ API Functions
   const apiFunctions = {
     // Leads

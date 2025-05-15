@@ -178,25 +178,6 @@
   text-align: center;
 }
 
-.logout_btn {
-  background-color: #334155;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.logout_btn:hover {
-  background-color: #475569;
-}
-
-.logout_icon {
-  margin-right: 8px;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
