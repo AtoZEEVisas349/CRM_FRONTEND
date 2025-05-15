@@ -10,7 +10,7 @@ export const uploadFile = async (file) => {
     const response = await apiService.post("/client-leads/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        "x-company-id": "2", // ⬅️ Manually added here
+        "x-company-id": "33cc883f-4bc7-4835-9f69-bdedfd0cc502", // ⬅️ Manually added here
       },
     });
 

@@ -9,7 +9,7 @@ const getToken = () => localStorage.getItem('token');
 const getHeaders = () => ({
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${getToken()}`,
-  'x-company-id': '2', // ⬅️ Hardcoded company ID
+  'x-company-id': '33cc883f-4bc7-4835-9f69-bdedfd0cc502', // ⬅️ Hardcoded company ID
 });
 
 /**
