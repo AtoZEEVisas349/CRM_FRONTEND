@@ -6,6 +6,7 @@ import { getEmailTemplates } from "../../static/emailTemplates";
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
+import useCopyNotification from "../../hooks/useCopyNotification";
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -30,9 +31,12 @@ const ClientOverview = () => {
     fetchFreshLeads,
     refreshMeetings,
     executiveInfo,
+    fetchNotifications,
+    createCopyNotification,
     createFollowUpHistoryAPI, // Added createFollowUpHistoryAPI
   } = useApi();
 
+  useCopyNotification(createCopyNotification, fetchNotifications);
   // Initialize date/time strings before state
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];

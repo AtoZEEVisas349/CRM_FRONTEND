@@ -56,16 +56,30 @@ export const fetchAssignedLeads = async (executiveName) => {
 };
 
 // ✅ Fetch notifications for a specific user (executive)
-export const fetchNotificationsByUser = async (userId) => {
+export const fetchNotificationsByUser = async ({ userId, userRole }) => {
   try {
-    const response = await apiService.get(`/notification/user/${userId}`);
+    const response = await apiService.post(`/notification/user`, {
+      userId,
+      userRole,
+    });
     return response.data.notifications;
   } catch (error) {
     console.error(`❌ Error fetching notifications for user ${userId}:`, error);
     throw error;
+  }};
+export const createCopyNotification = async ({ userId, userRole, message }) => {
+  try {
+    const response = await apiService.post("/notification/copy-event", {
+      userId,
+      message,
+      userRole,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating copy notification:", error);
+    throw error;
   }
 };
-
 // ✅ Mark a notification as read
 export const markNotificationAsRead = async (notificationId) => {
   try {

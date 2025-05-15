@@ -168,15 +168,22 @@ export const ApiProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
 
-  const fetchNotifications = useCallback(async (userId) => {
-    if (!userId) {
-      console.warn("⚠️ User ID is required to fetch notifications");
+  const fetchNotifications = useCallback(async ({ userId, userRole }) => {
+    console.log(userId);
+    console.log(userRole);
+    if (!userId || !userRole) {
+      console.warn(
+        "⚠️ User ID and User Role is required to fetch notifications"
+      );
       return;
     }
 
     setNotificationsLoading(true);
     try {
-      const data = await apiService.fetchNotificationsByUser(userId);
+      const data = await apiService.fetchNotificationsByUser({
+        userId,
+        userRole,
+      });
       setNotifications(data || []);
     } catch (error) {
       console.error("❌ Error fetching notifications:", error);
@@ -184,6 +191,15 @@ export const ApiProvider = ({ children }) => {
       setNotificationsLoading(false);
     }
   }, []);
+
+  const createCopyNotification = async (userId, userRole, message) => {
+    try {
+      await apiService.createCopyNotification({ userId, userRole, message });
+      fetchNotifications(userId);
+    } catch (error) {
+      console.error("❌ Failed to create copy notification:", error);
+    }
+  };
 
   const markNotificationReadAPI = async (notificationId) => {
     try {
@@ -660,7 +676,8 @@ const fetchRevenueChartDataAPI = async () => {
         notifications,
         notificationsLoading,
         fetchNotifications,
-        markNotificationReadAPI,
+        createCopyNotification,
+      markNotificationReadAPI,
         deleteNotificationAPI,
 
         revenueChartData,

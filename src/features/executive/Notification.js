@@ -14,8 +14,12 @@ function Notification() {
   const itemsPerPage = 8;
 
   useEffect(() => {
-    const uid = localStorage.getItem("executiveId");
-    if (uid) fetchNotifications(uid);
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log(user.role);
+
+    if (user) {
+      fetchNotifications({ userId: user.id, userRole: user.role }); // Pass both id and role
+    }
   }, [fetchNotifications]);
 
   const handleMarkAsRead = (notificationId) => {
@@ -49,11 +53,11 @@ function Notification() {
           <ul className="notification-list">
             {currentNotifications.map((n, index) => (
               <li
-                className={`notification-card ${n.is_read ? "read" : ""}`}
-                key={n.id}
+              className={`notification-card ${n.is_read ? "read" : ""}`}
+              key={n.id}
               >
                 <div className="notification-header">
-                  <strong>New Lead Assigned</strong>
+                  <strong>{n.message.split(":")[0].trim()}</strong>
                   <div className="notification-meta">
                     <span className="notification-time">
                       {new Date(n.createdAt).toLocaleTimeString()}
@@ -70,8 +74,9 @@ function Notification() {
                   </div>
                 </div>
                 <p className="notification-message">
-                  You have been assigned a new lead #
-                  {(currentPage - 1) * itemsPerPage + index + 1}
+                  {/* You have been assigned a new lead # */}
+                  {n.message.split(":")[1].trim()}
+                  {/* {(currentPage - 1) * itemsPerPage + index + 1} */}
                 </p>
               </li>
             ))}
