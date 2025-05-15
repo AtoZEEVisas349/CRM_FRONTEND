@@ -1,7 +1,7 @@
 import apiService from "./apiService";
 import { Navigate } from "react-router-dom";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
 
 // Shared headers
 const BASE_HEADERS = {

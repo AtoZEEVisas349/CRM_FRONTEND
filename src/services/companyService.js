@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance specific to company service
 const companyApi = axios.create({
-  baseURL: "http://localhost:5000/api/company", // ⚠️ Replace with env var in production
+  baseURL: "https://crm-backend-production-c208.up.railway.app/api", // ⚠️ Replace with env var in production
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,7 +28,7 @@ companyApi.interceptors.request.use(
  */
 export const createCompany = async (data) => {
   try {
-    const response = await companyApi.post("/create-company", data);
+    const response = await companyApi.post("/company/create-company", data);
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: "Company creation failed" };
@@ -40,7 +40,7 @@ export const createCompany = async (data) => {
  */
 export const getCompaniesForMaster = async () => {
   try {
-    const response = await companyApi.get("/master/companies");
+    const response = await companyApi.get("/company/master/companies");
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: "Failed to fetch companies" };

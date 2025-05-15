@@ -3,7 +3,7 @@ import axios from "axios";
 
 // ✅ Create Axios instance specific to master user authentication
 const authApi = axios.create({
-  baseURL: "http://localhost:5000/api/masteruser", // Replace with env var in production
+  baseURL: "https://crm-backend-production-c208.up.railway.app/api", // Replace with env var in production
   headers: {
     "Content-Type": "application/json",
   },
@@ -16,7 +16,7 @@ const authApi = axios.create({
  */
 export const signupMasterUser = async (userData) => {
   try {
-    const response = await authApi.post("/signup", userData);
+    const response = await authApi.post("/masteruser/signup", userData);
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: "Signup failed" };
@@ -31,7 +31,7 @@ export const loginMasterUser = async (credentials) => {
   try {
     localStorage.removeItem("masterToken");
 
-    const response = await authApi.post("/login", credentials);
+    const response = await authApi.post("/masteruser/login", credentials);
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: "Login failed" };
@@ -40,18 +40,17 @@ export const loginMasterUser = async (credentials) => {
 
 //logout
 export const logoutMasterUser = async () => {
-  
-  const token = localStorage.getItem("masterToken"); // ✅ get token from localStorage
+  const token = localStorage.getItem("masterToken");
+
   try {
-    const response = await axios.post(
-      "http://localhost:5000/api/masteruser/logout",
+    const response = await authApi.post(
+      "/masteruser/logout",
       {},
       {
         headers: {
           'x-company-id': 2,
-          Authorization: `Bearer ${token}`, // ✅ add Authorization header
+          Authorization: `Bearer ${token}`, // ✅ Securely attached token
         },
-        withCredentials: true, // still useful for cookie-based auth
       }
     );
     return response.data;
@@ -60,5 +59,6 @@ export const logoutMasterUser = async () => {
     throw error.response?.data || { error: "Logout failed" };
   }
 };
+
 
 
