@@ -1,12 +1,12 @@
 .fresh-leads-main-content {
   width: calc(100vw - 200px);
-  height: calc(100vh - 60px);
+  height:100vh;
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
-  margin-top: 30px;
+  margin-top: 50px;
   overflow: hidden;
-  margin-left: -40px;
+  margin-left: -20px;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
@@ -31,8 +31,8 @@
 .lead-content {
   flex-grow: 1;
   width: calc(100% - 250px);
-  height: 100%;
-  overflow: auto; /* allows scroll instead of overflow */
+  height: 100vh;
+  overflow: hidden; /* allows scroll instead of overflow */
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -41,8 +41,16 @@
 }
 .fresh-leads-table-container {
   flex-grow: 1;
-  overflow: auto;
+  overflow: hidden;
   max-height: calc(100vh - 80px);
+  border-radius: 10px;
+}
+.fresh-leads-table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.fresh-leads-table thead th:last-child {
+  border-top-right-radius: 12px;
 }
 /* Follow-up badge style */
 .followup-badge {
@@ -73,13 +81,13 @@
   border-color: #2563eb;
 }
 .fresh-leads-table {
-  width: 100%;
+  width: 97%;
   border-collapse: separate;
   border-spacing: 0;
   background-color: var(--card-bg);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
-  overflow: hidden;
+  border-radius: 10px;
+  table-layout: auto;
 }
 .fresh-leads-table tbody tr:hover {
 background-color: rgba(0, 0, 0, 0.03);
@@ -149,53 +157,13 @@ gap: 10px;
   font-weight: 500;
   color: #4b5563;
 }
-.fresh-leads-main-content {
-  width: calc(100vw - 200px);
-  height: calc(100vh - 60px);
-  display: flex;
-  flex-direction: column;
-  padding: 10px 20px;
-  margin-top: 30px;
-  overflow: hidden;
-  margin-left: -40px;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-.fresh-leads-table thead {
-  background-color: #e5e7eb;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 14px;
-}
+
 [data-theme="dark"] .fresh-leads-table thead {
   background-color: #1f2937;
 }
-.lead-assign-container {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  background-color: var(--bg-color);
-}
-.lead-sidebar {
-  width: 250px;
-}
-.lead-content {
-  flex-grow: 1;
-  width: calc(100% - 250px);
-  height: 100%;
-  overflow: auto; /* allows scroll instead of overflow */
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-.fresh-leads-table-container {
-  flex-grow: 1;
-  overflow: auto;
-  max-height: calc(100vh - 120px);
-  padding-bottom: 70px;
-}
+
+
+
 /* Follow-up badge style */
 .followup-badge {
   padding: 8px 14px;
@@ -223,15 +191,7 @@ gap: 10px;
   background-color: #2563eb;
   border-color: #2563eb;
 }
-.fresh-leads-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background-color: var(--card-bg);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
-  overflow: auto;
-}
+
 .fresh-leads-table tbody tr:hover {
 background-color: rgba(0, 0, 0, 0.03);
 }
@@ -386,7 +346,12 @@ gap: 10px;
 [data-theme="red"] .fresh-leads-main-content{
   --bg-color: #f3daf3;
  --text-color: #3c6ba9;
-}[data-theme="red"] .fresh-leads-table thead {
+}
+[data-theme="red"] .lead-content{
+  --bg-color: #f3daf3;
+
+}
+[data-theme="red"] .fresh-leads-table thead {
   background-color: #c8c8f4;
   color: #0d2f57;
 }
@@ -443,6 +408,8 @@ gap: 10px;
 [data-theme="green"] .fresh-leads-table tbody tr:hover {
   background-color: #e8f5e9 !important;
 }
+
+
 
 /* Radio buttons */
 [data-theme="green"] .status-radio {
