@@ -160,8 +160,10 @@ export const fetchAdminProfile = async () => {
 };
 
 // ✅ Function to assign leads to an executive
-export const assignLeadAPI = async (leadId, executiveName) => {
+export const assignLeadAPI = async (leadId, ) => {
   try {
+    const userData = JSON.parse(localStorage.getItem("user") || '{}');
+    const executiveName = userData?.username;
     const response = await apiService.put(
       `/client-leads/assign-executive/${leadId}`,
       {
