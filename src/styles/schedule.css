@@ -1,25 +1,27 @@
 /* Schedule */
-/* Base Styles */
-
 .task-management-container {
   font-family: 'Inter', sans-serif;
   background-color: #f3f7f6;
   min-height: 100vh;
+  width: calc(100% - 220px); /* ✅ Avoid using 90% with margin */
+  margin-left: 220px;
   padding: 0;
-  width: 90%;
   display: flex;
   justify-content: center;
   padding-bottom: 40px;
-margin-left: 220px;
+  overflow-x: hidden; /* ✅ Force prevent horizontal scrolling */
+  box-sizing: border-box; /* ✅ Include padding inside width */
 }
 
 .task-management-wrapper {
   background-color: #ffffff;
-  width: 1200px;
+  width: 100%; /* ✅ Let wrapper inherit parent's width */
+  max-width: 1200px; /* ✅ Limit max width only, not fixed */
   height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 /* Sticky Header */
