@@ -100,12 +100,23 @@ const TaskManagement = () => {
   };
 
   const assignLeads = async () => {
-    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
-    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
+    if (!selectedExecutive) {
+      alert("⚠️ Please select an executive.");
+      return;
+    }
   
-    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
+    if (selectedLeads.length === 0) {
+      alert("⚠️ Please select at least one lead.");
+      return;
+    }
+  
+    const executive = executives.find(
+      (exec) => String(exec.id) === selectedExecutive
+    );
+  
     if (!executive || !executive.username) {
-      return alert("⚠️ Invalid executive selected.");
+      alert("⚠️ Invalid executive selected.");
+      return;
     }
   
     let successCount = 0;
@@ -120,7 +131,7 @@ const TaskManagement = () => {
       }
   
       const clientLeadId = lead.clientLeadId || lead.id;
-      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, '');
+      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
   
       const leadPayload = {
         name: lead.name,
@@ -140,8 +151,10 @@ const TaskManagement = () => {
           continue;
         }
   
-        await assignLeadAPI(leadId, executive.username);
+        // Assign executive
+        await assignLeadAPI(Number(leadId), executive.username); // ✅ leadId explicitly as integer
   
+        // Create fresh lead entry
         const freshLeadPayload = {
           leadId: createdLead.id,
           name: createdLead.name,
@@ -154,8 +167,10 @@ const TaskManagement = () => {
   
         await createFreshLeadAPI(freshLeadPayload);
   
-        // Update local leads array
-        const leadIndex = updatedLeads.findIndex((l) => String(l.id) === leadId);
+        // ✅ All backend calls succeeded — now update UI state
+        const leadIndex = updatedLeads.findIndex(
+          (l) => String(l.id) === leadId
+        );
         if (leadIndex !== -1) {
           updatedLeads[leadIndex].assignedToExecutive = executive.username;
         }
@@ -171,14 +186,18 @@ const TaskManagement = () => {
     setSelectedLeads([]);
     setSelectedExecutive("");
   
+    // Notify user
     if (successCount > 0 && failCount === 0) {
       alert("✅ All leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
-      alert(`⚠️ ${successCount} leads assigned, ${failCount} failed. Check console for details.`);
+      alert(
+        `⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console for details.`
+      );
     } else {
       alert("❌ Lead assignment failed. Please check the console.");
     }
-  };  
+  };
+   
 
   return (
     <>
