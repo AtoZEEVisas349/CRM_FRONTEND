@@ -151,10 +151,10 @@ const TaskManagement = () => {
           continue;
         }
   
-        // Assign executive
-        await assignLeadAPI(Number(leadId), executive.username); // ✅ leadId explicitly as integer
+        // ✅ Assign executive
+        await assignLeadAPI(Number(leadId), executive.username);
   
-        // Create fresh lead entry
+        // ✅ Create fresh lead record
         const freshLeadPayload = {
           leadId: createdLead.id,
           name: createdLead.name,
@@ -167,12 +167,13 @@ const TaskManagement = () => {
   
         await createFreshLeadAPI(freshLeadPayload);
   
-        // ✅ All backend calls succeeded — now update UI state
-        const leadIndex = updatedLeads.findIndex(
-          (l) => String(l.id) === leadId
-        );
+        // ✅ All backend calls succeeded — now update local UI state
+        const leadIndex = updatedLeads.findIndex((l) => String(l.id) === leadId);
         if (leadIndex !== -1) {
-          updatedLeads[leadIndex].assignedToExecutive = executive.username;
+          updatedLeads[leadIndex] = {
+            ...updatedLeads[leadIndex],
+            assignedToExecutive: executive.username,
+          };
         }
   
         successCount++;
@@ -182,6 +183,7 @@ const TaskManagement = () => {
       }
     }
   
+    // ✅ Only apply updates to state after all processing
     setLeads(updatedLeads);
     setSelectedLeads([]);
     setSelectedExecutive("");
@@ -196,8 +198,7 @@ const TaskManagement = () => {
     } else {
       alert("❌ Lead assignment failed. Please check the console.");
     }
-  };
-   
+  };  
 
   return (
     <>
