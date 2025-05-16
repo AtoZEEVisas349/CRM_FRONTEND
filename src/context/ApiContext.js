@@ -573,7 +573,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     fetchAdmin();
     fetchLeadSectionVisitsAPI();
     fetchExecutives();
-    fetchFreshLeads();
     fetchAllCloseLeadsAPI();
     fetchConvertedClients();
     getExecutiveActivity();
@@ -591,6 +590,7 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     if (token && currentUser?.username) {
       fetchFollowUps();     // ✅ moved here safely
       getAllFollowUps();    // ✅ moved here safely
+      fetchFreshLeadsAPI();
     } else {
       console.warn("⛔ Token or user info missing. Skipping follow-up fetch.");
     }
