@@ -165,6 +165,7 @@ export const assignLeadAPI = async (leadId, executiveId, executiveName) => {
     const response = await apiService.put(
       `/client-leads/assign-executive/${leadId}`,
       {
+        leadId,
         executiveId,
         executiveName,
       }
@@ -265,47 +266,16 @@ export const createLeadAPI = async (leadData) => {
   }
 };
 
-// ✅ Improved version with fallback and user check
+// ✅ Function to fetch fresh leads for the executive
 export const fetchFreshLeads = async () => {
   try {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!token || !user?.username) {
-      console.warn("Missing token or username");
-      return [];
-    }
-
-    console.log("👤 Fetching fresh leads for:", user.username);
-
-    const response = await axios.get(`${API_BASE_URL}/freshleads`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "x-company-id": "4477079e-c9bf-4f2e-9d9c-3523791c9058", // 🔒 Hardcoded company ID
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response?.data?.message?.includes("No fresh leads")) {
-      return [];
-    }
-
-    return response.data;
+    const response = await apiService.get("/freshleads"); 
+    return response.data; 
   } catch (error) {
-    if (
-      error.response &&
-      error.response.status === 404 &&
-      error.response.data?.message?.includes("No fresh leads")
-    ) {
-      console.warn("⚠️ No fresh leads for this executive");
-      return [];
-    }
-
     console.error("❌ Error fetching fresh leads:", error);
-    throw error;
+    throw error; 
   }
 };
-
 
 // ✅ Create a new fresh lead
 export const createFreshLead = async (leadData) => {
