@@ -100,87 +100,85 @@ const TaskManagement = () => {
   };
 
   const assignLeads = async () => {
-    if (!selectedExecutive) return alert("Select an executive.");
-    if (!selectedLeads.length) return alert("Select at least one lead.");
-
+    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
+    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
+  
     const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-    if (!executive) return alert("Invalid executive selected.");
-
-    try {
-      await Promise.all(
-        selectedLeads.map(async (leadId) => {
-          const lead = leads.find((l) => String(l.id) === leadId);
-          if (!lead) return;
-
-          const clientLeadId = lead.clientLeadId || lead.id;
-          if (!clientLeadId) {
-            console.warn("❌ Missing clientLeadId for lead:", lead.name);
-            return;
-          }
-
-          const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, '');
-
-          if (!executive.username) {
-            console.warn("❌ Missing executive username.");
-            return;
-          }
-
-          const leadPayload = {
-            name: lead.name,
-            email: lead.email || "defaultEmail@example.com",
-            phone: phone,
-            source: lead.source,
-            clientLeadId: Number(clientLeadId),
-            assignedToExecutive: executive.username,
-          };
-
-          try {
-            const createdLead = await createLeadAPI(leadPayload);
-            if (!createdLead || !createdLead.id) {
-              console.error("❌ Lead creation failed or returned invalid data.");
-              return;
-            }
-
-            await assignLeadAPI(leadId, executive.id, executive.username);
-
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            const freshLeadPayload = {
-              leadId: createdLead.id,
-              name: createdLead.name,
-              email: createdLead.email,
-              phone: String(createdLead.phone),
-              assignedTo: executive.username,
-              assignedToId: executive.id,
-              assignDate: new Date().toISOString(),
-            };
-
-            try {
-              await createFreshLeadAPI(freshLeadPayload);
-            } catch (err) {
-              console.error("❌ Error creating fresh lead:", err);
-            }
-          } catch (err) {
-            console.error("❌ Error creating lead via createLeadAPI:", err);
-          }
-        })
-      );
-
-      setLeads((prevLeads) =>
-        prevLeads.map((lead) =>
-          selectedLeads.includes(String(lead.id))
-            ? { ...lead, assignedToExecutive: executive.username }
-            : lead
-        )
-      );
-
-      setSelectedLeads([]);
-      setSelectedExecutive("");
-      alert("Leads have been assigned successfully!");
-    } catch (err) {
-      console.error("❌ Error during lead assignment process:", err);
+    if (!executive || !executive.username) {
+      return alert("⚠️ Invalid executive selected.");
     }
-  };
+  
+    let successCount = 0;
+    let failCount = 0;
+    const updatedLeads = [...leads];
+  
+    for (const leadId of selectedLeads) {
+      const lead = leads.find((l) => String(l.id) === leadId);
+      if (!lead) {
+        failCount++;
+        continue;
+      }
+  
+      const clientLeadId = lead.clientLeadId || lead.id;
+      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, '');
+  
+      const leadPayload = {
+        name: lead.name,
+        email: lead.email || "default@example.com",
+        phone: phone,
+        source: lead.source || "Unknown",
+        clientLeadId: Number(clientLeadId),
+        assignedToExecutive: executive.username,
+      };
+  
+      try {
+        const createdLead = await createLeadAPI(leadPayload);
+  
+        if (!createdLead?.id) {
+          console.error("❌ Lead creation failed:", createdLead);
+          failCount++;
+          continue;
+        }
+  
+        await assignLeadAPI(leadId, executive.id, executive.username);
+  
+        const freshLeadPayload = {
+          leadId: createdLead.id,
+          name: createdLead.name,
+          email: createdLead.email,
+          phone: String(createdLead.phone),
+          assignedTo: executive.username,
+          assignedToId: executive.id,
+          assignDate: new Date().toISOString(),
+        };
+  
+        await createFreshLeadAPI(freshLeadPayload);
+  
+        // Update local leads array
+        const leadIndex = updatedLeads.findIndex((l) => String(l.id) === leadId);
+        if (leadIndex !== -1) {
+          updatedLeads[leadIndex].assignedToExecutive = executive.username;
+        }
+  
+        successCount++;
+      } catch (err) {
+        console.error(`❌ Error processing lead ID ${leadId}:`, err);
+        failCount++;
+      }
+    }
+  
+    setLeads(updatedLeads);
+    setSelectedLeads([]);
+    setSelectedExecutive("");
+  
+    if (successCount > 0 && failCount === 0) {
+      alert("✅ All leads assigned successfully.");
+    } else if (successCount > 0 && failCount > 0) {
+      alert(`⚠️ ${successCount} leads assigned, ${failCount} failed. Check console for details.`);
+    } else {
+      alert("❌ Lead assignment failed. Please check the console.");
+    }
+  };  
 
   return (
     <>
