@@ -378,6 +378,9 @@ gap: 10px;
   background-color: rgb(151, 103, 74);
   color :white;
 }
+[data-theme="blue"] .fresh-pagination{
+  background-color: rgb(151, 103, 74);
+}
 /*------------------------------Green------------------------------*/
 [data-theme="green"] .fresh-leads-main-content,
 [data-theme="green"] .lead-assign-container,
@@ -423,7 +426,7 @@ gap: 10px;
 
 /* Pagination */
 [data-theme="green"] .fresh-pagination {
-  background-color: white;
+  background: #e8f5e9; /* Light green background */
   border-top: 1px solid #c8e6c9;
 }
 
