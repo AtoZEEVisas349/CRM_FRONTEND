@@ -163,8 +163,9 @@ export const fetchAdminProfile = async () => {
 export const assignLeadAPI = async (leadId, executiveName) => {
   try {
     const response = await apiService.put(
-      `/client-leads/assign-executive/${leadId}`,
+      `/client-leads/assign-executive`, 
       {
+        id: leadId,              // 👈 Send id in body
         executiveName,
       }
     );
@@ -174,6 +175,7 @@ export const assignLeadAPI = async (leadId, executiveName) => {
     throw error;
   }
 };
+
 
 // ================== 📊 Executive Activity APIs ==================
 
