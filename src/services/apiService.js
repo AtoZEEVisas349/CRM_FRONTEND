@@ -265,16 +265,41 @@ export const createLeadAPI = async (leadData) => {
   }
 };
 
-// ✅ Function to fetch fresh leads for the executive
+// ✅ Improved version with fallback and user check
 export const fetchFreshLeads = async () => {
   try {
-    const response = await apiService.get("/freshleads"); 
-    return response.data; 
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!token || !user?.username) {
+      console.warn("Missing token or username");
+      return [];
+    }
+
+    console.log("👤 Fetching fresh leads for:", user.username);
+
+    const response = await apiService.get("/freshleads");
+
+    if (response?.data?.message?.includes("No fresh leads")) {
+      return [];
+    }
+
+    return response.data;
   } catch (error) {
+    if (
+      error.response &&
+      error.response.status === 404 &&
+      error.response.data?.message?.includes("No fresh leads")
+    ) {
+      console.warn("⚠️ No fresh leads for this executive");
+      return [];
+    }
+
     console.error("❌ Error fetching fresh leads:", error);
-    throw error; 
+    throw error;
   }
 };
+
 
 // ✅ Create a new fresh lead
 export const createFreshLead = async (leadData) => {

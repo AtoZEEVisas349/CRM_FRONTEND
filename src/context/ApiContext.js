@@ -250,17 +250,7 @@ export const ApiProvider = ({ children }) => {
   const [followUpCount, setFollowUpCount] = useState(0);
   const [convertedClientsCount, setConvertedClientsCount] = useState(0);
 
-  const fetchFreshLeads = async () => {
-    try {
-      const response = await apiService.fetchFreshLeads();
-      const data = response.data;   
-      const assignedLeads = data.filter(lead => lead.clientLead?.status === "Assigned");
-        setFreshLeadsCount(assignedLeads.length); 
-    } catch (error) {
-      console.error("❌ Failed to fetch fresh leads:", error);
-    }
-  };   
-
+   
   const fetchFollowUps = async () => {
     try {
       const response = await apiService.fetchAllFollowUps(); // <-- Corrected here

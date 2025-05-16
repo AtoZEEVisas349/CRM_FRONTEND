@@ -6,6 +6,7 @@
   color: var(--text-color);
   width: 100%;
   box-sizing: border-box;
+  height:100vh;
 }
 html, body, #root {
   height: 100%;
@@ -269,7 +270,7 @@ select:hover {
 @media (min-width: 600px) and (max-width: 991px) {
   .close-leads-page {
     margin-left:-250px;
-    
+    width: calc(100% + 36%);
   }
   .country_cards{
     width:90vw;
