@@ -278,7 +278,13 @@ export const fetchFreshLeads = async () => {
 
     console.log("👤 Fetching fresh leads for:", user.username);
 
-    const response = await apiService.get("/freshleads");
+    const response = await axios.get(`${API_BASE_URL}/freshleads`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-company-id": "4477079e-c9bf-4f2e-9d9c-3523791c9058", // 🔒 Hardcoded company ID
+        "Content-Type": "application/json",
+      },
+    });
 
     if (response?.data?.message?.includes("No fresh leads")) {
       return [];
