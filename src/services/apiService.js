@@ -5,6 +5,7 @@ const apiService = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    "Cache-Control": "no-cache",
   },
 });
 
@@ -175,8 +176,6 @@ export const assignLeadAPI = async (leadId, executiveName) => {
     throw error;
   }
 };
-
-
 
 // ================== 📊 Executive Activity APIs ==================
 
