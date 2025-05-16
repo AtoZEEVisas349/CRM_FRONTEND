@@ -564,6 +564,17 @@ const fetchRevenueChartDataAPI = async () => {
     setRevenueChartLoading(false);
   }
 };
+
+// Add updateUserLoginStatus to ApiContext
+const updateUserLoginStatus = async (userId, canLogin) => {
+  try {
+    const response = await apiService.updateUserLoginStatus(userId, canLogin);
+    return response;
+  } catch (error) {
+    console.error(`❌ Error in ApiContext updating login status for user ${userId}:`, error);
+    throw error;
+    }
+  };
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -605,6 +616,7 @@ const fetchRevenueChartDataAPI = async () => {
     fetchExecutivesAPI: apiService.fetchExecutivesAPI,
     fetchExecutiveInfo: apiService.fetchExecutiveInfo,
 
+    updateUserLoginStatus,
     // Follow-ups
     fetchFollowUps,
     createFollowUp,

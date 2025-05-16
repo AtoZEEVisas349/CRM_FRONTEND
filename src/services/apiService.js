@@ -27,6 +27,15 @@ apiService.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+export const updateUserLoginStatus = async (userId, canLogin) => {
+  try {
+    const response = await apiService.put("/login-status", { userId, canLogin });
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error updating login status for user ${userId}:`, error);
+    throw error;
+  }
+};
 // ✅ Function to fetch all leads
 export const fetchLeadsAPI = async (limit = 10, offset = 0) => {
   try {

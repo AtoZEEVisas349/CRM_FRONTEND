@@ -1,184 +1,224 @@
-import React, { useState} from "react";
-import img2 from '../../assets/img3.jpg'
+import React, { useState, useEffect } from "react";
+import img2 from "../../assets/img3.jpg";
 import SidebarToggle from "./SidebarToggle";
-
+import { useApi } from "../../context/ApiContext";
+import { toast } from "react-toastify";
+import { isAuthenticated } from "../../services/auth";
+import "../../styles/adminexedetails.css";
 
 const ExecutiveDetails = () => {
-    const people = [
-        {
-          id: 1,
-          image: img2,
-          name: 'Alice Johnson',
-          profession: 'Team Lead',
-          technology: 'React, JavaScript, CSS',
-          emailId: 'alice.johnson@example.com',
-          country: 'USA',
-          city: 'New York'
-        },
-        {
-          id: 2,
-          image: img2,
-          name: 'Bob Smith',
-          profession: 'Backend Developer',
-          technology: 'Node.js, Express, MongoDB',
-          emailId: 'bob.smith@example.com',
-          country: 'USA',
-          city: 'San Francisco'
-        },
-        {
-          id: 3,
-          image: img2,
-          name: 'Charlie Brown',
-          profession: 'Fullstack Developer',
-          technology: 'React, Node.js, AWS',
-          emailId: 'charlie.brown@example.com',
-          country: 'Canada',
-          city: 'Toronto'
-        },
-        {
-          id: 4,
-          image: img2,
-          name: 'Diana Prince',
-          profession: 'Frontend Developer',
-          technology: 'React, JavaScript, CSS',
-          emailId: 'diana.prince@example.com',
-          country: 'UK',
-          city: 'London'
-        },
-        {
-          id: 5,
-          image: img2,
-          name: 'Evan Stone',
-          profession: 'Backend Developer',
-          technology: 'Node.js, Express, MongoDB',
-          emailId: 'evan.stone@example.com',
-          country: 'Australia',
-          city: 'Sydney'
-        },
-        {
-          id: 6,
-          image: img2,
-          name: 'Fiona Green',
-          profession: 'Fullstack Developer',
-          technology: 'React, Node.js, AWS',
-          emailId: 'fiona.green@example.com',
-          country: 'India',
-          city: 'Bangalore'
-        },
-        {
-          id: 7,
-          image: img2,
-          name: 'George White',
-          profession: 'Frontend Developer',
-          technology: 'HTML, CSS, JavaScript',
-          emailId: 'george.white@example.com',
-          country: 'Germany',
-          city: 'Berlin'
-        },
-        {
-          id: 8,
-          image: img2,
-          name: 'Hannah Black',
-          profession: 'Backend Developer',
-          technology: 'Python, Django, PostgreSQL',
-          emailId: 'hannah.black@example.com',
-          country: 'France',
-          city: 'Paris'
-        }
-      
-      ];
-      
-      
-    const [filter, setFilter] = useState('All');
-    const [viewMode, setViewMode] = useState('grid');
+  const { fetchExecutivesAPI, updateUserLoginStatus } = useApi();
 
-  const filteredPeople = people.filter((person) => {
-    if (filter === 'All') return true;
-    if (filter === 'Team Lead') return person.profession.includes('Team Lead');
-    return true;
-  });
-    
-      
+  const [people, setPeople] = useState([]);
+  const [filter, setFilter] = useState("All");
+  const [viewMode, setViewMode] = useState("grid");
+  const [toggleStates, setToggleStates] = useState({});
+  const [cooldowns, setCooldowns] = useState({});
+  const [loadingStates, setLoadingStates] = useState({});
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Fetch executive data
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const executives = await fetchExecutivesAPI();
+        const mapped = executives.map((executive) => ({
+          id: executive.id,
+          image: img2,
+          name: executive.name || "Unknown",
+          profession: executive.role || "Executive",
+          technology: executive.skills || "Not specified",
+          emailId: executive.email || "N/A",
+          country: executive.country || "N/A",
+          city: executive.city || "N/A",
+          canLogin: executive.can_login,
+        }));
+        setPeople(mapped);
+        const toggles = {};
+        mapped.forEach((p) => {
+          toggles[p.id] = p.canLogin;
+        });
+        setToggleStates(toggles);
+      } catch (error) {
+        console.error("❌ Error fetching executives:", error);
+        setPeople([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [fetchExecutivesAPI]);
+
+  const filteredPeople = people.filter((person) =>
+    filter === "All" ? true : person.profession.includes(filter)
+  );
+
+  const handleToggle = async (id) => {
+    if (!isAuthenticated() || cooldowns[id] || loadingStates[id]) return;
+
+    const current = toggleStates[id] ?? true;
+    const next = !current;
+
+    setToggleStates((prev) => ({ ...prev, [id]: next }));
+
+    if (!next) {
+      setPopupText(
+        "Hey, Your credentials will get off within 15 minutes. Thank you for waiting."
+      );
+      setPopupVisible(true);
+      setTimeout(() => setPopupVisible(false), 3000);
+    }
+
+    setLoadingStates((prev) => ({ ...prev, [id]: true }));
+
+    try {
+      await updateUserLoginStatus(id, next);
+
+      if (!next) {
+        setCooldowns((prev) => ({ ...prev, [id]: true }));
+        setTimeout(() => {
+          setCooldowns((prev) => {
+            const updated = { ...prev };
+            delete updated[id];
+            return updated;
+          });
+        }, 15 * 60 * 1000);
+      }
+    } catch (error) {
+      console.error("❌ Error updating login status:", error);
+      toast.error("Failed to update login status.");
+      setToggleStates((prev) => ({ ...prev, [id]: current }));
+    } finally {
+      setLoadingStates((prev) => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
+    }
+  };
 
   return (
-    <div style={{ display: 'flex' }}>
-      {/* Sidebar Toggle */}
+    <div style={{ display: "flex" }}>
       <SidebarToggle />
-  <div  >
-    <h1 style={{textAlign:"center",padding:"20px"
-    }}>Executive Details</h1>
-  <div className="filter-buttons">
-    <button onClick={() => setFilter('All')}>All</button>
-    <button onClick={() => setFilter('Team Lead')}>Team Lead</button>
-    <div  >
-  <button
-    onClick={() => setViewMode(viewMode === 'grid' ? 'table' : 'grid')}
-    
-  >
-    {viewMode === 'grid' ? 'Table View' : 'Grid View'}
-  </button>
-</div>
-  </div>
-{viewMode === 'grid' ? (
-        <div className="boxes-container">
-          {filteredPeople.map((person) => (
-            <div key={person.id} className="box1">
-              <img src={person.image} alt={person.name} className="avatar" />
-              <div className="text-content">
-               
-                <div>
-                <span className="field-value"> User Id:</span>
-                <span className="field-value"> {person.id}</span></div>
-                
-                <span className="field-value"> {person.name}</span>
-                <span className="field-value"> {person.emailId}</span>
-                <span className="field-value"> {person.profession}</span>
-<span className="field-value"> {person.country}</span>
-<span className="field-value"> {person.city}</span>
-              </div>
-            </div>
-          ))}
+      <div>
+        <h1 style={{ textAlign: "center", padding: "20px" }}>
+          Executive Details
+        </h1>
+
+        <div className="filter-buttons">
+          <button onClick={() => setFilter("All")}>All</button>
+          <button onClick={() => setFilter("Team Lead")}>Team Lead</button>
+          <button
+            onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+          >
+            {viewMode === "grid" ? "Table View" : "Grid View"}
+          </button>
         </div>
-      ) : (
-        <table className="people-table">
-          <thead>
-            <tr>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>UserID</th>
-              <th>Profession</th>
-              <th>Technology</th>
-              <th>Email ID</th>
-              <th>City</th>
-              <th>Country</th>
-            </tr>
-          </thead>
-          <tbody>
+
+        {loading ? (
+          <div>Loading executives...</div>
+        ) : viewMode === "grid" ? (
+          <div className="boxes-container">
             {filteredPeople.map((person) => (
-              <tr key={person.id}>
-                <td>
-                  <img src={person.image} alt={person.name} className="avatar-small" />
-                </td>
-                <td>{person.name}</td>
-                <td>{person.id}</td>
-                <td>{person.profession}</td>
-                <td>{person.technology}</td>
-                <td>{person.emailId}</td>
-                <td>{person.city}</td>
-                <td>{person.country}</td>
-              </tr>
+              <div key={person.id} className="box1">
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    display: "flex",
+                    alignItems: "left",
+                    gap: "8px",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <span style={{ fontSize: "15px" }}>User Credentials:</span>
+                  <label
+                    className={`switch ${
+                      cooldowns[person.id] ? "cooldown" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={toggleStates[person.id] ?? true}
+                      onChange={() => handleToggle(person.id)}
+                      disabled={cooldowns[person.id] || loadingStates[person.id]}
+                    />
+                    <span className="slider round">
+                      <span className="switch-text">
+                        {toggleStates[person.id] ?? true ? "ON" : "OFF"}
+                      </span>
+                    </span>
+                  </label>
+                </div>
+
+                <img src={person.image} alt={person.name} className="avatar" />
+                <div className="text-content">
+                  <div>
+                    <span className="field-value">User Id:</span> {person.id}
+                  </div>
+                  <span className="field-value">{person.name}</span>
+                  <span className="field-value">{person.emailId}</span>
+                  <span className="field-value">{person.profession}</span>
+                  <span className="field-value">{person.country}</span>
+                  <span className="field-value">{person.city}</span>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
-      )}
-    <div className="invoice-pagination">
-        <span className="invoice-page-nav">« Prev</span>
-        <span>Page 1 of 5</span>
-        <span className="invoice-page-nav">Next »</span>
+          </div>
+        ) : (
+          <table className="people-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>UserID</th>
+                <th>Profession</th>
+                <th>Technology</th>
+                <th>Email ID</th>
+                <th>City</th>
+                <th>Country</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPeople.map((person) => (
+                <tr key={person.id}>
+                  <td>
+                    <img
+                      src={person.image}
+                      alt={person.name}
+                      className="avatar-small"
+                    />
+                  </td>
+                  <td>{person.name}</td>
+                  <td>{person.id}</td>
+                  <td>{person.profession}</td>
+                  <td>{person.technology}</td>
+                  <td>{person.emailId}</td>
+                  <td>{person.city}</td>
+                  <td>{person.country}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {popupVisible && (
+          <div className="popup-message">
+            <em>{popupText}</em>
+          </div>
+        )}
+
+        <div className="invoice-pagination">
+          <span className="invoice-page-nav">« Prev</span>
+          <span>Page 1 of 5</span>
+          <span className="invoice-page-nav">Next »</span>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
 
-export default ExecutiveDetails;
+export default ExecutiveDetails;
