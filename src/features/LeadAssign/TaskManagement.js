@@ -140,7 +140,7 @@ const TaskManagement = () => {
           continue;
         }
   
-        await assignLeadAPI(leadId, executive.id, executive.username);
+        await assignLeadAPI(leadId, executive.username);
   
         const freshLeadPayload = {
           leadId: createdLead.id,
