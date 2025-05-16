@@ -664,7 +664,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         freshLeadsCount,
         followUpCount,
         convertedClientsCount,
-        fetchFreshLeads,
         fetchFollowUps,
         fetchConvertedClients,
         convertedClients,        
