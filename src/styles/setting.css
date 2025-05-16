@@ -3,8 +3,9 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  width: 1200px;
-  min-width:1000px; /* Prevent layout from breaking on very small screens */
+    margin-left: 200px;
+  width: calc(100%-200px);
+ 
   background-color: #fcfcfc;
   overflow-x: hidden;
   margin-left: 250px;
