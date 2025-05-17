@@ -94,9 +94,7 @@ const ExecutiveActivity = () => {
   const toggle= async () => {
     if (!isBreakActive) {
       await startBreak();
-    } else {
-      await stopBreak();
-    }
+    } 
   };
   
   const toggleCallTracking = async () => {

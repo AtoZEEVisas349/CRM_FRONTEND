@@ -18,6 +18,11 @@ import {
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "../context/breakTimerContext";
 
+// Define breakIcons array
+const breakIcons = [
+  faMugHot, faPersonWalking, faBed, faCouch, faUmbrellaBeach, 
+  faPeace, faBookOpen, faMusic, faHeadphones, faYinYang
+];
 
 const SidebarandNavbar = () => {
   const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading ,resetBreakTimer} = useBreakTimer();
@@ -324,6 +329,32 @@ const SidebarandNavbar = () => {
           </div>
         )}
       </section>
+
+
+      {/* Enhanced Blur Screen with Stylish Icons */}
+      {isBreakActive && (
+        <div className="blur-screen">
+          {/* Floating background icons */}
+          <div className="floating-icons">
+            {breakIcons.map((icon, index) => (
+              <FontAwesomeIcon key={index} icon={icon} className="floating-icon" />
+            ))}
+          </div>
+          
+          <div className="break-message">
+            <FontAwesomeIcon icon={faMugHot} />
+            You are on a break
+            
+          </div>
+          
+          <div className="timer-display">{breakTimer}</div>
+          
+          <button className="stop-break-btn" onClick={stopBreak}>
+            <FontAwesomeIcon icon={faStopCircle} />
+            Stop break
+          </button>
+        </div>
+      )}
       {showTracker && <ExecutiveActivity />}
     </section>
   );
