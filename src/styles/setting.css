@@ -3,9 +3,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-    margin-left: 200px;
-  width: calc(100%-200px);
- 
+    margin-left: 200px; 
   background-color: #fcfcfc;
   overflow-x: hidden;
   margin-left: 250px;
@@ -628,7 +626,11 @@ settings-sidebar {
 /*-------------------------------------Pink--------------------------*/
 [data-theme="red"] .settings-sidebar{
   background: #ecc5ec;
-}[data-theme="red"] .my-profile{
+}
+[data-theme="red"] .settings-page-wrapper {
+  background: #f3daf3; 
+}
+[data-theme="red"] .my-profile{
   background: #f3daf3;
 }[data-theme="red"] .change-password  {
   background:#f3daf3;
@@ -661,6 +663,9 @@ background:#f3daf3 ;
 }[data-theme="blue"] .change-password  {
   background:rgb(202, 202, 247);
 }
+[data-theme="blue"] .settings-page-wrapper {
+  background:rgb(202, 202, 247); 
+}
 [data-theme="blue"] .change-password h2::after  {
   background: linear-gradient(135deg, #080567, grey);
   
@@ -683,6 +688,9 @@ background:#f3daf3 ;
 /*-------------------------------------Brown--------------------------*/
   [data-theme="brown"] .settings-sidebar{
     background: #d9cac4;
+  }
+  [data-theme="brown"] .settings-page-wrapper {
+    background:#d9cac4; 
   }
   [data-theme="brown"] .my-profile{
     background: #d9cac4;

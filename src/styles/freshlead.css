@@ -349,7 +349,6 @@ gap: 10px;
 }
 [data-theme="red"] .lead-content{
   --bg-color: #f3daf3;
-
 }
 [data-theme="red"] .fresh-leads-table thead {
   background-color: #c8c8f4;
@@ -362,7 +361,11 @@ gap: 10px;
 /*------------------------------Blue------------------------------*/
 [data-theme="blue"] .fresh-leads-main-content{
   --bg-color: rgb(186, 186, 232);
-}[data-theme="blue"] .fresh-leads-table thead {
+}
+[data-theme="blue"] .lead-content{
+  --bg-color: rgb(186, 186, 232);
+}
+[data-theme="blue"] .fresh-leads-table thead {
   background-color: rgb(114, 114, 214);
   color :white;
 }
@@ -377,6 +380,9 @@ gap: 10px;
 [data-theme="brown"] .fresh-leads-table thead {
   background-color: rgb(151, 103, 74);
   color :white;
+}
+[data-theme="brown"] .lead-content{
+  --bg-color: #d9cac4;
 }
 [data-theme="blue"] .fresh-pagination{
   background-color: rgb(151, 103, 74);
@@ -411,9 +417,6 @@ gap: 10px;
 [data-theme="green"] .fresh-leads-table tbody tr:hover {
   background-color: #e8f5e9 !important;
 }
-
-
-
 /* Radio buttons */
 [data-theme="green"] .status-radio {
   border-color: #2e7d32;
