@@ -6,7 +6,7 @@ const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
 // Shared headers
 const BASE_HEADERS = {
   "Content-Type": "application/json",
-  "x-company-id": "ac907b89-6a1e-4438-8032-b8ae8c45382a",
+  "x-company-id": "4477079e-c9bf-4f2e-9d9c-3523791c9058",
 };
 
 /*------------------------------LOGIN (fetch)---------------------------*/
