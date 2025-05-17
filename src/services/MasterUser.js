@@ -48,7 +48,7 @@ export const logoutMasterUser = async () => {
       {},
       {
         headers: {
-          'x-company-id': "4477079e-c9bf-4f2e-9d9c-3523791c9058",
+          'x-company-id': "ac907b89-6a1e-4438-8032-b8ae8c45382a",
           Authorization: `Bearer ${token}`, // ✅ Securely attached token
         },
       }
