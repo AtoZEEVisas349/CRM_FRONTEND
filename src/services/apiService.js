@@ -19,7 +19,7 @@ apiService.interceptors.request.use(
       delete config.headers.Authorization; // Remove malformed header
     }    
     // 🔥 Add x-company-id (hardcoded or from localStorage)
-    config.headers["x-company-id"] = "ac907b89-6a1e-4438-8032-b8ae8c45382a"; // Hardcoded
+    config.headers["x-company-id"] = "549403a0-8e59-440f-a381-17ae457c60c4"; // Hardcoded
     // Or use:
     // config.headers["x-company-id"] = localStorage.getItem("Company-Id") || "1";
 

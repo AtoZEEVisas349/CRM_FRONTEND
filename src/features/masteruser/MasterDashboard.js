@@ -24,8 +24,6 @@ const MasterDashboard = () => {
         {error && companies.length === 0 && (
   <p className="error-text">{error}</p>
 )}
-
-
         {!loading && companies.length > 0 ? (
           <table className="company-table">
             <thead>
