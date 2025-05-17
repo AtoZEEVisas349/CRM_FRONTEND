@@ -247,7 +247,9 @@ body {
   box-shadow: 0 2px 4px var(--shadow-light);
   z-index: 10;
 }
-
+.client-table tbody{
+  padding-bottom: 5px;
+}
 .client-table tbody {
   background-color: var(--card-bg);
 }

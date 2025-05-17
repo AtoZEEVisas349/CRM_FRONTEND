@@ -190,7 +190,7 @@ const TaskManagement = () => {
   
     // Notify user
     if (successCount > 0 && failCount === 0) {
-      alert("✅ All leads assigned successfully.");
+      alert("Leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
       alert(
         `⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console for details.`
