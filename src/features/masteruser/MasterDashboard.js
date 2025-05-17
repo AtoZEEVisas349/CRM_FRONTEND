@@ -9,12 +9,6 @@ const MasterDashboard = () => {
 
   useEffect(() => {
     fetchCompanies(); // Initial fetch
-  
-    const interval = setInterval(() => {
-      fetchCompanies();
-    }, 2000); // Every 2 seconds
-  
-    return () => clearInterval(interval); // Cleanup
   }, []);  
 
   return (
