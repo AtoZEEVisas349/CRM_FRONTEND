@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  FaFilter, FaCalendarAlt, FaChevronDown, FaBars,
   FaSun, FaMoon, FaPhone, FaUser, FaComment
 } from "react-icons/fa";
 
@@ -38,18 +37,23 @@ function AdminNavbar() {
     setUnreadLeadCount(unreadLeads.length);
   }, [notifications, localStorageUser]);
 
+  const isHovering = useRef(false);
   const handleMouseEnter = async () => {
     clearTimeout(hoverTimeout.current);
+    isHovering.current = true;
     setShowPopover(true);
     if (!adminProfile && !loading) {
       await fetchAdmin();
     }
   };
-
+  
   const handleMouseLeave = () => {
+    isHovering.current = false;
     hoverTimeout.current = setTimeout(() => {
-      setShowPopover(false);
-    }, 200); // delay to allow hover on popover
+      if (!isHovering.current) {
+        setShowPopover(false);
+      }
+    }, 200); // you can tune the delay here
   };
 
   const handleLogout = async () => {
@@ -96,41 +100,42 @@ function AdminNavbar() {
 
         {/* User Icon and Hover Popover */}
         <div
-          className="user-icon-wrapper"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          style={{ position: "relative", display: "inline-block" }}
-        >
-          <FaUser
-            className="admin-logo_name icon-hover-zoom"
-            style={{ cursor: 'pointer' }}
-          />
-          {showPopover && (
-            <div
-              className="admin_user_popover"
-              onMouseEnter={() => clearTimeout(hoverTimeout.current)}
-              onMouseLeave={handleMouseLeave}
-              style={{ position: "absolute", top: "100%", right: 0 }}
-            >
-              {loading ? (
-                <div>Loading...</div>
-              ) : (
-                adminProfile && (
-                  <div className="admin_user_details">
-                    <div className="admin_user_avatar">
-                      {adminProfile.name?.charAt(0).toUpperCase() || 'U'}
-                    </div>
-                    <div>
-                      <p className="admin_user_name">{adminProfile.name}</p>
-                      <p className="admin_user_email">{adminProfile.email}</p>
-                      <p className="admin_user_role">{adminProfile.role}</p>
-                    </div>
-                  </div>
-                )
-              )}
-              <button className="logout_btn" onClick={handleLogout}>
-                Logout
-              </button>
+  className="user-icon-wrapper"
+  onMouseEnter={handleMouseEnter}
+  onMouseLeave={handleMouseLeave}
+  style={{ position: "relative", display: "inline-block" }}
+>
+  <FaUser
+    className="admin-logo_name icon-hover-zoom"
+    style={{ cursor: 'pointer' }}
+  />
+
+  {showPopover && (
+    <div
+      className="admin_user_popover"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ position: "absolute", top: "100%", right: 0 }}
+    >
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        adminProfile && (
+          <div className="admin_user_details">
+            <div className="admin_user_avatar">
+              {adminProfile.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+            <div>
+              <p className="admin_user_name">{adminProfile.name}</p>
+              <p className="admin_user_email">{adminProfile.email}</p>
+              <p className="admin_user_role">{adminProfile.role}</p>
+            </div>
+          </div>
+        )
+      )}
+      <button className="logout_btn" onClick={handleLogout}>
+        Logout
+      </button>
             </div>
           )}
         </div>
