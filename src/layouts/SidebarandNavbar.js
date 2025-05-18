@@ -76,6 +76,7 @@ const SidebarandNavbar = () => {
   const userIconRef = useRef(null);
   const location = useLocation();
   const historyStackRef = useRef([]);
+  const { unreadCount } = useApi();
   const toggleSidebar = () => setIsActive(!isActive);
   const {handleStopWork}=useExecutiveActivity();
   const handleLogout = async () => {
@@ -318,14 +319,20 @@ const SidebarandNavbar = () => {
         <div className="navbar_icons">
           <div className="navbar_divider"></div>
           <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
-          <FontAwesomeIcon
-            className="navbar_icon"
-            icon={faBell}
-            style={{ cursor: "pointer" }}
-            title="Notifications"
-            tabIndex="0"
-            onClick={() => navigate("/notification")}
-          />
+          <div style={{ position: "relative" }}>
+  <FontAwesomeIcon
+    className="navbar_icon"
+    icon={faBell}
+    style={{ cursor: "pointer" }}
+    title="Notifications"
+    tabIndex="0"
+    onClick={() => navigate("/notification")}
+  />
+  {unreadCount > 0 && (
+    <span className="notification-badge">{unreadCount}</span>
+  )}
+</div>
+
           <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
           <FontAwesomeIcon className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)} />
           <FontAwesomeIcon ref={userIconRef} className="navbar_icon" icon={faCircleUser} onClick={handleUserIconClick} />

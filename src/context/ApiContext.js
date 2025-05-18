@@ -167,10 +167,11 @@ export const ApiProvider = ({ children }) => {
   // ✅ Notifications
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
-
+  const unreadCount = useMemo(
+    () => notifications.filter(n => !n.is_read).length,
+    [notifications]
+  );
   const fetchNotifications = useCallback(async ({ userId, userRole }) => {
-    console.log(userId);
-    console.log(userRole);
     if (!userId || !userRole) {
       console.warn(
         "⚠️ User ID and User Role is required to fetch notifications"
@@ -195,7 +196,7 @@ export const ApiProvider = ({ children }) => {
   const createCopyNotification = async (userId, userRole, message) => {
     try {
       await apiService.createCopyNotification({ userId, userRole, message });
-      fetchNotifications(userId);
+      fetchNotifications({userId,userRole});
     } catch (error) {
       console.error("❌ Failed to create copy notification:", error);
     }
@@ -686,6 +687,7 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         // ✅ Notifications
         notifications,
         notificationsLoading,
+        unreadCount,
         fetchNotifications,
         createCopyNotification,
       markNotificationReadAPI,
