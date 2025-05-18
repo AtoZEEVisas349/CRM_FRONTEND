@@ -33,7 +33,6 @@ const TaskManagement = () => {
       const isExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
       setSidebarState(isExpanded ? "expanded" : "collapsed");
     };
-
     window.addEventListener("sidebarToggle", updateSidebarState);
     updateSidebarState();
     return () => window.removeEventListener("sidebarToggle", updateSidebarState);
@@ -82,9 +81,9 @@ const TaskManagement = () => {
   };
 
   const handleLeadSelection = (leadId) => {
+    const stringId = String(leadId);
     setSelectedLeads((prev) => {
       const newSet = new Set(prev);
-      const stringId = String(leadId);
       if (newSet.has(stringId)) {
         newSet.delete(stringId);
       } else {
@@ -104,7 +103,6 @@ const TaskManagement = () => {
   const toggleSelectAll = () => {
     const currentLeadIds = leads.map((lead) => String(lead.id));
     const allSelected = currentLeadIds.every((id) => selectedLeads.includes(id));
-
     if (allSelected) {
       setSelectedLeads((prev) => prev.filter((id) => !currentLeadIds.includes(id)));
     } else {
@@ -123,10 +121,7 @@ const TaskManagement = () => {
       return;
     }
 
-    const executive = executives.find(
-      (exec) => String(exec.id) === selectedExecutive
-    );
-
+    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
     if (!executive || !executive.username) {
       alert("⚠️ Invalid executive selected.");
       return;
@@ -200,9 +195,7 @@ const TaskManagement = () => {
     if (successCount > 0 && failCount === 0) {
       alert("Leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
-      alert(
-        `⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console for details.`
-      );
+      alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console for details.`);
     } else {
       alert("❌ Lead assignment failed. Please check the console.");
     }
@@ -243,7 +236,7 @@ const TaskManagement = () => {
               <button className="reset" onClick={() => setSelectedLeads([])}>
                 Reset
               </button>
-              <span className="selected-counter">
+              <span style={{ marginLeft: "10px", fontWeight: "bold" }}>
                 Selected: {selectedLeads.length}
               </span>
             </div>
@@ -257,6 +250,7 @@ const TaskManagement = () => {
               <span className="source-header">Source</span>
               <span className="assign-header">Assigned To</span>
             </div>
+
             {paginatedLeads.map((lead) => (
               <div key={lead.id} className="lead-row">
                 <div className="lead-details">
@@ -297,9 +291,7 @@ const TaskManagement = () => {
                     </button>
                   </div>
                   <div className="lead-source">{lead.source}</div>
-                  <div className="lead-assign">
-                    {lead.assignedToExecutive || "Unassigned"}
-                  </div>
+                  <div className="lead-assign">{lead.assignedToExecutive || "Unassigned"}</div>
                   <div className="lead-actions">
                     <button className="edit">Edit</button>
                     <button className="delete">Delete</button>
@@ -312,23 +304,9 @@ const TaskManagement = () => {
 
             {leads.length > 0 && (
               <div className="pagination-controls">
-                <button
-                  onClick={handlePrev}
-                  disabled={currentPage === 1}
-                  aria-label="Previous page"
-                >
-                  Prev
-                </button>
-                <span className="page-indicator">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={handleNext}
-                  disabled={currentPage === totalPages || totalPages === 0}
-                  aria-label="Next page"
-                >
-                  Next
-                </button>
+                <button onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
+                <span className="page-indicator">Page {currentPage} of {totalPages}</span>
+                <button onClick={handleNext} disabled={currentPage === totalPages || totalPages === 0}>Next</button>
               </div>
             )}
           </div>
