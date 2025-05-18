@@ -211,10 +211,65 @@ position: relative;
   color: #007bff;
 }
 
+
+@media (max-width: 768px) {
+  .leads-dashboard,
+  .leads-dashboard.collapsed {
+    margin-left: 0;
+    width: 100%;
+    padding: 15px 20px;
+  }
+  
+  .leads-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .lead-details {
+    grid-template-areas:
+      "checkbox icon info"
+      "source source source"
+      "assign assign assign"
+      "actions actions actions";
+    grid-template-columns: 30px 40px 1fr;
+  }
+  
+  .lead-source { grid-area: source; }
+  .lead-assign { grid-area: assign; }
+  .lead-actions { grid-area: actions; }
+}
+
+@media (max-width: 576px) {
+  .leads-dashboard,
+  .leads-dashboard.collapsed {
+    padding: 15px;
+  }
+  
+  .lead-details {
+    grid-template-areas:
+      "checkbox icon"
+      "info info"
+      "source source"
+      "assign assign"
+      "actions actions";
+    grid-template-columns: 30px 1fr;
+  }
+  
+  .lead-actions {
+    flex-direction: column;
+  }
+  
+  .lead-actions button {
+    width: 100%;
+  }
+  
+  .pagination-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
 .edit { background-color: #007bff; color: white; border-radius: 5px; border: none; padding: 8px 12px; }
 .delete { background-color: #dc3545; color: white; border-radius: 5px; border: none; padding: 8px 12px; }
-.follow-up { background-color: #ffc107; color: black; border-radius: 5px; border: none; padding: 8px 12px; }
-.whatsapp { background-color: #28a745; color: white; border-radius: 5px; border: none; padding: 8px 12px; }
 
 /* Dark Mode */
 [data-theme="dark"] .leads-dashboard {
@@ -312,7 +367,7 @@ position: relative;
   }
   
   .lead-details {
-    grid-template-columns: 30px 40px minmax(250px, 1fr) 100px 100px auto;
+    grid-template-columns: 30px 40px minmax(150px, 1fr) 80px 80px auto;
   }
 }
 
@@ -334,66 +389,39 @@ position: relative;
   .lead-info {
     min-width: 200px;
   }
-}
-
-@media (max-width: 768px) {
   .leads-dashboard {
-    padding: 15px;
-    padding-top: 80px;
-    width: 100%;
-    max-width: 100%;
+    margin-left: 80px;
+    width: calc(100% - 80px);
+    padding: 20px 30px;
   }
   
   .header-actions {
-    grid-template-columns: 1fr;
-  }
-  
-  .source-header, .assign-header {
-    display: none;
-  }
-  
-  .leads-header {
     flex-direction: column;
-    gap: 10px;
   }
   
-  .lead-details {
-    grid-template-columns: 30px 40px 1fr;
-  }
-  
-  .lead-source, .lead-assign, .lead-actions {
-    grid-column: span 3;
-  }
-  
-  .lead-actions {
-    justify-content: center;
-    margin-top: 15px;
+  .header-actions select {
+    width: 100%;
   }
 }
 
 @media (max-width: 576px) {
-  .Logo {
-    font-size: large;
-    margin-left: 10px;
+  .leads-dashboard,
+  .leads-dashboard.collapsed {
+    padding: 15px;
   }
   
   .lead-details {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .lead-info {
-    min-width: 100%;
-  }
-  
-  .lead-source, .lead-assign {
-    grid-column: span 1;
-    justify-self: start;
+    grid-template-areas:
+      "checkbox icon"
+      "info info"
+      "source source"
+      "assign assign"
+      "actions actions";
+    grid-template-columns: 30px 1fr;
   }
   
   .lead-actions {
     flex-direction: column;
-    width: 100%;
   }
   
   .lead-actions button {
@@ -427,14 +455,6 @@ position: relative;
 .scroll-container {
   width: 100%;
   padding-left: 0; /* Remove fixed padding */
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-  .leads-dashboard {
-    margin-left: 80px;
-    width: calc(100% - 80px);
-  }
 }
 
 @media (max-width: 768px) {
