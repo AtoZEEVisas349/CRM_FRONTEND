@@ -775,14 +775,14 @@ margin-top:0px;
 
 .notification-badge {
   position: absolute;
-  top: -5px;
-  right: -8px;
+  top: -4px;
+  right: -5px;
   background: red;
   color: white;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
   border-radius: 50%;
-  padding: 2px 6px;
+  padding: 4px 8px;
   line-height: 1;
   z-index: 1;
 
@@ -790,6 +790,11 @@ margin-top:0px;
   animation: popBounce 0.4s ease;
   transform-origin: center;
   transition: transform 0.2s ease;
+}
+@keyframes popBounce {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .notification_wrapper:hover .notification_badge {
