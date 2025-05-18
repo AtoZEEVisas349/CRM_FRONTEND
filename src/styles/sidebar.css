@@ -768,19 +768,22 @@ margin-top:0px;
     transform: scale(1);
   }
 }
-.notification_wrapper {
+.notification-wrapper {
   position: relative;
   display: inline-block;
 }
-.notification_badge {
+
+.notification-badge {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: -5px;
+  right: -8px;
   background: red;
   color: white;
+  font-size: 10px;
+  font-weight: bold;
   border-radius: 50%;
   padding: 2px 6px;
-  font-size: 10px;
+  line-height: 1;
   z-index: 1;
 
   /* Animation */
@@ -788,6 +791,7 @@ margin-top:0px;
   transform-origin: center;
   transition: transform 0.2s ease;
 }
+
 .notification_wrapper:hover .notification_badge {
   transform: scale(1.1);
 }
