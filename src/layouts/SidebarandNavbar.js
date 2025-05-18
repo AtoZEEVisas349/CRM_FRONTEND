@@ -14,7 +14,7 @@ import {
   faFile, faReceipt, faGear, faArrowLeft, faCircleQuestion, faBell,
   faRobot, faCircleUser, faRightFromBracket, faMugHot, faPersonWalking,
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
-  faHeadphones, faYinYang, faStopCircle, FaPause, FaPlay
+  faHeadphones, faYinYang, faStopCircle, faPause, faPlay
 } from "@fortawesome/free-solid-svg-icons";
 
 // Break timer icons
@@ -223,7 +223,7 @@ const SidebarandNavbar = () => {
 
         <div className="compact-timer">
           <div className="timer-item">
-            <button className="timer-btn-small" onClick={handleWorkToggle}><FaPause /></button>
+            <button className="timer-btn-small" onClick={handleWorkToggle}><FontAwesomeIcon icon={faPause} /></button>
             <span className="timer-label-small">Work:</span>
             <span className="timer-box-small">{timer}</span>
           </div>
@@ -237,7 +237,7 @@ const SidebarandNavbar = () => {
 
           <div className="timer-item">
             <button className="timer-btn-small" onClick={toggleBreak}>
-              {isBreakActive ? <FaPause /> : <FaPlay />}
+              {isBreakActive ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
             </button>
             <span className="timer-label-small">Break:</span>
             <span className="timer-box-small">{breakTimer}</span>
