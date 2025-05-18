@@ -9,7 +9,7 @@ const TaskManagement = () => {
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [expandedLeads, setExpandedLeads] = useState({});
-  const { theme} = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const {
     fetchLeadsAPI,
     fetchExecutivesAPI,
@@ -22,12 +22,11 @@ const TaskManagement = () => {
     localStorage.getItem("adminSidebarExpanded") === "true" ? "expanded" : "collapsed"
   );
 
-  const leadsPerPage = 10;
+  const [leadsPerPage, setLeadsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalLeads, setTotalLeads] = useState(0); // New state for total leads from backend
-  const totalPages = Math.ceil(totalLeads / leadsPerPage); // Use totalLeads instead of leads.length
-
-  const paginatedLeads = leads; // Since backend handles pagination, leads already represent the current page
+  const [totalLeads, setTotalLeads] = useState(0);
+  const totalPages = Math.ceil(totalLeads / leadsPerPage);
+  const paginatedLeads = leads;
 
   useEffect(() => {
     const updateSidebarState = () => {
@@ -37,21 +36,20 @@ const TaskManagement = () => {
 
     window.addEventListener("sidebarToggle", updateSidebarState);
     updateSidebarState();
-
     return () => window.removeEventListener("sidebarToggle", updateSidebarState);
   }, []);
 
   useEffect(() => {
     fetchLeads();
     fetchExecutives();
-  }, [currentPage]); // Re-fetch leads when currentPage changes
+  }, [currentPage, leadsPerPage]);
 
   const fetchLeads = async () => {
     try {
-      const offset = (currentPage - 1) * leadsPerPage; // Calculate offset based on current page
-      const data = await fetchLeadsAPI(leadsPerPage, offset); // Pass limit and offset
-      setLeads(data.leads); // Set the leads for the current page
-      setTotalLeads(data.pagination.total); // Set the total leads from backend
+      const offset = (currentPage - 1) * leadsPerPage;
+      const data = await fetchLeadsAPI(leadsPerPage, offset);
+      setLeads(data.leads);
+      setTotalLeads(data.pagination.total);
     } catch (error) {
       console.error("❌ Failed to load leads:", error);
     }
@@ -74,16 +72,26 @@ const TaskManagement = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
+  const handleLeadRangeChange = (value) => {
+    setLeadsPerPage(Number(value));
+    setCurrentPage(1);
+  };
+
   const handleExecutiveChange = (event) => {
     setSelectedExecutive(event.target.value);
   };
 
   const handleLeadSelection = (leadId) => {
-    setSelectedLeads((prev) =>
-      prev.includes(String(leadId))
-        ? prev.filter((id) => id !== String(leadId))
-        : [...prev, String(leadId)]
-    );
+    setSelectedLeads((prev) => {
+      const newSet = new Set(prev);
+      const stringId = String(leadId);
+      if (newSet.has(stringId)) {
+        newSet.delete(stringId);
+      } else {
+        newSet.add(stringId);
+      }
+      return Array.from(newSet);
+    });
   };
 
   const toggleExpandLead = (leadId) => {
@@ -94,9 +102,14 @@ const TaskManagement = () => {
   };
 
   const toggleSelectAll = () => {
-    setSelectedLeads((prev) =>
-      prev.length === leads.length ? [] : leads.map((lead) => String(lead.id))
-    );
+    const currentLeadIds = leads.map((lead) => String(lead.id));
+    const allSelected = currentLeadIds.every((id) => selectedLeads.includes(id));
+
+    if (allSelected) {
+      setSelectedLeads((prev) => prev.filter((id) => !currentLeadIds.includes(id)));
+    } else {
+      setSelectedLeads((prev) => Array.from(new Set([...prev, ...currentLeadIds])));
+    }
   };
 
   const assignLeads = async () => {
@@ -104,35 +117,35 @@ const TaskManagement = () => {
       alert("⚠️ Please select an executive.");
       return;
     }
-  
+
     if (selectedLeads.length === 0) {
       alert("⚠️ Please select at least one lead.");
       return;
     }
-  
+
     const executive = executives.find(
       (exec) => String(exec.id) === selectedExecutive
     );
-  
+
     if (!executive || !executive.username) {
       alert("⚠️ Invalid executive selected.");
       return;
     }
-  
+
     let successCount = 0;
     let failCount = 0;
     const updatedLeads = [...leads];
-  
+
     for (const leadId of selectedLeads) {
       const lead = leads.find((l) => String(l.id) === leadId);
       if (!lead) {
         failCount++;
         continue;
       }
-  
+
       const clientLeadId = lead.clientLeadId || lead.id;
       const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
-  
+
       const leadPayload = {
         name: lead.name,
         email: lead.email || "default@example.com",
@@ -141,20 +154,18 @@ const TaskManagement = () => {
         clientLeadId: Number(clientLeadId),
         assignedToExecutive: executive.username,
       };
-  
+
       try {
         const createdLead = await createLeadAPI(leadPayload);
-  
+
         if (!createdLead?.id) {
           console.error("❌ Lead creation failed:", createdLead);
           failCount++;
           continue;
         }
-  
-        // ✅ Assign executive
+
         await assignLeadAPI(Number(leadId), executive.username);
-  
-        // ✅ Create fresh lead record
+
         const freshLeadPayload = {
           leadId: createdLead.id,
           name: createdLead.name,
@@ -164,10 +175,9 @@ const TaskManagement = () => {
           assignedToId: executive.id,
           assignDate: new Date().toISOString(),
         };
-  
+
         await createFreshLeadAPI(freshLeadPayload);
-  
-        // ✅ All backend calls succeeded — now update local UI state
+
         const leadIndex = updatedLeads.findIndex((l) => String(l.id) === leadId);
         if (leadIndex !== -1) {
           updatedLeads[leadIndex] = {
@@ -175,20 +185,18 @@ const TaskManagement = () => {
             assignedToExecutive: executive.username,
           };
         }
-  
+
         successCount++;
       } catch (err) {
         console.error(`❌ Error processing lead ID ${leadId}:`, err);
         failCount++;
       }
     }
-  
-    // ✅ Only apply updates to state after all processing
+
     setLeads(updatedLeads);
     setSelectedLeads([]);
     setSelectedExecutive("");
-  
-    // Notify user
+
     if (successCount > 0 && failCount === 0) {
       alert("Leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
@@ -198,7 +206,7 @@ const TaskManagement = () => {
     } else {
       alert("❌ Lead assignment failed. Please check the console.");
     }
-  };  
+  };
 
   return (
     <>
@@ -218,7 +226,12 @@ const TaskManagement = () => {
 
             <select><option>Fresh</option></select>
             <select><option>All</option></select>
-            <select><option>Default Sorting</option></select>
+            <select value={leadsPerPage} onChange={(e) => handleLeadRangeChange(e.target.value)}>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
 
             <div className="header-sort-filter">
               <button className="Selection-btn" onClick={toggleSelectAll}>
@@ -230,6 +243,9 @@ const TaskManagement = () => {
               <button className="reset" onClick={() => setSelectedLeads([])}>
                 Reset
               </button>
+              <span className="selected-counter">
+                Selected: {selectedLeads.length}
+              </span>
             </div>
           </div>
         </div>
@@ -237,7 +253,7 @@ const TaskManagement = () => {
         <div className="main-content">
           <div className="leads-table">
             <div className="leads-header">
-              <span>All customers ({totalLeads})</span> {/* Update to show totalLeads */}
+              <span>All customers ({totalLeads})</span>
               <span className="source-header">Source</span>
               <span className="assign-header">Assigned To</span>
             </div>
@@ -322,4 +338,4 @@ const TaskManagement = () => {
   );
 };
 
-export default TaskManagement;
+export default TaskManagement;
