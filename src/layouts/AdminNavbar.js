@@ -20,8 +20,7 @@ function AdminNavbar() {
   const [unreadLeadCount, setUnreadLeadCount] = useState(0);
   const localStorageUser = JSON.parse(localStorage.getItem("user"));
 
-  const userIconRef = useRef(null);
-  const popoverRef = useRef(null);
+  const hoverTimeout = useRef(null);
 
   // Filter unread lead notifications
   useEffect(() => {
@@ -39,28 +38,18 @@ function AdminNavbar() {
     setUnreadLeadCount(unreadLeads.length);
   }, [notifications, localStorageUser]);
 
-  // Hide popover on outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(event.target) &&
-        userIconRef.current &&
-        !userIconRef.current.contains(event.target)
-      ) {
-        setShowPopover(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const togglePopover = async () => {
-    setShowPopover((prev) => !prev);
+  const handleMouseEnter = async () => {
+    clearTimeout(hoverTimeout.current);
+    setShowPopover(true);
     if (!adminProfile && !loading) {
       await fetchAdmin();
     }
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeout.current = setTimeout(() => {
+      setShowPopover(false);
+    }, 200); // delay to allow hover on popover
   };
 
   const handleLogout = async () => {
@@ -92,7 +81,7 @@ function AdminNavbar() {
         <FaComment className="admin-logo_name icon-hover-zoom" />
 
         {/* Notification Icon */}
-        <div className="notification_wrapper">
+        <div className="notification_wrapper" style={{ position: 'relative' }}>
           <FontAwesomeIcon
             className="navbar_icon"
             icon={faBell}
@@ -105,15 +94,24 @@ function AdminNavbar() {
           )}
         </div>
 
-        {/* User Icon and Popover */}
-        <div className="user-icon-wrapper" ref={userIconRef}>
+        {/* User Icon and Hover Popover */}
+        <div
+          className="user-icon-wrapper"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{ position: "relative", display: "inline-block" }}
+        >
           <FaUser
             className="admin-logo_name icon-hover-zoom"
-            onClick={togglePopover}
             style={{ cursor: 'pointer' }}
           />
           {showPopover && (
-            <div className="admin_user_popover" ref={popoverRef}>
+            <div
+              className="admin_user_popover"
+              onMouseEnter={() => clearTimeout(hoverTimeout.current)}
+              onMouseLeave={handleMouseLeave}
+              style={{ position: "absolute", top: "100%", right: 0 }}
+            >
               {loading ? (
                 <div>Loading...</div>
               ) : (
