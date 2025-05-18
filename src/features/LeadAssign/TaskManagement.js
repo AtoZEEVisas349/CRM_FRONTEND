@@ -287,8 +287,7 @@ const TaskManagement = () => {
                   <div className="lead-actions">
                     <button className="edit">Edit</button>
                     <button className="delete">Delete</button>
-                    <button className="follow-up">Follow Up</button>
-                    <button className="whatsapp">WhatsApp Connect</button>
+                    
                   </div>
                 </div>
               </div>
