@@ -4,12 +4,15 @@ import { ThemeContext } from "../../features/admin/ThemeContext";
 import SidebarToggle from "../admin/SidebarToggle";
 
 const TaskManagement = () => {
-  const [leads, setLeads] = useState([]);
+  const [fetchedLeads, setFetchedLeads] = useState([]);
   const [executives, setExecutives] = useState([]);
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [expandedLeads, setExpandedLeads] = useState({});
+  const [leadsPerPageLimit, setLeadsPerPageLimit] = useState(10); // how many leads to load total
+  const [currentPage, setCurrentPage] = useState(1); // for pagination view
   const { theme } = useContext(ThemeContext);
+
   const {
     fetchLeadsAPI,
     fetchExecutivesAPI,
@@ -18,15 +21,17 @@ const TaskManagement = () => {
     createLeadAPI,
   } = useApi();
 
+  const leadsPerPageDisplay = 10;
+  const totalLeads = fetchedLeads.length;
+  const totalPages = Math.ceil(totalLeads / leadsPerPageDisplay);
+  const paginatedLeads = fetchedLeads.slice(
+    (currentPage - 1) * leadsPerPageDisplay,
+    currentPage * leadsPerPageDisplay
+  );
+
   const [sidebarState, setSidebarState] = useState(
     localStorage.getItem("adminSidebarExpanded") === "true" ? "expanded" : "collapsed"
   );
-
-  const [leadsPerPage, setLeadsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalLeads, setTotalLeads] = useState(0);
-  const totalPages = Math.ceil(totalLeads / leadsPerPage);
-  const paginatedLeads = leads;
 
   useEffect(() => {
     const updateSidebarState = () => {
@@ -41,14 +46,13 @@ const TaskManagement = () => {
   useEffect(() => {
     fetchLeads();
     fetchExecutives();
-  }, [currentPage, leadsPerPage]);
+  }, [leadsPerPageLimit]);
 
   const fetchLeads = async () => {
     try {
-      const offset = (currentPage - 1) * leadsPerPage;
-      const data = await fetchLeadsAPI(leadsPerPage, offset);
-      setLeads(data.leads);
-      setTotalLeads(data.pagination.total);
+      const data = await fetchLeadsAPI(leadsPerPageLimit, 0); // load entire chunk
+      setFetchedLeads(data.leads);
+      setCurrentPage(1);
     } catch (error) {
       console.error("❌ Failed to load leads:", error);
     }
@@ -71,9 +75,10 @@ const TaskManagement = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const handleLeadRangeChange = (value) => {
-    setLeadsPerPage(Number(value));
+  const handleLeadLimitChange = (value) => {
+    setLeadsPerPageLimit(Number(value));
     setCurrentPage(1);
+    setSelectedLeads([]); // optionally reset selection
   };
 
   const handleExecutiveChange = (event) => {
@@ -81,16 +86,27 @@ const TaskManagement = () => {
   };
 
   const handleLeadSelection = (leadId) => {
-    const stringId = String(leadId);
+    const id = String(leadId);
     setSelectedLeads((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(stringId)) {
-        newSet.delete(stringId);
+      const set = new Set(prev);
+      if (set.has(id)) {
+        set.delete(id);
       } else {
-        newSet.add(stringId);
+        set.add(id);
       }
-      return Array.from(newSet);
+      return Array.from(set);
     });
+  };
+
+  const toggleSelectAll = () => {
+    const currentPageIds = paginatedLeads.map((l) => String(l.id));
+    const allSelected = currentPageIds.every((id) => selectedLeads.includes(id));
+
+    if (allSelected) {
+      setSelectedLeads((prev) => prev.filter((id) => !currentPageIds.includes(id)));
+    } else {
+      setSelectedLeads((prev) => Array.from(new Set([...prev, ...currentPageIds])));
+    }
   };
 
   const toggleExpandLead = (leadId) => {
@@ -100,68 +116,42 @@ const TaskManagement = () => {
     }));
   };
 
-  const toggleSelectAll = () => {
-    const currentLeadIds = leads.map((lead) => String(lead.id));
-    const allSelected = currentLeadIds.every((id) => selectedLeads.includes(id));
-    if (allSelected) {
-      setSelectedLeads((prev) => prev.filter((id) => !currentLeadIds.includes(id)));
-    } else {
-      setSelectedLeads((prev) => Array.from(new Set([...prev, ...currentLeadIds])));
-    }
-  };
-
   const assignLeads = async () => {
-    if (!selectedExecutive) {
-      alert("⚠️ Please select an executive.");
-      return;
-    }
+    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
+    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
 
-    if (selectedLeads.length === 0) {
-      alert("⚠️ Please select at least one lead.");
-      return;
-    }
+    const executive = executives.find((e) => String(e.id) === selectedExecutive);
+    if (!executive?.username) return alert("⚠️ Invalid executive selected.");
 
-    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-    if (!executive || !executive.username) {
-      alert("⚠️ Invalid executive selected.");
-      return;
-    }
-
-    let successCount = 0;
-    let failCount = 0;
-    const updatedLeads = [...leads];
+    let success = 0;
+    let fail = 0;
 
     for (const leadId of selectedLeads) {
-      const lead = leads.find((l) => String(l.id) === leadId);
+      const lead = fetchedLeads.find((l) => String(l.id) === leadId);
       if (!lead) {
-        failCount++;
+        fail++;
         continue;
       }
 
       const clientLeadId = lead.clientLeadId || lead.id;
       const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
 
-      const leadPayload = {
+      const payload = {
         name: lead.name,
         email: lead.email || "default@example.com",
-        phone: phone,
+        phone,
         source: lead.source || "Unknown",
         clientLeadId: Number(clientLeadId),
         assignedToExecutive: executive.username,
       };
 
       try {
-        const createdLead = await createLeadAPI(leadPayload);
-
-        if (!createdLead?.id) {
-          console.error("❌ Lead creation failed:", createdLead);
-          failCount++;
-          continue;
-        }
+        const createdLead = await createLeadAPI(payload);
+        if (!createdLead?.id) throw new Error("Lead not created");
 
         await assignLeadAPI(Number(leadId), executive.username);
 
-        const freshLeadPayload = {
+        await createFreshLeadAPI({
           leadId: createdLead.id,
           name: createdLead.name,
           email: createdLead.email,
@@ -169,36 +159,22 @@ const TaskManagement = () => {
           assignedTo: executive.username,
           assignedToId: executive.id,
           assignDate: new Date().toISOString(),
-        };
+        });
 
-        await createFreshLeadAPI(freshLeadPayload);
-
-        const leadIndex = updatedLeads.findIndex((l) => String(l.id) === leadId);
-        if (leadIndex !== -1) {
-          updatedLeads[leadIndex] = {
-            ...updatedLeads[leadIndex],
-            assignedToExecutive: executive.username,
-          };
-        }
-
-        successCount++;
+        success++;
       } catch (err) {
-        console.error(`❌ Error processing lead ID ${leadId}:`, err);
-        failCount++;
+        console.error(`❌ Error assigning lead ${leadId}:`, err);
+        fail++;
       }
     }
 
-    setLeads(updatedLeads);
     setSelectedLeads([]);
     setSelectedExecutive("");
+    fetchLeads(); // reload updated leads
 
-    if (successCount > 0 && failCount === 0) {
-      alert("Leads assigned successfully.");
-    } else if (successCount > 0 && failCount > 0) {
-      alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console for details.`);
-    } else {
-      alert("❌ Lead assignment failed. Please check the console.");
-    }
+    if (success && !fail) alert("✅ Leads assigned successfully.");
+    else if (success && fail) alert(`⚠️ ${success} assigned, ${fail} failed.`);
+    else alert("❌ Assignment failed.");
   };
 
   return (
@@ -219,7 +195,7 @@ const TaskManagement = () => {
 
             <select><option>Fresh</option></select>
             <select><option>All</option></select>
-            <select value={leadsPerPage} onChange={(e) => handleLeadRangeChange(e.target.value)}>
+            <select value={leadsPerPageLimit} onChange={(e) => handleLeadLimitChange(e.target.value)}>
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="50">50</option>
@@ -227,15 +203,9 @@ const TaskManagement = () => {
             </select>
 
             <div className="header-sort-filter">
-              <button className="Selection-btn" onClick={toggleSelectAll}>
-                Select/Unselect All Leads
-              </button>
-              <button className="assign-btn" onClick={assignLeads}>
-                Assign
-              </button>
-              <button className="reset" onClick={() => setSelectedLeads([])}>
-                Reset
-              </button>
+              <button onClick={toggleSelectAll}>Select/Unselect All Leads</button>
+              <button onClick={assignLeads}>Assign</button>
+              <button onClick={() => setSelectedLeads([])}>Reset</button>
               <span style={{ marginLeft: "10px", fontWeight: "bold" }}>
                 Selected: {selectedLeads.length}
               </span>
@@ -256,7 +226,6 @@ const TaskManagement = () => {
                 <div className="lead-details">
                   <input
                     type="checkbox"
-                    className="lead-checkbox"
                     checked={selectedLeads.includes(String(lead.id))}
                     onChange={() => handleLeadSelection(lead.id)}
                   />
@@ -277,7 +246,6 @@ const TaskManagement = () => {
                       </>
                     )}
                     <button
-                      className="see-more-btn"
                       onClick={() => toggleExpandLead(lead.id)}
                       style={{
                         marginTop: "5px",
@@ -302,11 +270,11 @@ const TaskManagement = () => {
               </div>
             ))}
 
-            {leads.length > 0 && (
+            {totalPages > 1 && (
               <div className="pagination-controls">
                 <button onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
                 <span className="page-indicator">Page {currentPage} of {totalPages}</span>
-                <button onClick={handleNext} disabled={currentPage === totalPages || totalPages === 0}>Next</button>
+                <button onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
               </div>
             )}
           </div>
