@@ -1,21 +1,44 @@
-import React, { createContext, useContext, useState,useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   createCustomerStages,
   getCustomerStages,
   updateCustomerStages,
   profileSettings,
   getprofileSettings,
-  updateProfileSettings
+  updateProfileSettings,
 } from "../services/processService";
 
+// 1. Create Context
 const ProcessServiceContext = createContext();
 
+// 2. Provider Component
 export const ProcessServiceProvider = ({ children }) => {
+  // -----------------------
+  // Stage Management State
+  // -----------------------
   const [stages, setStages] = useState(null);
   const [stageLoading, setStageLoading] = useState(false);
   const [stageError, setStageError] = useState(null);
 
-  /* --------- Create --------- */
+  // -----------------------
+  // Profile Settings State
+  // -----------------------
+  const [profiles, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [response, setResponse] = useState(null);
+
+  // -----------------------
+  // Effects
+  // -----------------------
+  useEffect(() => {
+    getProfile();
+    console.log(profiles);
+  }, []);
+
+  // -----------------------
+  // Stage API Handlers
+  // -----------------------
   const handleCreateStages = async (data) => {
     setStageLoading(true);
     setStageError(null);
@@ -31,7 +54,6 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  /* --------- Update --------- */
   const handleUpdateStages = async (data) => {
     setStageLoading(true);
     setStageError(null);
@@ -47,7 +69,6 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  /* --------- Get --------- */
   const handleGetStages = async () => {
     setStageLoading(true);
     setStageError(null);
@@ -63,7 +84,6 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  /* --------- Upsert --------- */
   const handleUpsertStages = async (data) => {
     setStageLoading(true);
     setStageError(null);
@@ -89,22 +109,13 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-
-  const [loading, setLoading] = useState(false);  // Loading state
-const [profiles, setProfile] = useState();
-  const [error, setError] = useState(null);
-    const [response, setResponse] = useState(null);
-  // Optional: Load user from localStorage or cookie on refresh
-
-  useEffect(() => {
-    getprofile();
-    console.log(profiles)
-  }, []);
-
-   const profile = async (data) => {
+  // -----------------------
+  // Profile Settings Handlers
+  // -----------------------
+  const profile = async (data) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const result = await profileSettings(data);
       setResponse(result);
       return result;
@@ -116,26 +127,24 @@ const [profiles, setProfile] = useState();
     }
   };
 
-const getprofile = async () => {
+  const getProfile = async () => {
     setLoading(true);
-    setError(null); // ✅ Reset any previous error
-  
+    setError(null);
     try {
       const res = await getprofileSettings();
       setProfile(res);
     } catch (err) {
-      setError(err?.error || "Failed to fetch companies");
+      setError(err?.error || "Failed to fetch profile settings");
     } finally {
       setLoading(false);
     }
-  }; 
- 
-  const handleProfileSettings = async (data) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setResponse(null);
+  };
 
+  const handleProfileSettings = async (data) => {
+    setLoading(true);
+    setError(null);
+    setResponse(null);
+    try {
       const result = await updateProfileSettings(data);
       setResponse(result);
       return result;
@@ -146,20 +155,28 @@ const getprofile = async () => {
       setLoading(false);
     }
   };
+
+  // -----------------------
+  // Provider Return
+  // -----------------------
   return (
     <ProcessServiceContext.Provider
       value={{
+        // Stages
         stages,
         stageLoading,
         stageError,
         handleCreateStages,
         handleUpdateStages,
         handleGetStages,
-        handleUpsertStages, 
-        profile,getprofile,
+        handleUpsertStages,
+
+        // Profiles
+        profile,
+        getProfile,
         handleProfileSettings,
         profiles,
-        setProfile
+        setProfile,
       }}
     >
       {children}
@@ -167,4 +184,5 @@ const getprofile = async () => {
   );
 };
 
+// 3. Custom Hook
 export const useProcessService = () => useContext(ProcessServiceContext);

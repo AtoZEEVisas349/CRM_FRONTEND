@@ -1,45 +1,60 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, signupUser,logoutUser } from "../services/processAuth";
+import {
+  loginUser,
+  signupUser,
+  logoutUser,
+} from "../services/processAuth";
 
+// 1. Create Context
 const ProcessContext = createContext();
 
+// 2. Provider Component
 export const ProcessProvider = ({ children }) => {
   const [user, setUser] = useState(null);         // Logged in user info
   const [loading, setLoading] = useState(false);  // Loading state
 
-  // Optional: Load user from localStorage or cookie on refresh
+  // ---------------------------------------
+  // Load session from localStorage on refresh
+  // ---------------------------------------
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
+  // ---------------------------------------
+  // Login Handler
+  // ---------------------------------------
   const login = async (email, password) => {
     setLoading(true);
     try {
       const data = await loginUser(email, password);
-  
-      // Combine user info with user type
+
       const userPayload = {
         ...(data.customer || data.person),
-        type: data.type, // ✅ Ensure type is saved for UI checks
+        type: data.type, // ✅ Important for type-based UI control
       };
-  
+
       setUser(userPayload);
-  
+
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-  
+
       localStorage.setItem("user", JSON.stringify(userPayload));
-  
+
       return data;
     } catch (error) {
       throw error;
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
+  // ---------------------------------------
+  // Signup Handler
+  // ---------------------------------------
   const signup = async (fullName, email, password, userType) => {
     setLoading(true);
     try {
@@ -52,6 +67,9 @@ export const ProcessProvider = ({ children }) => {
     }
   };
 
+  // ---------------------------------------
+  // Logout Handler
+  // ---------------------------------------
   const logout = async () => {
     try {
       const userType = user?.type || "customer";
@@ -64,7 +82,10 @@ export const ProcessProvider = ({ children }) => {
       localStorage.removeItem("token");
     }
   };
-  
+
+  // ---------------------------------------
+  // Provider Return
+  // ---------------------------------------
   return (
     <ProcessContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
@@ -72,4 +93,5 @@ export const ProcessProvider = ({ children }) => {
   );
 };
 
+// 3. Custom Hook
 export const useProcess = () => useContext(ProcessContext);

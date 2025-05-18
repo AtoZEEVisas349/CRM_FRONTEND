@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { createCompany, getCompaniesForMaster } from "../services/companyService";
+import {
+  createCompany,
+  getCompaniesForMaster,
+} from "../services/companyService";
 
 // 1. Create Context
 const CompanyContext = createContext();
@@ -7,22 +10,26 @@ const CompanyContext = createContext();
 // 2. Custom Hook
 export const useCompany = () => useContext(CompanyContext);
 
-// 3. Provider
+// 3. Provider Component
 export const CompanyProvider = ({ children }) => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch all companies on load (optional — or call manually when needed)
+  // -------------------------
+  // Load all companies on mount
+  // -------------------------
   useEffect(() => {
     fetchCompanies();
   }, []);
 
-  // Fetch companies
+  // -------------------------
+  // Fetch all companies
+  // -------------------------
   const fetchCompanies = async () => {
     setLoading(true);
-    setError(null); // ✅ Reset any previous error
-  
+    setError(null);
+
     try {
       const res = await getCompaniesForMaster();
       setCompanies(res.companies || []);
@@ -31,23 +38,30 @@ export const CompanyProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
-  // Create company
+  // -------------------------
+  // Add a new company
+  // -------------------------
   const addCompany = async (companyData) => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
       const res = await createCompany(companyData);
       setCompanies((prev) => [...prev, res.company]);
       return res;
     } catch (err) {
-      setError(err.error || "Failed to create company");
+      setError(err?.error || "Failed to create company");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // -------------------------
+  // Provider Return
+  // -------------------------
   return (
     <CompanyContext.Provider
       value={{

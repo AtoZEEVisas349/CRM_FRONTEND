@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   recordStartWork,
   recordStopWork,
@@ -8,16 +8,16 @@ import {
   endCall,
   getActivityStatus,
   leadtrackVisit,
-  sendEmail
+  sendEmail,
 } from '../services/executiveService';
 
-// Create Context
+// 1. Create Context
 const ExecutiveActivityContext = createContext();
 
-// Hook for easier usage
+// 2. Hook for consuming context
 export const useExecutiveActivity = () => useContext(ExecutiveActivityContext);
 
-// Provider
+// 3. Provider Component
 export const ExecutiveActivityProvider = ({ children }) => {
   const [status, setStatus] = useState({
     workActive: false,
@@ -26,8 +26,11 @@ export const ExecutiveActivityProvider = ({ children }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [startTimeData, setStartTimeData] = useState(null);
 
-  // Fetch initial status on mount
+  // ---------------------------------------
+  // Effect: Fetch current activity status
+  // ---------------------------------------
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -47,31 +50,43 @@ export const ExecutiveActivityProvider = ({ children }) => {
 
     fetchStatus();
   }, []);
-  useEffect(() => {
-      handleStartWork(); 
-     const handleBeforeUnload = async () => {
-      await handleStopWork();
-      };
-    
-    }, []);
 
-  // Action handlers
-  const[startTimeData,setStartTimeData]=useState();
+  // ---------------------------------------
+  // Effect: Start work automatically on mount
+  // ---------------------------------------
+  useEffect(() => {
+    handleStartWork();
+
+    const handleBeforeUnload = async () => {
+      await handleStopWork();
+    };
+
+    // You could consider adding window event if needed
+    // window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      // Cleanup logic (optional)
+      // window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  // ---------------------------------------
+  // Work Session Handlers
+  // ---------------------------------------
   const handleStartWork = async () => {
     try {
       setLoading(true);
       const response = await recordStartWork();
-      console.log(response.activity,"r")
-      setStartTimeData(response.activity,"r")
-      
+
+      setStartTimeData(response.activity);
       if (response?.activity?.workStartTime) {
         localStorage.setItem(
           'workStartTime',
-          new Date(response?.activity?.workStartTime).toISOString()
+          new Date(response.activity.workStartTime).toISOString()
         );
       }
-  
-      setStatus(prev => ({ ...prev, workActive: true }));
+
+      setStatus((prev) => ({ ...prev, workActive: true }));
     } catch (error) {
       console.error("❌ Error recording start work:", error.message);
     } finally {
@@ -85,20 +100,23 @@ export const ExecutiveActivityProvider = ({ children }) => {
       await recordStopWork();
       setStatus({ workActive: false, breakActive: false, callActive: false });
     } catch (error) {
-      console.error(error.message);
+      console.error("❌ Error stopping work:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // ---------------------------------------
+  // Break Handlers
+  // ---------------------------------------
   const handleStartBreak = async () => {
     try {
       setLoading(true);
-      const response=await recordStartBreak();
-      console.log(response?.activity?.breakStartTime)
-      setStatus(prev => ({ ...prev, breakActive: true }));
+      const response = await recordStartBreak();
+      console.log("Break started:", response?.activity?.breakStartTime);
+      setStatus((prev) => ({ ...prev, breakActive: true }));
     } catch (error) {
-      console.error(error.message);
+      console.error("❌ Error starting break:", error.message);
     } finally {
       setLoading(false);
     }
@@ -108,23 +126,26 @@ export const ExecutiveActivityProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await recordStopBreak();
-      console.log(data?.breakDuration)
-      setStatus(prev => ({ ...prev, breakActive: false }));
+      console.log("Break duration:", data?.breakDuration);
+      setStatus((prev) => ({ ...prev, breakActive: false }));
       return data.breakDuration;
     } catch (error) {
-      console.error(error.message);
+      console.error("❌ Error stopping break:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // ---------------------------------------
+  // Call Activity Handlers
+  // ---------------------------------------
   const handleStartCall = async (leadId) => {
     try {
       setLoading(true);
       await startCall(leadId);
-      setStatus(prev => ({ ...prev, callActive: true }));
+      setStatus((prev) => ({ ...prev, callActive: true }));
     } catch (error) {
-      console.error(error.message);
+      console.error("❌ Error starting call:", error.message);
     } finally {
       setLoading(false);
     }
@@ -134,28 +155,35 @@ export const ExecutiveActivityProvider = ({ children }) => {
     try {
       setLoading(true);
       await endCall(leadId);
-      setStatus(prev => ({ ...prev, callActive: false }));
+      setStatus((prev) => ({ ...prev, callActive: false }));
     } catch (error) {
-      console.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const leadtrack = async (executiveId) => {
-    try {
-      setLoading(true);
-      if (executiveId) {
-        await leadtrackVisit(executiveId);
-      } else {
-        console.error('ExecutiveId is missing.');
-      }
-    } catch (error) {
-      console.error(error.message);
+      console.error("❌ Error ending call:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // ---------------------------------------
+  // Lead Visit Tracking
+  // ---------------------------------------
+  const leadtrack = async (executiveId) => {
+    try {
+      setLoading(true);
+      if (!executiveId) {
+        console.error("❌ Executive ID is missing.");
+        return;
+      }
+      await leadtrackVisit(executiveId);
+    } catch (error) {
+      console.error("❌ Error in lead tracking:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------------------------------
+  // Email Sending Handler
+  // ---------------------------------------
   const handleSendEmail = async ({
     templateId,
     executiveName,
@@ -164,22 +192,30 @@ export const ExecutiveActivityProvider = ({ children }) => {
     emailBody,
     emailSubject,
   }) => {
-    return await sendEmail({
-      templateId,
-      executiveName,
-      executiveEmail,
-      clientEmail,
-      emailBody,
-      emailSubject,
-    });
+    try {
+      return await sendEmail({
+        templateId,
+        executiveName,
+        executiveEmail,
+        clientEmail,
+        emailBody,
+        emailSubject,
+      });
+    } catch (error) {
+      console.error("❌ Email sending failed:", error.message);
+      throw error;
+    }
   };
 
+  // ---------------------------------------
+  // Provider Return
+  // ---------------------------------------
   return (
     <ExecutiveActivityContext.Provider
       value={{
         status,
         loading,
-        setStatus,  
+        setStatus,
         startTimeData,
         setStartTimeData,
         handleStartWork,
@@ -189,11 +225,10 @@ export const ExecutiveActivityProvider = ({ children }) => {
         handleStartCall,
         handleEndCall,
         handleSendEmail,
-        sendEmail,
-        leadtrack
+        leadtrack,
       }}
     >
       {children}
     </ExecutiveActivityContext.Provider>
-  );
+  );
 };

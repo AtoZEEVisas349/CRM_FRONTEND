@@ -12,20 +12,21 @@ function AdminNotification() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+
   const user = JSON.parse(localStorage.getItem("user"));
 
+  // ------------------------------
+  // Effect: Fetch notifications
+  // ------------------------------
   useEffect(() => {
-    console.log(user.role);
-
-    if (user) {
-      fetchNotifications({ userId: user.id, userRole: user.role }); // Pass both id and role
+    if (user?.id && user?.role) {
+      fetchNotifications({ userId: user.id, userRole: user.role });
     }
   }, [fetchNotifications]);
 
-  const handleMarkAsRead = (notificationId) => {
-    markNotificationReadAPI(notificationId);
-  };
-
+  // ------------------------------
+  // Pagination Calculations
+  // ------------------------------
   const totalPages = Math.ceil(notifications.length / itemsPerPage);
   const currentNotifications = notifications.slice(
     (currentPage - 1) * itemsPerPage,
@@ -33,13 +34,23 @@ function AdminNotification() {
   );
 
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
   };
 
+  // ------------------------------
+  // Mark notification as read
+  // ------------------------------
+  const handleMarkAsRead = (notificationId) => {
+    markNotificationReadAPI(notificationId);
+  };
+
+  // ------------------------------
+  // Render
+  // ------------------------------
   return (
     <div className="notification-container">
       <h2>Notifications</h2>
@@ -49,39 +60,41 @@ function AdminNotification() {
       ) : notifications.length === 0 ? (
         <p className="empty-msg">No notifications</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-<ul className="notification-list">
-  {currentNotifications.map((n, index) => (
-    <li
-      className={`notification-card ${n.is_read ? "read" : ""}`}
-      key={n.id}
-    >
-      <div className="notification-header">
-        <strong>{n.message.split(":")[0].trim()}</strong>
-        <div className="notification-meta">
-          <span className="notification-time">
-            {new Date(n.createdAt).toLocaleTimeString()}
-          </span>
-          <label className="read-checkbox">
-            <input
-              type="checkbox"
-              checked={n.is_read}
-              disabled={n.is_read}
-              onChange={() => handleMarkAsRead(n.id)}
-            />
-            Mark as read
-          </label>
-        </div>
-      </div>
-      <p className="notification-message">
-        Executive {n.userId} copied {n.message.split(":")[1].trim()}
-      </p>
-    </li>
-  ))}
-</ul>
+        <div className="notification-content">
+          <ul className="notification-list">
+            {currentNotifications.map((n) => {
+              const [title, messageBody] = n.message.split(":");
+              return (
+                <li
+                  key={n.id}
+                  className={`notification-card ${n.is_read ? "read" : ""}`}
+                >
+                  <div className="notification-header">
+                    <strong>{title?.trim()}</strong>
+                    <div className="notification-meta">
+                      <span className="notification-time">
+                        {new Date(n.createdAt).toLocaleTimeString()}
+                      </span>
+                      <label className="read-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={n.is_read}
+                          disabled={n.is_read}
+                          onChange={() => handleMarkAsRead(n.id)}
+                        />
+                        Mark as read
+                      </label>
+                    </div>
+                  </div>
+                  <p className="notification-message">
+                    Executive {n.userId} copied {messageBody?.trim()}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
 
-
-          {/* Pagination pinned at the bottom */}
+          {/* Pagination */}
           <div className="pagination">
             <button
               className="pagination-btn"

@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { uploadFile } from "../../services/fileUpload";
 import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
 import SidebarToggle from "./SidebarToggle";
@@ -11,19 +10,24 @@ const AssignTask = () => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const { theme } = useContext(ThemeContext);
   const { uploadFileAPI } = useApi();
 
   const isSidebarExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
 
+  // ----------------------------
+  // File Change Handler
+  // ----------------------------
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
+    const validTypes = [
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/csv",
+    ];
+
     if (selectedFile) {
-      const validTypes = [
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "text/csv",
-      ];
       if (validTypes.includes(selectedFile.type)) {
         setFile(selectedFile);
         setError("");
@@ -34,6 +38,9 @@ const AssignTask = () => {
     }
   };
 
+  // ----------------------------
+  // Upload Handler
+  // ----------------------------
   const handleUpload = async () => {
     if (!file) {
       setError("Please select a file first");
@@ -65,13 +72,18 @@ const AssignTask = () => {
       data-theme={theme}
     >
       <SidebarToggle />
+
       <div className="assign-task-content">
         <div className="background-text">AtoZeeVisas</div>
+
         <div className="assign-task-glass-card">
           <h2>Upload Task File</h2>
+
+          {/* Status Messages */}
           {error && <p className="error-message">{error}</p>}
           {success && <p className="success-message">{success}</p>}
 
+          {/* File Upload Box */}
           <div className="upload-box">
             <input
               id="file-upload"
