@@ -11,10 +11,19 @@ import { FaPlay, FaClock, FaMoon, FaSun,FaPause } from "react-icons/fa";
 import { useExecutiveActivity } from "../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHouse, faUsers, faUserPlus, faFile, faReceipt, faGear, faList,
-  faCircleXmark, faBars, faCircleQuestion, faBell, faCircleUser,
-  faRobot, faRightFromBracket, faClock,faArrowLeft
+  faMugHot,
+  faPersonWalking,
+  faBed,
+  faCouch,
+  faUmbrellaBeach,
+  faPeace,
+  faBookOpen,
+  faMusic,
+  faHeadphones,
+  faYinYang,
+  faStopCircle
 } from "@fortawesome/free-solid-svg-icons";
+
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "../context/breakTimerContext";
 
