@@ -67,6 +67,12 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
+              <Link to="/executiveform" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+                <span className="sidebar-label">Create Executive</span>
+              </Link>
+            </li>
+            <li>
               <Link to="/monitoring" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faUserGear} />
                 <span className="sidebar-label">Monitoring</span>
