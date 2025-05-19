@@ -272,7 +272,7 @@ const SidebarandNavbar = () => {
             ) : (
               <>
                 <div className="user_details">
-                  <div className="user_avatar">{executiveInfo.name?.charAt(0)}</div>
+                  <div className="user_avatar">{executiveInfo.username?.charAt(0)}</div>
                   <div>
                     <p className="user_name">{executiveInfo.username}</p>
                     <p className="user_role">{executiveInfo.role}</p>
