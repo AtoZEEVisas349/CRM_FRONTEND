@@ -216,12 +216,22 @@ const TaskManagement = () => {
               ))}
             </select>
 
-            <select>
-              <option>Fresh</option>
-            </select>
-            <select>
-              <option>All</option>
-            </select>
+            {/* Fresh Type Dropdown */}
+<select className="lead-type-dropdown">
+  <option value="">-- Fresh Type --</option>
+  <option value="hot">Hot</option>
+  <option value="warm">Warm</option>
+  <option value="cold">Cold</option>
+</select>
+
+{/* Lead Status Dropdown */}
+<select className="lead-status-dropdown">
+  <option value="">-- Lead Status --</option>
+  <option value="followup">Follow-Up</option>
+  <option value="converted">Converted</option>
+  <option value="closed">Closed</option>
+</select>
+
 
             <select value={selectedRange} onChange={handleRangeChange}>
               <option value="">Default Sorting</option>
