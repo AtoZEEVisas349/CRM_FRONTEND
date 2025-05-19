@@ -11,8 +11,8 @@ function convertTo24HrFormat(timeStr) {
   return `${hours}:${minutes}:00`; // valid for MySQL TIME
 }
 
-const navigate = useNavigate();
 const ClientDetailsOverview = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
   const { followUpHistories, fetchFollowUpHistoriesAPI, updateFollowUp, createConvertedClientAPI, createCloseLeadAPI } = useApi();
