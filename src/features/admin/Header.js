@@ -46,7 +46,7 @@ const Header = () => {
                 placeholderText="Select Date Range"
                 dropdownMode="select"
                 minDate={new Date(2000, 0, 1)}
-                maxDate={new Date(currentYear, 11, 31)}
+                maxDate={today}
                 onFocus={(e) => e.target.blur()}
               />
 
