@@ -36,6 +36,14 @@ const ChangePassword = () => {
 
   return (
     <div className="change-password">
+
+<div className="contact-admin-container" >
+  <div className="contact-admin-box">
+      <FaUserShield className="admin-icon" />
+  <p className="change-password-text">Contact to Administrater for changing the password</p>
+ 
+</div>
+</div>
       <h2>Change Password</h2>
       <form onSubmit={handleSubmit} className="password-form">
         <div className="input-container">

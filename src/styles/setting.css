@@ -1,9 +1,12 @@
 /* General Wrapper (SettingRoutes) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 .settings-page-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-    margin-left: 200px; 
+    margin-left: 200px;
+  /* width: calc(100%-200px); */
+ 
   background-color: #fcfcfc;
   overflow-x: hidden;
   margin-left: 250px;
@@ -18,7 +21,7 @@
 }
 
 .settings-sidebar {
-  width: 260px;
+  width: 30%;
   padding: 30px 20px;
   background: linear-gradient(135deg, #ebecec, #f4eeee);
   border-right: 1px solid #d0d7de;
@@ -188,8 +191,8 @@
   /* min-height: 650px; */
   transition: all 0.3s ease-in-out;
   padding-left: 100px;
-  padding-top: 80px;
-  width: 1000px;
+  padding-top: 25px;
+ width:70vw;
   height: 600px;
 }
 
@@ -219,8 +222,10 @@
   display: flex;
   flex-direction: column;
   gap: 25px;
-  width: 600px;
-  padding-left: 100px;
+  width: 80%;
+display: flex;
+text-align: center;
+justify-content: center;
 }
 
 .input-container {
@@ -577,6 +582,15 @@ cursor: pointer;
 .my-profile{
   width:fit-content !important;
 }
+.change-password{
+  width:60vw !important;
+}
+.password-form{
+  width:87%;
+}
+.change-password{
+
+}
 }
 @media (min-width: 1220px) and (max-width: 1330px) {
   .settings-sidebar{
@@ -585,8 +599,19 @@ cursor: pointer;
 .my-profile{
   width:62vw !important;
 }
+.change-password{
+  width:70vw !important;
+}
 }
 @media (min-width: 1330px) and (max-width: 1440px) {
+  .settings-sidebar{
+    width:205px;
+  }
+.my-profile{
+  width:69vw;
+}
+}
+@media (min-width:1445px) {
   .settings-sidebar{
     width:205px;
   }
@@ -623,14 +648,16 @@ settings-sidebar {
   border-bottom: 1px solid #888; /* Optional: subtle indication of edit */
   border-color: #007bff;
 }
-/*-------------------------------------Pink--------------------------*/
-[data-theme="red"] .settings-sidebar{
-  background: #ecc5ec;
+.setting-content{
+margin-left:200px;
 }
+/*-------------------------------------Pink--------------------------*/
 [data-theme="red"] .settings-page-wrapper {
   background: #f3daf3; 
 }
-[data-theme="red"] .my-profile{
+[data-theme="red"] .settings-sidebar{
+  background: #ecc5ec;
+}[data-theme="red"] .my-profile{
   background: #f3daf3;
 }[data-theme="red"] .change-password  {
   background:#f3daf3;
@@ -658,13 +685,13 @@ background:#f3daf3 ;
 }
 
 /*-------------------------------------Blue--------------------------*/
+[data-theme="blue"] .settings-page-wrapper {
+  background:rgb(202, 202, 247); 
+}
 [data-theme="blue"] .my-profile{
   background: rgb(202, 202, 247);  
 }[data-theme="blue"] .change-password  {
   background:rgb(202, 202, 247);
-}
-[data-theme="blue"] .settings-page-wrapper {
-  background:rgb(202, 202, 247); 
 }
 [data-theme="blue"] .change-password h2::after  {
   background: linear-gradient(135deg, #080567, grey);
@@ -686,11 +713,11 @@ background:#f3daf3 ;
   }
 
 /*-------------------------------------Brown--------------------------*/
+[data-theme="brown"] .settings-page-wrapper {
+  background:#d9cac4; 
+}
   [data-theme="brown"] .settings-sidebar{
     background: #d9cac4;
-  }
-  [data-theme="brown"] .settings-page-wrapper {
-    background:#d9cac4; 
   }
   [data-theme="brown"] .my-profile{
     background: #d9cac4;
@@ -806,4 +833,54 @@ background:#f3daf3 ;
 [data-theme="green"] .save-btn {
   background: linear-gradient(135deg, #4CAF50, #2e7d32);
   color: white;
+}
+/*  */
+.contact-admin-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.contact-admin-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f9f9f9;
+  padding: 15px 20px;
+  border-radius: 10px;
+  border-left:3px solid #007bff;
+   border-right:3px solid #007bff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  margin-right: 85px;
+}
+
+.contact-admin-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.admin-icon {
+  font-size: 24px;
+  color: #007bff;
+ 
+}
+
+.contact-admin-box:hover .admin-icon {
+  /* transform: rotate(10deg) scale(1.1); */
+  color: #0056b3;
+}
+
+.change-password-text {
+  font-size: 14px;
+  color: #333;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.contact-admin-box:hover .change-password-text {
+  color: #007bff;
+   text-decoration: underline;
+  text-decoration-color: #007bff;
 }
