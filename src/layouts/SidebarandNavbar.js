@@ -246,7 +246,6 @@ const SidebarandNavbar = () => {
 
         <div className="navbar_icons">
           <div className="navbar_divider"></div>
-          <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
           <div style={{ position: "relative" }}>
             <FontAwesomeIcon
               className="navbar_icon"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useApi } from "../../context/ApiContext";
-import "../../styles/notification.css";
+import "../../styles/adminNotification.css";
 
 function AdminNotification() {
   const {

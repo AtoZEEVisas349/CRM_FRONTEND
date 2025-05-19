@@ -19,7 +19,7 @@ const CustomerRoutes = () => {
   };
 
   const openInvoiceInNewTab = () => {
-    window.open("/invoice.html", "_blank"); // ✅ Opens invoice in a new tab
+    window.open("/invoice.html", "_blank"); 
   };
   
 
@@ -31,7 +31,6 @@ const CustomerRoutes = () => {
           <h2>Convert Customers</h2>
           <button className="button">Export List</button>
         </div>
-
         <SearchBar onSearch={handleSearch} />
         <CustomerTable
           customers={filteredCustomers.length > 0 ? filteredCustomers : CustomerTable}
