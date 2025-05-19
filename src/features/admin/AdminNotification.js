@@ -4,7 +4,7 @@ import "../../styles/adminNotification.css";
 
 function AdminNotification() {
   const {
-    notifications,
+    notifications = [],
     notificationsLoading,
     fetchNotifications,
     markNotificationReadAPI,
@@ -15,18 +15,14 @@ function AdminNotification() {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // ------------------------------
-  // Effect: Fetch notifications
-  // ------------------------------
+  // Fetch notifications when component mounts or user changes
   useEffect(() => {
     if (user?.id && user?.role) {
       fetchNotifications({ userId: user.id, userRole: user.role });
     }
-  }, [fetchNotifications]);
+  }, [fetchNotifications, user]);
 
-  // ------------------------------
-  // Pagination Calculations
-  // ------------------------------
+  // Pagination calculations
   const totalPages = Math.ceil(notifications.length / itemsPerPage);
   const currentNotifications = notifications.slice(
     (currentPage - 1) * itemsPerPage,
@@ -34,48 +30,43 @@ function AdminNotification() {
   );
 
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  // ------------------------------
-  // Mark notification as read
-  // ------------------------------
   const handleMarkAsRead = (notificationId) => {
     markNotificationReadAPI(notificationId);
   };
 
-  // ------------------------------
-  // Render
-  // ------------------------------
   return (
-    <div className="notification-container">
-      <h2>Notifications</h2>
+    <div className="admin-notification-wrapper">
+      <h2 className="admin-notification-title">Notifications</h2>
 
       {notificationsLoading ? (
-        <p className="loading-msg">Loading notifications...</p>
+        <p className="admin-notification-loading">Loading notifications...</p>
       ) : notifications.length === 0 ? (
-        <p className="empty-msg">No notifications</p>
+        <p className="admin-notification-empty">No notifications</p>
       ) : (
-        <div className="notification-content">
-          <ul className="notification-list">
+        <div className="admin-notification-content">
+          <ul className="admin-notification-list">
             {currentNotifications.map((n) => {
               const [title, messageBody] = n.message.split(":");
               return (
                 <li
-                  key={n.id}
-                  className={`notification-card ${n.is_read ? "read" : ""}`}
-                >
-                  <div className="notification-header">
+                key={n.id}
+                className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}
+              >
+              
+                  <div className="admin-notification-item-header">
                     <strong>{title?.trim()}</strong>
-                    <div className="notification-meta">
-                      <span className="notification-time">
+                    <div className="admin-notification-meta">
+                      <span className="admin-notification-time">
                         {new Date(n.createdAt).toLocaleTimeString()}
                       </span>
-                      <label className="read-checkbox">
+                      <label className="admin-notification-checkbox">
                         <input
                           type="checkbox"
                           checked={n.is_read}
@@ -86,7 +77,7 @@ function AdminNotification() {
                       </label>
                     </div>
                   </div>
-                  <p className="notification-message">
+                  <p className="admin-notification-message">
                     Executive {n.userId} copied {messageBody?.trim()}
                   </p>
                 </li>
@@ -95,19 +86,19 @@ function AdminNotification() {
           </ul>
 
           {/* Pagination */}
-          <div className="pagination">
+          <div className="admin-notification-pagination">
             <button
-              className="pagination-btn"
+              className="admin-notification-pagination-btn"
               onClick={handlePrevPage}
               disabled={currentPage === 1}
             >
               Prev
             </button>
-            <span>
+            <span className="admin-notification-page-info">
               Page {currentPage} of {totalPages}
             </span>
             <button
-              className="pagination-btn"
+              className="admin-notification-pagination-btn"
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
             >
