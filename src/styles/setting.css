@@ -645,7 +645,7 @@ settings-sidebar {
 
 .field-input:focus {
   outline: none;
-  border-bottom: 1px solid #888; /* Optional: subtle indication of edit */
+  border-bottom: 1px solid #888; 
   border-color: #007bff;
 }
 .setting-content{

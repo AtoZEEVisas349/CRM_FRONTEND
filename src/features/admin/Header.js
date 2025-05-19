@@ -49,7 +49,6 @@ const Header = () => {
                 maxDate={today}
                 onFocus={(e) => e.target.blur()}
               />
-
               <FaChevronDown
                 className="icon enhanced-icon dropdown-icon"
                 onClick={() => datepickerRef.current.setOpen(true)}
