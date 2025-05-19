@@ -651,7 +651,6 @@ settings-sidebar {
 .setting-content{
 margin-left:200px;
 }
-/*-------------------------------------Pink--------------------------*/
 [data-theme="red"] .settings-page-wrapper {
   background: #f3daf3; 
 }
