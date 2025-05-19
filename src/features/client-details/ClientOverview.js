@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams,useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { getEmailTemplates } from "../../static/emailTemplates";    
@@ -18,7 +18,7 @@ function convertTo24HrFormat(timeStr) {
 const ClientOverview = () => {
   const { clientId } = useParams();
   const location = useLocation();
-
+  const navigate = useNavigate();
   const client = location.state?.client || {};
   const createFollowUpFlag = location.state?.createFollowUp || false;
 
@@ -98,6 +98,7 @@ const ClientOverview = () => {
       return alert("Please select a follow-up type, date and time before updating.");
     }
 
+    
     const followUpId = clientInfo.followUpId || clientInfo.freshLeadId || clientInfo.id;
     if (!followUpId) {
       console.error("Missing follow-up ID on clientInfo:", clientInfo);
@@ -120,6 +121,7 @@ const ClientOverview = () => {
         await fetchFreshLeads();
         await fetchMeetings();
         await refreshMeetings();
+        setTimeout(() => navigate("/freshlead"), 3000);
       }
        else {
         const updatedData = {
@@ -131,6 +133,7 @@ const ClientOverview = () => {
         alert("✅ Follow-up status updated");
 
         await fetchFreshLeads();
+        setTimeout(() => navigate("/freshlead"), 3000);
       }
 
       setFollowUpType("");
@@ -168,9 +171,6 @@ const ClientOverview = () => {
   
     createFollowUp(newFollowUpData)
       .then((response) => {
-        // Log the full response to see its structure
-        console.log("Full follow-up response:", response);
-        
         // Try different paths to get the ID
         let followUpId = null;
         
@@ -183,10 +183,7 @@ const ClientOverview = () => {
           followUpId = response.data.id;
         } else if (response && response.data && response.data.followUp && response.data.followUp.id) {
           followUpId = response.data.followUp.id;
-        }
-        
-        console.log("Extracted follow-up ID:", followUpId);
-        
+        }        
         if (!followUpId) {
           console.error("Failed to get follow-up ID from response:", response);
           throw new Error("Missing follow-up ID in response");
@@ -220,6 +217,8 @@ const ClientOverview = () => {
         setInteractionRating("");
         setInteractionDate(todayStr);
         setInteractionTime(currentTimeStr);
+        setTimeout(() => navigate("/freshlead"), 3000);
+
       })
       .catch((error) => {
         console.error("Error creating Follow-up or history:", error);

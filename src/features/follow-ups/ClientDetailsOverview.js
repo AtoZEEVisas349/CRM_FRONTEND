@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams,useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
@@ -11,7 +11,7 @@ function convertTo24HrFormat(timeStr) {
   return `${hours}:${minutes}:00`; // valid for MySQL TIME
 }
 
-
+const navigate = useNavigate();
 const ClientDetailsOverview = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -154,6 +154,9 @@ const ClientDetailsOverview = () => {
         alert("Follow-up updated successfully!");
         // Refresh histories after update
         loadFollowUpHistories(updatedData.fresh_lead_id);
+        setTimeout(() => {
+          navigate('/follow-up');
+        }, 3000);
       })
       .catch((error) => {
         console.error("Error updating Follow-up:", error);
@@ -176,6 +179,9 @@ const ClientDetailsOverview = () => {
         alert("Converted client created successfully!");
         // Refresh histories after creating converted client
         loadFollowUpHistories(clientInfo.fresh_lead_id);
+        setTimeout(() => {
+          navigate('/follow-up');
+        }, 3000);
       } catch (error) {
         console.error("❌ Error creating converted client:", error);
         alert("Failed to create converted client. Ensure the lead exists.");
@@ -192,6 +198,9 @@ const ClientDetailsOverview = () => {
         alert("Close lead created successfully!");
         // Refresh histories after creating close lead
         loadFollowUpHistories(clientInfo.fresh_lead_id);
+        setTimeout(() => {
+          navigate('/follow-up');
+        }, 3000);
       } catch (error) {
         console.error("❌ Error creating close lead:", error);
         alert("Failed to create close lead.");
