@@ -1,4 +1,5 @@
 import React from "react";
+import { FaUserShield } from 'react-icons/fa';
 
 const InvoiceHeader = () => {
   return (

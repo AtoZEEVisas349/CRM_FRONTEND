@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash, FaKey } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUserShield } from "react-icons/fa";
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
