@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useApi } from "../../context/ApiContext";
 import "../../styles/adminNotification.css";
 
@@ -13,14 +13,13 @@ function AdminNotification() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
 
-  // Fetch notifications when component mounts or user changes
   useEffect(() => {
     if (user?.id && user?.role) {
       fetchNotifications({ userId: user.id, userRole: user.role });
     }
-  }, [fetchNotifications, user]);
+  }, [fetchNotifications, user?.id, user?.role]);
 
   // Pagination calculations
   const totalPages = Math.ceil(notifications.length / itemsPerPage);
