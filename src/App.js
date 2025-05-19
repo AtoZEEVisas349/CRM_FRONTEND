@@ -32,6 +32,7 @@ import MasterRoutes from "./routes/MasterRoutes";
 import ProcessRoutes from "./routes/ProcessRoutes";
 import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
+import ExecutiveFormRoutes from "./layouts/ExecutiveFormRoutes";
 
 
 const App = () => {
@@ -75,7 +76,7 @@ const App = () => {
           } 
         />
         <Route path="/process/*" element={<PrivateRoute><ProcessRoutes /></PrivateRoute>} />
-
+        <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><SettingRoutes/></PrivateRoute>} >
         <Route index element={<Navigate to="profile" replace />} />  {/* ✅ This does the redirect */}
         <Route path="profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
