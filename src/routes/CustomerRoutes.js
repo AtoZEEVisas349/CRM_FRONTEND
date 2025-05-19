@@ -29,7 +29,7 @@ const CustomerRoutes = () => {
       <div className="customer-main-content">
         <div className="heading">
           <h2>Convert Customers</h2>
-          <button className="button">Import List</button>
+          <button className="button">Export List</button>
         </div>
 
         <SearchBar onSearch={handleSearch} />
