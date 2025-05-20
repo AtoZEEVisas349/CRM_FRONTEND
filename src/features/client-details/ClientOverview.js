@@ -121,7 +121,7 @@ const ClientOverview = () => {
         await fetchFreshLeads();
         await fetchMeetings();
         await refreshMeetings();
-        setTimeout(() => navigate("/freshlead"), 3000);
+        setTimeout(() => navigate("/freshlead"), 2000);
       }
        else {
         const updatedData = {
@@ -133,7 +133,7 @@ const ClientOverview = () => {
         alert("✅ Follow-up status updated");
 
         await fetchFreshLeads();
-        setTimeout(() => navigate("/freshlead"), 3000);
+        setTimeout(() => navigate("/freshlead"), 2000);
       }
 
       setFollowUpType("");
@@ -217,7 +217,7 @@ const ClientOverview = () => {
         setInteractionRating("");
         setInteractionDate(todayStr);
         setInteractionTime(currentTimeStr);
-        setTimeout(() => navigate("/freshlead"), 3000);
+        setTimeout(() => navigate("/freshlead"), 2000);
 
       })
       .catch((error) => {

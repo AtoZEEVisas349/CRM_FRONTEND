@@ -152,11 +152,10 @@ const ClientDetailsOverview = () => {
     updateFollowUp(followUpId, updatedData)
       .then((response) => {
         alert("Follow-up updated successfully!");
-        // Refresh histories after update
         loadFollowUpHistories(updatedData.fresh_lead_id);
         setTimeout(() => {
           navigate('/follow-up');
-        }, 3000);
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error updating Follow-up:", error);
@@ -177,11 +176,10 @@ const ClientDetailsOverview = () => {
   
         const response = await createConvertedClientAPI(convertedPayload);
         alert("Converted client created successfully!");
-        // Refresh histories after creating converted client
         loadFollowUpHistories(clientInfo.fresh_lead_id);
         setTimeout(() => {
           navigate('/follow-up');
-        }, 3000);
+        }, 2000);
       } catch (error) {
         console.error("❌ Error creating converted client:", error);
         alert("Failed to create converted client. Ensure the lead exists.");
@@ -200,7 +198,7 @@ const ClientDetailsOverview = () => {
         loadFollowUpHistories(clientInfo.fresh_lead_id);
         setTimeout(() => {
           navigate('/follow-up');
-        }, 3000);
+        }, 2000);
       } catch (error) {
         console.error("❌ Error creating close lead:", error);
         alert("Failed to create close lead.");
