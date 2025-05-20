@@ -4,11 +4,9 @@ import "../styles/adminsidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFolderOpen,
-  faGauge,
-  faTasks,
+  faUserPlus,
   faClipboardList,
   faUserTie,
-  faFileInvoiceDollar,
   faCircleQuestion,
   faSliders,
   faChartPie,
@@ -68,7 +66,7 @@ const AdminSidebar = () => {
             </li>
             <li>
               <Link to="/executiveform" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+                <FontAwesomeIcon className="admin-aside-icon" icon={faUserPlus} />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
