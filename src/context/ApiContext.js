@@ -636,8 +636,8 @@ const updateUserLoginStatus = async (userId, canLogin) => {
  fetchMeetings:    apiService.fetchMeetings,
 
  meetings,
- refreshMeetings
-
+ refreshMeetings,
+ fetchDealFunnelData: apiService.fetchDealFunnelData
   };
 
   return (

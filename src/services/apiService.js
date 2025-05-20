@@ -488,10 +488,19 @@ export const fetchAdminExecutiveDashboard = async () => {
 // ✅ Fetch revenue chart data
 export const fetchRevenueChartData = async () => {
   try {
-    const response = await apiService.get("/revenuechart/revenue-data");
+    const response = await apiService.get("/revenue/revenue-data");
     return response.data;
   } catch (error) {
     console.error("❌ Error fetching revenue chart data:", error);
+    throw error;
+  }
+};
+export const fetchDealFunnelData = async () => {
+  try {
+    const response = await apiService.get("/client-leads/dealfunnel");
+    return response.data.data; // Returns { statusCounts, totalLeads }
+  } catch (error) {
+    console.error("❌ Error fetching deal funnel data:", error);
     throw error;
   }
 };

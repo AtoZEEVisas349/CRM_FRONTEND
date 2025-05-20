@@ -8,29 +8,28 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useApi } from "../../context/ApiContext"; 
+import { useApi } from "../../context/ApiContext";
 
 const RevenueChart = () => {
   const { revenueChartData, revenueChartLoading, fetchRevenueChartDataAPI } = useApi();
 
-  // Fetch data on component mount (already handled in ApiContext, but can be triggered here if needed)
   useEffect(() => {
     fetchRevenueChartDataAPI();
   }, []);
 
-  // If loading, show a loading message
   if (revenueChartLoading) {
     return <div>Loading revenue chart data...</div>;
   }
 
-  // If no data, show a message
   if (!revenueChartData || revenueChartData.length === 0) {
     return <div>No revenue data available.</div>;
   }
 
-  // Format the data to match the chart's expectations (if needed)
   const formattedData = revenueChartData.map((entry) => ({
-    date: new Date(entry.date).toLocaleDateString("en-US", { month: "short", day: "2-digit" }),
+    date: new Date(entry.date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+    }),
     revenue: entry.revenue,
     lead: entry.lead,
   }));
@@ -43,21 +42,23 @@ const RevenueChart = () => {
           <BarChart
             data={formattedData}
             margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
-            barCategoryGap="30%" 
+            barCategoryGap="30%"
           >
             <XAxis dataKey="date" />
             <YAxis
               yAxisId="left"
-              tickFormatter={(value) => `$${value.toLocaleString()}`}
+              tickFormatter={(value) => `Rs.${value.toLocaleString()}`}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               tickFormatter={(value) => value}
             />
-           <Tooltip
-            formatter={(value, name) => (name === "revenue" ? `$${value}` : value)}
-          />
+            <Tooltip
+              formatter={(value, name) =>
+                name === "revenue" ? `Rs.${value}` : value
+              }
+            />
             <Legend
               align="right"
               verticalAlign="top"

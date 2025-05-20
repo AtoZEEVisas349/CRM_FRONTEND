@@ -39,27 +39,6 @@ useEffect(() => {
     fetchProfile();
     console.log(profiles,"abc")
   }, []);
-  
-  // const handleSubmit = async () => {
-  //   try {
-  //     await profile(formData);
-  //     alert("Signup successful!");
-
-  //     // ✅ Redirect to login after 2 seconds
-      
-  //   } catch (error) {
-  //     alert(error.message);
-  //   }
-  // };
-  //  const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     await handleProfileSettings(formData);
-  //     alert('Customer details created successfully');
-  //   } catch (err) {
-  //     alert(err.error || 'Failed to create details');
-  //   }
-  // };
    const handleSubmit = async (e) => {
     e.preventDefault();
 
