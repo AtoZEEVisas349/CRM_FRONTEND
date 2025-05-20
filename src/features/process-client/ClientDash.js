@@ -51,9 +51,9 @@ const ClientDash = () => {
   const fetchAndSetStages = async () => {
     try {
       const latestStages = await handleGetStages();
+      const newComments = [...comments];
 
-      // Create a new array to avoid shallow mutation issues
-      const newComments = Array(iconPositions.length).fill({}).map((_, i) => {
+      for (let i = 0; i < 6; i++) {
         const text = latestStages[`stage${i + 1}_data`] || "";
         const date = latestStages[`stage${i + 1}_timestamp`]
           ? new Date(latestStages[`stage${i + 1}_timestamp`]).toLocaleString("default", {
@@ -61,13 +61,11 @@ const ClientDash = () => {
               year: "numeric",
             })
           : "";
-        return { text, date };
-      });
+        newComments[i] = { text, date };
+      }
 
       setComments(newComments);
       setStageData(latestStages);
-
-      console.log("🔍 Updated comments from API:", newComments);
     } catch (err) {
       console.error("Error fetching customer stages:", err.message);
     }
@@ -100,7 +98,6 @@ const ClientDash = () => {
       await handleUpsertStages(newStageData);
       await fetchAndSetStages();
       setActiveIcon(null);
-      setInputValue("");
     } catch (error) {
       console.error("API error:", error.message);
     }
@@ -141,7 +138,7 @@ const ClientDash = () => {
                 </div>
               </button>
 
-              {index < editableStages && comments[index]?.text && (
+              {index < editableStages && comments[index].text && (
                 <div
                   className={`comment-box ${expanded[index] ? "expanded" : "collapsed"}`}
                   style={{
@@ -153,7 +150,7 @@ const ClientDash = () => {
                     Stage {index + 1}
                   </div>
                   <div>
-                    {expanded[index] || comments[index].text.length <= 100
+                    {expanded[index]
                       ? comments[index].text
                       : (
                         <>
