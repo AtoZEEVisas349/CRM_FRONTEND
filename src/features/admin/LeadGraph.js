@@ -3,10 +3,8 @@ import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useApi } from "../../context/ApiContext";
 
-const LeadGraph = () => {
-  const { fetchExecutiveDashboardData, fetchExecutivesAPI } = useApi();
-  const [executives, setExecutives] = useState([]);
-  const [selectedExecutive, setSelectedExecutive] = useState(null);
+const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
+  const { fetchExecutiveDashboardData } = useApi();
   const [chartData, setChartData] = useState({
     weeklyData: [0, 0, 0, 0, 0, 0, 0],
     totalVisits: 0
@@ -14,42 +12,62 @@ const LeadGraph = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const loadExecutives = async () => {
-      const data = await fetchExecutivesAPI();
-      setExecutives(data);
-      setSelectedExecutive(data[0]); // default selection
-    };
-    loadExecutives();
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
-      if (!selectedExecutive) return;
+      if (!selectedExecutiveId) return;
+      
       setLoading(true);
       try {
+        // Fetch all executive activities
         const allActivities = await fetchExecutiveDashboardData();
+        console.log("All executive activities:", allActivities);
+        
+        // Find the activity for the selected executive
         const executiveActivity = allActivities.find(
-          (activity) => activity.ExecutiveId === selectedExecutive.id
+          (activity) => activity.ExecutiveId === selectedExecutiveId
         );
-
+        
+        console.log("Selected executive activity:", executiveActivity);
+        
         if (executiveActivity && executiveActivity.leadSectionVisits) {
+          // For now we're just setting all visits to Monday
+          // In a real implementation, you would distribute these across the week
           const weeklyData = [
-            executiveActivity.leadSectionVisits || 0, 0, 0, 0, 0, 0, 0
+            executiveActivity.leadSectionVisits || 0, // Monday
+            0, // Tuesday
+            0, // Wednesday
+            0, // Thursday
+            0, // Friday
+            0, // Saturday
+            0, // Sunday
           ];
+          
           const totalVisits = weeklyData.reduce((sum, visits) => sum + visits, 0);
-          setChartData({ weeklyData, totalVisits });
+          
+          setChartData({
+            weeklyData,
+            totalVisits
+          });
         } else {
-          setChartData({ weeklyData: [0, 0, 0, 0, 0, 0, 0], totalVisits: 0 });
+          // Reset to zero if no data found
+          setChartData({
+            weeklyData: [0, 0, 0, 0, 0, 0, 0],
+            totalVisits: 0
+          });
         }
       } catch (err) {
         console.error("Error loading lead visits:", err);
+        // Reset on error
+        setChartData({
+          weeklyData: [0, 0, 0, 0, 0, 0, 0],
+          totalVisits: 0
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [selectedExecutive]);
+  }, [selectedExecutiveId]);
 
   const data = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -82,30 +100,26 @@ const LeadGraph = () => {
       },
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: "#a1a1aa" } },
-      y: { grid: { color: "rgba(255,255,255,0.1)" }, ticks: { color: "#a1a1aa" } },
+      x: {
+        grid: { display: false },
+        ticks: { color: "#a1a1aa", font: { size: 12 } },
+      },
+      y: {
+        grid: { color: "rgba(255,255,255,0.1)" },
+        ticks: { color: "#a1a1aa", font: { size: 12 } },
+      },
     },
   };
 
   return (
     <div className="lead-sec-graph">
-      <h2 className="exec-section-title">Lead Visit</h2>
-      <select
-        value={selectedExecutive?.id || ""}
-        onChange={(e) =>
-          setSelectedExecutive(executives.find((ex) => ex.id === e.target.value))
-        }
-        style={{ marginBottom: "1rem" }}
-      >
-        {executives.map((ex) => (
-          <option key={ex.id} value={ex.id}>
-            {ex.username}
-          </option>
-        ))}
-      </select>
+      <h2 className="exec-section-title">
+        <span>Lead Visit</span>
+        <span className="executive-name">{executiveName || "Select an Executive"}</span>
+      </h2>
 
       <div className="mb-4 text-sm text-gray-400">
-        Total Visits This Week:{" "}
+        Total Visits This Week (from dashboard):{" "}
         <span className="text-white font-medium">
           {loading ? "Loading..." : chartData.totalVisits}
         </span>
