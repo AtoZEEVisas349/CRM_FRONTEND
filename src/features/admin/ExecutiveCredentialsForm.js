@@ -142,7 +142,7 @@ const ExecutiveCredentialsForm = () => {
                 <h2>Profile Information</h2>
                 
                 <div className="profile-upload">
-                  <div className="profile-image">
+                  <div className="form-profile-image">
                     {previewImage ? (
                       <img src={previewImage} alt="Profile preview" />
                     ) : (
