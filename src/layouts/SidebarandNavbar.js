@@ -256,7 +256,7 @@ const SidebarandNavbar = () => {
 
     <div className="compact-timer">
       <div className="timer-item">
-        <button className="timer-btn-small"><faPause /></button>
+        <button className="timer-btn-small"><faPlay /></button>
         <span className="timer-label-small">Work:</span>
         <span className="timer-box-small">{timer}</span>
       </div>
