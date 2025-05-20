@@ -8,18 +8,26 @@ const BASE_HEADERS = {
 };
 
 export const createCustomerStages = async (stageData) => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token not found in localStorage");
+
   const res = await fetch(`${API_BASE_URL}/customer-stages/stages`, {
     method: "POST",
-    headers: BASE_HEADERS,
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
     credentials: "include",
     body: JSON.stringify(stageData),
   });
+
   const data = await res.json();
   if (!res.ok) {
     throw new Error(data.error || "Failed to create customer stages");
   }
   return data;
 };
+
 
 export const getCustomerStages = async () => {
   const res = await fetch(`${API_BASE_URL}/customer-stages/stages`, {
@@ -35,12 +43,19 @@ export const getCustomerStages = async () => {
 };
 
 export const updateCustomerStages = async (stageData) => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token not found in localStorage");
+
   const res = await fetch(`${API_BASE_URL}/customer-stages/stages`, {
     method: "PUT",
-    headers: BASE_HEADERS,
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
     credentials: "include",
     body: JSON.stringify(stageData),
   });
+
   const data = await res.json();
   if (!res.ok) {
     throw new Error(data.error || "Failed to update customer stages");
