@@ -249,7 +249,7 @@
 .user_popover {
   position: absolute;
   top: 60px; /* match or exceed navbar height */
-  right: 20px;
+  right: 40px;
   width: 280px;
   padding: 20px;
   border-radius: 16px;
