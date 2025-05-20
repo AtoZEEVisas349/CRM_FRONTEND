@@ -1,7 +1,7 @@
 // --- App.js ---
 import { Routes, Route, Navigate } from "react-router-dom";
 import { PrivateRoute,PublicRoute } from "./services/auth";
-import { PrivateRoute,PublicRoute } from "./services/processAuth";
+import { ProcessPrivateRoute,ProcessPublicRoute } from "./services/processAuth";
 import Login from "./features/authentication/Login";
 import Signup from "./features/authentication/Signup";
 import LoginMaster from "./features/masteruser/LoginMaster";
@@ -58,8 +58,8 @@ const App = () => {
         {/* Public master routes - login & signup */}
         <Route path="/master/loginmaster" element={<MasterPublicRoute><LoginMaster /></MasterPublicRoute>} />
         <Route path="/master/signupmaster" element={<MasterPublicRoute><SignupMaster /></MasterPublicRoute>} />
-        <Route path="/process/client/login" element={<PublicRoute><ClientLogin /></PublicRoute>} />
-       <Route path="/process/client/signup" element={<PublicRoute><ClientSignup /></PublicRoute>} />
+        <Route path="/process/client/login" element={<ProcessPublicRoute><ClientLogin /></ProcessPublicRoute>} />
+       <Route path="/process/client/signup" element={<ProcessPublicRoute><ClientSignup /></ProcessPublicRoute>} />
         <Route 
           path="/follow-up/*" 
           element={
@@ -76,7 +76,7 @@ const App = () => {
             </PrivateRoute>
           } 
         />
-        <Route path="/process/*" element={<PrivateRoute><ProcessRoutes /></PrivateRoute>} />
+        <Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} />
         <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><SettingRoutes/></PrivateRoute>} >
         <Route index element={<Navigate to="profile" replace />} />  {/* ✅ This does the redirect */}

@@ -76,12 +76,12 @@ export const getUserType = () => {
   return data || null;
 };
 
-export const PrivateRoute = ({ children }) => {
+export const ProcessPrivateRoute = ({ children }) => {
   return isAuthenticated()
     ? children
     : <Navigate to="/process/client/login" replace />;
 };
-export const PublicRoute = ({ children }) => {
+export const ProcessPublicRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   const userType = localStorage.getItem("userType");
 
