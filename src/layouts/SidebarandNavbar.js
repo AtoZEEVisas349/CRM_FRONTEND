@@ -193,8 +193,8 @@ const SidebarandNavbar = () => {
         <li  style={{ position: "relative" }}>
           <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
             <FontAwesomeIcon icon={faUserPlus} /> Leads
-            <span style={{ marginLeft: "auto", fontSize: "12px" }}>▶️
-</span>
+            <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼
+            </span>
           </Link>
           {isOpen && (
           <ul className="submenu_nav">
