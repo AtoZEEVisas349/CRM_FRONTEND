@@ -62,19 +62,73 @@ export const updateCustomerStages = async (stageData) => {
 };
 /*---------------------Customer settings-----------------*/
 export const profileSettings = async (payload) => {
-  const headers = getHeaders();
-  const response = await axios.post(`${API_BASE_URL}/customer-details`, payload, { headers });
-  return response.data;
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw { error: 'Token missing in localStorage' };
+    }
+
+    const { phone, dob, nationality, passportNumber } = payload;
+
+    const response = await axios.post(
+      `${API_BASE_URL}/customer-details`,
+      { phone, dob, nationality, passportNumber },
+      {
+        headers: {
+          ...BASE_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error.response || error);
+    throw error.response?.data || { error: 'Network error or server error' };
+  }
 };
 
+
 export const getprofileSettings = async () => {
-  const headers = getHeaders();
-  const response = await axios.get(`${API_BASE_URL}/customer-details`, { headers });
-  return response.data;
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_BASE_URL}/customer-details`, {
+    method: "GET",
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+
+  const responseBody = await res.json();
+
+  if (!res.ok) {
+    console.error("Details fetching failed:", responseBody);
+    throw new Error(responseBody.error || "Details fetching failed");
+  }
+
+  return responseBody;
 };
 
 export const updateProfileSettings = async (payload) => {
-  const headers = getHeaders();
-  const response = await axios.put(`${API_BASE_URL}/customer-details`, payload, { headers });
-  return response.data;
+  try {
+    const token = localStorage.getItem('token');
+    const { phone, dob, nationality, passportNumber } = payload;
+
+    const response = await axios.put(
+      `${API_BASE_URL}/customer-details`,
+      { phone, dob, nationality, passportNumber },
+      {
+        headers: {
+          ...BASE_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'Network error' };
+  }
 };
