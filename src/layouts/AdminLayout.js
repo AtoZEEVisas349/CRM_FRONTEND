@@ -30,7 +30,7 @@ const AdminLayout = () => {
 
   return (
     <div className="admin-dashboard-container">
-      <AdminSidebar className="admin-sidbare" />
+      <AdminSidebar className="admin-sidebar" />
       <main className="admin-main-content">
         {isDashboard ? (
           <div className="dashboard-wrapper">
@@ -39,22 +39,21 @@ const AdminLayout = () => {
             <div className="charts">
               <div className="chart-row">
                 <DealFunnel />
-                <OpportunityStage />
+                <ExecutiveActi
+                  selectedExecutiveId={currentExecutive?.id}
+                  executiveName={currentExecutive?.username}
+                />
               </div>
               <div className="chart-row">
                 <LeadGraph
                   selectedExecutiveId={currentExecutive?.id}
                   executiveName={currentExecutive?.username}
                 />
-                <ExecutiveActi
-                  selectedExecutiveId={currentExecutive?.id}
-                  executiveName={currentExecutive?.username}
-                />
+                <ExecutiveList onSelectExecutive={setSelectedExecutive}/>
               </div>
             </div>
             <div className="revenue-executive-container">
               <RevenueChart />
-              <ExecutiveList onSelectExecutive={setSelectedExecutive} />
             </div>
             <div className="additional-section">
               <ProfitChart />
