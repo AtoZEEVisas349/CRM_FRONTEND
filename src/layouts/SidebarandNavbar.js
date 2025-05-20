@@ -137,7 +137,7 @@ const SidebarandNavbar = () => {
       fetchNotifications({ userId: user.id, userRole: user.role });
     }
   }, [fetchNotifications]);
-
+  
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
@@ -280,14 +280,20 @@ const SidebarandNavbar = () => {
 
     <div className="navbar_icons">
       <div className="navbar_divider"></div>
-      <FontAwesomeIcon
-        className="navbar_icon"
-        icon={faBell}
-        style={{ cursor: "pointer" }}
-        title="Notifications"
-        tabIndex="0"
-        onClick={() => navigate("/notification")}
-      />
+      <div className="notification-container" style={{ position: "relative" }}>
+  <FontAwesomeIcon
+    className="navbar_icon"
+    icon={faBell}
+    style={{ cursor: "pointer" }}
+    title="Notifications"
+    tabIndex="0"
+    onClick={() => navigate("/notification")}
+  />
+  {unreadCount > 0 && (
+    <span className="notification-badge">{unreadCount}</span>
+  )}
+</div>
+
       <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
       <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
       <FontAwesomeIcon 
