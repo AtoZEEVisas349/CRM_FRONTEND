@@ -349,7 +349,7 @@ html, body {
 .user_popover {
   position: absolute;
   top: 60px;
-  right: 10px;
+  right: 30px;
   background-color: var(--card-bg); /* Handles both modes */
   color: var(--text-color);
   border-radius: 12px;
