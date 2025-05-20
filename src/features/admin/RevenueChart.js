@@ -8,7 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useApi } from "../../context/ApiContext";
+import { useApi } from "../../context/ApiContext"; 
 
 const RevenueChart = () => {
   const { revenueChartData, revenueChartLoading, fetchRevenueChartDataAPI } = useApi();
@@ -26,10 +26,7 @@ const RevenueChart = () => {
   }
 
   const formattedData = revenueChartData.map((entry) => ({
-    date: new Date(entry.date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-    }),
+    date: new Date(entry.date).toLocaleDateString("en-US", { month: "short", day: "2-digit" }),
     revenue: entry.revenue,
     lead: entry.lead,
   }));
