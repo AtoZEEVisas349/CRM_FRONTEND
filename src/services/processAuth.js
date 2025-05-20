@@ -51,21 +51,19 @@ export const signupUser = async (fullName, email, password, userType = "customer
 };
 /*------------------------------LOGOUT---------------------------*/
 export const logoutUser = async (userType = "customer") => {
-  try {
-    const res = await fetch(`${API_BASE_URL}/${userType}/logout`, {
-      method: "POST",
-      headers: BASE_HEADERS,
-      credentials: "include",
-    });
+  const token = localStorage.getItem("token");
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || "Logout failed");
-    }
+  const res = await fetch(`${API_BASE_URL}/${userType}/logout`, {
+    method: "POST",
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include", // still needed for cookie fallback
+  });
 
-    return await res.json();
-  } catch (error) {
-    console.error("Logout error:", error);
-    throw error;
-  }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Logout failed");
+  return data;
 };
+
