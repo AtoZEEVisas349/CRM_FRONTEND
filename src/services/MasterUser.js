@@ -1,6 +1,6 @@
 // src/services/MasterUser.js
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 // ✅ Create Axios instance specific to master user authentication
 const authApi = axios.create({
   baseURL: "https://crm-backend-production-c208.up.railway.app/api", // Replace with env var in production
