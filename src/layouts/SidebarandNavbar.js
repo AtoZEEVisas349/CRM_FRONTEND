@@ -183,117 +183,153 @@ const SidebarandNavbar = () => {
 
   return (
     <section className="sidebar_navbar" data-theme={theme}>
-      <section className={`sidebar_container ${isActive ? "active" : ""}`}>
-        <button className="menuToggle" onClick={toggleSidebar}>
-          <FontAwesomeIcon icon={faBars} />
-        </button>
-        <div className="sidebar_heading"><h1>AtoZeeVisas</h1></div>
-        <div><h3 className="sidebar_crm">CRM</h3></div>
-        <nav className="navbar_container">
-          <ul>
-            <li><Link to="/executive" className="sidebar_nav"><FontAwesomeIcon icon={faHouse} /> Dashboard</Link></li>
-            <li style={{ position: "relative" }}>
-              <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
-                <FontAwesomeIcon icon={faUserPlus} /> Leads <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼</span>
+<section className={`sidebar_container ${isActive ? "active" : ""}`}>
+<button className="menuToggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
+    <div className="sidebar_heading"><h1>AtoZeeVisas</h1></div>
+    <div><h3 className="sidebar_crm">CRM</h3></div>
+    <nav className="navbar_container">
+    <ul>
+        <li><Link to="/executive" className="sidebar_nav"><FontAwesomeIcon icon={faHouse} /> Dashboard</Link></li>
+        <li  style={{ position: "relative" }}>
+          <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
+            <FontAwesomeIcon icon={faUserPlus} /> Leads
+            <span style={{ marginLeft: "auto", fontSize: "12px" }}>▶️
+</span>
+          </Link>
+          {isOpen && (
+          <ul className="submenu_nav">
+            <li>
+              <Link
+                to="/freshlead"
+                className="submenu_item"
+                onClick={() => setIsOpen(false)}
+              >
+                <FontAwesomeIcon icon={faUsers} /> Fresh Leads
               </Link>
-              {isOpen && (
-                <ul className="submenu_nav">
-                  <li><Link to="/freshlead" className="submenu_item" onClick={() => setIsOpen(false)}><FontAwesomeIcon icon={faUsers} /> Fresh Leads</Link></li>
-                  <li><Link to="/follow-up" className="submenu_item" onClick={() => setIsOpen(false)}><FontAwesomeIcon icon={faList} /> Follow ups</Link></li>
-                  <li><Link to="/customer" className="submenu_item" onClick={() => setIsOpen(false)}><FontAwesomeIcon icon={faClock} /> Convert</Link></li>
-                  <li><Link to="/close-leads" className="submenu_item" onClick={() => setIsOpen(false)}><FontAwesomeIcon icon={faCircleXmark} /> Close</Link></li>
-                </ul>
-              )}
             </li>
-            <li><Link to="/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
-            <li><Link to="/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
-            <li><Link to="/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
+            <li>
+              <Link
+                to="/follow-up"
+                className="submenu_item"
+                onClick={() => setIsOpen(false)}
+              >
+                <FontAwesomeIcon icon={faList} /> Follow ups
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/customer"
+                className="submenu_item"
+                onClick={() => setIsOpen(false)}
+              >
+                <FontAwesomeIcon icon={faClock} /> Convert
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/close-leads"
+                className="submenu_item"
+                onClick={() => setIsOpen(false)}
+              >
+                <FontAwesomeIcon icon={faCircleXmark} /> Close
+              </Link>
+            </li>
           </ul>
-        </nav>
-      </section>
+        )}
+        </li>
+        <li><Link to="/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
+        <li><Link to="/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
+        <li><Link to="/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
+      </ul>
+    </nav>
+  </section>
 
-      <section className="navbar">
-        <div className="menu_search">
-          <button className="menu_toggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
-          <div className="search_bar">
-            <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{ fontSize: "20px", cursor: "pointer" }} />
-            <input className="search-input-exec" placeholder="Search" />
-          </div>
+  <section className="navbar">
+    <div className="menu_search">
+      <button className="menu_toggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
+      <div className="search_bar">
+      <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{fontSize:"20px",cursor:"pointer",
+      }} />
+    <input className="search-input-exec" placeholder="Search" />
+    </div>
+    </div>
+
+    <div className="compact-timer">
+      <div className="timer-item">
+        <button className="timer-btn-small"><faPause /></button>
+        <span className="timer-label-small">Work:</span>
+        <span className="timer-box-small">{timer}</span>
+      </div>
+
+      <div className="analog-clock">
+      <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
+      <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
+<div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+
+      <div className="center-dot"></div>
+      </div>
+
+      <div className="timer-item">
+        <button className="timer-btn-small" onClick={toggleBreak}>
+        {isBreakActive ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
+        </button>
+        <span className="timer-label-small">Break:</span>
+        <span className="timer-box-small">{breakTimer}</span>
+      </div>
+        </div>
+
+    <div className="navbar_icons">
+      <div className="navbar_divider"></div>
+      <FontAwesomeIcon className="navbar_icon" icon={faCircleQuestion} />
+      <FontAwesomeIcon
+        className="navbar_icon"
+        icon={faBell}
+        style={{ cursor: "pointer" }}
+        title="Notifications"
+        tabIndex="0"
+        onClick={() => navigate("/notification")}
+      />
+      <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
+      <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
+      <FontAwesomeIcon 
+        className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }</div>
+            <div 
+        onMouseEnter={() => setShowUserPopover(true)}
+        onMouseLeave={() => setShowUserPopover(false)}
+
+        >
+        <FontAwesomeIcon  
+        className="navbar_icon"
+        icon={faCircleUser}
+        onClick={handleUserIconClick}
+        />
+
+        {showUserPopover && (
+        <div className="user_popover">
+          {executiveLoading ? (
+            <p>Loading user details...</p>
+          ) : (
+            <>
+      <div className="user_details">
+        <div className="user_avatar">{executiveInfo.username?.charAt(0)}</div>
+        <div>
+          <p className="user_name">{executiveInfo.username}</p>
+          <p className="user_role">{executiveInfo.role}</p>
         </div>
+      </div>
+      <button className="logout_btn" onClick={handleLogout}>
+        <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
+      </button>
+    </>
+  )}
+</div>
+)}
+</div>
 
-        <div className="compact-timer">
-          <div className="timer-item">
-            <button className="timer-btn-small" onClick={handleWorkToggle}><FontAwesomeIcon icon={faPause} /></button>
-            <span className="timer-label-small">Work:</span>
-            <span className="timer-box-small">{timer}</span>
-          </div>
+    </div>
 
-          <div className="analog-clock">
-            <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
-            <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
-            <div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
-            <div className="center-dot"></div>
-          </div>
+  </section>
 
-          <div className="timer-item">
-            <button className="timer-btn-small" onClick={toggleBreak}>
-              {isBreakActive ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
-            </button>
-            <span className="timer-label-small">Break:</span>
-            <span className="timer-box-small">{breakTimer}</span>
-          </div>
-        </div>
-
-        <div className="navbar_icons">
-          <div className="navbar_divider"></div>
-          <div style={{ position: "relative" }}>
-            <FontAwesomeIcon
-              className="navbar_icon"
-              icon={faBell}
-              style={{ cursor: "pointer" }}
-              title="Notifications"
-              tabIndex="0"
-              onClick={() => navigate("/notification")}
-            />
-            {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount}</span>
-            )}
-            </div>
-            <div
-            className="navbar_user_icon"
-            onMouseEnter={() => setShowUserPopover(true)}
-            onMouseLeave={() => setShowUserPopover(false)}
-            ref={userIconRef}
-            >
-            <FontAwesomeIcon  
-              className="navbar_icon"
-              icon={faCircleUser}
-              onClick={handleUserIconClick}
-            />
-
-            {showUserPopover && (
-              <div className="user_popover" ref={popoverRef}>
-                {executiveLoading ? (
-                  <p>Loading user details...</p>
-                ) : (
-                  <>
-                    <div className="user_details">
-                      <div className="user_avatar">{executiveInfo.username?.charAt(0)}</div>
-                      <div>
-                        <p className="user_name">{executiveInfo.username}</p>
-                        <p className="user_role">{executiveInfo.role}</p>
-                      </div>
-                    </div>
-                    <button className="logout_btn" onClick={handleLogout}>
-                      <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-          </div>
-      </section>
       {isBreakActive && (
         <div className="blur-screen">
           <div className="floating-icons">
@@ -310,8 +346,6 @@ const SidebarandNavbar = () => {
           </button>
         </div>
       )}
-
-      {showTracker && <ExecutiveActivity />}
     </section>
   );
 };
