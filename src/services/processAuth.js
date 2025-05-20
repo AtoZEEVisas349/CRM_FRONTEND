@@ -1,3 +1,4 @@
+import { Navigate } from "react-router-dom";
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
 const BASE_HEADERS = {
   "Content-Type": "application/json",
@@ -67,3 +68,30 @@ export const logoutUser = async (userType = "customer") => {
   return data;
 };
 
+export const isAuthenticated = () => {
+  return !!localStorage.getItem("token");
+};
+export const getUserType = () => {
+  const data = localStorage.getItem("userType");
+  return data || null;
+};
+
+export const PrivateRoute = ({ children }) => {
+  return isAuthenticated()
+    ? children
+    : <Navigate to="/process/client/login" replace />;
+};
+export const PublicRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+  const userType = localStorage.getItem("userType");
+
+  // If user is not logged in, allow access to login/signup
+  if (!token) return children;
+
+  // Redirect authenticated users based on their type
+  if (userType === "customer") return <Navigate to="/process/client/dashboard" replace />;
+  if (userType === "processperson") return <Navigate to="/process/person/dashboard" replace />;
+
+  // Default fallback redirect (if type is unknown or missing)
+  return <Navigate to="/process/client/dashboard" replace />;
+};

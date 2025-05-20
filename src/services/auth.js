@@ -104,3 +104,18 @@ export const isAuthenticated = () => {
 export const PrivateRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/login" replace />;
 };
+/*-------------------------------PUBLIC ROUTES-----------------*/
+export const PublicRoute = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+
+  // If no user is logged in, allow access to the public page
+  if (!token) return children;
+
+  // Redirect logged-in users based on their role
+  if (user?.role === "admin") return <Navigate to="/admin" replace />;
+  if (user?.role === "executive") return <Navigate to="/executive" replace />;
+  
+  // Optionally fallback to a default route
+  return <Navigate to="/executive" replace />;
+};

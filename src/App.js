@@ -1,6 +1,7 @@
 // --- App.js ---
 import { Routes, Route, Navigate } from "react-router-dom";
-import { PrivateRoute } from "./services/auth";
+import { PrivateRoute,PublicRoute } from "./services/auth";
+import { PrivateRoute,PublicRoute } from "./services/processAuth";
 import Login from "./features/authentication/Login";
 import Signup from "./features/authentication/Signup";
 import LoginMaster from "./features/masteruser/LoginMaster";
@@ -33,6 +34,7 @@ import ProcessRoutes from "./routes/ProcessRoutes";
 import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
 import ExecutiveFormRoutes from "./layouts/ExecutiveFormRoutes";
+import { MasterPublicRoute } from "./services/MasterUser";
 
 
 const App = () => {
@@ -49,15 +51,15 @@ const App = () => {
     <ThemeProvider>
       <Routes>
         <Route path="/" element={<Navigate replace to="/signup" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+      <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
         {/* Public master routes - login & signup */}
-        <Route path="/master/loginmaster" element={<LoginMaster />} />
-        <Route path="/master/signupmaster" element={<SignupMaster />} />
-        <Route path="/process/client/login" element={<ClientLogin />} />
-       <Route path="/process/client/signup" element={<ClientSignup />} />
+        <Route path="/master/loginmaster" element={<MasterPublicRoute><LoginMaster /></MasterPublicRoute>} />
+        <Route path="/master/signupmaster" element={<MasterPublicRoute><SignupMaster /></MasterPublicRoute>} />
+        <Route path="/process/client/login" element={<PublicRoute><ClientLogin /></PublicRoute>} />
+       <Route path="/process/client/signup" element={<PublicRoute><ClientSignup /></PublicRoute>} />
         <Route 
           path="/follow-up/*" 
           element={
@@ -66,7 +68,6 @@ const App = () => {
             </PrivateRoute>
           } 
         />
-
           <Route 
           path="/clients/*" 
           element={

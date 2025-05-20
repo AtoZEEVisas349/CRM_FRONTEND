@@ -60,5 +60,11 @@ export const logoutMasterUser = async () => {
   }
 };
 
+// ✅ Public Route Wrapper for Master User Pages
+export const MasterPublicRoute = ({ children }) => {
+  const masterToken = localStorage.getItem("masterToken");
 
+  // If already logged in, redirect to actual dashboard URL
+  return masterToken ? <Navigate to="/dashboard" replace /> : children;
+};
 
