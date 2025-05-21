@@ -297,38 +297,42 @@ const SidebarandNavbar = () => {
       <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
       <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
       <FontAwesomeIcon 
-        className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }</div>
-            <div 
-        onMouseEnter={() => setShowUserPopover(true)}
-        onMouseLeave={() => setShowUserPopover(false)}
-
-        >
-        <FontAwesomeIcon  
-        className="navbar_icon"
-        icon={faCircleUser}
-        onClick={handleUserIconClick}
-        />
-
-        {showUserPopover && (
-        <div className="user_popover">
-          {executiveLoading ? (
-            <p>Loading user details...</p>
-          ) : (
-            <>
-      <div className="user_details">
-        <div className="user_avatar">{executiveInfo.username?.charAt(0)}</div>
-        <div>
-          <p className="user_name">{executiveInfo.username}</p>
-          <p className="user_role">{executiveInfo.role}</p>
-        </div>
+        className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
       </div>
-      <button className="logout_btn" onClick={handleLogout}>
-        <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
-      </button>
-    </>
+        
+      <div 
+  className="user-icon-wrapper"
+  onMouseEnter={() => setShowUserPopover(true)}
+  onMouseLeave={() => setShowUserPopover(false)}
+>
+  <FontAwesomeIcon  
+    className="navbar_icon"
+    icon={faCircleUser}
+    onClick={handleUserIconClick}
+  />
+
+  {showUserPopover && (
+    <div className="user_popover">
+      {executiveLoading ? (
+        <p>Loading user details...</p>
+      ) : (
+        <>
+          <div className="user_details">
+            <div className="user_avatar">
+              {executiveInfo.username?.charAt(0)}
+            </div>
+            <div>
+              <p className="user_name">{executiveInfo.username}</p>
+              <p className="user_role">{executiveInfo.role}</p>
+            </div>
+          </div>
+          <button className="logout_btn" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
+          </button>
+        </>
+      )}
+    </div>
   )}
-</div>
-)}
 </div>
 
     </div>

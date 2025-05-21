@@ -163,7 +163,7 @@ html, body {
   transition: transform 0.3s ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
 }
-[data-theme="dark"] .card-details{
+[data-theme="dark"] .card-details h4{
   color: #fff;
 }
 [data-theme="dark"] .news h1{
