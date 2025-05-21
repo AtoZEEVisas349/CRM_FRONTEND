@@ -300,44 +300,52 @@ const SidebarandNavbar = () => {
         className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
       </div>
         
-      <div 
+      <div
   className="user-icon-wrapper"
-  onMouseEnter={() => setShowUserPopover(true)}
-  onMouseLeave={() => setShowUserPopover(false)}
+  ref={popoverRef}
   style={{ position: "relative" }}
 >
-  <div ref={userIconRef}>
-    <FontAwesomeIcon  
-      className="navbar_icon"
-      icon={faCircleUser}
-      onClick={handleUserIconClick}
-    />
-  </div>
+  <FontAwesomeIcon
+    className="navbar_icon"
+    icon={faCircleUser}
+    onClick={async () => {
+      setShowUserPopover(true);
+      await fetchExecutiveData();
+    }}
+    ref={userIconRef}
+    style={{ cursor: "pointer" }}
+  />
 
   {showUserPopover && (
     <div
-      ref={popoverRef}
       className="user_popover"
       style={{
         position: "absolute",
-        top: "100%", // push below the icon
+        top: "100%",
         right: 0,
-        zIndex: 1000
+        zIndex: 1000,
       }}
+      onMouseLeave={() => setShowUserPopover(false)}
     >
       {executiveLoading ? (
         <p>Loading user details...</p>
       ) : (
         <>
           <div className="user_details">
-            <div className="user_avatar">{executiveInfo.username?.charAt(0)}</div>
+            <div className="user_avatar">
+              {executiveInfo.username?.charAt(0)}
+            </div>
             <div>
               <p className="user_name">{executiveInfo.username}</p>
               <p className="user_role">{executiveInfo.role}</p>
             </div>
           </div>
           <button className="logout_btn" onClick={handleLogout}>
-            <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
+            <FontAwesomeIcon
+              icon={faRightFromBracket}
+              style={{ marginRight: "8px" }}
+            />{" "}
+            Logout
           </button>
         </>
       )}
