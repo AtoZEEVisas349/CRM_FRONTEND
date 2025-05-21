@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import {
-  FaFilter,
+  
   FaCalendarAlt,
   FaChevronDown,
   FaBars
