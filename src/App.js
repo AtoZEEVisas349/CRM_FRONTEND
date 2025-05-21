@@ -1,7 +1,6 @@
 // --- App.js ---
 import { Routes, Route, Navigate } from "react-router-dom";
 import { PrivateRoute } from "./services/auth";
-import { ProcessPrivateRoute,ProcessPublicRoute } from "./services/processAuth";
 import Login from "./features/authentication/Login";
 import Signup from "./features/authentication/Signup";
 import LoginMaster from "./features/masteruser/LoginMaster";
@@ -34,7 +33,6 @@ import ProcessRoutes from "./routes/ProcessRoutes";
 import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
 import ExecutiveFormRoutes from "./layouts/ExecutiveFormRoutes";
-import { MasterPublicRoute } from "./services/MasterUser";
 
 
 const App = () => {
@@ -53,13 +51,13 @@ const App = () => {
         <Route path="/" element={<Navigate replace to="/signup" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* Public master routes - login & signup */}
-        <Route path="/master/loginmaster" element={<MasterPublicRoute><LoginMaster /></MasterPublicRoute>} />
-        <Route path="/master/signupmaster" element={<MasterPublicRoute><SignupMaster /></MasterPublicRoute>} />
-        <Route path="/process/client/login" element={<ProcessPublicRoute><ClientLogin /></ProcessPublicRoute>} />
-       <Route path="/process/client/signup" element={<ProcessPublicRoute><ClientSignup /></ProcessPublicRoute>} />
+        <Route path="/master/loginmaster" element={<LoginMaster />} />
+        <Route path="/master/signupmaster" element={<SignupMaster />} />
+        <Route path="/process/client/login" element={<ClientLogin />} />
+       <Route path="/process/client/signup" element={<ClientSignup />} />
         <Route 
           path="/follow-up/*" 
           element={
@@ -68,6 +66,7 @@ const App = () => {
             </PrivateRoute>
           } 
         />
+
           <Route 
           path="/clients/*" 
           element={
@@ -76,7 +75,7 @@ const App = () => {
             </PrivateRoute>
           } 
         />
-        <Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} />
+        <Route path="/process/*" element={<PrivateRoute><ProcessRoutes /></PrivateRoute>} />
         <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><SettingRoutes/></PrivateRoute>} >
         <Route index element={<Navigate to="profile" replace />} />  {/* ✅ This does the redirect */}

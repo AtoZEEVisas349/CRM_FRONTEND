@@ -68,30 +68,30 @@ export const logoutUser = async (userType = "customer") => {
   return data;
 };
 
-export const isAuthenticated = () => {
-  return !!localStorage.getItem("token");
-};
-export const getUserType = () => {
-  const data = localStorage.getItem("userType");
-  return data || null;
-};
+// export const isAuthenticated = () => {
+//   return !!localStorage.getItem("token");
+// };
+// export const getUserType = () => {
+//   const data = localStorage.getItem("userType");
+//   return data || null;
+// };
 
-export const ProcessPrivateRoute = ({ children }) => {
-  return isAuthenticated()
-    ? children
-    : <Navigate to="/process/client/login" replace />;
-};
-export const ProcessPublicRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  const userType = localStorage.getItem("userType");
+// export const ProcessPrivateRoute = ({ children }) => {
+//   return isAuthenticated()
+//     ? children
+//     : <Navigate to="/process/client/login" replace />;
+// };
+// export const ProcessPublicRoute = ({ children }) => {
+//   const token = localStorage.getItem("token");
+//   const userType = localStorage.getItem("userType");
 
-  // If user is not logged in, allow access to login/signup
-  if (!token) return children;
+//   // If user is not logged in, allow access to login/signup
+//   if (!token) return children;
 
-  // Redirect authenticated users based on their type
-  if (userType === "customer") return <Navigate to="/process/client/dashboard" replace />;
-  if (userType === "processperson") return <Navigate to="/process/person/dashboard" replace />;
+//   // Redirect authenticated users based on their type
+//   if (userType === "customer") return <Navigate to="/process/client/dashboard" replace />;
+//   if (userType === "processperson") return <Navigate to="/process/person/dashboard" replace />;
 
-  // Default fallback redirect (if type is unknown or missing)
-  return <Navigate to="/process/client/dashboard" replace />;
-};
+//   // Default fallback redirect (if type is unknown or missing)
+//   return <Navigate to="/process/client/dashboard" replace />;
+// };
