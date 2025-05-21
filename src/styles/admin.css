@@ -171,15 +171,14 @@ body {
   overflow: hidden;
   pointer-events: none;
 }
-
+[data-theme="dark"] .header-left h1{
+  color: #ffff;
+}
 .header-left {
   display: flex;
   align-items: center;
   gap: 20px;
 }
-
-
-
 /* Navbar */
 .navbar {
   display: flex;
