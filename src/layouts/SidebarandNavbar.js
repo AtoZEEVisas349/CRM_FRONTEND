@@ -150,20 +150,7 @@ const SidebarandNavbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(event.target) &&
-        userIconRef.current &&
-        !userIconRef.current.contains(event.target)
-      ) {
-        setShowUserPopover(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -300,16 +287,18 @@ const SidebarandNavbar = () => {
         className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
       </div>
         
-      <div 
+      <div
   className="user-icon-wrapper"
-  onMouseEnter={() => setShowUserPopover(true)}
+  ref={popoverRef}
   onMouseLeave={() => setShowUserPopover(false)}
 >
-  <FontAwesomeIcon  
+  <FontAwesomeIcon
+    ref={userIconRef}
     className="navbar_icon"
     icon={faCircleUser}
-    onClick={handleUserIconClick}
+    onClick={() => setShowUserPopover((prev) => !prev)}
   />
+
 
   {showUserPopover && (
     <div className="user_popover">
