@@ -17,6 +17,8 @@ const ReportCard = () => {
     fetchData(); // fire on mount
   }, []);
 
+  if (!counts) return <p>Loading report data...</p>;
+
   const cards = [
     {
       title: "Fresh Leads",
