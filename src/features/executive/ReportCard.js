@@ -54,19 +54,19 @@ useEffect(() => {
   const cards = [
     {
       title: "Fresh Leads",
-      value:<div>{freshleadCounts}</div>,
+      value:<div>{freshleadCounts ||0}</div>,
       change: "+3.85%",
       icon: <FaUserPlus />,
     },
     {
       title: "Follow-ups",
-         value:<div>{followupCounts}</div>,
+         value:<div>{followupCounts||0}</div>,
       change: "+6.41%",
       icon: <FaClipboardCheck />,
     },
     {
       title: "Converted Clients",
-         value:<div>{convertedCounts}</div>,
+         value:<div>{convertedCounts||0}</div>,
       change: "-5.38%",
       icon: <FaUsers />,
     },
