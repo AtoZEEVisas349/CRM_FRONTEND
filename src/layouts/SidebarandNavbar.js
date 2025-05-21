@@ -319,12 +319,6 @@ const SidebarandNavbar = () => {
   {showUserPopover && (
     <div
       className="user_popover"
-      style={{
-        position: "absolute",
-        top: "100%",
-        right: 0,
-        zIndex: 1000,
-      }}
       onMouseLeave={() => setShowUserPopover(false)}
     >
       {executiveLoading ? (
