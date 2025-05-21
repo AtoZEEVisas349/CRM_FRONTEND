@@ -37,18 +37,40 @@ const Header = () => {
             <div className="date-picker">
               <FaCalendarAlt className="icon enhanced-icon" />
               <DatePicker
-                ref={datepickerRef}
-                selectsRange={true}
-                startDate={startDate}
-                endDate={endDate}
-                onChange={(update) => setDateRange(update)}
-                dateFormat="MMM dd, yyyy"
-                placeholderText="Select Date Range"
-                dropdownMode="select"
-                minDate={new Date(2000, 0, 1)}
-                maxDate={today}
-                onFocus={(e) => e.target.blur()}
-              />
+  ref={datepickerRef}
+  selectsRange={true}
+  startDate={startDate}
+  endDate={endDate}
+  onChange={(update) => setDateRange(update)}
+  dateFormat="MMM dd, yyyy"
+  placeholderText="Select Date Range"
+  dropdownMode="select"
+  minDate={new Date(2000, 0, 1)}
+  maxDate={today}
+  onFocus={(e) => e.target.blur()}
+  showPopperArrow={false}
+  renderCustomHeader={({
+    date,
+    decreaseMonth,
+    increaseMonth,
+    prevMonthButtonDisabled,
+    nextMonthButtonDisabled,
+  }) => (
+    <div className="custom-header">
+      <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+        {"<"}
+      </button>
+      <span>{date.toLocaleString("default", { month: "long", year: "numeric" })}</span>
+      <button
+        onClick={increaseMonth}
+        disabled={nextMonthButtonDisabled || new Date(date).getMonth() === today.getMonth()}
+      >
+        {">"}
+      </button>
+    </div>
+  )}
+/>
+
               <FaChevronDown
                 className="icon enhanced-icon dropdown-icon"
                 onClick={() => datepickerRef.current.setOpen(true)}
