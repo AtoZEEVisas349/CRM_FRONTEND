@@ -587,7 +587,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     const token = localStorage.getItem("token");
   
     if (token && currentUser?.username) {
-      fetchFollowUps();     // ✅ moved here safely
       getAllFollowUps();    // ✅ moved here safely
       fetchFreshLeadsAPI();
     } else {
@@ -607,7 +606,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
 
     updateUserLoginStatus,
     // Follow-ups
-    fetchFollowUps,
     createFollowUp,
     fetchFreshLeadsAPI,
     
@@ -644,7 +642,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         createFreshLeadAPI,
         createLeadAPI,
         updateFreshLeadFollowUp,
-        fetchFreshLeads,
         executiveDashboardData,
         executiveDashboardLoading,
         fetchExecutiveDashboardData,
@@ -661,8 +658,7 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         closeLeadsError,
         
         // ✅ Dashboard Counts
-        freshLeadsCount,
-        followUpCount,
+        
         convertedClients,        
         convertedClientsLoading,
         // ✅ Fresh Leads
