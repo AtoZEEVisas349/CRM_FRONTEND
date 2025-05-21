@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 import ReportCard from "../features/executive/ReportCard";
 import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/executive.css";
@@ -14,6 +15,7 @@ const ExecutiveLayout = () => {
           <div className="dashboard-main-content">
             <ReportCard />
             <NewsComponent />
+            <Outlet />
           </div>
         </div>
       </div>
