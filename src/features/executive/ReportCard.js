@@ -1,43 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { FaUserPlus, FaClipboardCheck, FaUsers } from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
 
 const ReportCard = () => {
-  const { fetchCounts } = useApi();
-  const [counts, setCounts] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchCounts(); // call from context
-        setCounts(data); // store in local state
-        console.log("Fetched counts:", data);
-      } catch (error) {
-        console.error("❌ Failed to fetch counts from context:", error);
-      }
-    };
-
-    fetchData(); // fire on mount
-  }, []);
-
-  if (!counts) return <p>Loading report data...</p>;
+  const {
+    freshLeadsCount,
+    followUpCount,
+    convertedClientsCount,
+  } = useApi();
 
   const cards = [
     {
       title: "Fresh Leads",
-      value: <div>{counts.freshLeads || 0}</div>,
+      value: freshLeadsCount.toLocaleString(),
       change: "+3.85%",
       icon: <FaUserPlus />,
     },
     {
       title: "Follow-ups",
-      value: <div>{counts.followUps || 0}</div>,
+      value: followUpCount.toLocaleString(),
       change: "+6.41%",
       icon: <FaClipboardCheck />,
     },
     {
       title: "Converted Clients",
-      value: <div>{counts.convertedClients || 0}</div>,
+      value: convertedClientsCount.toLocaleString(),
       change: "-5.38%",
       icon: <FaUsers />,
     },
