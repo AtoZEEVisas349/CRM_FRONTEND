@@ -599,8 +599,7 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     
     createCloseLeadAPI,
     fetchAllCloseLeadsAPI,
-       fetchCounts,
-       stats,
+ 
     createConvertedClientAPI,
     fetchConvertedClientsAPI,
     // Follow-up Histories
@@ -646,7 +645,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         closeLeadsError,
         
         // ✅ Dashboard Counts
-        counts,
         convertedClients,        
         convertedClientsLoading,
         // ✅ Fresh Leads
