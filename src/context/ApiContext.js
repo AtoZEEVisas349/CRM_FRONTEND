@@ -245,46 +245,21 @@ export const ApiProvider = ({ children }) => {
       console.error("Error fetching executive activity data:", error);
     }
   };
-
-  // ✅ Executive Dashboard Cards Total Count
-  const [freshLeadsCount, setFreshLeadsCount] = useState(0);
-  const [followUpCount, setFollowUpCount] = useState(0);
-  const [convertedClientsCount, setConvertedClientsCount] = useState(0);
-
-  const fetchFreshLeads = async () => {
-    try {
-      const response = await apiService.fetchFreshLeads();
-      const data = response.data;   
-      const assignedLeads = data.filter(lead => lead.clientLead?.status === "Assigned");
-        setFreshLeadsCount(assignedLeads.length); 
-    } catch (error) {
-      console.error("❌ Failed to fetch fresh leads:", error);
-    }
-  };
-
-  const fetchFollowUps = async () => {
-    try {
-      const response = await apiService.fetchAllFollowUps(); // <-- Corrected here
-      const data = response.data;
-      const followUpLeads = data.filter(lead => lead.clientLeadStatus === "Follow-Up");  
-      setFollowUpCount(followUpLeads.length);
-    } catch (error) {
-      console.error("❌ Failed to fetch follow-up leads:", error);
-    }
-  };
+// Fetch Counts
+  const [stats, setStats] = useState({ freshLeads: 0, followUps: 0, convertedClients: 0 });
+  const fetchCounts = async () => {
+   
+   try {
+     const response = await apiService.fetchFreshLeadsCount();
   
-  const fetchConvertedClients = async () => {
-    try {
-      const response = await apiService.fetchConvertedClients(); 
-      const data = response.data;
-  
-      const convertedClients = data.filter(lead => lead.status === "Converted");  
-      setConvertedClientsCount(convertedClients.length); 
-    } catch (error) {
-      console.error("❌ Failed to fetch converted clients:", error);
-    }
-  };  
+    return response.data;
+    
+   } catch (error) {
+     console.error("❌ Failed to fetch fresh leads:", error);
+   }
+ };
 
+  
   // ✅ Fetch Fresh Leads API
   const [freshLeads, setFreshLeads] = useState([]);
   const [freshLeadsLoading, setFreshLeadsLoading] = useState(false);
@@ -548,6 +523,20 @@ const [opportunitiesLoading, setOpportunitiesLoading] = useState(false);
     }
   };
 
+ const [dealFunnel, setDealFunnel] = useState(null);
+ 
+  const getDealFunnel = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.fetchDealFunnelData();
+      setDealFunnel(data);
+    } catch (error) {
+      console.error("❌ Context error fetching deal funnel:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ✅ Revenue Chart Data State
 const [revenueChartData, setRevenueChartData] = useState([]);
 const [revenueChartLoading, setRevenueChartLoading] = useState(false);
@@ -585,7 +574,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     fetchLeadSectionVisitsAPI();
     fetchExecutives();
     fetchAllCloseLeadsAPI();
-    fetchConvertedClients();
     getExecutiveActivity();
     fetchFollowUpHistoriesAPI(); 
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -625,7 +613,8 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     
     createCloseLeadAPI,
     fetchAllCloseLeadsAPI,
-
+       fetchCounts,
+       stats,
     createConvertedClientAPI,
     fetchConvertedClientsAPI,
     // Follow-up Histories
@@ -674,9 +663,6 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         // ✅ Dashboard Counts
         freshLeadsCount,
         followUpCount,
-        convertedClientsCount,
-        fetchFollowUps,
-        fetchConvertedClients,
         convertedClients,        
         convertedClientsLoading,
         // ✅ Fresh Leads
@@ -734,7 +720,8 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         opportunities,
         opportunitiesLoading,
         fetchOpportunitiesData,
-
+        getDealFunnel,
+        dealFunnel,
         // ✅ Follow-up Histories
         followUpHistories,
         followUpHistoriesLoading,

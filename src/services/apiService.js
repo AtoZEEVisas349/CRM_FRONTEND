@@ -225,34 +225,13 @@ export const fetchLeadSectionVisits = async (executiveId) => {
 export const fetchFreshLeadsCount = async () => {
   try {
     const response = await apiService.get("/executive-dashboard");
-    return response.data.data.freshLeads;
+    return response.data;
   } catch (error) {
     console.error("❌ Error fetching fresh leads count:", error);
     throw error;
   }
 };
 
-// ✅ Fetch follow-up count for the executive
-export const fetchFollowUpCount = async () => {
-  try {
-    const response = await apiService.get("/executive-dashboard/followupstats");
-    return response.data.data.followUps;
-  } catch (error) {
-    console.error("❌ Error fetching follow-up count:", error);
-    throw error;
-  }
-};
-
-// ✅ Fetch converted clients count for the executive
-export const fetchConvertedClientsCount = async () => {
-  try {
-    const response = await apiService.get("/executive-dashboard/converted");
-    return response.data.data.convertedClients;
-  } catch (error) {
-    console.error("❌ Error fetching converted clients count:", error);
-    throw error;
-  }
-};
 // ✅ Create a new lead
 export const createLeadAPI = async (leadData) => {
   try {
