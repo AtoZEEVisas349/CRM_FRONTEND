@@ -163,6 +163,12 @@ html, body {
   transition: transform 0.3s ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
 }
+[data-theme="dark"] .card-details{
+  color: #fff;
+}
+[data-theme="dark"] .news h1{
+  color: #fff;
+}
 [data-theme="dark"]
 .report-card:hover {
   background: linear-gradient(135deg, #5f0a87, #a4508b); /* Purple gradient on hover */
