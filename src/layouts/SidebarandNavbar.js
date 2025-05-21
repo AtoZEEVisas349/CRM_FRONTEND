@@ -300,27 +300,19 @@ const SidebarandNavbar = () => {
         className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
       </div>
         
-      <div
+      <div 
   className="user-icon-wrapper"
-  ref={popoverRef}
-  style={{ position: "relative" }}
+  onMouseEnter={() => setShowUserPopover(true)}
+  onMouseLeave={() => setShowUserPopover(false)}
 >
-  <FontAwesomeIcon
+  <FontAwesomeIcon  
     className="navbar_icon"
     icon={faCircleUser}
-    onClick={async () => {
-      setShowUserPopover(true);
-      await fetchExecutiveData();
-    }}
-    ref={userIconRef}
-    style={{ cursor: "pointer" }}
+    onClick={handleUserIconClick}
   />
 
   {showUserPopover && (
-    <div
-      className="user_popover"
-      onMouseLeave={() => setShowUserPopover(false)}
-    >
+    <div className="user_popover">
       {executiveLoading ? (
         <p>Loading user details...</p>
       ) : (
@@ -335,11 +327,7 @@ const SidebarandNavbar = () => {
             </div>
           </div>
           <button className="logout_btn" onClick={handleLogout}>
-            <FontAwesomeIcon
-              icon={faRightFromBracket}
-              style={{ marginRight: "8px" }}
-            />{" "}
-            Logout
+            <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
           </button>
         </>
       )}
