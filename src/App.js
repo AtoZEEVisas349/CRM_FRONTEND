@@ -1,6 +1,6 @@
 // --- App.js ---
 import { Routes, Route, Navigate } from "react-router-dom";
-import { PrivateRoute,PublicRoute } from "./services/auth";
+import { PrivateRoute } from "./services/auth";
 import { ProcessPrivateRoute,ProcessPublicRoute } from "./services/processAuth";
 import Login from "./features/authentication/Login";
 import Signup from "./features/authentication/Signup";
@@ -51,10 +51,10 @@ const App = () => {
     <ThemeProvider>
       <Routes>
         <Route path="/" element={<Navigate replace to="/signup" />} />
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
-       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
-      <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
         {/* Public master routes - login & signup */}
         <Route path="/master/loginmaster" element={<MasterPublicRoute><LoginMaster /></MasterPublicRoute>} />
         <Route path="/master/signupmaster" element={<MasterPublicRoute><SignupMaster /></MasterPublicRoute>} />
