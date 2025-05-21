@@ -304,23 +304,33 @@ const SidebarandNavbar = () => {
   className="user-icon-wrapper"
   onMouseEnter={() => setShowUserPopover(true)}
   onMouseLeave={() => setShowUserPopover(false)}
+  style={{ position: "relative" }}
 >
-  <FontAwesomeIcon  
-    className="navbar_icon"
-    icon={faCircleUser}
-    onClick={handleUserIconClick}
-  />
+  <div ref={userIconRef}>
+    <FontAwesomeIcon  
+      className="navbar_icon"
+      icon={faCircleUser}
+      onClick={handleUserIconClick}
+    />
+  </div>
 
   {showUserPopover && (
-    <div className="user_popover">
+    <div
+      ref={popoverRef}
+      className="user_popover"
+      style={{
+        position: "absolute",
+        top: "100%", // push below the icon
+        right: 0,
+        zIndex: 1000
+      }}
+    >
       {executiveLoading ? (
         <p>Loading user details...</p>
       ) : (
         <>
           <div className="user_details">
-            <div className="user_avatar">
-              {executiveInfo.username?.charAt(0)}
-            </div>
+            <div className="user_avatar">{executiveInfo.username?.charAt(0)}</div>
             <div>
               <p className="user_name">{executiveInfo.username}</p>
               <p className="user_role">{executiveInfo.role}</p>
@@ -334,6 +344,7 @@ const SidebarandNavbar = () => {
     </div>
   )}
 </div>
+
 
     </div>
 
