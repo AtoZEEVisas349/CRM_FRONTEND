@@ -22,7 +22,7 @@ const Summary = () => {
     };
 
     fetchData();
-  }, [getDealFunnel]);
+  }, []);
 
   const summaryItems = [
     {
