@@ -150,6 +150,9 @@ body {
   color: white;
   font-size: 20px;
 }
+.box-icon {
+  font-size: 22px;
+}
 .sidebar-toggle-btn {
   font-size: 22px;
   margin-right: 20px;
