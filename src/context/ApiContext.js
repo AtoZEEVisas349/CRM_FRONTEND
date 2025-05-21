@@ -246,14 +246,14 @@ export const ApiProvider = ({ children }) => {
     }
   };
 // Fetch Counts
+  const [counts,setCounts]=useState();
   const [stats, setStats] = useState({ freshLeads: 0, followUps: 0, convertedClients: 0 });
   const fetchCounts = async () => {
    
    try {
      const response = await apiService.fetchFreshLeadsCount();
   
-    return response.data;
-    
+    setCounts(response.data);
    } catch (error) {
      console.error("❌ Failed to fetch fresh leads:", error);
    }
@@ -658,7 +658,7 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         closeLeadsError,
         
         // ✅ Dashboard Counts
-        
+        counts,
         convertedClients,        
         convertedClientsLoading,
         // ✅ Fresh Leads
