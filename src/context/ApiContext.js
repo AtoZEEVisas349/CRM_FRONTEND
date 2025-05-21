@@ -245,21 +245,7 @@ export const ApiProvider = ({ children }) => {
       console.error("Error fetching executive activity data:", error);
     }
   };
-// Fetch Counts
-  const [counts,setCounts]=useState();
-  const [stats, setStats] = useState({ freshLeads: 0, followUps: 0, convertedClients: 0 });
-  const fetchCounts = async () => {
-   
-   try {
-     const response = await apiService.fetchFreshLeadsCount();
-  
-    setCounts(response.data);
-   } catch (error) {
-     console.error("❌ Failed to fetch fresh leads:", error);
-   }
- };
 
-  
   // ✅ Fetch Fresh Leads API
   const [freshLeads, setFreshLeads] = useState([]);
   const [freshLeadsLoading, setFreshLeadsLoading] = useState(false);
@@ -331,6 +317,7 @@ export const ApiProvider = ({ children }) => {
     try {
       const data = await apiService.fetchAllFollowUps();
       setFollowUps(data);
+      return data || [];
     } catch (error) {
       console.error("❌ Failed to fetch follow-ups in context:", error);
     } finally {
@@ -450,6 +437,7 @@ const fetchConvertedClientsAPI = async () => {
     const response = await apiService.fetchConvertedClients(); 
     if (response && response.data && Array.isArray(response.data)) {
       setConvertedClients(response.data); 
+      return response.data;
     } else {
       console.error("❌ No data found in the response");
       setConvertedClients([]); 

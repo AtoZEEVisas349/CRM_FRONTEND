@@ -221,16 +221,6 @@ export const fetchLeadSectionVisits = async (executiveId) => {
     throw error;
   }
 };
-// ✅ Fetch fresh leads count for the executive
-export const fetchFreshLeadsCount = async () => {
-  try {
-    const response = await apiService.get("/executive-dashboard");
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error fetching fresh leads count:", error);
-    throw error;
-  }
-};
 
 // ✅ Create a new lead
 export const createLeadAPI = async (leadData) => {
