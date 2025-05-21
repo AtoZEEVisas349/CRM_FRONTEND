@@ -5,14 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFolderOpen,
   faGauge,
-  faTasks,
   faClipboardList,
   faUserTie,
-  faFileInvoiceDollar,
   faCircleQuestion,
   faSliders,
   faChartPie,
-  faUserGear
+  faUserGear,
+  faUserPlus
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminSidebar = () => {
@@ -113,7 +112,7 @@ const AdminSidebar = () => {
             </li>
             <li>
               <Link to="/executiveform" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+                <FontAwesomeIcon className="admin-aside-icon" icon={faUserPlus} />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
