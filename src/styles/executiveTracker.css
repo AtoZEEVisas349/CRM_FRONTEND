@@ -16,7 +16,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px var(--shadow-light);
   width: 340px;
-  height: 88vh;
+  height: 80vh;
   overflow: hidden;
   transition: all 0.3s ease;
 }

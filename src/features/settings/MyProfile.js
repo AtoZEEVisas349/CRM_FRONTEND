@@ -151,7 +151,7 @@ const MyProfile = () => {
           value={profile.firstname || ""}
           onChange={handleChange}
           className="field-input"
-          placeholder="First Name"
+          placeholder="Name"
         />
         <input
           type="text"
