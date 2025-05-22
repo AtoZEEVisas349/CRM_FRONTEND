@@ -382,8 +382,8 @@ gap: 10px;
 [data-theme="brown"] .lead-content{
   --bg-color: #d9cac4;
 }
-[data-theme="blue"] .fresh-pagination{
-  background-color: rgb(151, 103, 74);
+[data-theme="brown"] .fresh-pagination{
+  background-color: #d9cac4;
 }
 /*------------------------------Green------------------------------*/
 [data-theme="green"] .fresh-leads-main-content,
