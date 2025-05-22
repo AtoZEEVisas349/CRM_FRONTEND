@@ -102,14 +102,13 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                 <td>{client.freshLead?.phone?.toString() || "No Phone"}</td>
                 <td>{client.freshLead?.email || "N/A"}</td>
                 <td>
-                  <span className="followup-badge">
-                    {(filter === "Interested" && (client.follow_up_type || "").toLowerCase() === "interested") ||
-                    (filter === "Not Interested" && (client.follow_up_type || "").toLowerCase() === "not interested")
-                      ? client.follow_up_type
-                      : ""}
-                  </span>
-                  <span className="edit-icon" onClick={() => handleEdit(client)}>✏</span>
-                </td>
+                <span className="followup-badge">
+                  {filter === "All Follow Ups"
+                    ? "Create"
+                    : (client.follow_up_type || "").toLowerCase()}
+                </span>
+                <span className="edit-icon" onClick={() => handleEdit(client)}>✏</span>
+              </td>
                 <td>
                   <span className={`status-badge ${getStatusColorClass(client.clientLeadStatus)}`}>
                     {client.clientLeadStatus || "N/A"}

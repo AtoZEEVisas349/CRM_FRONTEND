@@ -14,9 +14,9 @@ import {
   faFile, faReceipt, faGear, faArrowLeft, faCircleQuestion, faBell,
   faRobot, faCircleUser, faRightFromBracket, faMugHot, faPersonWalking,
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
-  faHeadphones, faYinYang, faStopCircle, faPause, faPlay
+  faHeadphones, faYinYang, faStopCircle
 } from "@fortawesome/free-solid-svg-icons";
-
+import { FaPlay,FaPause } from "react-icons/fa";
 // Break timer icons
 const breakIcons = [
   faMugHot, faPersonWalking, faBed, faCouch,
@@ -57,55 +57,13 @@ const SidebarandNavbar = () => {
   const historyStackRef = useRef([]);
 
   const toggleSidebar = () => setIsActive(prev => !prev);
-
-  const toggleBreak = () => {
-    if (isBreakRunning) {
-      clearInterval(breakIntervalRef.current);
-      setIsBreakRunning(false);
-      setBreakTime("00:00");
+  const toggle = async () => {
+    if (!isBreakActive) {
+      await startBreak();
     } else {
-      let time = 5 * 60;
-      breakIntervalRef.current = setInterval(() => {
-        time--;
-        const min = String(Math.floor(time / 60)).padStart(2, "0");
-        const sec = String(time % 60).padStart(2, "0");
-        setBreakTime(`${min}:${sec}`);
-        if (time <= 0) {
-          clearInterval(breakIntervalRef.current);
-          setIsBreakRunning(false);
-          setBreakTime("00:00");
-        }
-      }, 1000);
-      setIsBreakRunning(true);
-    }
-  };
-
-  const handleWorkToggle = () => {
-    if (isWorkRunning) {
-      clearInterval(workIntervalRef.current);
-      setIsWorkRunning(false);
-      setWorkTime("00:00");
-    } else {
-      let time = 25 * 60;
-      workIntervalRef.current = setInterval(() => {
-        time--;
-        const min = String(Math.floor(time / 60)).padStart(2, "0");
-        const sec = String(time % 60).padStart(2, "0");
-        setWorkTime(`${min}:${sec}`);
-        if (time <= 0) {
-          clearInterval(workIntervalRef.current);
-          setIsWorkRunning(false);
-          setWorkTime("00:00");
-        }
-      }, 1000);
-      setIsWorkRunning(true);
-    }
-  };
-
-  const handleUserIconClick = async () => {
-    setShowUserPopover(prev => !prev);
-    await fetchExecutiveData();
-  };
+      await stopBreak();
+      }
+    };
 
   const handleLogout = async () => {
     try {
@@ -243,7 +201,7 @@ const SidebarandNavbar = () => {
 
     <div className="compact-timer">
       <div className="timer-item">
-        <button className="timer-btn-small"><faPlay /></button>
+        <button className="timer-btn-small"><FaPause /></button>
         <span className="timer-label-small">Work:</span>
         <span className="timer-box-small">{timer}</span>
       </div>
@@ -257,8 +215,8 @@ const SidebarandNavbar = () => {
       </div>
 
       <div className="timer-item">
-        <button className="timer-btn-small" onClick={toggleBreak}>
-        {isBreakActive ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
+        <button className="timer-btn-small" onClick={toggle}>
+        {isBreakActive ? <FaPause />: <FaPlay />}
         </button>
         <span className="timer-label-small">Break:</span>
         <span className="timer-box-small">{breakTimer}</span>

@@ -21,9 +21,10 @@ function FreshLead() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const navigate = useNavigate();
+  const itemsPerPage = 9; // ✅ Show only 9 leads per page
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     const executiveId = userData?.id;
@@ -36,16 +37,16 @@ function FreshLead() {
 
   useEffect(() => {
     const loadLeads = async () => {
-      if (!executiveInfo?.username) {
-        if (!executiveLoading) {
-          await fetchExecutiveData();
-        }
-        return;
-      }
-
       try {
         setLoading(true);
+
+        if (!executiveInfo && !executiveLoading) {
+          await fetchExecutiveData();
+        }
+
         const data = await fetchFreshLeadsAPI();
+        console.log("Fetched raw data:", data);
+
         let leads = [];
 
         if (Array.isArray(data)) {
@@ -53,16 +54,19 @@ function FreshLead() {
         } else if (data && Array.isArray(data.data)) {
           leads = data.data;
         } else {
-          console.error("❌ leadsData is not an array:", data);
-          setError("Invalid data format received for leads.");
+          setError("Invalid leads data format.");
           return;
         }
-        const filteredLeads = leads.filter(
-          (lead) => lead.clientLead?.status === "Assigned" 
-        );         
 
+        const filteredLeads = leads.filter(
+          (lead) => lead.clientLead?.status === "Assigned"
+        );
+
+        console.log("Filtered leads (Assigned only):", filteredLeads);
         setLeadsData(filteredLeads);
+        setCurrentPage(1); // reset to first page
       } catch (err) {
+        console.error("Lead fetching error:", err);
         setError("Failed to load leads. Please try again.");
       } finally {
         setLoading(false);
@@ -70,7 +74,7 @@ function FreshLead() {
     };
 
     loadLeads();
-  }, [executiveInfo?.username, executiveLoading]);
+  }, [executiveInfo, executiveLoading]);
 
   const totalPages = Math.ceil(leadsData.length / itemsPerPage);
   const currentLeads = leadsData.slice(
@@ -79,11 +83,11 @@ function FreshLead() {
   );
 
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
   const handleAddFollowUp = (lead) => {
@@ -100,9 +104,13 @@ function FreshLead() {
       assignDate: lead.assignDate,
       freshLeadId: lead.id,
     };
-  
+
     navigate(`/clients/${encodeURIComponent(lead.name)}`, {
-      state: { client: clientData, createFollowUp: true, clientId: clientData.id },
+      state: {
+        client: clientData,
+        createFollowUp: true,
+        clientId: clientData.id,
+      },
     });
   };
 
@@ -112,6 +120,7 @@ function FreshLead() {
     <div className="fresh-leads-main-content">
       {loading && <p className="loading-text">Loading leads...</p>}
       {error && <p className="error-text">{error}</p>}
+
       {!loading && !error && (
         <>
           <div className="fresh-leads-table-container">
@@ -151,11 +160,11 @@ function FreshLead() {
                         </button>
                       </td>
                       <td>
-                      <input
-                      type="radio"
-                      name={`leadStatus-${index}`}  // Ensure no other interference with this string
-                      className="status-radio"
-                    />
+                        <input
+                          type="radio"
+                          name={`leadStatus-${index}`}
+                          className="status-radio"
+                        />
                       </td>
                       <td className="call-cell">
                         <button
@@ -170,10 +179,7 @@ function FreshLead() {
                           📞
                         </button>
                         {activePopoverIndex === index && (
-                          <div
-                            className="popover"
-                            // ref={(el) => (popoverRefs.current[index] = el)}
-                          >
+                          <div className="popover">
                             <button className="popover-option">
                               <FontAwesomeIcon
                                 icon={faWhatsapp}
@@ -198,7 +204,7 @@ function FreshLead() {
                             </button>
                           </div>
                         )}
-                      </td>
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -213,29 +219,31 @@ function FreshLead() {
           </div>
 
           {/* Pagination */}
-          <div className="fresh-pagination">
-            <button
-              className="fresh-pagination-btn"
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-            >
-              « Prev
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              className="fresh-pagination-btn"
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next »
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="fresh-pagination">
+              <button
+                className="fresh-pagination-btn"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                « Prev
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="fresh-pagination-btn"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next »
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
   );
 }
 
-export default FreshLead;
+export default FreshLead;

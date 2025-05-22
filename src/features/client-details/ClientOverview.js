@@ -121,7 +121,7 @@ const ClientOverview = () => {
         await fetchFreshLeads();
         await fetchMeetings();
         await refreshMeetings();
-        setTimeout(() => navigate("/freshlead"), 2000);
+        setTimeout(() => navigate("/freshlead"), 1000);
       }
        else {
         const updatedData = {

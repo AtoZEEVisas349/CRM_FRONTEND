@@ -181,12 +181,15 @@ export const AuthProvider = ({ children }) => {
       await recordStopWork();
 
       // Clear localStorage and session data
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("executiveId");
       localStorage.removeItem("workStartTime");
       localStorage.removeItem("breakStartTime");
       localStorage.removeItem("accumulatedBreakTime");
+     
+     await authService.logoutUser();
+     
+     localStorage.removeItem("token");
+     localStorage.removeItem("user");
+     localStorage.removeItem("executiveId");
 
       setUser(null);
       navigate("/login");

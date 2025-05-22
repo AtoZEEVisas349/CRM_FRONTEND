@@ -12,7 +12,7 @@
 /* Main Content */
 .customer-main-content {
   margin-left: 200px;
-  width: calc(100%-200px);
+  width: calc(100% - 200px);
   height: 100vh;
   /* padding: 20px 40px 0px 100px; */
   box-sizing: border-box;
@@ -61,14 +61,15 @@ h2 {
 .button:hover {
   background: #005bb5;
 }
-
-/* Table */
 .table-container {
   width: 100%;
+  max-height: 450px; /* or adjust as needed */
+  overflow-y: auto;
   overflow-x: auto;
   padding: 0;
   margin: 0;
 }
+
 .table {
   width: 100%;
    table-layout: auto;
@@ -120,8 +121,19 @@ h2 {
 }
 
 .table-head th {
+  background-color: #6bbdea;
+  color: white;
   padding: 15px;
-  text-align: left;
+}
+.table-body-scroll {
+  max-height: 350px; /* Show approx 6 rows before scroll */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.table-body-scroll .table {
+  width: 100%;
+  table-layout: fixed;
 }
 
 .table-body {

@@ -8,7 +8,7 @@ function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
   const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}:00`; // valid for MySQL TIME
+  return `${hours}:${minutes}:00`; 
 }
 
 const ClientDetailsOverview = () => {
