@@ -394,7 +394,7 @@ export const createConvertedClient = async (convertedData) => {
     throw error;
   }
 };
-
+//fetch Converted clients
 export const fetchConvertedClients = async () => {
   try {
     const response = await apiService.get('/converted/exec'); 
@@ -470,6 +470,19 @@ export const fetchDealFunnelData = async () => {
     return response.data.data; // Returns { statusCounts, totalLeads }
   } catch (error) {
     console.error("❌ Error fetching deal funnel data:", error);
+    throw error;
+  }
+};
+//Reassigned Leads 
+export const reassignLead = async (leadId, newExecutive) => {
+  try {
+    const response = await apiService.put(`leads/reassign/${leadId}`, {
+      leadId: Number(leadId),
+      newExecutive,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error in reassignLead API:", error);
     throw error;
   }
 };

@@ -553,6 +553,14 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     throw error;
     }
   };
+const handleReassignLead = async (leadId, newExecutive) => {
+  try {
+    const data = await apiService.reassignLead(leadId, newExecutive);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -632,7 +640,7 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         executiveDashboardData,
         executiveDashboardLoading,
         fetchExecutiveDashboardData,
-
+        handleReassignLead,
         adminMeeting,
         // ✅ Follow-ups
         followUps,

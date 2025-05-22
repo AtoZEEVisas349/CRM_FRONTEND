@@ -57,7 +57,7 @@ const App = () => {
         <Route path="/master/loginmaster" element={<LoginMaster />} />
         <Route path="/master/signupmaster" element={<SignupMaster />} />
         <Route path="/process/client/login" element={<ClientLogin />} />
-       <Route path="/process/client/signup" element={<ClientSignup />} />
+        <Route path="/process/client/signup" element={<ClientSignup />} />
         <Route 
           path="/follow-up/*" 
           element={
@@ -66,7 +66,6 @@ const App = () => {
             </PrivateRoute>
           } 
         />
-
           <Route 
           path="/clients/*" 
           element={
