@@ -10,15 +10,17 @@ const TaskManagement = () => {
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [expandedLeads, setExpandedLeads] = useState({});
-  const [selectedRange, setSelectedRange] = useState(""); // ✅ new state
+  const [selectedRange, setSelectedRange] = useState("");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
+
   const { theme } = useContext(ThemeContext);
   const {
     fetchLeadsAPI,
     fetchExecutivesAPI,
     assignLeadAPI,
+    reassignLead,
     createFreshLeadAPI,
     createLeadAPI,
   } = useApi();
@@ -27,7 +29,6 @@ const TaskManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
-
   const paginatedLeads = leads;
 
   useEffect(() => {
@@ -35,10 +36,8 @@ const TaskManagement = () => {
       const isExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
       setSidebarCollapsed(!isExpanded);
     };
-
     window.addEventListener("sidebarToggle", updateSidebarState);
     updateSidebarState();
-
     return () => window.removeEventListener("sidebarToggle", updateSidebarState);
   }, []);
 
@@ -75,10 +74,7 @@ const TaskManagement = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-
-  const handleExecutiveChange = (event) => {
-    setSelectedExecutive(event.target.value);
-  };
+  const handleExecutiveChange = (e) => setSelectedExecutive(e.target.value);
 
   const handleLeadSelection = (leadId) => {
     setSelectedLeads((prev) =>
@@ -89,10 +85,7 @@ const TaskManagement = () => {
   };
 
   const toggleExpandLead = (leadId) => {
-    setExpandedLeads((prev) => ({
-      ...prev,
-      [leadId]: !prev[leadId],
-    }));
+    setExpandedLeads((prev) => ({ ...prev, [leadId]: !prev[leadId] }));
   };
 
   const toggleSelectAll = () => {
@@ -123,92 +116,96 @@ const TaskManagement = () => {
     setSelectedLeads(selectedIds);
   }, [leads, selectedRange, currentPage]);
 
-  
   const assignLeads = async () => {
-    if (!selectedExecutive) return alert("Select an executive.");
-    if (!selectedLeads.length) return alert("Select at least one lead.");
+    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
+    if (!selectedLeads.length) return alert("⚠️ Please select at least one lead.");
 
     const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-    if (!executive) return alert("Invalid executive selected.");
+    if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
 
-    try {
-      await Promise.all(
-        selectedLeads.map(async (leadId) => {
-          const lead = leads.find((l) => String(l.id) === leadId);
-          if (!lead) return;
+    let successCount = 0;
+    let failCount = 0;
+    const updatedLeads = [...leads];
 
-          const clientLeadId = lead.clientLeadId || lead.id;
-          if (!clientLeadId) {
-            console.warn("❌ Missing clientLeadId for lead:", lead.name);
-            return;
-          }
+    for (const leadId of selectedLeads) {
+      const lead = leads.find((l) => String(l.id) === leadId);
+      if (!lead) {
+        failCount++;
+        continue;
+      }
 
-          const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, '');
+      const clientLeadId = lead.clientLeadId || lead.id;
+      if (!clientLeadId) {
+        console.warn("❌ Missing clientLeadId:", lead);
+        failCount++;
+        continue;
+      }
 
-          if (!executive.username) {
-            console.warn("❌ Missing executive username.");
-            return;
-          }
+      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
 
-          const leadPayload = {
-            name: lead.name,
-            email: lead.email || "defaultEmail@example.com",
-            phone: phone,
-            source: lead.source,
-            clientLeadId: Number(clientLeadId),
+      const leadPayload = {
+        name: lead.name,
+        email: lead.email || "default@example.com",
+        phone,
+        source: lead.source || "Unknown",
+        clientLeadId: Number(clientLeadId),
+        assignedToExecutive: executive.username,
+      };
+
+      try {
+        const createdLead = await createLeadAPI(leadPayload);
+        if (!createdLead?.id) throw new Error("Lead creation failed");
+
+        const finalLeadId = createdLead.id;
+
+        if (!lead.assignedToExecutive) {
+          await assignLeadAPI(Number(finalLeadId), executive.username);
+        } else {
+          await reassignLead(Number(finalLeadId), executive.username);
+        }
+
+        const freshLeadPayload = {
+          leadId: createdLead.id,
+          name: createdLead.name,
+          email: createdLead.email,
+          phone: String(createdLead.phone),
+          assignedTo: executive.username,
+          assignedToId: executive.id,
+          assignDate: new Date().toISOString(),
+        };
+
+        await createFreshLeadAPI(freshLeadPayload);
+
+        const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
+        if (index !== -1) {
+          updatedLeads[index] = {
+            ...updatedLeads[index],
             assignedToExecutive: executive.username,
           };
+        }
 
-          try {
-            const createdLead = await createLeadAPI(leadPayload);
-            if (!createdLead || !createdLead.id) {
-              console.error("❌ Lead creation failed or returned invalid data.");
-              return;
-            }
+        successCount++;
+      } catch (err) {
+        console.error(`❌ Error processing lead ID ${leadId}:`, err);
+        failCount++;
+      }
+    }
 
-            await assignLeadAPI(leadId, executive.id, executive.username);
+    setLeads(updatedLeads);
+    setSelectedLeads([]);
+    setSelectedExecutive("");
 
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            const freshLeadPayload = {
-              leadId: createdLead.id,
-              name: createdLead.name,
-              email: createdLead.email,
-              phone: String(createdLead.phone),
-              assignedTo: executive.username,
-              assignedToId: executive.id,
-              assignDate: new Date().toISOString(),
-            };
-
-            try {
-              await createFreshLeadAPI(freshLeadPayload);
-            } catch (err) {
-              console.error("❌ Error creating fresh lead:", err);
-            }
-          } catch (err) {
-            console.error("❌ Error creating lead via createLeadAPI:", err);
-          }
-        })
-      );
-
-      setLeads((prevLeads) =>
-        prevLeads.map((lead) =>
-          selectedLeads.includes(String(lead.id))
-            ? { ...lead, assignedToExecutive: executive.username }
-            : lead
-        )
-      );
-
-      setSelectedLeads([]);
-      setSelectedExecutive("");
-      alert("Leads have been assigned successfully!");
-    } catch (err) {
-      console.error("❌ Error during lead assignment process:", err);
+    if (successCount > 0 && failCount === 0) {
+      alert("✅ Leads assigned successfully.");
+    } else if (successCount > 0 && failCount > 0) {
+      alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
+    } else {
+      alert("❌ All lead assignments failed.");
     }
   };
 
   return (
-    <div className={`f-lead-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
       <div className="leads-dashboard" data-theme={theme}>
         <div className="Logo">Lead Assign</div>
@@ -223,7 +220,6 @@ const TaskManagement = () => {
               ))}
             </select>
 
-            {/* Fresh Type Dropdown */}
             <select className="lead-type-dropdown">
               <option value="">-- Fresh Type --</option>
               <option value="hot">Hot</option>
@@ -231,13 +227,13 @@ const TaskManagement = () => {
               <option value="cold">Cold</option>
             </select>
 
-            {/* Lead Status Dropdown */}
             <select className="lead-status-dropdown">
               <option value="">-- Lead Status --</option>
               <option value="followup">Follow-Up</option>
               <option value="converted">Converted</option>
               <option value="closed">Closed</option>
             </select>
+
             <select value={selectedRange} onChange={handleRangeChange}>
               <option value="">Default Sorting</option>
               <option value="1-10">1 - 10</option>
@@ -245,6 +241,7 @@ const TaskManagement = () => {
               <option value="21-50">21 - 50</option>
               <option value="51-100">51 - 100</option>
             </select>
+
             <div className="header-sort-filter">
               <button className="Selection-btn" onClick={toggleSelectAll}>
                 Select/Unselect All Leads
@@ -265,7 +262,7 @@ const TaskManagement = () => {
               <span>All customers ({totalLeads})</span>
               <span className="source-header">Source</span>
               <span className="assign-header">Assigned To</span>
-              <span></span> {/* Empty span for actions column */}
+              <span></span>
             </div>
             {paginatedLeads.map((lead) => (
               <div key={lead.id} className="lead-row">
@@ -293,18 +290,13 @@ const TaskManagement = () => {
                           <span>Country Preference: {lead.countryPreference || "N/A"}</span>
                         </>
                       )}
-                      <button
-                        className="see-more-btn"
-                        onClick={() => toggleExpandLead(lead.id)}
-                      >
+                      <button className="see-more-btn" onClick={() => toggleExpandLead(lead.id)}>
                         {expandedLeads[lead.id] ? "See less..." : "See more..."}
                       </button>
                     </div>
                   </div>
                   <div className="lead-source">{lead.source}</div>
-                  <div className="lead-assign">
-                    {lead.assignedToExecutive || "Unassigned"}
-                  </div>
+                  <div className="lead-assign">{lead.assignedToExecutive || "Unassigned"}</div>
                   <div className="lead-actions">
                     <button className="edit">Edit</button>
                     <button className="delete">Delete</button>
@@ -316,11 +308,7 @@ const TaskManagement = () => {
 
           {leads.length > 0 && (
             <div className="pagination-controls">
-              <button
-                onClick={handlePrev}
-                disabled={currentPage === 1}
-                aria-label="Previous page"
-              >
+              <button onClick={handlePrev} disabled={currentPage === 1} aria-label="Previous page">
                 Prev
               </button>
               <span className="page-indicator">

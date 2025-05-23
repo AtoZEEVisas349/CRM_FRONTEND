@@ -476,7 +476,7 @@ export const fetchDealFunnelData = async () => {
 //Reassigned Leads 
 export const reassignLead = async (leadId, newExecutive) => {
   try {
-    const response = await apiService.put(`leads/reassign/${leadId}`, {
+    const response = await apiService.put(`leads/reassign`, {
       leadId: Number(leadId),
       newExecutive,
     });
