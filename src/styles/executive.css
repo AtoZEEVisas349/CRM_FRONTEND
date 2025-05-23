@@ -273,14 +273,16 @@ html, body {
 .executive-activity,
 .lead-section-graph,
 .map-container,
-.news {
+.news{
   background: var(--card-bg);
   color: var(--text-color);
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 12px var(--shadow-light);
 }
-
+.news h1{
+  text-align: left !important;
+}
 /* ===== Table Styling ===== */
 .transaction-table {
   width: 100%;
