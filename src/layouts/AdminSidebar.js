@@ -126,6 +126,14 @@ const AdminSidebar = () => {
 
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
+          <li>
+          <Link to="/admin/eod-report" className="admin-aside-link">
+            <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+            <span className="sidebar-label">EOD Report</span>
+          </Link>
+        </li>
+          </ul>
+          <ul>
             <li>
               <Link to="/admin/executive-details" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faUserTie} />

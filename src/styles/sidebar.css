@@ -17,9 +17,7 @@
   background-color: #1e90ff; /* Blue - Dashboard */
   border-radius: 12px;
 }
-.sidebar_heading {
-  padding: 20px;
-}
+
 .sidebar-toggle-btn {
   position: absolute;
   top: 10px;
