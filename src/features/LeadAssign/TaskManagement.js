@@ -118,31 +118,31 @@ const TaskManagement = () => {
 
   const assignLeads = async () => {
     if (!selectedExecutive) return alert("⚠️ Please select an executive.");
-    if (!selectedLeads.length) return alert("⚠️ Please select at least one lead.");
-
+    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
+  
     const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
     if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
-
+  
     let successCount = 0;
     let failCount = 0;
     const updatedLeads = [...leads];
-
+  
     for (const leadId of selectedLeads) {
       const lead = leads.find((l) => String(l.id) === leadId);
       if (!lead) {
         failCount++;
         continue;
       }
-
+  
       const clientLeadId = lead.clientLeadId || lead.id;
       if (!clientLeadId) {
-        console.warn("❌ Missing clientLeadId:", lead);
+        console.warn("❌ Missing clientLeadId or lead.id:", lead);
         failCount++;
         continue;
       }
-
+  
       const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
-
+  
       const leadPayload = {
         name: lead.name,
         email: lead.email || "default@example.com",
@@ -150,20 +150,31 @@ const TaskManagement = () => {
         source: lead.source || "Unknown",
         clientLeadId: Number(clientLeadId),
         assignedToExecutive: executive.username,
+        previousAssignedTo: lead.previousAssignedTo
       };
-
+  
       try {
+        let finalLeadId = leadId;
+  
+        // Always create the lead first
         const createdLead = await createLeadAPI(leadPayload);
         if (!createdLead?.id) throw new Error("Lead creation failed");
-
-        const finalLeadId = createdLead.id;
-
+  
+        finalLeadId = createdLead.id;
+  
         if (!lead.assignedToExecutive) {
           await assignLeadAPI(Number(finalLeadId), executive.username);
         } else {
-          await reassignLead(Number(finalLeadId), executive.username);
+          if (lead.previousAssignedTo) {
+            alert("❌ Lead ID was already reassigned. Cannot reassign again.");
+            failCount++;
+            continue;
+          } else {
+            await reassignLead(Number(lead.id), executive.username);
+            console.log("Previous Assigned To:", lead.previousAssignedTo);
+          }
         }
-
+  
         const freshLeadPayload = {
           leadId: createdLead.id,
           name: createdLead.name,
@@ -173,9 +184,9 @@ const TaskManagement = () => {
           assignedToId: executive.id,
           assignDate: new Date().toISOString(),
         };
-
+  
         await createFreshLeadAPI(freshLeadPayload);
-
+  
         const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
         if (index !== -1) {
           updatedLeads[index] = {
@@ -183,27 +194,28 @@ const TaskManagement = () => {
             assignedToExecutive: executive.username,
           };
         }
-
+  
         successCount++;
       } catch (err) {
         console.error(`❌ Error processing lead ID ${leadId}:`, err);
+        alert("❌ Something went wrong while processing a lead.");
         failCount++;
       }
     }
-
+  
     setLeads(updatedLeads);
     setSelectedLeads([]);
     setSelectedExecutive("");
-
+  
     if (successCount > 0 && failCount === 0) {
       alert("✅ Leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
       alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
     } else {
-      alert("❌ All lead assignments failed.");
+      alert("❌ No leads were assigned.");
     }
   };
-
+  
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
