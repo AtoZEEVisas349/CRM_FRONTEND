@@ -23,6 +23,7 @@ function FreshLead() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // ✅ Show only 9 leads per page
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
+  const [hasLoaded, setHasLoaded] = useState(false); // ✅ track loading only once
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,18 +38,18 @@ function FreshLead() {
 
   useEffect(() => {
     const loadLeads = async () => {
+      if (hasLoaded) return; // ✅ prevent repeated fetch
       try {
         setLoading(true);
-
+  
         if (!executiveInfo && !executiveLoading) {
-          await fetchExecutiveData();
+          await fetchExecutiveData(); // only if needed
         }
-
+  
         const data = await fetchFreshLeadsAPI();
-        console.log("Fetched raw data:", data);
-
+  
         let leads = [];
-
+  
         if (Array.isArray(data)) {
           leads = data;
         } else if (data && Array.isArray(data.data)) {
@@ -57,14 +58,30 @@ function FreshLead() {
           setError("Invalid leads data format.");
           return;
         }
-
+  
         const filteredLeads = leads.filter(
-          (lead) => lead.clientLead?.status === "Assigned"
-        );
-
-        console.log("Filtered leads (Assigned only):", filteredLeads);
+          (lead) => lead.clientLead?.status === "New" ||
+          lead.clientLead?.status === "Assigned"
+        )
+        .sort((a, b) => {
+          const dateA = new Date(
+            a.assignDate ||
+            a.lead?.assignmentDate ||
+            a.clientLead?.assignDate ||
+            0
+          );
+          const dateB = new Date(
+            b.assignDate ||
+            b.lead?.assignmentDate ||
+            b.clientLead?.assignDate ||
+            0
+          );
+          return dateB - dateA;
+        });        
+        
         setLeadsData(filteredLeads);
-        setCurrentPage(1); // reset to first page
+        setCurrentPage(1);
+        setHasLoaded(true); // ✅ set flag after successful load
       } catch (err) {
         console.error("Lead fetching error:", err);
         setError("Failed to load leads. Please try again.");
@@ -72,9 +89,10 @@ function FreshLead() {
         setLoading(false);
       }
     };
-
+  
     loadLeads();
-  }, [executiveInfo, executiveLoading]);
+  }, [executiveInfo, executiveLoading, hasLoaded]);
+  
 
   const totalPages = Math.ceil(leadsData.length / itemsPerPage);
   const currentLeads = leadsData.slice(

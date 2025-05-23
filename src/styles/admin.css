@@ -1584,7 +1584,9 @@ body.sidebar-collapsed .assign-task-container {
   transition: color 0.3s;
   color: var(--text-color);
 }
-
+.bell-align {
+  transform: translateY(2px); /* Fine-tune with 1px, 2px, or 3px as needed */
+}
 
 
 .admin-logo_name:hover {
@@ -1998,7 +2000,7 @@ body.sidebar-collapsed .admin-main-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 10px 15px;
   margin: 10px 0;
   color: var(--text-color);
 }

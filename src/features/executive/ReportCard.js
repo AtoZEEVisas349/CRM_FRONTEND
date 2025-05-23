@@ -25,7 +25,8 @@ const fetchAllCounts = async () => {
 
     // Filter assigned fresh leads
     const assignedFreshLeads = freshLeads.data.filter(
-      (lead) => lead.clientLead?.status === "Assigned"
+      (lead) => lead.clientLead?.status === "New" ||
+      lead.clientLead?.status === "Assigned"
     );
     setFreshLeadCounts(assignedFreshLeads.length);
     console.log("✅ Assigned Fresh Leads:", assignedFreshLeads);

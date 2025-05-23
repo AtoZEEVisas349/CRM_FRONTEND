@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import "../../styles/executiveTracker.css";
 import { useExecutiveActivity } from '../../context/ExecutiveActivityContext';
 import useWorkTimer from "./useLoginTimer";
-// import useBreakTimer from "./useTimerBreak";
 import { useApi } from "../../context/ApiContext";
 import { useBreakTimer } from "../../context/breakTimerContext";
 
@@ -90,6 +89,12 @@ const ExecutiveActivity = () => {
     }
   }, [user?.role]);
 
+  useEffect(() => {
+    if (!executiveInfo && !executiveLoading) {
+      fetchExecutiveData(); // only when necessary
+    }
+  }, []);
+  
   const [breakText, setBreakText] = useState("Take Break");
   const toggle= async () => {
     if (!isBreakActive) {

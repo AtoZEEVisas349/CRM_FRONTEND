@@ -30,45 +30,41 @@ function Monitoring() {
     useEffect(() => {
       fetchExecutives();
     }, []);
-  return (
-    <>
-    <SidebarToggle/>
-   <div>
-
-            <h1 style={{ textAlign: "center", marginTop: "20px" }}>Executives</h1>
-            <div className="exec-grid">
-                {executives?.map((e, i) => (
-                <div className="exec-item" key={i}>
-                    <p className='exec-name'
-                    >{e?.username}</p>
-                    <div className="exec-box-wrapper">
-                    <div className="exec-box">
-            <div className="exe-avatar">
-                {e?.username?.charAt(0)?.toUpperCase()}
-            </div>
-            </div>
-          <div className="media-toggle-attached">
-            <div className="toggle-btn" onClick={() => toggleAudio(e.id)}>
-              <FontAwesomeIcon
-                icon={audioStatus[e.id] ? faMicrophone : faMicrophoneSlash}
-                size="sm"
-              />
-            </div>
-            <div className="toggle-btn" onClick={() => toggleVideo(e.id)}>
-              <FontAwesomeIcon
-                icon={videoStatus[e.id] ? faVideo : faVideoSlash}
-                size="sm"
-              />
-            </div>
+    return (
+      <>
+        <SidebarToggle />
+        <div className='monitor'>
+          <h1>Executives</h1>
+          <div className="exec-grid">
+            {executives.map((e, i) => (
+              <div className="exec-item" key={i}>
+                <p className="exec-name">{e.username}</p>
+                <div className="exec-box-wrapper">
+                  <div className="exec-box">
+                    <div className="exe-avatar">
+                      {e.username.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
+                  <div className="media-toggle-attached">
+                    <div className="toggle-btn" onClick={() => toggleAudio(e.id)}>
+                      <FontAwesomeIcon
+                        icon={audioStatus[e.id] ? faMicrophone : faMicrophoneSlash}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="toggle-btn" onClick={() => toggleVideo(e.id)}>
+                      <FontAwesomeIcon
+                        icon={videoStatus[e.id] ? faVideo : faVideoSlash}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    ))}  
-  </div>
-</div>
-</>
-  );
-};
-
- 
-export default Monitoring;
+      </>
+    );
+  }
+  export default Monitoring;

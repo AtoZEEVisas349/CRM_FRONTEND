@@ -698,7 +698,8 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         // ✅ Executive Activity
         activityData,
         getExecutiveActivity,
-
+        fetchConvertedClientsAPI,
+        
         opportunities,
         opportunitiesLoading,
         fetchOpportunitiesData,

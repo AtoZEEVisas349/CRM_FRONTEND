@@ -2,12 +2,10 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useApi } from '../context/ApiContext';
 import { ThemeContext } from '../features/admin/ThemeContext';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  FaSun, FaMoon, FaPhone, FaUser, FaComment
+  FaSun, FaMoon, FaBell, FaUser, FaComment
 } from "react-icons/fa";
 
 function AdminNavbar() {
@@ -86,10 +84,9 @@ function AdminNavbar() {
 
         {/* Notification Icon */}
         <div className="notification_wrapper" style={{ position: 'relative' }}>
-          <FontAwesomeIcon
-            className="navbar_icon"
-            icon={faBell}
-            title="Notifications"
+          <FaBell
+            className="admin-logo_name icon-hover-zoom bell-align"
+              title="Notifications"
             tabIndex="0"
             onClick={() => navigate("/admin/notification")}
           />
