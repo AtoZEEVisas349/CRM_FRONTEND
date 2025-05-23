@@ -11,25 +11,25 @@ const TaskManagement = () => {
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [expandedLeads, setExpandedLeads] = useState({});
   const [selectedRange, setSelectedRange] = useState("");
+  const [leadsPerPage, setLeadsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalLeads, setTotalLeads] = useState(0);
+  const totalPages = Math.ceil(totalLeads / leadsPerPage);
+  const paginatedLeads = leads;
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
 
   const { theme } = useContext(ThemeContext);
   const {
+    reassignLead,
     fetchLeadsAPI,
     fetchExecutivesAPI,
     assignLeadAPI,
-    reassignLead,
     createFreshLeadAPI,
     createLeadAPI,
   } = useApi();
-
-  const leadsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalLeads, setTotalLeads] = useState(0);
-  const totalPages = Math.ceil(totalLeads / leadsPerPage);
-  const paginatedLeads = leads;
 
   useEffect(() => {
     const updateSidebarState = () => {
@@ -44,7 +44,7 @@ const TaskManagement = () => {
   useEffect(() => {
     fetchLeads();
     fetchExecutives();
-  }, [currentPage]);
+  }, [currentPage, leadsPerPage]);
 
   const fetchLeads = async () => {
     try {
@@ -119,30 +119,30 @@ const TaskManagement = () => {
   const assignLeads = async () => {
     if (!selectedExecutive) return alert("⚠️ Please select an executive.");
     if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
-  
+
     const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
     if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
-  
+
     let successCount = 0;
     let failCount = 0;
     const updatedLeads = [...leads];
-  
+
     for (const leadId of selectedLeads) {
       const lead = leads.find((l) => String(l.id) === leadId);
       if (!lead) {
         failCount++;
         continue;
       }
-  
+
       const clientLeadId = lead.clientLeadId || lead.id;
       if (!clientLeadId) {
         console.warn("❌ Missing clientLeadId or lead.id:", lead);
         failCount++;
         continue;
       }
-  
+
       const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
-  
+
       const leadPayload = {
         name: lead.name,
         email: lead.email || "default@example.com",
@@ -152,16 +152,15 @@ const TaskManagement = () => {
         assignedToExecutive: executive.username,
         previousAssignedTo: lead.previousAssignedTo
       };
-  
+
       try {
         let finalLeadId = leadId;
-  
-        // Always create the lead first
+
         const createdLead = await createLeadAPI(leadPayload);
         if (!createdLead?.id) throw new Error("Lead creation failed");
-  
+
         finalLeadId = createdLead.id;
-  
+
         if (!lead.assignedToExecutive) {
           await assignLeadAPI(Number(finalLeadId), executive.username);
         } else {
@@ -171,10 +170,9 @@ const TaskManagement = () => {
             continue;
           } else {
             await reassignLead(Number(lead.id), executive.username);
-            console.log("Previous Assigned To:", lead.previousAssignedTo);
           }
         }
-  
+
         const freshLeadPayload = {
           leadId: createdLead.id,
           name: createdLead.name,
@@ -184,9 +182,9 @@ const TaskManagement = () => {
           assignedToId: executive.id,
           assignDate: new Date().toISOString(),
         };
-  
+
         await createFreshLeadAPI(freshLeadPayload);
-  
+
         const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
         if (index !== -1) {
           updatedLeads[index] = {
@@ -194,28 +192,27 @@ const TaskManagement = () => {
             assignedToExecutive: executive.username,
           };
         }
-  
+
         successCount++;
       } catch (err) {
         console.error(`❌ Error processing lead ID ${leadId}:`, err);
-        alert("❌ Something went wrong while processing a lead.");
         failCount++;
       }
     }
-  
+
     setLeads(updatedLeads);
     setSelectedLeads([]);
     setSelectedExecutive("");
-  
+
     if (successCount > 0 && failCount === 0) {
       alert("✅ Leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
       alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
     } else {
-      alert("❌ No leads were assigned.");
+      alert("❌ Leads was already reassigned.");
     }
   };
-  
+
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
