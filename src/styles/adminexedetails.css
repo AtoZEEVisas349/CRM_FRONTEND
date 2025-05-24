@@ -1,141 +1,623 @@
+
 /* Toggle Switch */
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 30px;
-    margin-top: -5px;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: 0.4s;
-    border-radius: 34px;
-    background-color: red;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    font-size: 15px;
-    padding: 0 6px;
-    color: white;
-  }
-  
-  .slider:before {
-    display: none;
-    position: absolute;
-    content: "";
-    height: 30px;
-    width: 30px;
-    left: 4px;
-    bottom: 5px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-    z-index: 2;
-  }
-  
-  input:checked + .slider {
-    background-color: green;
-    justify-content: flex-start;
-  }
-  
-  .switch input {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  margin-top: -5px;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+  border-radius: 34px;
+  background-color: red;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 15px;
+  padding: 0 6px;
+  color: white;
+}
+
+.slider:before {
+  display: none;
+  position: absolute;
+  content: "";
+  height: 30px;
+  width: 30px;
+  left: 4px;
+  bottom: 5px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+input:checked + .slider {
+  background-color: green;
+  justify-content: flex-start;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider background */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: red;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* When checked, turn slider green */
+input:checked + .slider {
+  background-color: green;
+}
+
+/* Move the circle when checked */
+input:checked + .slider:before {
+  transform: translateX(38px);
+}
+
+/* Rounded slider */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.switch-text {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: inherit;
+  font-weight: bold;
+}
+
+/* Popup styling */
+.popup-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-style: italic;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  animation: fadeInOut 3s ease forwards;
+  z-index: 999;
+  max-width: 90%;
+  text-align: center;
+}
+
+@keyframes fadeInOut {
+  0% {
     opacity: 0;
-    width: 0;
-    height: 0;
+    transform: translateX(-50%) translateY(20px);
   }
-  
-  /* The slider background */
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+.switch.cooldown .slider {
+  background-color: #ff0000 !important;
+  cursor: not-allowed;
+}
+
+.switch.cooldown input:checked + .slider {
+  background-color: #ff0000 !important;
+}
+
+.boxes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px; /* Increased gap for better spacing */
+  padding: 5px 40px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%; /* Ensure it takes the full available width */
+  transition: all 0.3s ease; /* Smooth transition for sidebar toggle */
+}
+
+.box1 {
+  background-color: #f5f7fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+  width: 100%; /* Ensure boxes take full width of their grid cell */
+  box-sizing: border-box;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 12px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin:0 0;
+}
+
+.filter-buttons button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 2px solid #4f52bb;
+  color: #4f52bb;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.3s ease;
+}
+
+.filter-buttons button:hover {
+  background-color: #4f52bb;
+  color: white;
+}
+
+.people-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px auto;
+  font-size: 14px;
+}
+
+.people-table th,
+.people-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.toggle-section {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Ensure the content area adjusts with the sidebar */
+.admi-content {
+  flex: 1; /* Take up remaining space */
+  transition: all 0.3s ease; /* Smooth transition when sidebar toggles */
+}
+.table-responsive-wrapper {
+  width: 100% !important;
+  overflow-x: auto !important;
+}
+
+.table-responsive-wrapper table {
+  min-width: 700px; /* optional: to ensure table doesn't shrink too much */
+}
+
+/* Responsive Layout */
+
+/* Small screens (e.g., phones and small tablets, iPad Mini) */
+@media screen and (max-width: 767px) {
+  .boxes-container {
+    grid-template-columns: 1fr;
+    gap: 20px; /* Reduced gap for smaller screens */
+    padding: 15px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-small {
+    width: 40px;
+    height: 40px;
+  }
+
+  .text-content {
+    font-size: 12px;
+  }
+
+  .filter-buttons button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .people-table {
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .people-table th,
+  .people-table td {
+    padding: 8px;
+  }
+
+  .switch {
+    width: 50px;
+    height: 25px;
+  }
+
   .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: red;
-    transition: 0.4s;
-    border-radius: 34px;
+    font-size: 12px;
+    padding: 0 4px;
   }
-  
+
   .slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
+    height: 15px;
+    width: 15px;
+    left: 2px;
+    bottom: 2px;
   }
-  
-  /* When checked, turn slider green */
-  input:checked + .slider {
-    background-color: green;
-  }
-  
-  /* Move the circle when checked */
+
   input:checked + .slider:before {
-    transform: translateX(38px);
+    transform: translateX(30px);
   }
-  
-  /* Rounded slider */
-  .slider.round {
-    border-radius: 34px;
+}
+
+/* Medium screens (e.g., iPad Air, iPad 9th Gen) */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .boxes-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px; /* Slightly larger gap */
+    padding: 40px;
   }
-  .slider.round:before {
-    border-radius: 50%;
+
+  .avatar {
+    width: 90px;
+    height: 90px;
   }
-  .switch-text {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    text-align: inherit;
-    font-weight: bold;
+
+  .text-content {
+    font-size: 13px;
   }
-  
-  /* Popup styling */
-  .popup-message {
-    position: fixed;
-    top: 20px; /* 👈 move to top */
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: #fff;
-    padding: 15px 25px;
-    border-radius: 8px;
-    font-style: italic; /* 👈 italic text */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    animation: fadeInOut 3s ease forwards;
-    z-index: 999;
+
+  .people-table {
+    width: 98%;
+    table-layout: fixed;
   }
-  
-  
-  @keyframes fadeInOut {
-    0% {
-      opacity: 0;
-      transform: translateX(-50%) translateY(20px);
+
+  .people-table th,
+  .people-table td {
+    padding: 8px;
+    font-size: 13px;
+    word-wrap: break-word;
+  }
+  body.sidebar-expanded .boxes-container {
+    padding-left: 20px;
+    padding-right: 40px;
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding-left: 70px;
+    padding-right: 50px;
+  }
+}
+
+/* Large tablets (e.g., iPad Pro 11", iPad Pro 12.9") */
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .boxes-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 15px;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .text-content {
+    font-size: 14px;
+  }
+  .people-table {
+    width: 98%;
+    table-layout: fixed;
+  }
+
+  .people-table th,
+  .people-table td {
+    font-size: 14px;
+  }
+  body.sidebar-expanded .boxes-container {
+    padding-left: 20px;
+    padding-right: 40px;
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding-left: 70px;
+    padding-right: 50px;
+  }
+}
+
+/* Small laptops (e.g., MacBook Air 13", Lenovo laptops) */
+@media screen and (min-width: 1200px) and (max-width: 1439px) {
+  .boxes-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 45px; /* Larger gap for better spacing */
+    padding: 20px 40px;
+  }
+
+  .avatar {
+    width: 110px;
+    height: 110px;
+  }
+  .box1 {
+    width: 250px;
+  }
+
+  @media screen and (min-width: 1200px) {
+    .people-table {
+      width: 98%;
+      table-layout: fixed;
     }
-    10%,
-    90% {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(-50%) translateY(-20px);
+
+    .people-table th,
+    .people-table td {
+      padding: 12px;
+      font-size: 15px;
+      word-wrap: break-word;
     }
   }
-  .switch.cooldown .slider {
-    background-color: #ff0000 !important;
-    cursor: not-allowed;
+
+  body.sidebar-expanded .boxes-container {
+    padding-left: 20px;
+    padding-right: 40px;
   }
-  .switch.cooldown input:checked + .slider {
-    background-color: #ff0000 !important;
+
+  body.sidebar-collapsed .boxes-container {
+    padding-left: 100px;
+    padding-right: 50px;
   }
-  
+}
+
+/* Medium laptops (e.g., MacBook Pro 14"-16") */
+@media screen and (min-width: 1440px) and (max-width: 1799px) {
+  .boxes-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    max-width: 100%;
+    margin: 15px auto;
+  }
+  .box1 {
+    width:270px;
+  }
+
+  .avatar {
+    width: 110px;
+    height: 110px;
+  }
+  @media screen and (min-width: 1200px) {
+    .people-table {
+      width: 98%;
+      table-layout: fixed;
+      margin: 20px 10px;
+    }
+
+    .people-table th,
+    .people-table td {
+      padding: 12px;
+      font-size: 15px;
+      word-wrap: break-word;
+    }
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding: 0 150px;
+  }
+   body.sidebar-expanded .boxes-container {
+    padding: 0 90px;
+  }
+}
+
+/* Large screens (e.g., large monitors, 2K+ displays) */
+@media screen and (min-width: 1800px) and (max-width: 1920px) {
+  .boxes-container {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 50px; /* Maximum gap for large screens */
+    padding: 0px 100px;
+
+    margin: 15px auto;
+  }
+  .box1 {
+    width:270px;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .text-content {
+    font-size: 15px;
+  }
+
+  .people-table {
+    width: 98%;
+    table-layout: fixed;
+    margin: 20px 10px;
+  }
+
+  .people-table th,
+  .people-table td {
+    padding: 12px;
+    font-size: 15px;
+    word-wrap: break-word;
+  }
+  body.sidebar-expanded .boxes-container {
+    padding-left: 30px;
+    padding-right: 40px;
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding: 0 110px
+  }
+}
+/* Extra large screens (1921px and above) */
+@media screen and (min-width: 1921px) {
+  .boxes-container {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 55px;
+    padding: 50px;
+    margin: 15px auto;
+    max-width: 2400px;
+  }
+
+  .box1 {
+    width:270px;
+  }
+
+  .avatar {
+    width: 90px;
+    height: 90px;
+    font-size: 36px;
+  }
+
+  .people-table {
+    width: 98%;
+    table-layout: fixed;
+    margin: 20px 10px;
+  }
+
+  .people-table th,
+  .people-table td {
+    padding: 12px;
+    font-size: 15px;
+    word-wrap: break-word;
+  }
+  body.sidebar-expanded .boxes-container {
+    padding:0 70px
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding: 0 130px
+  }
+}
+
+/* Ultra-wide screens optimization */
+@media screen and (min-width: 2500px) {
+  .boxes-container {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 60px;
+  }
+  .box1 {
+    width: 280px;
+  }
+
+  .people-table {
+    width: 98%;
+    table-layout: fixed;
+    margin: 20px 10px;
+  }
+
+  .people-table th,
+  .people-table td {
+    padding: 12px;
+    font-size: 15px;
+    word-wrap: break-word;
+  }
+  body.sidebar-expanded .boxes-container {
+    padding-left: 100px;
+    padding-right: 40px;
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding-left: 150px;
+    padding-right: -50px;
+  }
+}
+@media screen and (min-width: 2800px) {
+  .boxes-container {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 60px;
+  }
+  .box1 {
+    width: 280px;
+  }
+
+  .people-table {
+    width: 98%;
+    table-layout: fixed;
+    margin: 20px 10px;
+  }
+
+  .people-table th,
+  .people-table td {
+    padding: 12px;
+    font-size: 15px;
+    word-wrap: break-word;
+  }
+  body.sidebar-expanded .boxes-container {
+    padding-left: 100px;
+    padding-right: 40px;
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding-left: 150px;
+    padding-right: -50px;
+  }
+}
+

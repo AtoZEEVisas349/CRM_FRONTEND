@@ -144,7 +144,9 @@ const ExecutiveDetails = () => {
                       type="checkbox"
                       checked={toggleStates[person.id] ?? true}
                       onChange={() => handleToggle(person.id)}
-                      disabled={cooldowns[person.id] || loadingStates[person.id]}
+                      disabled={
+                        cooldowns[person.id] || loadingStates[person.id]
+                      }
                     />
                     <span className="slider round">
                       <span className="switch-text">
@@ -173,13 +175,13 @@ const ExecutiveDetails = () => {
             <thead>
               <tr>
                 <th>Photo</th>
+                <th>Disable</th>
                 <th>Name</th>
                 <th>UserID</th>
                 <th>Profession</th>
                 <th>Technology</th>
                 <th>Email ID</th>
                 <th>City</th>
-                <th>Country</th>
               </tr>
             </thead>
             <tbody>
@@ -192,13 +194,33 @@ const ExecutiveDetails = () => {
                       className="avatar-small"
                     />
                   </td>
+                  <td>
+                    <label
+                      className={`switch ${
+                        cooldowns[person.id] ? "cooldown" : ""
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={toggleStates[person.id] ?? true}
+                        onChange={() => handleToggle(person.id)}
+                        disabled={
+                          cooldowns[person.id] || loadingStates[person.id]
+                        }
+                      />
+                      <span className="slider round">
+                        <span className="switch-text">
+                          {toggleStates[person.id] ?? true ? "ON" : "OFF"}
+                        </span>
+                      </span>
+                    </label>
+                  </td>
                   <td>{person.name}</td>
                   <td>{person.id}</td>
                   <td>{person.profession}</td>
                   <td>{person.technology}</td>
                   <td>{person.emailId}</td>
                   <td>{person.city}</td>
-                  <td>{person.country}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { FaEdit, FaRegCopy } from 'react-icons/fa';
 import { useProcessService } from '../../context/ProcessServiceContext';
 const ClientSetting = () => {
   const [profileImage, setProfileImage] = useState(null);
     
-  const{profile,getprofile,handleProfileSettings,profiles}=useProcessService();
-   
+  const{profile,getProfile,handleProfileSettings,profiles,profileLoading}=useProcessService();
+   const[loading,setLoading]=useState()
   const [detailsExist, setDetailsExist] = useState(false);
+  const hasFetched = useRef(false);
  const [formData, setFormData] = useState({
   customerId: '',
   dob: '',
@@ -17,8 +18,67 @@ const ClientSetting = () => {
   updatedAt: '',
   createdAt: '',
 });
+
 useEffect(() => {
-  if (profiles) {
+  const fetchProfile = async () => {
+    setLoading(true);
+    const data = await getProfile(); // <- Get response
+    setLoading(false);
+
+    if (data && Object.keys(data).length > 0) {
+      setFormData({
+        customerId: data.customerId || '',
+        dob: data.dob || '',
+        id: data.id || '',
+        nationality: data.nationality || '',
+        passportNumber: data.passportNumber || '',
+        phone: data.phone || '',
+        updatedAt: data.updatedAt || '',
+        createdAt: data.createdAt || '',
+        profession: data.profession || '',
+        location: data.location || '',
+        bio: data.bio || '',
+        updates: data.updates || false,
+        profileView: data.profileView || false,
+      });
+      setDetailsExist(true);
+    } else {
+      // New user – clear form
+      setFormData({
+        customerId: '',
+        dob: '',
+        id: '',
+        nationality: '',
+        passportNumber: '',
+        phone: '',
+        updatedAt: '',
+        createdAt: '',
+        profession: '',
+        location: '',
+        bio: '',
+        updates: false,
+        profileView: false,
+      });
+      setDetailsExist(false);
+    }
+  };
+
+  fetchProfile();
+}, []);
+ // empty dependency — run once on mount
+
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     setLoading(true)
+  //     await getProfile();
+  //     setLoading(false)
+  //   };
+  
+  //   fetchProfile();
+  //   console.log(profiles,"abc")
+  // }, []);
+useEffect(() => {
+  if (profiles && Object.keys(profiles).length > 0) {
     setFormData({
       customerId: profiles.customerId || '',
       dob: profiles.dob || '',
@@ -28,35 +88,52 @@ useEffect(() => {
       phone: profiles.phone || '',
       updatedAt: profiles.updatedAt || '',
       createdAt: profiles.createdAt || '',
+      profession: profiles.profession || '',
+      location: profiles.location || '',
+      bio: profiles.bio || '',
+      updates: profiles.updates || false,
+      profileView: profiles.profileView || false,
     });
+    setDetailsExist(true);
+  } else {
+    // Ensure no stale data shows up
+    setFormData({
+      customerId: '',
+      dob: '',
+      id: '',
+      nationality: '',
+      passportNumber: '',
+      phone: '',
+      updatedAt: '',
+      createdAt: '',
+      profession: '',
+      location: '',
+      bio: '',
+      updates: false,
+      profileView: false,
+    });
+    setDetailsExist(false);
   }
 }, [profiles]);
-  useEffect(() => {
-    const fetchProfile = async () => {
-      await getprofile();
-    };
-  
-    fetchProfile();
-    console.log(profiles,"abc")
-  }, []);
+
    const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const userType = localStorage.getItem("userType");
     try {
       if (detailsExist) {
         // Always PUT if detailsExist is true
         await handleProfileSettings(formData);
-        alert('Customer details updated successfully');
+        alert(`${userType} details updated successfully`);
       } else {
         try {
           await profile(formData);
-          alert('Customer details created successfully');
+          alert(`${userType} details created successfully`);
           setDetailsExist(true); // Now mark as exist
         } catch (err) {
           // Check if error is 'Customer details already exist', then switch to PUT
           if (err.error === 'Customer details already exist') {
             await handleProfileSettings(formData);
-            alert('Customer details updated successfully');
+            alert(`${userType} details updated successfully`);
             setDetailsExist(true);
           } else {
             throw err;
@@ -283,6 +360,28 @@ useEffect(() => {
           </form>
         </div>
       </div>
+       {loading && (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(255,255,255,0.7)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontSize: "24px",
+          fontWeight: "bold",
+          zIndex: 1000,
+          backdropFilter: "blur(5px)",
+          WebkitBackdropFilter: "blur(5px)",
+        }}
+      >
+        Loading...
+      </div>
+    )}
     </div>
   );
 };

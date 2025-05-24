@@ -17,6 +17,7 @@ export const loginUser = async (email, password) => {
 
     if (!res.ok) throw await res.json();
     const data = await res.json();
+    localStorage.setItem("userType", userType);
     return { ...data, type: userType };
   };
 
