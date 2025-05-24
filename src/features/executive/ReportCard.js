@@ -4,11 +4,8 @@ import { useApi } from "../../context/ApiContext";
 
 const ReportCard = () => {
   const {
-convertedClients,
 fetchConvertedClientsAPI,
 getAllFollowUps,
-followUps,
-freshLeads,
 fetchFreshLeadsAPI
   } = useApi();
 const[freshleadCounts,setFreshLeadCounts]=useState();

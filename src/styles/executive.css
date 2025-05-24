@@ -166,7 +166,19 @@ html, body {
 [data-theme="dark"] .card-details h4{
   color: #fff;
 }
+[data-theme="dark"] .card-value1{
+  color: #fff;
+}
+[data-theme="red"] .card-value1{
+  color: #fff;
+}
+[data-theme="blue"] .card-value1{
+  color: #fff;
+}
 [data-theme="dark"] .news h1{
+  color: #fff;
+}
+[data-theme="brown"] .card-value1{
   color: #fff;
 }
 [data-theme="dark"]
@@ -447,11 +459,13 @@ html, body {
   background: #fff4d6;
 }
 .light-mode .report-card h4,
-.light-mode .card-value,
+.light-mode .card-value1,
 .light-mode .card-change {
   color: #222;
 }
-
+.card-value1{
+  color:#222 ;
+}
 /* Nuclear option to ensure visibility */
 .report-icon {
   filter: drop-shadow(0 2px 2px rgba(0,0,0,1));
