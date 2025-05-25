@@ -19,7 +19,7 @@ import FreshLeadRoutes from "./routes/FreshLeadRoutes";
 import LeadAssignRoutes from "./routes/LeadAssignRoute";
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "./features/admin/ThemeContext";
-import { AuthProvider } from './context/AuthContext'; 
+import { useLocation } from "react-router-dom"; // ✅ at the top of App.js
 import NotificationRoutes from "./routes/NotificationRoutes";
 import InvoiceRoutes from "./routes/InvoiceRoutes";
 import SettingRoutes from "./routes/SettingRoutes";
@@ -40,6 +40,11 @@ const App = () => {
     const saved = localStorage.getItem('followUpText');
     return saved || "";
   });
+  const location = useLocation(); // ✅ Add this
+
+useEffect(() => {
+  console.log("Path changed:", location.pathname);
+}, [location.pathname]);
 
   useEffect(() => {
     localStorage.setItem('followUpText', followUpText);
@@ -69,8 +74,8 @@ const App = () => {
           <Route 
           path="/clients/*" 
           element={
-            <PrivateRoute>
-              <ClientRoutes />
+            <PrivateRoute key={location.pathname}>
+              <ClientRoutes/>
             </PrivateRoute>
           } 
         />

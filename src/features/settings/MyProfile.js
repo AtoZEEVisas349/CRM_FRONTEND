@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 const MyProfile = () => {
   const [editingSections, setEditingSections] = useState({
@@ -120,7 +122,13 @@ const MyProfile = () => {
               className="edit-btn"
               onClick={() => toggleSection("header")}
             >
-              {editingSections.header ? "Cancel ❌" : "Edit ✏"}
+              {editingSections.header ? (
+                "Cancel ❌"
+              ) : (
+                <>
+                  Edit <FontAwesomeIcon icon={faPenToSquare} style={{ marginLeft: "6px" }} />
+                </>
+              )}
             </button>
           </div>
           <div className="profile-header">
@@ -208,7 +216,13 @@ const MyProfile = () => {
               className="edit-btn"
               onClick={() => toggleSection("personal")}
             >
-              {editingSections.personal ? "Cancel ❌" : "Edit ✏"}
+              {editingSections.personal ? (
+                "Cancel ❌"
+              ) : (
+                <>
+                  Edit <FontAwesomeIcon icon={faPenToSquare} style={{ marginLeft: "6px" }} />
+                </>
+              )}
             </button>
           </div>
           <div className="profile-fields">
@@ -225,7 +239,13 @@ const MyProfile = () => {
               className="edit-btn"
               onClick={() => toggleSection("address")}
             >
-              {editingSections.address ? "Cancel ❌" : "Edit ✏"}
+              {editingSections.address ? (
+                "Cancel ❌"
+              ) : (
+                <>
+                  Edit <FontAwesomeIcon icon={faPenToSquare} style={{ marginLeft: "6px" }} />
+                </>
+              )}
             </button>
           </div>
           <div className="profile-fields">

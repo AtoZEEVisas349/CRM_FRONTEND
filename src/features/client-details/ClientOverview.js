@@ -41,11 +41,8 @@ const ClientOverview = () => {
   // Initialize date/time strings before state
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
-  const currentTimeStr = now.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  }); // e.g. "02:45 PM"
+  const currentTimeStr = now.toTimeString().slice(0, 5); // e.g. "14:45"
+  
   
   // State hooks
   const [clientInfo, setClientInfo] = useState(client);
@@ -495,13 +492,12 @@ const ClientOverview = () => {
                   <div>
                     <label style={{ fontWeight: "600" }}>Time:</label>
                     <TimePicker
-  onChange={setInteractionTime}
-  value={interactionTime}
-  format="hh:mm a"
-  disableClock={true}
-  clearIcon={null}
-/>
-
+                    onChange={setInteractionTime}
+                    value={interactionTime}
+                    disableClock={true}
+                    clearIcon={null}
+                    format="h:mm a"  
+                    />
                   </div>
                 </div>
               </div>

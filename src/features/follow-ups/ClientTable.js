@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faPhone,faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
@@ -70,7 +70,19 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
         return "status-default";
     }
   };
-
+  const getRatingColorClass = (rating) => {
+    switch ((rating || "").toLowerCase()) {
+      case "hot":
+        return "rating-hot";
+      case "warm":
+        return "rating-warm";
+      case "cold":
+        return "rating-cold";
+      default:
+        return "rating-default";
+    }
+  };
+  
   return (
     <div className="table-container responsive-table-wrapper" style={{ maxHeight: tableHeight }}>
       <table className="client-table">
@@ -102,18 +114,34 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                 <td>{client.freshLead?.phone?.toString() || "No Phone"}</td>
                 <td>{client.freshLead?.email || "N/A"}</td>
                 <td>
-                <span className="followup-badge">
-                  {filter === "All Follow Ups"
-                    ? "Create"
-                    : (client.follow_up_type || "").toLowerCase()}
-                </span>
-                <span className="edit-icon" onClick={() => handleEdit(client)}>✏</span>
-              </td>
-                <td>
-                  <span className={`status-badge ${getStatusColorClass(client.clientLeadStatus)}`}>
-                    {client.clientLeadStatus || "N/A"}
-                  </span>
+                  {filter === "All Follow Ups" ? (
+                    <button
+                      className="followup-badge full-click"
+                      onClick={() => handleEdit(client)}
+                    >
+                      Create <FontAwesomeIcon icon={faPenToSquare} className="icon" />
+                    </button>
+                  ) : (
+                    <button
+                      className="followup-badge full-click"
+                      onClick={() => handleEdit(client)}
+                    >
+                      {(client.follow_up_type || "").toLowerCase()}
+                    </button>
+                  )}
                 </td>
+                <td>
+                  {client.interaction_rating ? (
+                    <span className={`rating-badge ${getRatingColorClass(client.interaction_rating)}`}>
+                      {client.interaction_rating.charAt(0).toUpperCase() + client.interaction_rating.slice(1)}
+                    </span>
+                  ) : (
+                    <span className={`status-badge ${getStatusColorClass(client.clientLeadStatus)}`}>
+                      {client.clientLeadStatus || "N/A"}
+                    </span>
+                  )}
+                </td>
+
                 <td className="call-cell">
                   <button
                     className="call-button"
@@ -127,11 +155,21 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                   {activePopoverIndex === index && (
                     <div className="popover">
                       <button className="popover-option">
-                        <FontAwesomeIcon icon={faWhatsapp} className="icon" />
+                        <FontAwesomeIcon icon={faWhatsapp} className="icon" 
+                        style={{
+                          color: "#25D366",
+                          marginRight: "6px",
+                          fontSize: "18px",
+                        }}/>
                         WhatsApp
                       </button>
                       <button className="popover-option">
-                        <FontAwesomeIcon icon={faPhone} className="icon" />
+                        <FontAwesomeIcon icon={faPhone} className="icon" 
+                        style={{
+                          color: "#25D366",
+                          marginRight: "6px",
+                          fontSize: "16px",
+                        }}/>
                         Normal Call
                       </button>
                     </div>

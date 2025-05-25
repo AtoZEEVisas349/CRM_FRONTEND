@@ -1,5 +1,6 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState,useRef ,} from 'react';
 import { FaEdit, FaRegCopy } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { useProcessService } from '../../context/ProcessServiceContext';
 const ClientSetting = () => {
   const [profileImage, setProfileImage] = useState(null);
@@ -7,6 +8,7 @@ const ClientSetting = () => {
   const{profile,getProfile,handleProfileSettings,profiles,profileLoading}=useProcessService();
    const[loading,setLoading]=useState()
   const [detailsExist, setDetailsExist] = useState(false);
+  const navigate = useNavigate();
   const hasFetched = useRef(false);
  const [formData, setFormData] = useState({
   customerId: '',
@@ -225,7 +227,11 @@ useEffect(() => {
             <span>Notifications</span>
             <span>Members</span>
             <span>Billings</span>
-            <span>Language & Region</span>
+            {localStorage.getItem("userType") === "processperson" ? (
+              <span onClick={() => navigate("/process/client/create-client")}>Create Client</span>
+            ) : (
+              <span>Language & Region</span>
+            )}
             <span>Security</span>
           </div>
 
@@ -236,22 +242,22 @@ useEffect(() => {
                 <div className="process-field">
                   <label>Nationality</label>
                  <input
-  type="text"
-  name="nationality"
-  value={formData.nationality}
-  onChange={handleChange}
-  placeholder="Enter Nationality"
-/>
+                  type="text"
+                  name="nationality"
+                  value={formData.nationality}
+                  onChange={handleChange}
+                  placeholder="Enter Nationality"
+                />
                 </div>
                 <div className="process-field">
                   <label>Phone</label>
                  <input
-  type="text"
-  name="phone"
-  value={formData.phone}
-  onChange={handleChange}
-  placeholder="Enter your phone"
-/>
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter your phone"
+                  />
                 </div>
               </div>
                <div className="process-row">
@@ -259,24 +265,22 @@ useEffect(() => {
                   <label>DOB</label>
                  <input
                    type="text"
-  name="dob"
-  value={formData.dob}
-  onChange={handleChange}
-  placeholder="Enter your DOB"
-/>
+                      name="dob"
+                      value={formData.dob}
+                      onChange={handleChange}
+                      placeholder="Enter your DOB"
+                    />
                 </div>
                    <div className="process-field">
                   <label>Passport Number</label>
                <input
-  type="text"
-  name="passportNumber"
-  value={formData.passportNumber}
-  onChange={handleChange}
-  placeholder="Enter Passport Number"
-/></div>
+                type="text"
+                name="passportNumber"
+                value={formData.passportNumber}
+                onChange={handleChange}
+                placeholder="Enter Passport Number"
+              /></div>
                 </div>
-              
-
               <div className="process-field">
                 <label>Profession</label>
                 <select name="profession" value={formData.profession} onChange={handleChange}>

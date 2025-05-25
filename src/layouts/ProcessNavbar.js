@@ -30,7 +30,11 @@ const ProcessNavbar = () => {
       >
         <li><Link to="/process/client/dashboard">Dashboard</Link></li>
         <li><Link to="/process/client/upload">Upload</Link></li>
-        <li><Link to="/process/client/settings">Settings</Link></li>
+         {/* ✅ Only show this link to processperson */}
+          {user?.type === 'processperson' && (
+            <li><Link to="/process/client/all-clients">Clients</Link></li>
+          )}
+          <li><Link to="/process/client/settings">Settings</Link></li>
         <li><button className="process-logout-btn" onClick={handleLogout}>Logout</button></li>
       </ul>
 

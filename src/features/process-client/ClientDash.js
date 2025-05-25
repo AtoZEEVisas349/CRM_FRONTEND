@@ -1,59 +1,50 @@
 import React, { useState, useEffect } from "react";
-import roadMapImage from "../../assets/roadMapImage.jpeg";
 import { useProcessService } from "../../context/ProcessServiceContext";
-
-const iconPositions = [
-  { top: "25%", left: "22.5%" },
-  { top: "78%", left: "29.7%" },
-  { top: "20%", left: "36.7%" },
-  { top: "72%", left: "44.1%" },
-  { top: "14%", left: "50.5%" },
-  { top: "73%", left: "57.5%" },
-  { top: "19%", left: "64.5%" },
-  { top: "78%", left: "71.3%" },
-  { top: "24%", left: "79%" },
-];
+import { useProcess } from "../../context/ProcessAuthContext"; // 👈 Import it
 
 const ClientDash = () => {
-  const editableStages = 6;
   const { handleUpsertStages, handleGetStages } = useProcessService();
 
-  const [comments, setComments] = useState(Array(iconPositions.length).fill({ text: "", date: "" }));
-  const [expanded, setExpanded] = useState(Array(iconPositions.length).fill(false));
+  const [stageCount, setStageCount] = useState(6); // Replaces editableStages
+  const [comments, setComments] = useState([]);
+  const [expanded, setExpanded] = useState([]);
   const [activeIcon, setActiveIcon] = useState(null);
   const [inputValue, setInputValue] = useState("");
-
-  const [stageData, setStageData] = useState({
-    stage1_data: "",
-    stage1_completed: false,
-    stage1_timestamp: null,
-    stage2_data: "",
-    stage2_completed: false,
-    stage2_timestamp: null,
-    stage3_data: "",
-    stage3_completed: false,
-    stage3_timestamp: null,
-    stage4_data: "",
-    stage4_completed: false,
-    stage4_timestamp: null,
-    stage5_data: "",
-    stage5_completed: false,
-    stage5_timestamp: null,
-    stage6_data: "",
-    stage6_completed: false,
-    stage6_timestamp: null,
-  });
+  const [stageData, setStageData] = useState({});
+  const [hexagons, setHexagons] = useState([]);
+  const { user } = useProcess(); // 👈 Hook gives you user type
 
   useEffect(() => {
     fetchAndSetStages();
-  }, []);
+  }, [stageCount]);
+
+  useEffect(() => {
+    const newHexagons = [];
+    const topRowCount = Math.ceil(stageCount / 2);
+    const bottomRowCount = Math.floor(stageCount / 2);
+  
+    for (let i = 0; i < topRowCount; i++) {
+      const num = i * 2 + 1;
+      const left = 140 + i * 260;
+      newHexagons.push({ num, left, top: 120, row: "top" }); // decreased top Y
+    }
+  
+    for (let i = 0; i < bottomRowCount; i++) {
+      const num = (i + 1) * 2;
+      const left = 280 + i * 260;
+      newHexagons.push({ num, left, top: 360, row: "bottom" }); // decreased bottom Y
+    }
+  
+    setHexagons(newHexagons);
+  }, [stageCount]);
+  
 
   const fetchAndSetStages = async () => {
     try {
       const latestStages = await handleGetStages();
-      const newComments = [...comments];
+      const newComments = [];
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < stageCount; i++) {
         const text = latestStages[`stage${i + 1}_data`] || "";
         const date = latestStages[`stage${i + 1}_timestamp`]
           ? new Date(latestStages[`stage${i + 1}_timestamp`]).toLocaleString("default", {
@@ -61,10 +52,11 @@ const ClientDash = () => {
               year: "numeric",
             })
           : "";
-        newComments[i] = { text, date };
+        newComments.push({ text, date });
       }
 
       setComments(newComments);
+      setExpanded(Array(stageCount).fill(false));
       setStageData(latestStages);
     } catch (err) {
       console.error("Error fetching customer stages:", err.message);
@@ -72,26 +64,21 @@ const ClientDash = () => {
   };
 
   const handleIconClick = (index) => {
-    if (index < editableStages) {
+    if (index < stageCount) {
       setActiveIcon(index);
-      setInputValue(comments[index].text);
+      setInputValue(comments[index]?.text || "");
     }
   };
 
   const handleSubmit = async () => {
     const currentDate = new Date().toISOString();
-
     const updatedStage = {
       [`stage${activeIcon + 1}_data`]: inputValue,
       [`stage${activeIcon + 1}_completed`]: true,
       [`stage${activeIcon + 1}_timestamp`]: currentDate,
     };
 
-    const newStageData = {
-      ...stageData,
-      ...updatedStage,
-    };
-
+    const newStageData = { ...stageData, ...updatedStage };
     setStageData(newStageData);
 
     try {
@@ -105,7 +92,7 @@ const ClientDash = () => {
 
   const toggleExpand = (index) => {
     const updated = [...expanded];
-    updated[index] = !expanded[index];
+    updated[index] = !updated[index];
     setExpanded(updated);
   };
 
@@ -115,71 +102,134 @@ const ClientDash = () => {
       "#3498db", "#9b59b6", "#e67e22",
       "#1abc9c", "#ccd61d", "#ef1a93",
     ];
-    return colors[index] || "#000";
+    return colors[index % colors.length] || "#000";
   };
+
+  const addStage = () => setStageCount((prev) => prev + 1);
+  const removeStage = () => {
+    if (stageCount > 1) setStageCount((prev) => prev - 1);
+  };
+
+  const calculateRoadPath = (stageCount) => {
+    const segments = Math.ceil(stageCount / 2);
+    let path = "M0 260 ";
+  
+    for (let i = 0; i < segments; i++) {
+      const x1 = 60 + i * 260;
+      const x2 = 140 + i * 260;
+      path += `C${x1} 260, ${x1} 130, ${x2} 130 `;
+      if (i < segments - 1) {
+        const x3 = 220 + i * 260;
+        path += `S${x3} 260, ${x3 + 60} 260 `;
+      }
+    }
+  
+    return path;
+  };
+  
 
   return (
     <div className="page-wrapper">
       <div className="roadmap-container">
         <h1>Activity Roadmap</h1>
-        <div className="process-image-wrapper">
-          <img src={roadMapImage} alt="Roadmap" className="roadmap-image" />
-          {iconPositions.map((pos, index) => (
-            <div key={index} className="icon-container" style={{ top: pos.top, left: pos.left }}>
-              <button
-                className={`hex-button hex-icon-${index}`}
-                onClick={() => handleIconClick(index)}
-                disabled={index >= editableStages}
-                style={{ cursor: index >= editableStages ? "default" : "pointer" }}
-              >
-                <div className="hex-text">
-                  <small>Stage</small>
-                  <small>{index + 1}</small>
-                </div>
-              </button>
+        {user?.type === "processperson" && (
+        <div className="stage-controls" style={{ marginBottom: "1.5rem" }}>
+          <button onClick={addStage} className="control-btn">Add Stage</button>
+          <button onClick={removeStage} className="control-btn">Remove Stage</button>
+          <span className="stage-count">Total Stages: {stageCount}</span>
+        </div>
+        )}
+        <div className="timeline-container">
+          <svg
+            className="road-svg"
+            fill="none"
+            viewBox={`0 0 ${280 + Math.ceil(stageCount / 2) * 260} 450`}
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d={calculateRoadPath(stageCount)}
+              stroke="#4B4B4B"
+              strokeLinecap="round"
+              strokeWidth="70"
+            />
+            <path
+              d={calculateRoadPath(stageCount)}
+              stroke="white"
+              strokeDasharray="10 15"
+              strokeLinecap="round"
+              strokeWidth="8"
+            />
 
-              {index < editableStages && comments[index].text && (
-                <div
-                  className={`comment-box ${expanded[index] ? "expanded" : "collapsed"}`}
-                  style={{
-                    borderColor: getColor(index),
-                    top: parseFloat(pos.top) < 50 ? "-90px" : "60px",
-                  }}
-                >
-                  <div style={{ fontWeight: "bold", color: getColor(index), fontSize: "15px", marginBottom: "5px" }}>
-                    Stage {index + 1}
-                  </div>
-                  <div>
-                    {expanded[index]
-                      ? comments[index].text
-                      : (
-                        <>
-                          {comments[index].text.slice(0, 100)}...
-                          <span
-                            onClick={() => toggleExpand(index)}
-                            style={{ color: "#007bff", cursor: "pointer", fontSize: "12px", marginLeft: "6px" }}
-                          >
-                            See more
-                          </span>
-                        </>
-                      )}
-                  </div>
-                  {expanded[index] && comments[index].text.length > 100 && (
-                    <div
-                      onClick={() => toggleExpand(index)}
-                      style={{ color: "#007bff", cursor: "pointer", fontSize: "12px", marginTop: "6px" }}
+            {hexagons.map((hex) => (
+              <React.Fragment key={`line-${hex.num}`}>
+                <line
+                  x1={hex.left}
+                  y1="300"
+                  x2={hex.left}
+                  y2={hex.top - (hex.row === "top" ? 130 : 100)}
+                  stroke="white"
+                  strokeWidth="4"
+                />
+                <line
+                  x1={hex.left - 10}
+                  y1="300"
+                  x2={hex.left + 10}
+                  y2="300"
+                  stroke="white"
+                  strokeWidth="12"
+                />
+              </React.Fragment>
+            ))}
+          </svg>
+
+          {hexagons.map((hex, index) => (
+            <div
+              key={hex.num}
+              className="hexagon-container"
+              style={{ left: `${hex.left - 35}px`, top: `${hex.top}px` }}
+            >
+              <div
+                className="hexagon"
+                style={{ backgroundColor: getColor(index),
+                cursor: user?.type === "processperson" ? "pointer" : "not-allowed"
+                 }}
+                onClick={user?.type === "processperson" ? () => handleIconClick(index) : undefined}>
+                <span>Stage {hex.num}</span>
+              </div>
+
+              {comments[index]?.text && (
+                <div className="stage-description-card">
+                  <div className="card-content">
+                    <p
+                      className="card-text"
+                      style={{
+                        maxHeight: expanded[index] ? "none" : "60px",
+                        overflow: "hidden",
+                      }}
                     >
-                      See less
-                    </div>
-                  )}
+                      {comments[index].text}
+                    </p>
+                    {comments[index].text.length > 100 && (
+                      <button
+                        className="expand-toggle"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpand(index);
+                        }}
+                      >
+                        {expanded[index] ? "See Less" : "See More"}
+                      </button>
+                    )}
+                  </div>
+                  <h3>Stage {hex.num}</h3>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        {activeIcon !== null && (
-          <div className="input-popup">
+        {user?.type === "processperson" && activeIcon !== null && (
+            <div className="input-popup">
             <textarea
               placeholder="Enter your comment"
               value={inputValue}
@@ -188,10 +238,6 @@ const ClientDash = () => {
             <button onClick={handleSubmit}>Submit</button>
           </div>
         )}
-      </div>
-
-      <div className="table-section">
-        <h2>Stage Details (Coming Soon)</h2>
       </div>
     </div>
   );

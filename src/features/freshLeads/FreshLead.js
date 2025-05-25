@@ -4,7 +4,7 @@ import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faPhone ,faPenToSquare} from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 function FreshLead() {
@@ -174,8 +174,9 @@ function FreshLead() {
                           className="followup-badge"
                           onClick={() => handleAddFollowUp(lead)}
                         >
-                          Add Follow Up ✏
-                        </button>
+                        Add Follow Up
+                        <FontAwesomeIcon icon={faPenToSquare} className="icon"/>
+                      </button>
                       </td>
                       <td>
                         <input

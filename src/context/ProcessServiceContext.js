@@ -6,6 +6,7 @@ import {
   profileSettings,
   getprofileSettings,
   updateProfileSettings,
+  getAllConvertedClients
 } from "../services/processService";
 
 // 1. Create Context
@@ -19,6 +20,10 @@ export const ProcessServiceProvider = ({ children }) => {
   const [stages, setStages] = useState(null);
   const [stageLoading, setStageLoading] = useState(false);
   const [stageError, setStageError] = useState(null);
+
+const [convertedClients, setConvertedClients] = useState([]);
+const [convertedLoading, setConvertedLoading] = useState(false);
+const [convertedError, setConvertedError] = useState(null);
 
   // -----------------------
   // Profile Settings State
@@ -155,7 +160,21 @@ export const ProcessServiceProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
+  const fetchConvertedClients = async () => {
+    setConvertedLoading(true);
+    setConvertedError(null);
+    try {
+      const response = await getAllConvertedClients();
+      setConvertedClients(response.data || []);
+      return response.data;
+    } catch (err) {
+      setConvertedError(err.message || "Failed to fetch converted clients");
+      throw err;
+    } finally {
+      setConvertedLoading(false);
+    }
+  };
+  
   // -----------------------
   // Provider Return
   // -----------------------
@@ -177,6 +196,11 @@ export const ProcessServiceProvider = ({ children }) => {
         handleProfileSettings,
         profiles,
         setProfile,
+
+        convertedClients,
+    fetchConvertedClients,
+    convertedLoading,
+    convertedError,
       }}
     >
       {children}

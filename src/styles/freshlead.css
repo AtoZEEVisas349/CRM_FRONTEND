@@ -54,16 +54,21 @@
 }
 /* Follow-up badge style */
 .followup-badge {
-  padding: 8px 14px;
-  background-color: #f3f4f6;
-  color: #111827;
-  border: 1px solid #d1d5db;
-  border-radius: 9999px;
-  font-size: 13px;
-  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background-color: #f5f5f5;
+  border: 1px solid #cfd4dc;
+  border-radius: 999px; /* pill-shaped */
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
+
 .followup-badge:hover {
-  background-color: #e5e7eb;
+  background-color: #c5c0c0;
 }
 /* Radio button (for status) */
 .status-radio {

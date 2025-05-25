@@ -409,8 +409,9 @@ h1, h2, h3, h4, h5, h6 {
 .client-table td {
   padding: 8px 15px;
   border-bottom: 1px solid #eee;
-  vertical-align: top;
+  vertical-align: middle;
   padding-bottom: 5px;
+  text-align: left;
 }
 
 .client-name {
@@ -432,21 +433,77 @@ h1, h2, h3, h4, h5, h6 {
 .user-icon {
   font-size: 14px;
 }
-
-.followup-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  background-color: #f0f0f0;
-  font-size: 12px;
-  color: #555;
-  margin-left: 10px;
+.followup-badge.full-click {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background-color: #f5f5f5;
+  border: 1px solid #cfd4dc;
+  border-radius: 999px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
 }
 
+.followup-badge.full-click:hover {
+  background-color: #e0e0e0;
+}
+
+.followup-badge .icon {
+  font-size: 14px;
+  line-height: 1;
+}
+.followup-badge .icon {
+  margin-left: 6px;
+  font-size: 14px;
+  color: #444;
+}
 .edit-icon {
   margin-left: 10px;
   cursor: pointer;
 }
+.rating-badge {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #333;
+  background-color: #f0f0f0;
+  text-align: center;
+  min-width: auto;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
 
+.rating-hot {
+  background-color: #ffe5e5;
+  color: #b71c1c;
+  border-color: #f8bbbb;
+}
+
+.rating-warm {
+  background-color: #fff3e0;
+  color: #e65100;
+  border-color: #ffd8ab;
+}
+
+.rating-cold {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  border-color: #90caf9;
+}
+
+.rating-default {
+  background-color: #eeeeee;
+  color: #424242;
+  border-color: #d6d6d6;
+}
 .call-cell {
   position: relative;
 }
@@ -473,21 +530,34 @@ h1, h2, h3, h4, h5, h6 {
   padding: 6px 0;
 }
 
+.popover-global {
+  position: absolute;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  padding: 6px 0;
+}
+
 .popover-option {
-  background: none;
-  border: none;
-  padding: 8px 12px;
-  text-align: left;
+  padding: 10px 16px;
   font-size: 14px;
   display: flex;
   align-items: center;
+  background: white;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s ease;
+  text-align: left;
 }
 
 .popover-option:hover {
-  background-color: #f3f3f3;
+  background-color: #f0f0f0;
 }
+
 
 /*----------------------------------Pink--------------------------*/
 [data-theme="red"] .follow-app-container{

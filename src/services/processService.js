@@ -132,3 +132,27 @@ export const updateProfileSettings = async (payload) => {
     throw error.response?.data || { error: 'Network error' };
   }
 };
+// ✅ GET - All Converted Clients
+export const getAllConvertedClients = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token not found in localStorage");
+  }
+
+  const res = await fetch(`${API_BASE_URL}/converted`, {
+    method: "GET",
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to fetch converted clients");
+  }
+
+  return data;
+};
