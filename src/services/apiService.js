@@ -373,8 +373,7 @@ export const updateUserSettings = async (updatedSettings) => {
 export const fetchMeetings = async () => {
   try {
     const response = await apiService.get("/meetings/exec");
-    console.log("⚡ FULL response:", response.data);
-    return response.data.data; // 👈 access `data` inside `data`
+    return response.data.data; 
   } catch (error) {
     console.error("❌ Error fetching meetings:", error.response?.data || error.message);
     throw error;

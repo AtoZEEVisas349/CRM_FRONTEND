@@ -11,7 +11,6 @@ const ResetPassword = () => {
    
    const token = new URLSearchParams(location.search).get("token");
     useEffect(() => {
-      console.log("Reset token from URL:", token);
     }, [token]);
 
     const handleResetPassword = (e) => {

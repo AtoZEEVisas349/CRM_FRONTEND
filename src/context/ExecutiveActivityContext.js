@@ -113,7 +113,6 @@ export const ExecutiveActivityProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await recordStartBreak();
-      console.log("Break started:", response?.activity?.breakStartTime);
       setStatus((prev) => ({ ...prev, breakActive: true }));
     } catch (error) {
       console.error("❌ Error starting break:", error.message);
@@ -126,7 +125,6 @@ export const ExecutiveActivityProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await recordStopBreak();
-      console.log("Break duration:", data?.breakDuration);
       setStatus((prev) => ({ ...prev, breakActive: false }));
       return data.breakDuration;
     } catch (error) {

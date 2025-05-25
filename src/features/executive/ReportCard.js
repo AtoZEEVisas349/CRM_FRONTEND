@@ -26,22 +26,16 @@ const fetchAllCounts = async () => {
       lead.clientLead?.status === "Assigned"
     );
     setFreshLeadCounts(assignedFreshLeads.length);
-    console.log("✅ Assigned Fresh Leads:", assignedFreshLeads);
-
     // Filter follow-up leads
     const followUpLeads = followUps.data.filter(
       (lead) => lead.clientLeadStatus === "Follow-Up"
     );
     setFollowupCounts(followUpLeads.length);
-    console.log("✅ Follow-Up Leads:", followUpLeads);
-
     // Filter converted clients
     const filteredConvertedClients = convertedClients.filter(
       (client) => client.status === "Converted"
     );
     setConvertedCounts(filteredConvertedClients.length);
-    console.log("✅ Converted Clients:", filteredConvertedClients);
-
   } catch (error) {
     console.error("❌ Failed to fetch data:", error);
   }

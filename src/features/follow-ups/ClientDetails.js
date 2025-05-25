@@ -11,10 +11,8 @@ const ClientDetails = ({ selectedClient, onClose }) => {
       const freshLeadId = selectedClient.freshLead?.id || selectedClient.fresh_lead_id;
       if (freshLeadId) {
         setLoading(true);
-        console.log("Fetching histories for freshLeadId:", freshLeadId); // Debug log
         fetchFollowUpHistoriesAPI(freshLeadId)
           .then((histories) => {
-            console.log("Fetched histories:", histories); // Debug log
             if (histories && Array.isArray(histories) && histories.length > 1) {
               setLatestFollowUp(histories[1]); // Second most recent follow-up
             } else {

@@ -197,15 +197,11 @@ const ClientOverview = () => {
           follow_up_date: interactionDate,
           follow_up_time: convertTo24HrFormat(interactionTime),
           fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
-        };
-        
-        console.log("Creating follow-up history with data:", followUpHistoryData);
-        
+        };        
         // Return the promise so we can chain then/catch
         return createFollowUpHistoryAPI(followUpHistoryData);
       })
       .then((historyResponse) => {
-        console.log("Follow-up history created successfully:", historyResponse);
         alert("Follow-up and history created successfully!");
         
         // Reset form fields
@@ -270,7 +266,6 @@ const ClientOverview = () => {
     };
 
     try {
-      console.log(emailPayload);
       await handleSendEmail(emailPayload);
       alert("Email sent successfully!");
       setSendingEmail(false);

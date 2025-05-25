@@ -15,7 +15,6 @@ function Notification() {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    console.log(user.role);
 
     if (user) {
       fetchNotifications({ userId: user.id, userRole: user.role }); // Pass both id and role

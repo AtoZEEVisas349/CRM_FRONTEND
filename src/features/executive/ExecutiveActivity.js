@@ -21,7 +21,6 @@ const ExecutiveActivity = () => {
    const { executiveInfo, executiveLoading, fetchExecutiveData } = useApi();
    useEffect(() => {
     fetchExecutiveData(); // Call it only once on mount
-    console.log(executiveInfo)
   }, []);
   
   const [callText, setCallText] = useState('Start Call');
@@ -52,7 +51,6 @@ const ExecutiveActivity = () => {
     try {
       setLoading(true);
       const data = await getActivityStatus();
-      console.log("Activity data received:", data);
       setStatus((prev) => ({
         ...prev,
         onBreak: data.onBreak || false,

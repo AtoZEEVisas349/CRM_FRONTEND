@@ -21,14 +21,9 @@ const AllClient = () => {
     navigate("/process/client/create-client", { state: { client } });
   };
   useEffect(() => {
-    console.log("📦 Fetching converted clients...");
-    fetchConvertedClients()
-      .then((data) => {
-        console.log("✅ Clients fetched:", data);
-      })
-      .catch((err) => {
-        console.error("❌ Error fetching clients:", err);
-      });
+    fetchConvertedClients().catch((err) => {
+      console.error("❌ Error fetching clients:", err);
+    });
   }, []);
 
   return (

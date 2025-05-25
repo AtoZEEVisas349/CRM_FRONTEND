@@ -16,7 +16,6 @@ const useCopyNotification = (createCopyNotification, fetchNotifications) => {
       const message = `Copied: "${copiedText.slice(0, 100)}"`;
 
       createCopyNotification(userId, userRole, message);
-      console.log(`userId: ${userId}, role: ${userRole}, message: ${message}`);
     };
 
     document.addEventListener("copy", handleCopy);

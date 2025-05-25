@@ -76,9 +76,7 @@ const ClientDetailsOverview = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetchFollowUpHistoriesAPI(freshLeadId);
-      console.log("Follow-up histories:", response);
-      
+      const response = await fetchFollowUpHistoriesAPI(freshLeadId);      
       if (response && Array.isArray(response)) {
         setHistories(response);
         

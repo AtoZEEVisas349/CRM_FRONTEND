@@ -18,7 +18,6 @@ const ContactUs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
     alert("Message Submitted!");
   };
 

@@ -180,7 +180,6 @@ export const leadtrackVisit = async (executiveId) => {
       { ExecutiveId: executiveId },
       { headers: getHeaders() }
     );
-    console.log('Lead visit tracked:', response.data);
   } catch (error) {
     if (error.response) {
       console.error('API error:', error.response.data.message);

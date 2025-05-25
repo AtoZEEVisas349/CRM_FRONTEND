@@ -38,7 +38,6 @@ const CreateClient = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Submitted:", formData);
       alert("Client created successfully!");
     } catch (err) {
       console.error("Create client error:", err);

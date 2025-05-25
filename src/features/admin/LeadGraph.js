@@ -19,18 +19,12 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       try {
         // Fetch all executive activities
         const allActivities = await fetchExecutiveDashboardData();
-        console.log("All executive activities:", allActivities);
         
         // Find the activity for the selected executive
         const executiveActivity = allActivities.find(
           (activity) => activity.ExecutiveId === selectedExecutiveId
-        );
-        
-        console.log("Selected executive activity:", executiveActivity);
-        
+        );        
         if (executiveActivity && executiveActivity.leadSectionVisits) {
-          // For now we're just setting all visits to Monday
-          // In a real implementation, you would distribute these across the week
           const weeklyData = [
             executiveActivity.leadSectionVisits || 0, // Monday
             0, // Tuesday

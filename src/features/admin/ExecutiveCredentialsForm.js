@@ -104,7 +104,6 @@ const ExecutiveCredentialsForm = () => {
     
     // Simulate API call
     setTimeout(() => {
-      console.log('Executive Credentials Created:', formData);
       setIsLoading(false);
       setFormSubmitted(true);
       

@@ -379,7 +379,6 @@ export const ApiProvider = ({ children }) => {
 const fetchSettings = async () => {
   try {
     const settings = await apiService.fetchUserSettings();  
-    console.log("User Settings:", settings);
     setUserSettings(settings); 
   } catch (error) {
     console.error("Error fetching user settings:", error);
@@ -390,7 +389,6 @@ const fetchSettings = async () => {
 const updateSettings = async (updatedSettings) => {
   try {
     const updated = await apiService.updateUserSettings(updatedSettings); 
-    console.log("Settings Updated:", updated);
     setUserSettings(updated); 
   } catch (error) {
     console.error("Error updating user settings:", error);

@@ -38,7 +38,6 @@ const [convertedError, setConvertedError] = useState(null);
   // -----------------------
   useEffect(() => {
     getProfile();
-    console.log(profiles);
   }, []);
 
   // -----------------------

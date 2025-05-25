@@ -67,18 +67,7 @@ useEffect(() => {
 
   fetchProfile();
 }, []);
- // empty dependency — run once on mount
 
-  // useEffect(() => {
-  //   const fetchProfile = async () => {
-  //     setLoading(true)
-  //     await getProfile();
-  //     setLoading(false)
-  //   };
-  
-  //   fetchProfile();
-  //   console.log(profiles,"abc")
-  // }, []);
 useEffect(() => {
   if (profiles && Object.keys(profiles).length > 0) {
     setFormData({
@@ -163,12 +152,6 @@ useEffect(() => {
       [name]: type === 'checkbox' ? checked : value,
     });
   };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   alert('Saved successfully!');
-  //   console.log('Saved data:', formData);
-  // };
 
   const handleCopyLink = () => {
     const link = "https://www.portfoliolink.com";

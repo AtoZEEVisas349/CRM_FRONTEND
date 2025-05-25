@@ -53,8 +53,6 @@ const AssignTask = () => {
       setSuccess("");
 
       const response = await uploadFileAPI(file);
-      console.log("✅ Upload response:", response);
-
       setSuccess("File uploaded successfully!");
       setFile(null);
       document.getElementById("file-upload").value = "";
