@@ -205,7 +205,7 @@ const TaskManagement = () => {
     setSelectedExecutive("");
 
     if (successCount > 0 && failCount === 0) {
-      alert("✅ Leads assigned successfully.");
+      alert("✅ Leads reassigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
       alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
     } else {
