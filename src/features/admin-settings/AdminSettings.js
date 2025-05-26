@@ -1,20 +1,97 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/adminsettings.css";
-import { FaBars } from "react-icons/fa"; 
+import { FaBars } from "react-icons/fa";
 import SidebarToggle from "../admin/SidebarToggle";
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [bio, setBio] = useState("");
   const [showJobTitle, setShowJobTitle] = useState(false);
-  const [pageAccess, setPageAccess] = useState({
-    overview: true,
-    assignTask: true,
-    taskManagement: false,
-    monitoring: true,
-    executiveDetails: false,
-    invoice: true,
-  });
+ const [pageAccess, setPageAccess] = useState({
+  // Page Access Controls
+  dashboard_manager: true,
+  dashboard_teamlead: true,
+  dashboard_hr: false,
+  task_management_manager: true,
+  task_management_teamlead: true,
+  task_management_hr: false,
+  user_management_manager: true,
+  user_management_teamlead: false,
+  user_management_hr: true,
+  reporting_manager: true,
+  reporting_teamlead: true,
+  reporting_hr: false,
+  settings_manager: false,
+  settings_teamlead: false,
+  settings_hr: false,
+  billing_manager: false,
+  billing_teamlead: false,
+  billing_hr: false,
+  executive_details_manager: false,
+  executive_details_teamlead: false,
+  executive_details_hr: false,
+  monitoring_manager: true,
+  monitoring_teamlead: true,
+  monitoring_hr: false,
+  invoice_manager: true,
+  invoice_teamlead: false,
+  invoice_hr: false,
+});
+
+const [emailPreferences, setEmailPreferences] = useState({
+  // Email Preferences
+  weekly_summary_manager: true,
+  weekly_summary_teamlead: true,
+  weekly_summary_hr: false,
+  account_updates_manager: true,
+  account_updates_teamlead: false,
+  account_updates_hr: true,
+  marketing_emails_manager: false,
+  marketing_emails_teamlead: false,
+  marketing_emails_hr: false,
+  system_alerts_manager: true,
+  system_alerts_teamlead: true,
+  system_alerts_hr: true,
+  newsletter_manager: false,
+  newsletter_teamlead: false,
+  newsletter_hr: false,
+});
+
+const [notificationSettings, setNotificationSettings] = useState({
+  // Notification Settings
+  push_notifications_manager: true,
+  push_notifications_teamlead: false,
+  push_notifications_hr: false,
+  sms_alerts_manager: false,
+  sms_alerts_teamlead: false,
+  sms_alerts_hr: false,
+  email_reminders_manager: true,
+  email_reminders_teamlead: true,
+  email_reminders_hr: false,
+  task_assignments_manager: true,
+  task_assignments_teamlead: true,
+  task_assignments_hr: false,
+  deadline_warnings_manager: true,
+  deadline_warnings_teamlead: true,
+  deadline_warnings_hr: false,
+  approval_requests_manager: true,
+  approval_requests_teamlead: false,
+  approval_requests_hr: true,
+});
+
+const ToggleSwitch = ({ checked, onChange }) => (
+  <label className="toggle-switch">
+    <input 
+      type="checkbox" 
+      checked={checked}
+      onChange={onChange}
+    />
+    <span className="slider">
+      <span className="toggle-label">{checked ? "On" : "Off"}</span>
+    </span>
+  </label>
+);
+
 
   useEffect(() => {
     const handleSidebarToggle = () => {
@@ -28,33 +105,166 @@ const AdminSettings = () => {
     return () => window.removeEventListener("sidebarToggle", handleSidebarToggle);
   }, []);
 
-  const tabs = [
-    "profile", "password", "security",
-    "team", "plan", "billing",
-    "email", "notifications", "integrations"
-  ];
+const tabs = [
+  { key: "profile", label: "Profile" },
+  { key: "password", label: "Password" },
+  { key: "pageAccess", label: "Page Access Controller" }, 
+  { key: "team", label: "Team" },
+  { key: "plan", label: "Plan" },
+  { key: "billing", label: "Billing" },
+  { key: "integrations", label: "Integrations" }
+];
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "security":
-        return (
-          <div className="section-block">
-            <h3>Page Access Control</h3>
-            {Object.entries(pageAccess).map(([page, access]) => (
-              <label key={page} className="form-group">
-                <input
-                  type="checkbox"
-                  checked={access}
-                  onChange={() =>
-                    setPageAccess(prev => ({ ...prev, [page]: !prev[page] }))
-                  }
+   case "pageAccess":
+  return (
+    <div className="section-block">
+      <div className="access-control-table">
+        <div className="table-header">
+          <div className="header-cell">Functionalities</div>
+          <div className="header-cell">Manager</div>
+          <div className="header-cell">Team Lead</div>
+          <div className="header-cell">HR</div>
+        </div>
+        
+        {/* Page Access Section */}
+        <div className="functionality-group">
+          <div className="group-title">Page Access </div>
+          {[
+            "Dashboard",
+            "Task Management",
+            "User Management",
+            "Reporting",
+            "Settings",
+            "Billing"
+          ].map((func) => (
+            <div className="table-row" key={`page-${func}`}>
+              <div className="row-cell functionality">{func}</div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={pageAccess[`${func.toLowerCase().replace(' ', '_')}_manager`] || false}
+                  onChange={() => setPageAccess(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_manager`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_manager`]
+                  }))}
                 />
-                {page.charAt(0).toUpperCase() + page.slice(1).replace(/([A-Z])/g, ' $1')}
-              </label>
-            ))}
-          </div>
-        );
-      case "team":
+              </div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={pageAccess[`${func.toLowerCase().replace(' ', '_')}_teamlead`] || false}
+                  onChange={() => setPageAccess(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_teamlead`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_teamlead`]
+                  }))}
+                />
+              </div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={pageAccess[`${func.toLowerCase().replace(' ', '_')}_hr`] || false}
+                  onChange={() => setPageAccess(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_hr`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_hr`]
+                  }))}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Email Preferences Section */}
+        <div className="functionality-group">
+          <div className="group-title">Email Preferences</div>
+          {[
+            "Weekly Summary",
+            "Account Updates",
+            "Marketing Emails"
+          ].map((func) => (
+            <div className="table-row" key={`email-${func}`}>
+              <div className="row-cell functionality">{func}</div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={emailPreferences[`${func.toLowerCase().replace(' ', '_')}_manager`] || false}
+                  onChange={() => setEmailPreferences(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_manager`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_manager`]
+                  }))}
+                />
+              </div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={emailPreferences[`${func.toLowerCase().replace(' ', '_')}_teamlead`] || false}
+                  onChange={() => setEmailPreferences(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_teamlead`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_teamlead`]
+                  }))}
+                />
+              </div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={emailPreferences[`${func.toLowerCase().replace(' ', '_')}_hr`] || false}
+                  onChange={() => setEmailPreferences(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_hr`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_hr`]
+                  }))}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Notification Settings Section */}
+        <div className="functionality-group">
+          <div className="group-title">Notification Settings</div>
+          {[
+            "Push Notifications",
+            "SMS Alerts",
+            "Email Reminders"
+          ].map((func) => (
+            <div className="table-row" key={`notif-${func}`}>
+              <div className="row-cell functionality">{func}</div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={notificationSettings[`${func.toLowerCase().replace(' ', '_')}_manager`] || false}
+                  onChange={() => setNotificationSettings(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_manager`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_manager`]
+                  }))}
+                />
+              </div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={notificationSettings[`${func.toLowerCase().replace(' ', '_')}_teamlead`] || false}
+                  onChange={() => setNotificationSettings(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_teamlead`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_teamlead`]
+                  }))}
+                />
+              </div>
+              <div className="row-cell">
+                <ToggleSwitch 
+                  checked={notificationSettings[`${func.toLowerCase().replace(' ', '_')}_hr`] || false}
+                  onChange={() => setNotificationSettings(prev => ({
+                    ...prev,
+                    [`${func.toLowerCase().replace(' ', '_')}_hr`]: 
+                      !prev[`${func.toLowerCase().replace(' ', '_')}_hr`]
+                  }))}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
         return (
           <div className="section-block">
             <h3>Team Members</h3>
@@ -86,24 +296,6 @@ const AdminSettings = () => {
                 <tr><td>March 10</td><td>$49</td><td>Paid</td><td><button className="mini-btn">Download</button></td></tr>
               </tbody>
             </table>
-          </div>
-        );
-      case "email":
-        return (
-          <div className="section-block">
-            <h3>Email Preferences</h3>
-            <label><input type="checkbox" /> Weekly summary</label><br />
-            <label><input type="checkbox" /> Important account updates</label><br />
-            <label><input type="checkbox" /> Marketing emails</label>
-          </div>
-        );
-      case "notifications":
-        return (
-          <div className="section-block">
-            <h3>Notification Settings</h3>
-            <label><input type="checkbox" /> Push notifications</label><br />
-            <label><input type="checkbox" /> SMS alerts</label><br />
-            <label><input type="checkbox" /> Email reminders</label>
           </div>
         );
       case "integrations":
@@ -198,7 +390,6 @@ const AdminSettings = () => {
 
   return (
     <div className="admin-settings">
-      {/* Here is the Sidebar Toggle Button */}
       <SidebarToggle />
 
       <div className="settings-header">
@@ -206,16 +397,16 @@ const AdminSettings = () => {
       </div>
 
       <div className="settings-tabs">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            className={activeTab === tab ? "active" : ""}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
+  {tabs.map((tab) => (
+    <button
+      key={tab.key}
+      className={activeTab === tab.key ? "active" : ""}
+      onClick={() => setActiveTab(tab.key)}
+    >
+      {tab.label}
+    </button>
+  ))}
+</div>
 
       <div className="settings-card">{renderTabContent()}</div>
     </div>

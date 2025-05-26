@@ -1,5 +1,7 @@
+
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash, FaUserShield } from "react-icons/fa";
+import BlurOverlay from "../../features/Invoice/BlurOverlay"; 
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +14,7 @@ const ChangePassword = () => {
     newPassword: false,
     confirmPassword: false,
   });
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,72 +39,69 @@ const ChangePassword = () => {
 
   return (
     <div className="change-password">
-
-<div className="contact-admin-container" >
-  <div className="contact-admin-box">
-      <FaUserShield className="admin-icon" />
-  <p className="change-password-text">Contact to Administrater for changing the password</p>
- 
-</div>
-</div>
+      <div className="contact-admin-container">
+        <div className="contact-admin-box">
+          <FaUserShield className="admin-icon" />
+          <p className="change-password-text">Contact to Administrater for changing the password</p>
+        </div>
+      </div>
+      
       <h2>Change Password</h2>
-      <form onSubmit={handleSubmit} className="password-form">
-        <div className="input-container">
-          <input
-            type={passwordVisible.currentPassword ? "text" : "password"}
-            name="currentPassword"
-            value={formData.currentPassword}
-            onChange={handleChange}
-            placeholder="Enter your current password"
-          />
-         
-          <span
-            className="password-icon"
-            onClick={() => togglePasswordVisibility("currentPassword")}
-          >
-            {passwordVisible.currentPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
-        </div>
+      
+      {/* Wrap the form section with BlurOverlay */}
+      <BlurOverlay isLoading={isLoading}>
+        <form onSubmit={handleSubmit} className="password-form">
+          <div className="input-container">
+            <input
+              type={passwordVisible.currentPassword ? "text" : "password"}
+              name="currentPassword"
+              value={formData.currentPassword}
+              onChange={handleChange}
+              placeholder="Enter your current password"
+            />
+            <span
+              className="password-icon"
+              onClick={() => togglePasswordVisibility("currentPassword")}
+            >
+              {passwordVisible.currentPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
-        <div className="input-container">
-          <input
-            type={passwordVisible.newPassword ? "text" : "password"}
-            name="newPassword"
-            value={formData.newPassword}
-            onChange={handleChange}
-            placeholder="Enter a new password"
-          />
-         
-          <span
-            className="password-icon"
-            onClick={() => togglePasswordVisibility("newPassword")}
-          >
-            {passwordVisible.newPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
-        </div>
+          <div className="input-container">
+            <input
+              type={passwordVisible.newPassword ? "text" : "password"}
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              placeholder="Enter a new password"
+            />
+            <span
+              className="password-icon"
+              onClick={() => togglePasswordVisibility("newPassword")}
+            >
+              {passwordVisible.newPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
-        <div className="input-container">
-          <input
-            type={passwordVisible.confirmPassword ? "text" : "password"}
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="Confirm your new password"
-          />
-          {/* <label>
-            <FaKey />
-            Confirm New Password
-          </label> */}
-          <span
-            className="password-icon"
-            onClick={() => togglePasswordVisibility("confirmPassword")}
-          >
-            {passwordVisible.confirmPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
-        </div>
+          <div className="input-container">
+            <input
+              type={passwordVisible.confirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your new password"
+            />
+            <span
+              className="password-icon"
+              onClick={() => togglePasswordVisibility("confirmPassword")}
+            >
+              {passwordVisible.confirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
-        <button type="submit">Update Password</button>
-      </form>
+          <button type="submit">Update Password</button>
+        </form>
+      </BlurOverlay>
     </div>
   );
 };

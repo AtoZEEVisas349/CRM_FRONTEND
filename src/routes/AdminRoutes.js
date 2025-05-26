@@ -7,6 +7,7 @@ import AdminSettings from "../features/admin-settings/AdminSettings";
 import ContactUs from "../features/admin/ContactUs";
 import AdminNotification from "../features/admin/AdminNotification"
 import Eod from "../features/admin/Eod";
+import AttendanceTable from "../features/admin/AttendanceTable";
 
 const AdminRoutes = () => {
   return (
@@ -18,6 +19,8 @@ const AdminRoutes = () => {
         <Route path="notification" element={<AdminNotification />} />
         <Route path="help-support" element ={<ContactUs/>}/>
         <Route path="eod-report" element={<Eod />} /> {/* ✅ EOD route added here */}
+        <Route path="executive-attendance" element={<AttendanceTable />} />
+
       </Route>
     </Routes>
   );

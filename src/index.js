@@ -11,12 +11,14 @@ import { CompanyProvider } from './context/CompanyContext';
 import { ThemeProvider } from './features/admin/ThemeContext';
 import { ProcessProvider } from './context/ProcessAuthContext';
 import { ProcessServiceProvider } from './context/ProcessServiceContext';
+import { BeepSettingsProvider } from './context/BeepSettingsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <BrowserRouter>
   <ThemeProvider>
+    <BeepSettingsProvider>
   <AuthProvider>
     <ApiProvider>
       <ExecutiveActivityProvider>
@@ -34,6 +36,7 @@ root.render(
       </ExecutiveActivityProvider>
     </ApiProvider>
   </AuthProvider>
+  </BeepSettingsProvider>
   </ThemeProvider>
 </BrowserRouter>
 );

@@ -1,24 +1,36 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useParams,useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
+import TimePicker from "react-time-picker";
+import "react-time-picker/dist/TimePicker.css";
+import Swal from "sweetalert2";
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
   const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}:00`; 
+  return `${hours}:${minutes}:00`;
 }
 
 const ClientDetailsOverview = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
-  const { followUpHistories, fetchFollowUpHistoriesAPI, updateFollowUp, createConvertedClientAPI, createCloseLeadAPI } = useApi();
-  
+  const {
+    followUpHistories,
+    fetchFollowUpHistoriesAPI,
+    updateFollowUp,
+    createConvertedClientAPI,
+    createCloseLeadAPI,
+    createMeetingAPI,
+    fetchFreshLeadsAPI,
+    fetchMeetings,
+    refreshMeetings,
+    followUpLoading,
+  } = useApi();
+
   const client = location.state?.client || {};
-  
+
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -28,17 +40,25 @@ const ClientDetailsOverview = () => {
   const [interactionDate, setInteractionDate] = useState("");
   const now = new Date();
   const defaultTime = now.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
   });
   const [interactionTime, setInteractionTime] = useState(defaultTime);
-   const [histories, setHistories] = useState([]);
+  const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
 
+  const capitalize = (text) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+  useEffect(() => {
+    console.log("FollowUp Type Changed:", followUpType);
+  }, [followUpType]);
+  
   const clientFields = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
@@ -54,36 +74,27 @@ const ClientDetailsOverview = () => {
   
   useEffect(() => {
     if (client) {
-      const freshLeadId = client.freshLead && client.freshLead.id 
-        ? client.freshLead.id 
-        : client.fresh_lead_id || client.id;
-        
+      const freshLeadId =
+        client.freshLead?.id || client.fresh_lead_id || client.id;
       const normalizedClient = {
         ...client,
         fresh_lead_id: freshLeadId,
-        followUpId: client.followUpId || client.id, 
+        followUpId: client.followUpId || client.id,
       };
       setClientInfo(normalizedClient);
-      
-      // Fetch follow-up histories when client info is set
       loadFollowUpHistories(freshLeadId);
     }
   }, [client]);
-  
-  // Function to fetch follow-up histories
+
   const loadFollowUpHistories = async (freshLeadId) => {
     if (!freshLeadId) return;
-    
     setIsLoading(true);
     try {
-      const response = await fetchFollowUpHistoriesAPI(freshLeadId);      
-      if (response && Array.isArray(response)) {
+      const response = await fetchFollowUpHistoriesAPI(freshLeadId);
+      if (Array.isArray(response)) {
         setHistories(response);
-        
-        // If we have histories, populate the form with the latest one
         if (response.length > 0) {
-          const latestHistory = response[0]; // Assuming the API returns the latest first
-          populateFormWithHistory(latestHistory);
+          populateFormWithHistory(response[0]);
         }
       }
     } catch (error) {
@@ -92,117 +103,89 @@ const ClientDetailsOverview = () => {
       setIsLoading(false);
     }
   };
-  
-  // Helper function to populate form fields with history data
+
   const populateFormWithHistory = (history) => {
-    if (!history) return;
-    
-    // Convert contact method to lowercase for checkbox matching
-    const method = history.connect_via ? history.connect_via.toLowerCase() : "";
-    setContactMethod(method);
-    
-    // Set follow-up type (handle hyphenated values)
+    setContactMethod(history.connect_via?.toLowerCase() || "");
     setFollowUpType(history.follow_up_type || "");
-    
-    // Convert interaction rating to lowercase for checkbox matching
-    const rating = history.interaction_rating ? history.interaction_rating.toLowerCase() : "";
-    setInteractionRating(rating);
-    
-    // Set description
+    setInteractionRating(history.interaction_rating?.toLowerCase() || "");
     setReasonDesc(history.reason_for_follow_up || "");
-    
-    // Set date and time
     setInteractionDate(history.follow_up_date || "");
     setInteractionTime(history.follow_up_time || "");
   };
-  
-  useEffect(() => {
-    isListeningRef.current = isListening;
-  }, [isListening]);
 
   const handleChange = (field, value) => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
 
-  const capitalize = (text) => {
-    if (!text) return "";
-    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-  };
+  const handleFollowUpAction = async () => {
+    const freshLeadId =
+      clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
 
-  const handleTextUpdate = () => {  
-    const updatedData = {
-      connect_via: capitalize(contactMethod),
-      follow_up_type: followUpType,
-      interaction_rating: capitalize(interactionRating),
-      reason_for_follow_up: reasonDesc,
-      follow_up_date: interactionDate,
-      follow_up_time: convertTo24HrFormat(interactionTime),
-      fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.leadId || clientInfo.id, // Ensure fresh_lead_id is included
-    };
-  
-    const followUpId = clientInfo.followUpId || clientInfo.id;
-  
-    if (!followUpId || !updatedData.fresh_lead_id) {
-      alert("Missing follow-up ID or fresh lead ID.");
-      return;
-    }  
-    
-    updateFollowUp(followUpId, updatedData)
-      .then((response) => {
-        alert("Follow-up updated successfully!");
-        loadFollowUpHistories(updatedData.fresh_lead_id);
-        setTimeout(() => {
-          navigate('/follow-up');
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error("Error updating Follow-up:", error);
-        alert("Failed to update follow-up.");
+    if (!freshLeadId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Lead ID",
+        text: "Unable to find the lead. Please reload and try again.",
       });
-  };  
-  
-  const handleConvertedOrClose = async () => {
-    if (followUpType === "converted") {
-      try {
-        if (!clientInfo.fresh_lead_id) {
-          alert("Fresh Lead ID is missing. Please ensure the lead exists.");
-          return;
-        }        
-        const convertedPayload = {
-          fresh_lead_id: clientInfo.fresh_lead_id,
-        };
-  
-        const response = await createConvertedClientAPI(convertedPayload);
-        alert("Converted client created successfully!");
-        loadFollowUpHistories(clientInfo.fresh_lead_id);
-        setTimeout(() => {
-          navigate('/follow-up');
-        }, 2000);
-      } catch (error) {
-        console.error("❌ Error creating converted client:", error);
-        alert("Failed to create converted client. Ensure the lead exists.");
-      }
-    } else if (followUpType === "close") {
-      try {
-        if (!clientInfo.fresh_lead_id) {
-          alert("Fresh Lead ID is missing. Please ensure the lead exists.");
-          return;
-        }
-
-        const closeLeadPayload = { fresh_lead_id: clientInfo.fresh_lead_id };
-        const response = await createCloseLeadAPI(closeLeadPayload); 
-        alert("Close lead created successfully!");
-        // Refresh histories after creating close lead
-        loadFollowUpHistories(clientInfo.fresh_lead_id);
-        setTimeout(() => {
-          navigate('/follow-up');
-        }, 2000);
-      } catch (error) {
-        console.error("❌ Error creating close lead:", error);
-        alert("Failed to create close lead.");
-      }
     }
-  };  
+
+    try {
+      if (followUpType === "converted") {
+        await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
+        Swal.fire({ icon: "success", title: "Client Converted" });
+      } else if (followUpType === "close") {
+        await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
+        Swal.fire({ icon: "success", title: "Lead Closed" });
+      } else if (followUpType === "appointment") {
+        if (!reasonDesc) {
+          return Swal.fire({
+            icon: "warning",
+            title: "Missing Reason",
+            text: "Please add a reason before creating a meeting.",
+          });
+        }
+        const meetingPayload = {
+          clientName: clientInfo.name,
+          clientEmail: clientInfo.email,
+          clientPhone: clientInfo.phone,
+          reasonForFollowup: reasonDesc,
+          startTime: new Date(
+            `${interactionDate || new Date().toISOString().split("T")[0]}T${convertTo24HrFormat(interactionTime)}`
+          ).toISOString(),
+          endTime: null,
+          fresh_lead_id: freshLeadId,
+        };
+        await createMeetingAPI(meetingPayload);
+        Swal.fire({ icon: "success", title: "Meeting Created" });
+      } else {
+        const followUpId = clientInfo.followUpId || clientInfo.id;
+        const updatePayload = {
+          connect_via: capitalize(contactMethod),
+          follow_up_type: followUpType,
+          interaction_rating: capitalize(interactionRating),
+          reason_for_follow_up: reasonDesc,
+          follow_up_date: interactionDate,
+          follow_up_time: convertTo24HrFormat(interactionTime),
+          fresh_lead_id: freshLeadId,
+        };
+        await updateFollowUp(followUpId, updatePayload);
+        Swal.fire({ icon: "success", title: "Follow-Up Updated" });
+      }
+
+      await fetchFreshLeadsAPI();
+      await fetchMeetings();
+      await refreshMeetings();
+      loadFollowUpHistories(freshLeadId);
+      setTimeout(() => navigate("/follow-up"), 1000);
+    } catch (err) {
+      console.error("Follow-up Action Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }
+  }; 
 
   const toggleListening = () => {
     if (!recognitionRef.current) return alert("Speech recognition not supported");
@@ -345,11 +328,9 @@ const ClientDetailsOverview = () => {
       {/* Follow-Up Detail */}
       <div className="followup-detail-theme">
         <div className="followup-detail-container">
-          <h2>Follow-Up Details</h2>
           <div className="follow-up-reason">
             <h3>Reason for Follow-Up</h3>
             <div className="interaction-field">
-              <label>Interaction Description:</label>
               <div className="textarea-with-speech">
                 <textarea
                   value={reasonDesc}
@@ -391,27 +372,94 @@ const ClientDetailsOverview = () => {
                 </div>
               </div>
 
-              <div className="button-group" style={{ marginTop: "20px" }}>
-                <button
+                {/* <button
                   onClick={handleTextUpdate}
                   className="crm-button update-follow-btn"
                 >
                   Update Follow-Up
-                </button>
-                {(followUpType === "converted" || followUpType === "close") && (
-                  <button
-                    onClick={handleConvertedOrClose}
-                    className="crm-button converted-btn"
-                  >
-                    {followUpType === "converted" ? "Create Converted" : "Create Close"}
-                  </button>
-                )}
+                </button> */}
+
+           
+<div className="button-group" style={{ marginTop: "20px" }}>
+  {/* Always show update follow-up */}
+  <button
+    onClick={handleFollowUpAction}
+    className="crm-button update-follow-btn"
+    disabled={followUpLoading}
+    style={{
+      backgroundColor: "#007bff",
+      color: "white",
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      cursor: followUpLoading ? "not-allowed" : "pointer",
+      opacity: followUpLoading ? 0.6 : 1,
+    }}
+  >
+    {followUpLoading ? "Processing..." : "Update Follow-Up"}
+  </button>
+
+  {/* Show these based on follow-up type */}
+  {followUpType === "converted" && (
+    <button
+      onClick={handleFollowUpAction}
+      className="crm-button converted-btn"
+      disabled={followUpLoading}
+      style={{
+        backgroundColor: "#28a745",
+        color: "white",
+        padding: "10px 20px",
+        marginLeft: "10px",
+        borderRadius: "5px",
+        border: "none",
+      }}
+    >
+      Create Converted
+    </button>
+  )}
+
+  {followUpType === "close" && (
+    <button
+      onClick={handleFollowUpAction}
+      className="crm-button close-btn"
+      disabled={followUpLoading}
+      style={{
+        backgroundColor: "#dc3545",
+        color: "white",
+        padding: "10px 20px",
+        marginLeft: "10px",
+        borderRadius: "5px",
+        border: "none",
+      }}
+    >
+      Create Close
+    </button>
+  )}
+
+  {followUpType === "appointment" && (
+    <button
+      onClick={handleFollowUpAction}
+      className="crm-button meeting-btn"
+      disabled={followUpLoading}
+      style={{
+        backgroundColor: "#17a2b8",
+        color: "white",
+        padding: "10px 20px",
+        marginLeft: "10px",
+        borderRadius: "5px",
+        border: "none",
+      }}
+    >
+      Create Meeting
+    </button>
+  )}
+</div>
+
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

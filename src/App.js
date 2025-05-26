@@ -33,7 +33,7 @@ import ProcessRoutes from "./routes/ProcessRoutes";
 import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
 import ExecutiveFormRoutes from "./routes/ExecutiveFormRoutes";
-
+import BeepSound from "./features/settings/BeepSound";
 
 const App = () => {
   const [followUpText, setFollowUpText] = useState(() => {
@@ -86,6 +86,7 @@ useEffect(() => {
         <Route path="profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
          <Route path="theme" element={<PrivateRoute><Theme /></PrivateRoute>} />
           <Route path="change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
+          <Route path="change-Beep" element={<PrivateRoute><BeepSound /></PrivateRoute>} />
         </Route>
         <Route path="/master/*" element={
           <PrivateMasterRoute>

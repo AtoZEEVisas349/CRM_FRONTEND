@@ -217,3 +217,23 @@ export const sendEmail = async ({
     throw new Error(error.response?.data?.message || 'Failed to send email');
   }
 };
+export const getAttendance = async (weekStart) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/executive-activities/attendance`,
+      {
+        headers: getHeaders(),
+        params: {
+          weekStart: weekStart.format("YYYY-MM-DD"), // Ensure weekStart is a Day.js object
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("API error:", error.response.data.message);
+    } else {
+      console.error("Network error:", error.message);
+    }
+  }
+};

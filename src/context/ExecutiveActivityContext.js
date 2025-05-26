@@ -9,6 +9,7 @@ import {
   getActivityStatus,
   leadtrackVisit,
   sendEmail,
+  getAttendance
 } from '../services/executiveService';
 
 // 1. Create Context
@@ -205,6 +206,17 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
+  const handleGetAttendance = async (weekStart) => {
+    try {
+      setLoading(true);
+      const data = await getAttendance(weekStart);
+      return data || [];
+    } catch (error) {
+      console.error("Error fetching attendance:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   // ---------------------------------------
   // Provider Return
   // ---------------------------------------
@@ -224,6 +236,8 @@ export const ExecutiveActivityProvider = ({ children }) => {
         handleEndCall,
         handleSendEmail,
         leadtrack,
+        handleGetAttendance,
+        
       }}
     >
       {children}

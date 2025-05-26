@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/sidebar.css";
+import BeepNotification from "../BeepNotification";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
@@ -16,7 +17,7 @@ import {
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
   faHeadphones, faYinYang, faStopCircle
 } from "@fortawesome/free-solid-svg-icons";
-import { FaPlay,FaPause } from "react-icons/fa";
+import { FaPlay,FaPause ,BeepNo} from "react-icons/fa";
 // Break timer icons
 const breakIcons = [
   faMugHot, faPersonWalking, faBed, faCouch,
@@ -29,7 +30,7 @@ const SidebarandNavbar = () => {
   const { user, logout } = useAuth();
   const {
     executiveInfo, executiveLoading, fetchExecutiveData,
-    fetchNotifications, unreadCount
+    fetchNotifications, unreadCount, notifications,markNotificationReadAPI
   } = useApi();
   const { handleStopWork } = useExecutiveActivity();
   const { theme } = useContext(ThemeContext);
@@ -109,7 +110,11 @@ const SidebarandNavbar = () => {
   }, []);
 
 
-
+// BeepNotification handlers
+const handleDismissBeepNotification = () => {
+  // This function can be used to handle any additional logic when dismissing
+  console.log('BeepNotification dismissed');
+};
   useEffect(() => {
     const currentPath = location.pathname;
     if (!["/login", "/signup"].includes(currentPath)) {
@@ -125,8 +130,15 @@ const SidebarandNavbar = () => {
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
-
+  const handleMarkAllAsRead = () => {
+    // Mark all notifications as read
+    const unreadNotifications = notifications.filter(n => !n.is_read);
+    unreadNotifications.forEach(notification => {
+      markNotificationReadAPI(notification.id);
+    });
+  };
   return (
+    <>
     <section className="sidebar_navbar" data-theme={theme}>
 <section className={`sidebar_container ${isActive ? "active" : ""}`}>
 <button className="menuToggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
@@ -304,6 +316,13 @@ const SidebarandNavbar = () => {
         </div>
       )}
     </section>
+    <BeepNotification
+    notifications={notifications}
+    unreadCount={unreadCount}
+    onDismissPopup={handleDismissBeepNotification}
+    onMarkAllRead={handleMarkAllAsRead}
+  />
+  </>
   );
 };
 

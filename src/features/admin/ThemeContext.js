@@ -11,15 +11,19 @@ const themes = {
   brown: '#f4ccbb',
 };
 
-const THEME_KEYS = {
-  admin: 'adminTheme',
-  executive: 'executiveTheme',
-};
 
 export const ThemeProvider = ({ children }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const role = user?.role?.toLowerCase() || 'executive';
 
+  const executiveId = localStorage.getItem('executiveId');
+  const id = user?.id;
+  
+  const THEME_KEYS = {
+    admin: `adminTheme_${executiveId || 'light'}`,
+    executive: `executiveTheme_${id || 'light'}`,
+  };
+  
   const [theme, setTheme] = useState('light');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 

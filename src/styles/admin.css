@@ -276,7 +276,7 @@ body:not(.sidebar-open) .admin-main-content {
 }
 
 body:not(.sidebar-collapsed) .admin-main-content {
-  margin-left: 250px;
+  margin-left: 50px;
 }
 
 /* Sidebar width matches expanded/collapsed */

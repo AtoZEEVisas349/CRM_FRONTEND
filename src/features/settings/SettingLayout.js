@@ -12,6 +12,7 @@ const SettingsLayout = () => {
           <li><Link to="profile">My Profile</Link></li>
           <li><Link to="theme">Theme</Link></li>
           <li><Link to="change-password">Change Password</Link></li>
+          <li><Link to="change-beep">Change in Beep</Link></li>
         </ul>
       </aside>
       <main className="settings-content">

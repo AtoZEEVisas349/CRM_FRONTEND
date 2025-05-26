@@ -11,7 +11,8 @@ import {
   faSliders,
   faChartPie,
   faUserGear,
-  faUserPlus
+  faUserPlus,
+  faCalendarCheck
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminSidebar = () => {
@@ -138,6 +139,14 @@ const AdminSidebar = () => {
               <Link to="/admin/executive-details" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faUserTie} />
                 <span className="sidebar-label">Executive Details</span>
+              </Link>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <Link to="/admin/executive-attendance" className="admin-aside-link">
+                <FontAwesomeIcon className="admin-aside-icon" icon={faCalendarCheck} />
+                <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
           </ul>

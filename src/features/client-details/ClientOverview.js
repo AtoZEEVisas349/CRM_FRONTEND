@@ -498,9 +498,13 @@ const ClientOverview = () => {
               </div>
 
               <div className="client-btn">
-                <button className="update-btn" onClick={handleTextUpdate} disabled={followUpLoading}>
-                  Update FreshLead
-                </button>
+              <button
+                className="update-btn"
+                onClick={handleTextUpdate}
+                disabled={followUpLoading}
+              >
+                {followUpType === "appointment" ? "Create Meeting" : "Update FreshLead"}
+              </button>
                 {createFollowUpFlag && (
                   <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
                     Create Follow-Up
