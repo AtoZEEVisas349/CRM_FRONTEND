@@ -137,13 +137,69 @@ const ClientDetailsOverview = () => {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
         Swal.fire({ icon: "success", title: "Lead Closed" });
       } else if (followUpType === "appointment") {
-        if (!reasonDesc) {
+        if (!clientInfo.email || clientInfo.email.trim() === "") {
+          return Swal.fire({
+            icon: "warning",
+            title: "Missing Email",
+            text: "Client email is required to create a meeting.",
+          });
+        }
+        
+        if (!contactMethod) {
+          return Swal.fire({
+            icon: "warning",
+            title: "Missing Contact Method",
+            text: "Please select how you connected with the client.",
+          });
+        }
+        
+        if (!followUpType) {
+          return Swal.fire({
+            icon: "warning",
+            title: "Missing Follow-Up Type",
+            text: "Please select a follow-up type before proceeding.",
+          });
+        }
+        
+        if (!interactionRating) {
+          return Swal.fire({
+            icon: "warning",
+            title: "Missing Interaction Rating",
+            text: "Please rate the client interaction before proceeding.",
+          });
+        }
+        
+        if (!reasonDesc || reasonDesc.trim() === "") {
           return Swal.fire({
             icon: "warning",
             title: "Missing Reason",
-            text: "Please add a reason before creating a meeting.",
+            text: "Please provide a reason for the follow-up.",
           });
         }
+        
+          const selectedDate = interactionDate || new Date().toISOString().split("T")[0];
+          const timeIn24Hr = convertTo24HrFormat(interactionTime);
+          const [year, month, day] = selectedDate.split("-");
+          const [hours, minutes] = timeIn24Hr.split(":");    
+          const combinedDate = new Date(
+            parseInt(year),
+            parseInt(month) - 1,
+            parseInt(day),
+            parseInt(hours),
+            parseInt(minutes)
+          );
+          
+          // Optional: log for debugging
+          console.log("⏰ Selected time:", combinedDate);
+          console.log("🕒 Current time:", new Date());
+          if (combinedDate <= new Date()) {
+            return Swal.fire({
+              icon: "error",
+              title: "Invalid Time",
+              text: "The selected time is in the past. Please choose a future time.",
+            });
+          }
+
         const meetingPayload = {
           clientName: clientInfo.name,
           clientEmail: clientInfo.email,

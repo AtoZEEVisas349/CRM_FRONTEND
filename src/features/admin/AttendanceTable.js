@@ -63,14 +63,12 @@ const AttendanceTable = () => {
             <tr key={exec.executiveId}>
               <td>{exec.executiveId}</td>
               {dates.map((date) => (
-                <td
-                  key={date}
-                  className={
-                    exec.attendance[date] === "Present" ? "present" : "absent"
-                  }
-                >
+                <td key={date}>
+                <span className={`status-badge ${exec.attendance[date] === "Present" ? "present" : "absent"}`}>
                   {exec.attendance[date]}
-                </td>
+                </span>
+              </td>
+              
               ))}
             </tr>
           ))}
