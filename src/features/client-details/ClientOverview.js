@@ -288,20 +288,15 @@ const ClientOverview = () => {
               <div className="c-profile">
                 <div className="c-info">
                 {clientFields.map(({ key, label }) => (
-                <div className="info-item" key={key} style={{ marginBottom: "10px" }}>
-                  <label className="label" style={{ fontWeight: "400", marginRight: "8px" }}>
+                <div className="info-item" key={key} >
+                  <label className="label">
                     {label}:
                   </label>
                   <input
                     type="text"
                     value={clientInfo[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    style={{
-                      padding: "6px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      width: "60%",
-                    }}
+                    className="client-input"
                   />
                 </div>
               ))}

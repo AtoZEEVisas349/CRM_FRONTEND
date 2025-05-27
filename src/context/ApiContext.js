@@ -551,6 +551,36 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     throw error;
     }
   };
+const [verificationResults, setVerificationResults] = useState({});
+const [verificationLoading, setVerificationLoading] = useState(false);
+
+const verifyNumberAPI = async (index, phone) => {
+  setVerificationLoading(true);
+  try {
+    const data = await apiService.verifyNumber(phone);
+    setVerificationResults((prev) => ({
+      ...prev,
+      [index]: data.success
+        ? {
+            name: data.name,
+            location: data.location,
+          }
+        : {
+            error: data.error || "Lookup failed",
+          },
+    }));
+    return data;
+  } catch (error) {
+    console.error("❌ Error verifying number:", error);
+    setVerificationResults((prev) => ({
+      ...prev,
+      [index]: { error: "Network error" },
+    }));
+    return null;
+  } finally {
+    setVerificationLoading(false);
+  }
+};
 
   // ✅ Effect to fetch initial data
   useEffect(() => {
@@ -637,6 +667,10 @@ const updateUserLoginStatus = async (userId, canLogin) => {
         followUpLoading,
         getAllFollowUps,
         updateFollowUp,
+
+        verifyNumberAPI,
+      verificationResults,
+      verificationLoading,
 
         closeLeads, // Add the state for Close Leads
         closeLeadsLoading,

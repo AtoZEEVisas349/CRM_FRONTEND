@@ -165,11 +165,10 @@ select:hover {
   flex-wrap: wrap;
   margin-bottom: 10px;
   background-color: var(--bg-color);
-  padding: 20px;
 }
 .top_controls {
-  gap: 16px;
   flex-wrap: wrap;
+  padding-top: 32px;
 }
 
 .add_btn {

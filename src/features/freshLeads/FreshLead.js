@@ -14,6 +14,9 @@ function FreshLead() {
     fetchExecutiveData,
     executiveLoading,
     createFollowUp,
+    verifyNumberAPI,
+    verificationResults,
+    verificationLoading,
   } = useApi();
 
   const { leadtrack } = useExecutiveActivity();
@@ -23,7 +26,6 @@ function FreshLead() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [verifyResults, setVerifyResults] = useState({});
   const [verifyingIndex, setVerifyingIndex] = useState(null);
 
   const itemsPerPage = 9;
@@ -31,33 +33,8 @@ function FreshLead() {
 
   const handleVerify = async (index, number) => {
     setVerifyingIndex(index);
-    const cleanedNumber = number.replace(/\D/g, '');
-    try {
-      const res = await fetch(`http://localhost:4000/api/get-name?number=${cleanedNumber}`);
-      const data = await res.json();
-
-      if (data.success) {
-        setVerifyResults((prev) => ({
-          ...prev,
-          [index]: {
-            name: data.name,
-            location: data.location,
-          },
-        }));
-      } else {
-        setVerifyResults((prev) => ({
-          ...prev,
-          [index]: { error: data.error || "Lookup failed" },
-        }));
-      }
-    } catch (err) {
-      setVerifyResults((prev) => ({
-        ...prev,
-        [index]: { error: "Network error" },
-      }));
-    } finally {
-      setVerifyingIndex(null);
-    }
+    await verifyNumberAPI(index, number);
+    setVerifyingIndex(null);
   };
 
   useEffect(() => {
@@ -217,23 +194,25 @@ function FreshLead() {
                           <button
                             onClick={() => handleVerify(index, lead.phone)}
                             className="verify-btn"
-                            disabled={verifyingIndex === index}
+                            disabled={
+                              verifyingIndex === index || verificationLoading
+                            }
                           >
                             {verifyingIndex === index
                               ? "Verifying..."
                               : "Get Verified"}
                           </button>
-                          {verifyResults[index] && (
+                          {verificationResults[index] && (
                             <div className="verify-result">
-                              {verifyResults[index].error ? (
+                              {verificationResults[index].error ? (
                                 <span className="text-red-600">
-                                  ❌ {verifyResults[index].error}
+                                  ❌ {verificationResults[index].error}
                                 </span>
                               ) : (
                                 <span className="text-green-600">
                                   ✅{" "}
-                                  {verifyResults[index].name ||
-                                    verifyResults[index].location}
+                                  {verificationResults[index].name ||
+                                    verificationResults[index].location}
                                 </span>
                               )}
                             </div>

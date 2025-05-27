@@ -495,4 +495,14 @@ export const fetchOpportunities = async () => {
     throw error;
   }
 };
+export const verifyNumber = async (number) => {
+  try {
+    const cleanedNumber = number.replace(/\D/g, "");
+    const response = await apiService.get(`/get-name?number=${cleanedNumber}`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error verifying number:", error);
+    throw error;
+  }
+};
 export default apiService;

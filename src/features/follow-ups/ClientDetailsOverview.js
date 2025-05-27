@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import TimePicker from "react-time-picker";
-import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { getEmailTemplates } from "../../static/emailTemplates";  
-import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import Swal from "sweetalert2";
 
@@ -30,12 +27,8 @@ const ClientDetailsOverview = () => {
     fetchMeetings,
     refreshMeetings,
     followUpLoading,
-    executiveInfo,
-    createCopyNotification,
-    fetchNotifications
+    createFollowUpHistoryAPI,
   } = useApi();
-  
-  useCopyNotification(createCopyNotification, fetchNotifications);
 
   const client = location.state?.client || {};
 
@@ -63,10 +56,11 @@ const ClientDetailsOverview = () => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
+
   useEffect(() => {
     console.log("FollowUp Type Changed:", followUpType);
   }, [followUpType]);
-  
+
   const clientFields = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
@@ -75,11 +69,11 @@ const ClientDetailsOverview = () => {
     { key: "education", label: "Education" },
     { key: "experience", label: "Experience" },
     { key: "state", label: "State" },
-    { key: "dob", label: "Date of Birth" },
+    { key: "dob", label: "DOB" },
     { key: "country", label: "Country" },
     { key: "assignDate", label: "Assign Date" },
   ];
-  
+
   useEffect(() => {
     if (client) {
       const freshLeadId =
@@ -98,15 +92,26 @@ const ClientDetailsOverview = () => {
     if (!freshLeadId) return;
     setIsLoading(true);
     try {
-      const response = await fetchFollowUpHistoriesAPI(freshLeadId);
+      const response = await fetchFollowUpHistoriesAPI();
       if (Array.isArray(response)) {
-        setHistories(response);
-        if (response.length > 0) {
-          populateFormWithHistory(response[0]);
+        const filteredHistories = response.filter(
+          (history) => history.fresh_lead_id === freshLeadId
+        );
+        filteredHistories.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setHistories(filteredHistories);
+        if (filteredHistories.length > 0) {
+          populateFormWithHistory(filteredHistories[0]);
+        } else {
+          setHistories([]);
         }
+      } else {
+        setHistories([]);
       }
     } catch (error) {
       console.error("Error fetching follow-up histories:", error);
+      setHistories([]);
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +128,126 @@ const ClientDetailsOverview = () => {
 
   const handleChange = (field, value) => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateFollowUpDetails = async (freshLeadId, followUpId) => {
+    const updatePayload = {
+      connect_via: capitalize(contactMethod),
+      follow_up_type: followUpType,
+      interaction_rating: capitalize(interactionRating),
+      reason_for_follow_up: reasonDesc,
+      follow_up_date: interactionDate,
+      follow_up_time: convertTo24HrFormat(interactionTime),
+      fresh_lead_id: freshLeadId,
+    };
+
+    await updateFollowUp(followUpId, updatePayload);
+
+    // Create a new FollowUpHistory entry to reflect the updated details
+    await createFollowUpHistoryAPI({
+      follow_up_id: followUpId,
+      connect_via: capitalize(contactMethod),
+      follow_up_type: followUpType,
+      interaction_rating: capitalize(interactionRating),
+      reason_for_follow_up: reasonDesc,
+      follow_up_date: interactionDate,
+      follow_up_time: convertTo24HrFormat(interactionTime),
+      fresh_lead_id: freshLeadId,
+    });
+  };
+
+  const handleUpdateFollowUp = async () => {
+    const freshLeadId =
+      clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
+
+    if (!freshLeadId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Lead ID",
+        text: "Unable to find the lead. Please reload and try again.",
+      });
+    }
+
+    try {
+      const followUpId = clientInfo.followUpId || clientInfo.id;
+
+      // Update follow-up details and create history entry
+      await updateFollowUpDetails(freshLeadId, followUpId);
+
+      Swal.fire({ icon: "success", title: "Follow-Up Updated" });
+
+      // Refresh data and navigate
+      await fetchFreshLeadsAPI();
+      await fetchMeetings();
+      await refreshMeetings();
+      loadFollowUpHistories(freshLeadId);
+      setTimeout(() => navigate("/follow-up"), 1000);
+    } catch (err) {
+      console.error("Follow-Up Update Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }
+  };
+
+  const handleCreateMeeting = async () => {
+    const freshLeadId =
+      clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
+
+    if (!freshLeadId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Lead ID",
+        text: "Unable to find the lead. Please reload and try again.",
+      });
+    }
+
+    if (!reasonDesc) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Reason",
+        text: "Please add a reason before creating a meeting.",
+      });
+    }
+
+    try {
+      const followUpId = clientInfo.followUpId || clientInfo.id;
+
+      // First, update follow-up details and create history entry
+      await updateFollowUpDetails(freshLeadId, followUpId);
+
+      // Then, schedule the meeting
+      const meetingPayload = {
+        clientName: clientInfo.name,
+        clientEmail: clientInfo.email,
+        clientPhone: clientInfo.phone,
+        reasonForFollowup: reasonDesc,
+        startTime: new Date(
+          `${interactionDate || new Date().toISOString().split("T")[0]}T${convertTo24HrFormat(interactionTime)}`
+        ).toISOString(),
+        endTime: null,
+        fresh_lead_id: freshLeadId,
+      };
+      await createMeetingAPI(meetingPayload);
+
+      Swal.fire({ icon: "success", title: "Meeting Created" });
+
+      // Refresh data and navigate
+      await fetchFreshLeadsAPI();
+      await fetchMeetings();
+      await refreshMeetings();
+      loadFollowUpHistories(freshLeadId);
+      setTimeout(() => navigate("/follow-up"), 1000);
+    } catch (err) {
+      console.error("Meeting Creation Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }
   };
 
   const handleFollowUpAction = async () => {
@@ -144,96 +269,8 @@ const ClientDetailsOverview = () => {
       } else if (followUpType === "close") {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
         Swal.fire({ icon: "success", title: "Lead Closed" });
-      } else if (followUpType === "appointment") {
-        if (!clientInfo.email || clientInfo.email.trim() === "") {
-          return Swal.fire({
-            icon: "warning",
-            title: "Missing Email",
-            text: "Client email is required to create a meeting.",
-          });
-        }
-        
-        if (!contactMethod) {
-          return Swal.fire({
-            icon: "warning",
-            title: "Missing Contact Method",
-            text: "Please select how you connected with the client.",
-          });
-        }
-        
-        if (!followUpType) {
-          return Swal.fire({
-            icon: "warning",
-            title: "Missing Follow-Up Type",
-            text: "Please select a follow-up type before proceeding.",
-          });
-        }
-        
-        if (!interactionRating) {
-          return Swal.fire({
-            icon: "warning",
-            title: "Missing Interaction Rating",
-            text: "Please rate the client interaction before proceeding.",
-          });
-        }
-        
-        if (!reasonDesc || reasonDesc.trim() === "") {
-          return Swal.fire({
-            icon: "warning",
-            title: "Missing Reason",
-            text: "Please provide a reason for the follow-up.",
-          });
-        }
-        
-          const selectedDate = interactionDate || new Date().toISOString().split("T")[0];
-          const timeIn24Hr = convertTo24HrFormat(interactionTime);
-          const [year, month, day] = selectedDate.split("-");
-          const [hours, minutes] = timeIn24Hr.split(":");    
-          const combinedDate = new Date(
-            parseInt(year),
-            parseInt(month) - 1,
-            parseInt(day),
-            parseInt(hours),
-            parseInt(minutes)
-          );
-          
-          // Optional: log for debugging
-          console.log("⏰ Selected time:", combinedDate);
-          console.log("🕒 Current time:", new Date());
-          if (combinedDate <= new Date()) {
-            return Swal.fire({
-              icon: "error",
-              title: "Invalid Time",
-              text: "The selected time is in the past. Please choose a future time.",
-            });
-          }
-
-        const meetingPayload = {
-          clientName: clientInfo.name,
-          clientEmail: clientInfo.email,
-          clientPhone: clientInfo.phone,
-          reasonForFollowup: reasonDesc,
-          startTime: new Date(
-            `${interactionDate || new Date().toISOString().split("T")[0]}T${convertTo24HrFormat(interactionTime)}`
-          ).toISOString(),
-          endTime: null,
-          fresh_lead_id: freshLeadId,
-        };
-        await createMeetingAPI(meetingPayload);
-        Swal.fire({ icon: "success", title: "Meeting Created" });
       } else {
-        const followUpId = clientInfo.followUpId || clientInfo.id;
-        const updatePayload = {
-          connect_via: capitalize(contactMethod),
-          follow_up_type: followUpType,
-          interaction_rating: capitalize(interactionRating),
-          reason_for_follow_up: reasonDesc,
-          follow_up_date: interactionDate,
-          follow_up_time: convertTo24HrFormat(interactionTime),
-          fresh_lead_id: freshLeadId,
-        };
-        await updateFollowUp(followUpId, updatePayload);
-        Swal.fire({ icon: "success", title: "Follow-Up Updated" });
+        return; // Do nothing for other types; handled by specific buttons
       }
 
       await fetchFreshLeadsAPI();
@@ -249,7 +286,7 @@ const ClientDetailsOverview = () => {
         text: "Something went wrong. Please try again.",
       });
     }
-  }; 
+  };
 
   const toggleListening = () => {
     if (!recognitionRef.current) return alert("Speech recognition not supported");
@@ -261,48 +298,7 @@ const ClientDetailsOverview = () => {
     setIsListening(false);
     recognitionRef.current?.stop();
   };
- const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
-  const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
 
-  //State for selecting email template
-  const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [sendingEmail, setSendingEmail] = useState(false);
-
-  const handleTemplateChange = (e) => {
-    setSelectedTemplateId(e.target.value);
-  };
-
-  const handleEmailSubmit = async (e) => {
-    e.preventDefault();
-    setSendingEmail(true);
-
-    const selectedTemplate = emailTemplates.find(
-      (template) => template.id === selectedTemplateId
-    );
-
-    if (!selectedTemplate) {
-      alert("Please select a template.");
-      return;
-    }
-
-    const emailPayload = {
-      templateId: selectedTemplate.id,
-      executiveName: executiveInfo.username,
-      executiveEmail: executiveInfo.email,
-      clientEmail: clientInfo.email,
-      emailBody: selectedTemplate.body,
-      emailSubject: selectedTemplate.subject,
-    };
-
-    try {
-      await handleSendEmail(emailPayload);
-      alert("Email sent successfully!");
-      setSendingEmail(false);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send email.");
-    }
-  }; 
   return (
     <div className="client-overview-wrapper">
       {/* Client Details */}
@@ -318,15 +314,13 @@ const ClientDetailsOverview = () => {
                 <div className="c-info">
                   {clientFields.map(({ key, label }) => (
                     <div className="info-item" key={key}>
-                      <span className="label">{label} -</span>
-                      <span
-                        className="value"
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleChange(key, e.target.innerText)}
-                      >
-                        {clientInfo[key] || ""}
-                      </span>
+                      <span className="label">{label}:</span>
+                      <input
+                        type="text"
+                        className="client-input"
+                        value={clientInfo[key] || ""}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                      />
                     </div>
                   ))}
                 </div>
@@ -339,19 +333,24 @@ const ClientDetailsOverview = () => {
                 {isLoading ? (
                   <p>Loading follow-up history...</p>
                 ) : histories.length > 0 ? (
-                  <p>{histories[0].reason_for_follow_up || "No description available."}</p>
+                  <div>
+                    <p>
+                        {new Date(histories[0].follow_up_date).toLocaleDateString()} -{" "}
+                        {histories[0].follow_up_time}
+                    </p>
+                    <p>{histories[0].reason_for_follow_up || "No description available."}</p>
+                  </div>
                 ) : (
                   <p>No follow-up history available.</p>
                 )}
               </div>
-              
+
               {histories.length > 0 && (
                 <div className="follow-up-history-summary">
-                  <h4>Previous Follow-ups</h4>
                   <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
                     {histories.slice(1).map((history, index) => (
                       <div key={index} className="history-item" style={{ marginBottom: "10px", padding: "5px", borderBottom: "1px solid #eee" }}>
-                        <p><strong>{new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}</strong></p>
+                        <p>{new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}</p>
                         <p>{history.reason_for_follow_up}</p>
                       </div>
                     ))}
@@ -366,78 +365,6 @@ const ClientDetailsOverview = () => {
       {/* Client Interaction */}
       <div className="client-interaction-container">
         <div className="interaction-form">
-        <div>
-            <h4 style={{ marginBottom: "0.5rem" }}>Send Email to Client</h4>
-
-            <form
-              onSubmit={handleEmailSubmit}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                flexWrap: "wrap", // for responsiveness
-              }}
-            >
-              <div>
-                <label>
-                  From:
-                  <input
-                    type="email"
-                    value={executiveInfo.email}
-                    readOnly
-                    style={{
-                      marginLeft: "0.5rem",
-                      padding: "8px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label>
-                  To:
-                  <input
-                    type="email"
-                    value={clientInfo.email}
-                    // readOnly
-                    style={{
-                      marginLeft: "0.5rem",
-                      padding: "8px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label>
-                  Template:
-                  <select
-                    value={selectedTemplateId}
-                    onChange={handleTemplateChange}
-                    required
-                    style={{ marginLeft: "0.5rem" }}
-                  >
-                    <option value="">Select</option>
-                    {emailTemplates.map((template) => (
-                      <option key={template.id} value={template.id}>
-                        {template.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                className="sendEmail-btn"
-                disabled={sendingEmail}
-              >
-                {sendingEmail ? "Sending..." : "Send Email"}
-              </button>
-            </form>
-          </div>
           <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">
@@ -542,101 +469,92 @@ const ClientDetailsOverview = () => {
                       onChange={setInteractionTime}
                       value={interactionTime}
                       format="hh:mm a"
-                      disableClock={true}       
-                      clearIcon={null}          
+                      disableClock={true}
+                      clearIcon={null}
                     />
                   </div>
                 </div>
               </div>
 
-                {/* <button
-                  onClick={handleTextUpdate}
+              <div className="button-group" style={{ marginTop: "20px" }}>
+                {/* Update Follow-Up button */}
+                <button
+                  onClick={handleUpdateFollowUp}
                   className="crm-button update-follow-btn"
+                  disabled={followUpLoading}
+                  style={{
+                    backgroundColor: "#007bff",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "5px",
+                    border: "none",
+                    cursor: followUpLoading ? "not-allowed" : "pointer",
+                    opacity: followUpLoading ? 0.6 : 1,
+                  }}
                 >
-                  Update Follow-Up
-                </button> */}
+                  {followUpLoading ? "Processing..." : "Update Follow-Up"}
+                </button>
 
-           
-<div className="button-group" style={{ marginTop: "20px" }}>
-  {/* Always show update follow-up */}
-  <button
-    onClick={handleFollowUpAction}
-    className="crm-button update-follow-btn"
-    disabled={followUpLoading}
-    style={{
-      backgroundColor: "#007bff",
-      color: "white",
-      padding: "10px 20px",
-      borderRadius: "5px",
-      border: "none",
-      cursor: followUpLoading ? "not-allowed" : "pointer",
-      opacity: followUpLoading ? 0.6 : 1,
-    }}
-  >
-    {followUpLoading ? "Processing..." : "Update Follow-Up"}
-  </button>
+                {/* Show these based on follow-up type */}
+                {followUpType === "converted" && (
+                  <button
+                    onClick={handleFollowUpAction}
+                    className="crm-button converted-btn"
+                    disabled={followUpLoading}
+                    style={{
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      padding: "10px 20px",
+                      marginLeft: "10px",
+                      borderRadius: "5px",
+                      border: "none",
+                    }}
+                  >
+                    Create Converted
+                  </button>
+                )}
 
-  {/* Show these based on follow-up type */}
-  {followUpType === "converted" && (
-    <button
-      onClick={handleFollowUpAction}
-      className="crm-button converted-btn"
-      disabled={followUpLoading}
-      style={{
-        backgroundColor: "#28a745",
-        color: "white",
-        padding: "10px 20px",
-        marginLeft: "10px",
-        borderRadius: "5px",
-        border: "none",
-      }}
-    >
-      Create Converted
-    </button>
-  )}
+                {followUpType === "close" && (
+                  <button
+                    onClick={handleFollowUpAction}
+                    className="crm-button close-btn"
+                    disabled={followUpLoading}
+                    style={{
+                      backgroundColor: "#dc3545",
+                      color: "white",
+                      padding: "10px 20px",
+                      marginLeft: "10px",
+                      borderRadius: "5px",
+                      border: "none",
+                    }}
+                  >
+                    Create Close
+                  </button>
+                )}
 
-  {followUpType === "close" && (
-    <button
-      onClick={handleFollowUpAction}
-      className="crm-button close-btn"
-      disabled={followUpLoading}
-      style={{
-        backgroundColor: "#dc3545",
-        color: "white",
-        padding: "10px 20px",
-        marginLeft: "10px",
-        borderRadius: "5px",
-        border: "none",
-      }}
-    >
-      Create Close
-    </button>
-  )}
-
-  {followUpType === "appointment" && (
-    <button
-      onClick={handleFollowUpAction}
-      className="crm-button meeting-btn"
-      disabled={followUpLoading}
-      style={{
-        backgroundColor: "#17a2b8",
-        color: "white",
-        padding: "10px 20px",
-        marginLeft: "10px",
-        borderRadius: "5px",
-        border: "none",
-      }}
-    >
-      Create Meeting
-    </button>
-  )}
-</div>
-
+                {followUpType === "appointment" && (
+                  <button
+                    onClick={handleCreateMeeting}
+                    className="crm-button meeting-btn"
+                    disabled={followUpLoading}
+                    style={{
+                      backgroundColor: "#17a2b8",
+                      color: "white",
+                      padding: "10px 20px",
+                      marginLeft: "10px",
+                      borderRadius: "5px",
+                      border: "none",
+                    }}
+                  >
+                    Create Meeting
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
   );
 };
 

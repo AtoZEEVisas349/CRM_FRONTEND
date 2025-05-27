@@ -11,6 +11,7 @@ body {
   color: var(--text-color);
 }
 
+
 /* Sidebar */
 .sidebar_container {
   position: relative;
@@ -62,10 +63,43 @@ body {
   width:100%;
 }
 
+
 .client-info {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 5px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.info-item .label {
+  width: 70px;
+  font-weight: 600;
+  color: #456dc9; /* Match the heading tone */
+}
+.client-input {
+  width: 150px;              /* Fixed width for consistency */
+  height: 24px;              /* Matches design */
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #d0d7de; /* Subtle border tone */
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #333;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.client-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
 }
 
 .user-icon-bg {

@@ -13,8 +13,21 @@ const ClientDetails = ({ selectedClient, onClose }) => {
         setLoading(true);
         fetchFollowUpHistoriesAPI(freshLeadId)
           .then((histories) => {
-            if (histories && Array.isArray(histories) && histories.length > 1) {
-              setLatestFollowUp(histories[1]); // Second most recent follow-up
+            if (histories && Array.isArray(histories)) {
+              // Filter histories to only include those matching the current fresh_lead_id
+              const filteredHistories = histories.filter(
+                (history) => history.fresh_lead_id === freshLeadId
+              );
+              // Sort by createdAt to ensure the most recent history is first
+              filteredHistories.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+              );
+              // Set the most recent follow-up (first item after sorting)
+              if (filteredHistories.length > 0) {
+                setLatestFollowUp(filteredHistories[0]);
+              } else {
+                setLatestFollowUp(null);
+              }
             } else {
               setLatestFollowUp(null);
             }
@@ -62,7 +75,13 @@ const ClientDetails = ({ selectedClient, onClose }) => {
           {loading ? (
             <p>Loading...</p>
           ) : latestFollowUp ? (
-            <p>{latestFollowUp.reason_for_follow_up || "No description available."}</p>
+            <div>
+              <p>
+                  {new Date(latestFollowUp.follow_up_date).toLocaleDateString()} -{" "}
+                  {latestFollowUp.follow_up_time}
+              </p>
+              <p>{latestFollowUp.reason_for_follow_up || "No description available."}</p>
+            </div>
           ) : (
             <p>No previous follow-up available.</p>
           )}
