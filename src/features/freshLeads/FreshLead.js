@@ -4,7 +4,7 @@ import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone ,faPenToSquare} from "@fortawesome/free-solid-svg-icons";
+import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 function FreshLead() {
@@ -21,35 +21,66 @@ function FreshLead() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // ✅ Show only 9 leads per page
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
-  const [hasLoaded, setHasLoaded] = useState(false); // ✅ track loading only once
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [verifyResults, setVerifyResults] = useState({});
+  const [verifyingIndex, setVerifyingIndex] = useState(null);
+
+  const itemsPerPage = 9;
   const navigate = useNavigate();
+
+  const handleVerify = async (index, number) => {
+    setVerifyingIndex(index);
+    const cleanedNumber = number.replace(/\D/g, '');
+    try {
+      const res = await fetch(`http://localhost:4000/api/get-name?number=${cleanedNumber}`);
+      const data = await res.json();
+
+      if (data.success) {
+        setVerifyResults((prev) => ({
+          ...prev,
+          [index]: {
+            name: data.name,
+            location: data.location,
+          },
+        }));
+      } else {
+        setVerifyResults((prev) => ({
+          ...prev,
+          [index]: { error: data.error || "Lookup failed" },
+        }));
+      }
+    } catch (err) {
+      setVerifyResults((prev) => ({
+        ...prev,
+        [index]: { error: "Network error" },
+      }));
+    } finally {
+      setVerifyingIndex(null);
+    }
+  };
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     const executiveId = userData?.id;
     if (executiveId) {
       leadtrack(executiveId);
-    } else {
-      console.error("ExecutiveId not found");
     }
   }, []);
 
   useEffect(() => {
     const loadLeads = async () => {
-      if (hasLoaded) return; // ✅ prevent repeated fetch
+      if (hasLoaded) return;
       try {
         setLoading(true);
-  
+
         if (!executiveInfo && !executiveLoading) {
-          await fetchExecutiveData(); // only if needed
+          await fetchExecutiveData();
         }
-  
+
         const data = await fetchFreshLeadsAPI();
-  
+
         let leads = [];
-  
         if (Array.isArray(data)) {
           leads = data;
         } else if (data && Array.isArray(data.data)) {
@@ -58,41 +89,41 @@ function FreshLead() {
           setError("Invalid leads data format.");
           return;
         }
-  
-        const filteredLeads = leads.filter(
-          (lead) => lead.clientLead?.status === "New" ||
-          lead.clientLead?.status === "Assigned"
-        )
-        .sort((a, b) => {
-          const dateA = new Date(
-            a.assignDate ||
-            a.lead?.assignmentDate ||
-            a.clientLead?.assignDate ||
-            0
-          );
-          const dateB = new Date(
-            b.assignDate ||
-            b.lead?.assignmentDate ||
-            b.clientLead?.assignDate ||
-            0
-          );
-          return dateB - dateA;
-        });        
-        
+
+        const filteredLeads = leads
+          .filter(
+            (lead) =>
+              lead.clientLead?.status === "New" ||
+              lead.clientLead?.status === "Assigned"
+          )
+          .sort((a, b) => {
+            const dateA = new Date(
+              a.assignDate ||
+                a.lead?.assignmentDate ||
+                a.clientLead?.assignDate ||
+                0
+            );
+            const dateB = new Date(
+              b.assignDate ||
+                b.lead?.assignmentDate ||
+                b.clientLead?.assignDate ||
+                0
+            );
+            return dateB - dateA;
+          });
+
         setLeadsData(filteredLeads);
         setCurrentPage(1);
-        setHasLoaded(true); // ✅ set flag after successful load
+        setHasLoaded(true);
       } catch (err) {
-        console.error("Lead fetching error:", err);
         setError("Failed to load leads. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-  
+
     loadLeads();
   }, [executiveInfo, executiveLoading, hasLoaded]);
-  
 
   const totalPages = Math.ceil(leadsData.length / itemsPerPage);
   const currentLeads = leadsData.slice(
@@ -174,16 +205,40 @@ function FreshLead() {
                           className="followup-badge"
                           onClick={() => handleAddFollowUp(lead)}
                         >
-                        Add Follow Up
-                        <FontAwesomeIcon icon={faPenToSquare} className="icon"/>
-                      </button>
+                          Add Follow Up
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="icon"
+                          />
+                        </button>
                       </td>
                       <td>
-                        <input
-                          type="radio"
-                          name={`leadStatus-${index}`}
-                          className="status-radio"
-                        />
+                        <div className="status-cell">
+                          <button
+                            onClick={() => handleVerify(index, lead.phone)}
+                            className="verify-btn"
+                            disabled={verifyingIndex === index}
+                          >
+                            {verifyingIndex === index
+                              ? "Verifying..."
+                              : "Get Verified"}
+                          </button>
+                          {verifyResults[index] && (
+                            <div className="verify-result">
+                              {verifyResults[index].error ? (
+                                <span className="text-red-600">
+                                  ❌ {verifyResults[index].error}
+                                </span>
+                              ) : (
+                                <span className="text-green-600">
+                                  ✅{" "}
+                                  {verifyResults[index].name ||
+                                    verifyResults[index].location}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="call-cell">
                         <button
@@ -237,7 +292,6 @@ function FreshLead() {
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="fresh-pagination">
               <button

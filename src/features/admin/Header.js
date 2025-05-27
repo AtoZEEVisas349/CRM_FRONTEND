@@ -1,6 +1,7 @@
 import React from "react";
 import { FaBars } from "react-icons/fa";
 import AdminNavbar from "../../layouts/AdminNavbar";
+import AdminCalendar from "./AdminCalendar";
 
 const Header = () => {
   const toggleSidebar = () => {
@@ -23,6 +24,7 @@ const Header = () => {
 
         <div className="header-right">
           {/* You can add other controls or leave this area empty */}
+          <AdminCalendar/>
         </div>
       </header>
     </>

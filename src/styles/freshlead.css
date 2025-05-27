@@ -70,21 +70,7 @@
 .followup-badge:hover {
   background-color: #c5c0c0;
 }
-/* Radio button (for status) */
-.status-radio {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--text-color);
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: transparent;
-  transition: 0.2s;
-}
-.status-radio:checked {
-  background-color: #2563eb;
-  border-color: #2563eb;
-}
+
 .fresh-leads-table {
   width: 97%;
   border-collapse: separate;
@@ -181,20 +167,7 @@ gap: 10px;
 .followup-badge:hover {
   background-color: #e5e7eb;
 }
-.status-radio {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--text-color);
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: transparent;
-  transition: 0.2s;
-}
-.status-radio:checked {
-  background-color: #2563eb;
-  border-color: #2563eb;
-}
+
 
 .fresh-leads-table tbody tr:hover {
 background-color: rgba(0, 0, 0, 0.03);
@@ -279,6 +252,50 @@ gap: 10px;
 .call-cell {
   position: relative;
 }
+.verify-btn {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.verify-btn:hover:enabled {
+  transform: scale(1.04);
+  background: linear-gradient(to right, #36d1dc, #5b86e5);
+}
+
+.verify-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #c5c5c5;
+}
+
+.status-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.verify-result {
+  font-size: 0.65rem;
+  margin-top: 4px;
+  padding: 3px 6px;
+  background-color: #f3f3f3;
+  border-radius: 4px;
+  color: #444;
+  border-left: 4px solid #4caf50;
+}
+
+
 .call-button {
   padding: 6px 10px;
   background: #ffffff;
