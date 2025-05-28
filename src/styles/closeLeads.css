@@ -244,8 +244,32 @@ select:hover {
 .table_icon:hover {
   background-color: var(--hover-bg);
 }
+[data-theme="light"] .country_name p{
+  color: #151515;
+}
 [data-theme="dark"] .c-card{
   color: black;
+}
+[data-theme="dark"] .search_input{
+  color: #fff;
+}
+[data-theme="dark"] select{
+  color: #fff;
+}
+[data-theme="dark"] .Total_leads{
+  color: #fff;
+}
+[data-theme="dark"] .country_name p{
+  color: #151515;
+}
+[data-theme="dark"] .top_bar h1{
+  color: #fff;
+}
+[data-theme="dark"] .view_controls{
+  color: #fff;
+}
+[data-theme="dark"] .dropdown_label{
+  color: #fff;
 }
 .name{
   font-size: 20px;
@@ -298,7 +322,9 @@ select:hover {
   color: white;
   background: linear-gradient(135deg, #a3446a, #ea99e8);
 }
-
+[data-theme="red"] .country_name p{
+  color: #151515;
+}
 /*-------------------------------------Blue-----------------------------*/
 [data-theme="blue"] .close-leads-page {
   background-color: rgb(186, 186, 232);
@@ -323,7 +349,9 @@ select:hover {
   color: white;
   background: linear-gradient(135deg, #080567, grey);
 }
-
+[data-theme="blue"] .country_name p{
+  color: #151515;
+}
 /*-------------------------------------Brown-----------------------------*/
 [data-theme="brown"] .close-leads-page{
   --bg-color: #d9cac4;
@@ -337,7 +365,9 @@ select:hover {
   color: white;
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
-
+[data-theme="brown"] .country_name p{
+  color: #151515;
+}
 /*-------------------------------------Green-----------------------------*/
 [data-theme="green"] .close-leads-page {
   background-color: #e8f5e9 !important; /* Light green background */

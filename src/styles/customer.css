@@ -38,11 +38,18 @@
   box-shadow: 0 2px 5px var(--shadow-light);
   transform: translateX(-50px); /* ✅ shifts it slightly left */
 }
-
+[data-theme="light"] .name p{
+  color: #080808;
+} 
 [data-theme="dark"] .heading h2{
   color: #080808;
 }
-
+[data-theme="dark"] .table-body td{
+  color: #fff;
+}
+[data-theme="dark"] .search-bar{
+  color: #f0f0f0;
+}
 h2 {
   margin-left: 5px;
 }
@@ -334,7 +341,9 @@ h2 {
   background: #c8c8f4;
   color: #0d2f57;
 }
-
+[data-theme="red"] .name p{
+  color: #3c6ba9;
+}
 /*-------------------------------------Blue------------------------*/
 [data-theme="blue"] .customer-main-content{
   --bg-color: rgb(186, 186, 232); 
@@ -342,6 +351,9 @@ h2 {
 }[data-theme="blue"] .button{
   background: linear-gradient(135deg, #080567, grey);
 }
+[data-theme="blue"] .name p{
+  color: #080808;
+} 
 [data-theme="blue"] .button:hover{
   background-color: #a88c38 ;
 }[data-theme="blue"] .table-head{
@@ -357,6 +369,9 @@ h2 {
   --bg-color: #d9cac4;
   height:100vh;
 }
+[data-theme="brown"] .name p{
+  color: #080808;
+} 
 [data-theme="brown"] .button{
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
@@ -369,7 +384,7 @@ h2 {
 [data-theme="brown"] .button:hover{
   background:  rgb(125, 188, 187);
 }
-
+ 
 /*-------------------------------------Green------------------------*/
 [data-theme="green"] .customer-main-content {
   background: #c6e7c8;
@@ -377,7 +392,9 @@ h2 {
 [data-theme="green"] .heading h2 {
   color: rgb(6, 5, 5) !important;
 }
-
+[data-theme="green"] .country_name p{
+  color: #080808;
+} 
 /* Button with gradient */
 [data-theme="green"] .button{
   background: linear-gradient(160deg, #5ccf5a, #2b4584) !important;

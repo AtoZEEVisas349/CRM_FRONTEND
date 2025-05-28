@@ -414,7 +414,9 @@
   background-color: #1a202c;
   color: white;
 }
-
+[data-theme="dark"] .meetings-title{
+  color: #fff;
+}
 /* Dark Mode */
 [data-theme="dark"] .task-management-container {
   background-color:#1a202c;

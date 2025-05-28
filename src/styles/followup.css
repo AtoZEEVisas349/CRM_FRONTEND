@@ -83,6 +83,40 @@ body {
   font-weight: 600;
   color: #456dc9; /* Match the heading tone */
 }
+[data-theme="light"] .last-followup p{
+  color: #000000;
+}
+[data-theme="light"] .followup-tabs button{
+  color: #000000;
+} 
+[data-theme="dark"] .client-details-title{
+  color: #fff;
+}
+[data-theme="dark"] .follow-main-content h2{
+  color: #fff;
+}
+[data-theme="dark"] .client-info{
+  color: #fff;
+}
+[data-theme="dark"] .client-table td{
+  color: #fff;
+}
+[data-theme="dark"] .client-text h4 ,p{
+  color:#fff;
+}
+[data-theme="dark"] .lead-info span{
+  color: #fff !important;
+}
+[data-theme="dark"] .last-followup h5{
+  color: #fff;
+}
+[data-theme="dark"] .close-btn{
+  color: #fff;
+}
+[data-theme="dark"] .client-text p{
+color: #fff;
+}
+
 .client-input {
   width: 150px;              /* Fixed width for consistency */
   height: 24px;              /* Matches design */
@@ -250,7 +284,7 @@ body {
   cursor: pointer;
   border-radius: 5px;
   background: var(--card-bg);
-  color: var(--text-color);
+  color: #fff;
 }
 
 .followup-tabs .active {
@@ -606,6 +640,12 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme="red"].last-followup h5{
   color: #0d2f57; 
 }
+[data-theme="red"] .followup-tabs button{
+  color: #000000;
+} 
+[data-theme="red"] .last-followup p{
+  color: #0d2f57;
+}
 /*----------------------------------Blue--------------------------*/
 
 [data-theme="blue"] .follow-app-container{
@@ -613,8 +653,19 @@ h1, h2, h3, h4, h5, h6 {
 }[data-theme="blue"] .client-table thead th {
   background:rgb(114, 114, 214);
 }
+[data-theme="blue"] .followup-tabs button{
+  color: #000000;
+} 
+[data-theme="blue"] .last-followup p{
+  color: #000000;
+}
 /*----------------------------------Brown--------------------------*/
-
+[data-theme="brown"] .followup-tabs button{
+  color: #000000;
+} 
+[data-theme="brown"] .last-followup p{
+  color: #000000;
+}
 [data-theme="brown"] .follow-app-container {
   --bg-color: #d9cac4;
 }
@@ -631,7 +682,12 @@ background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
   background: #c6e7c8; /* Light green background */
   color: #333;
 }
-
+[data-theme="green"] .last-followup p{
+  color: #000000;
+}
+[data-theme="green"] .followup-tabs button{
+  color: #000000;
+} 
 /* Sidebar */
 [data-theme="green"] .sidebar_container { /* Light green background */
   color: white;
