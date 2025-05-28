@@ -129,6 +129,8 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
       return;
     }
 
+    console.log("Submitting follow-up form with reason:", reasonDesc);
+
     onSubmit({
       clientName,
       email,
@@ -291,90 +293,62 @@ const FollowUpHistory = ({ meeting, onClose }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (meeting) {
-      const freshLeadId = meeting.fresh_lead_id || 
-                         meeting.freshLead?.id || 
-                         meeting.clientLead?.freshLead?.id || 
-                         meeting.clientLead?.fresh_lead_id ||
-                         meeting.freshLead?.lead?.id ||
-                         meeting.id;
-      
-      console.log("Meeting data for history:", meeting);
-      console.log("Extracted freshLeadId:", freshLeadId);
-      
-      if (freshLeadId) {
-        loadFollowUpHistories(freshLeadId);
-      } else {
-        console.warn("No valid freshLeadId found for meeting:", meeting);
-        console.warn("Available keys:", Object.keys(meeting));
-        setFollowUpHistories([]);
-      }
+    if (!meeting) return;
+
+    const freshLeadId = meeting.fresh_lead_id || 
+                       meeting.freshLead?.id || 
+                       meeting.clientLead?.freshLead?.id || 
+                       meeting.clientLead?.fresh_lead_id ||
+                       meeting.freshLead?.lead?.id ||
+                       meeting.id;
+
+    console.log("Meeting data for history:", meeting);
+    console.log("Extracted freshLeadId:", freshLeadId);
+
+    if (freshLeadId) {
+      loadFollowUpHistories(freshLeadId);
+    } else {
+      console.warn("No valid freshLeadId found for meeting:", meeting);
+      setFollowUpHistories([]);
     }
   }, [meeting]);
 
   const loadFollowUpHistories = async (freshLeadId) => {
-    if (!freshLeadId) return;
+    if (!freshLeadId) {
+      setFollowUpHistories([]);
+      return;
+    }
     setLoading(true);
     try {
-      const response = await fetchFollowUpHistoriesAPI(freshLeadId);
+      const response = await fetchFollowUpHistoriesAPI();
       console.log("Follow-up histories response:", response);
-      
+
       if (Array.isArray(response)) {
         const normalizedFreshLeadId = String(freshLeadId);
-        
-        const filteredByLead = response.filter((history) => {
+        const filteredHistories = response.filter((history) => {
           const historyLeadId = String(history.fresh_lead_id);
-          const matches = historyLeadId === normalizedFreshLeadId;
-          if (!matches) {
-            console.log(
-              `History with ID ${history.id} does not match fresh_lead_id ${normalizedFreshLeadId}.`
-            );
-          }
-          return matches;
-        });
-        
-        if (filteredByLead.length === 0) {
-          console.log("No histories match the fresh_lead_id:", normalizedFreshLeadId);
-        }
-
-        const meetingDate = new Date(meeting.follow_up_date || meeting.startTime);
-        const filteredHistories = filteredByLead.filter((history) => {
-          const historyDate = new Date(history.follow_up_date || history.created_at);
-          const isSame = isSameDay(historyDate, meetingDate);
-          if (!isSame) {
-            console.log(
-              `History with ID ${history.id} does not match meeting date ${meetingDate.toISOString()}.`
-            );
-          }
-          return isSame;
+          return historyLeadId === normalizedFreshLeadId;
         });
 
         if (filteredHistories.length === 0) {
-          console.log("No histories match the meeting date:", meetingDate.toISOString());
+          console.log("No histories match the fresh_lead_id:", normalizedFreshLeadId);
         }
-        
+
+        // Sort by follow_up_date and follow_up_time descending
         const sortedHistories = filteredHistories.sort((a, b) => {
-          const dateTimeA = getComparableDateTime(a);
-          const dateTimeB = getComparableDateTime(b);
-          
-          if (dateTimeA !== dateTimeB) {
-            return dateTimeB - dateTimeA;
-          }
-          
-          const createdA = new Date(a.created_at).getTime();
-          const createdB = new Date(b.created_at).getTime();
-          return createdB - createdA;
+          const dateA = getComparableDateTime(a);
+          const dateB = getComparableDateTime(b);
+          return dateB - dateA;
         });
-        
-        console.log("Sorted histories with datetime comparison:", sortedHistories.map(h => ({
+
+        console.log("Sorted histories:", sortedHistories.map(h => ({
           id: h.id,
           follow_up_date: h.follow_up_date,
           follow_up_time: h.follow_up_time,
           created_at: h.created_at,
-          comparable_datetime: getComparableDateTime(h),
           reason: h.reason_for_follow_up?.substring(0, 50) + '...'
         })));
-        
+
         setFollowUpHistories(sortedHistories);
       } else {
         console.error("Follow-up histories response is not an array:", response);
@@ -390,17 +364,13 @@ const FollowUpHistory = ({ meeting, onClose }) => {
 
   const getConnectViaIcon = (connectVia) => {
     switch (connectVia?.toLowerCase()) {
-      case 'phone':
       case 'call':
         return faPhone;
       case 'email':
         return faEnvelope;
-      case 'chat':
-      case 'message':
+      case 'whatsapp':
         return faComments;
       case 'video':
-      case 'zoom':
-      case 'meet':
         return faVideo;
       default:
         return faComments;
@@ -409,20 +379,12 @@ const FollowUpHistory = ({ meeting, onClose }) => {
 
   const getRatingColor = (rating) => {
     switch (rating?.toLowerCase()) {
-      case 'excellent':
-      case 'great':
       case 'hot':
-        return 'rating-excellent';
-      case 'good':
+        return 'rating-hot';
       case 'warm':
-        return 'rating-good';
-      case 'average':
-      case 'neutral':
-        return 'rating-average';
-      case 'poor':
-      case 'bad':
+        return 'rating-warm';
       case 'cold':
-        return 'rating-poor';
+        return 'rating-cold';
       default:
         return 'rating-neutral';
     }
@@ -490,12 +452,11 @@ const FollowUpHistory = ({ meeting, onClose }) => {
           ) : followUpHistories.length > 0 ? (
             <div className="history-timeline">
               {followUpHistories.map((history, index) => (
-                <div key={history.id || index} className={`timeline-item ${index === 0 ? 'latest' : ''}`}>
+                <div key={history.id || index} className="timeline-item">
                   <div className="timeline-marker">
                     <div className="timeline-dot">
-                      {index === 0 && <FontAwesomeIcon icon={faStar} className="latest-icon" />}
+                      <FontAwesomeIcon icon={faStar} className="history-icon" />
                     </div>
-                    {index < followUpHistories.length - 1 && <div className="timeline-line"></div>}
                   </div>
                   
                   <div className="timeline-content">
@@ -513,7 +474,6 @@ const FollowUpHistory = ({ meeting, onClose }) => {
                             </div>
                           )}
                         </div>
-                        
                         {index === 0 && (
                           <div className="latest-badge">
                             <span>Latest</span>
@@ -545,6 +505,7 @@ const FollowUpHistory = ({ meeting, onClose }) => {
                         </div>
                         
                         <div className="follow-up-reason">
+                          <h4>Follow-Up Reason</h4>
                           <p>{history.reason_for_follow_up || "No reason provided"}</p>
                         </div>
                       </div>
@@ -558,7 +519,7 @@ const FollowUpHistory = ({ meeting, onClose }) => {
               <div className="empty-state">
                 <FontAwesomeIcon icon={faHistory} className="empty-icon" />
                 <h4>No Follow-up History</h4>
-                <p>No follow-up history available for this client on this date.</p>
+                <p>No follow-up history available for this client.</p>
               </div>
             </div>
           )}
@@ -613,11 +574,11 @@ const ScheduleMeeting = () => {
           
           if (freshLeadId) {
             try {
-              const histories = await fetchFollowUpHistoriesAPI(freshLeadId);
+              const histories = await fetchFollowUpHistoriesAPI();
               if (Array.isArray(histories) && histories.length > 0) {
                 const recentHistory = histories
                   .filter(h => String(h.fresh_lead_id) === String(freshLeadId))
-                  .sort((a, b) => new Date(b.follow_up_date || b.created_at) - new Date(a.follow_up_date || a.created_at))[0];
+                  .sort((a, b) => new Date(b.created_at || b.follow_up_date) - new Date(a.created_at || a.follow_up_date))[0];
                 
                 if (recentHistory) {
                   return {
@@ -695,6 +656,9 @@ const ScheduleMeeting = () => {
     } = formData;
     const meeting = selectedMeetingForFollowUp;
 
+    console.log("Received formData:", formData);
+    console.log("Reason for follow-up:", reason_for_follow_up);
+
     const freshLeadId = meeting.fresh_lead_id || 
                         meeting.freshLead?.id || 
                         meeting.clientLead?.freshLead?.id || 
@@ -718,11 +682,11 @@ const ScheduleMeeting = () => {
     try {
       let followUpId;
       try {
-        const histories = await fetchFollowUpHistoriesAPI(freshLeadId);
+        const histories = await fetchFollowUpHistoriesAPI();
         if (Array.isArray(histories) && histories.length > 0) {
           const recentHistory = histories
             .filter(h => String(h.fresh_lead_id) === String(freshLeadId))
-            .sort((a, b) => new Date(b.follow_up_date || b.created_at) - new Date(a.follow_up_date || a.created_at))[0];
+            .sort((a, b) => new Date(b.created_at || b.follow_up_date) - new Date(a.created_at || a.follow_up_date))[0];
           followUpId = recentHistory.follow_up_id;
           console.log("Found existing follow-up with ID:", followUpId);
         }
@@ -739,6 +703,8 @@ const ScheduleMeeting = () => {
         follow_up_time,
         fresh_lead_id: freshLeadId,
       };
+
+      console.log("Submitting followUpData:", followUpData);
 
       if (followUpId) {
         console.log("Submitting updateFollowUp with payload:", followUpData);
@@ -785,21 +751,23 @@ const ScheduleMeeting = () => {
         console.log("Converting client with fresh_lead_id:", freshLeadId);
         await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
         Swal.fire({ icon: "success", title: "Client Converted" });
-        navigate("/converted", { state: { lead: leadDetails } });
+        navigate("/customer", { state: { lead: leadDetails } });
         setMeetings((prevMeetings) => prevMeetings.filter((m) => m.id !== meeting.id));
       } else if (follow_up_type === "close") {
         console.log("Closing lead with fresh_lead_id:", freshLeadId);
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
         Swal.fire({ icon: "success", title: "Lead Closed" });
-        navigate("/closed", { state: { lead: leadDetails } });
+        navigate("/close-leads", { state: { lead: leadDetails } });
         setMeetings((prevMeetings) => prevMeetings.filter((m) => m.id !== meeting.id));
       } else if (follow_up_type === "appointment") {
         const meetingPayload = {
           clientName,
           clientEmail: email,
+          clientPhone: meeting.clientPhone,
           reasonForFollowup: reason_for_follow_up,
           startTime: new Date(`${follow_up_date}T${follow_up_time}`).toISOString(),
           endTime: meeting.endTime || null,
+          fresh_lead_id: freshLeadId,
         };
         console.log("Updating meeting with ID:", meeting.id, "with payload:", meetingPayload);
         const updatedMeeting = await updateMeetingAPI(meeting.id, meetingPayload);
