@@ -15,22 +15,9 @@ html, body, #root {
 .close-leads-main{
   margin-top: 40px;
 }
-.c-heading2 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-  margin-bottom: 15px;
-  gap: 10px;
+.c-heading{
+  padding-bottom: 30px;
 }
-.c-heading {
-padding-right: 20%;
-}
-.c-heading2 select,
-.c-heading2 .table_bar {
-  margin-left: 10px;
-}
-
 .country_container {
   margin-top: 10px;
 }
@@ -158,39 +145,6 @@ select:hover {
   border-color: var(--accent-color);
 }
 
-.top_bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-  background-color: var(--bg-color);
-}
-.top_controls {
-  flex-wrap: wrap;
-  padding-top: 32px;
-}
-
-.add_btn {
-  padding: 8px 14px;
-  background-color: var(--accent-color);
-  color: black;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.search_input {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  outline: none;
-  width: 200px;
-}
-
 .filter_icon {
   font-size: 18px;
   color: var(--text-color);
@@ -202,57 +156,13 @@ select:hover {
   color: var(--accent-color);
 }
 
-.dropdown_label {
-  font-size: 14px;
-  margin-right: 8px;
-  color: var(--text-color);
-}
-
-.top_controls {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.top_bar_btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.view_controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.dropdown_label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-.table_icon {
-  font-size: 18px;
-  padding: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.table_icon:hover {
-  background-color: var(--hover-bg);
-}
 [data-theme="light"] .country_name p{
   color: #151515;
 }
 [data-theme="dark"] .c-card{
   color: black;
 }
-[data-theme="dark"] .search_input{
-  color: #fff;
-}
+
 [data-theme="dark"] select{
   color: #fff;
 }
@@ -261,15 +171,6 @@ select:hover {
 }
 [data-theme="dark"] .country_name p{
   color: #151515;
-}
-[data-theme="dark"] .top_bar h1{
-  color: #fff;
-}
-[data-theme="dark"] .view_controls{
-  color: #fff;
-}
-[data-theme="dark"] .dropdown_label{
-  color: #fff;
 }
 .name{
   font-size: 20px;
@@ -282,14 +183,7 @@ select:hover {
   color:rgb(17, 10, 10);
   font-family: Inter 'sans-serif';
 }
-@media (min-width: 1024px) and (max-width: 1330px) {
-/* .top_bar{
-  flex-wrap: nowrap; 
-  overflow-x: auto;
-  flex-direction: column;
-    align-items: stretch;
-} */
-}
+
 @media (min-width: 600px) and (max-width: 991px) {
   .close-leads-page {
     margin-left:-250px;
@@ -318,9 +212,6 @@ select:hover {
    background: linear-gradient(135deg, #d8d7fa, #ffffff);
    border:1px solid #a4a9eb;
    border-left:5px solid #7e2f7d; 
-}[data-theme="red"] .add_btn{
-  color: white;
-  background: linear-gradient(135deg, #a3446a, #ea99e8);
 }
 [data-theme="red"] .country_name p{
   color: #151515;
@@ -343,12 +234,7 @@ select:hover {
    border:1px solid #a4a9eb;
    border-left:5px solid #4d41a7; 
 }[data-theme="blue"] 
-  .top_bar{
-    background :rgb(186, 186, 232);
-  }[data-theme="blue"] .add_btn{
-  color: white;
-  background: linear-gradient(135deg, #080567, grey);
-}
+
 [data-theme="blue"] .country_name p{
   color: #151515;
 }
@@ -358,13 +244,6 @@ select:hover {
   height:100vh;
 }
 
- [data-theme="brown"] .top_bar{
-    --bg-color: #d9cac4;
-  }
-[data-theme="brown"] .add_btn{
-  color: white;
-  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
-}
 [data-theme="brown"] .country_name p{
   color: #151515;
 }
@@ -376,9 +255,7 @@ select:hover {
 [data-theme="green"] .leads_page_wrapper {
   background-color: transparent !important; 
 }
-[data-theme="green"] .top_bar{
-  --bg-color: #e8f5e9 ;
-}
+
 /* Rest of your existing green theme styles... */
 [data-theme="green"] .country_name {
   background: white !important;
@@ -399,17 +276,6 @@ select:hover {
 [data-theme="green"] .name {
   color: #2e7d32 !important; /* Dark green for headings */
 }
-
-[data-theme="green"] .add_btn {
-  background: #4CAF50 !important; /* Solid green button */
-  color: white !important;
-}
-
-[data-theme="green"] .add_btn:hover {
-  background: #388E3C !important; /* Darker green on hover */
-}
-
-[data-theme="green"] .search_input,
 [data-theme="green"] select {
   background: white !important;
   border: 1px solid #c8e6c9 !important;
@@ -418,10 +284,6 @@ select:hover {
 
 [data-theme="green"] .filter_icon {
   color: #4CAF50 !important;
-}
-
-[data-theme="green"] .table_icon:hover {
-  background-color: #e8f5e9 !important; /* Light green hover */
 }
 
 [data-theme="green"] .Total_leads {

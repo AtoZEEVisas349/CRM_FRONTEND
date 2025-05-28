@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import NavSearch from "./NavSearch";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
 
@@ -18,7 +17,7 @@ const Leads = () => {
 
   return (
     <div className="close-leads-page">
-      <NavSearch />
+      <h1 className="c-heading">CloseLeads</h1>
       <div className="leads_page_wrapper">
         <h2 className="Total_leads">Total close leads: {leadsArray.length}</h2>
         {closeLeadsLoading ? (

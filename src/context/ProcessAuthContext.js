@@ -5,17 +5,17 @@ import {
   logoutUser,
 } from "../services/processAuth";
 
-// 1. Create Context
+//Create Context
 const ProcessContext = createContext();
 
-// 2. Provider Component
+//Provider Component
 export const ProcessProvider = ({ children }) => {
-  const [user, setUser] = useState(null);         // Logged in user info
-  const [loading, setLoading] = useState(false);  // Loading state
+  const [user, setUser] = useState(null);        
+  const [loading, setLoading] = useState(false);  
 
-  // ---------------------------------------
-  // Load session from localStorage on refresh
-  // ---------------------------------------
+// ---------------------------------------
+// Load session from localStorage on refresh
+// ---------------------------------------
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -23,9 +23,9 @@ export const ProcessProvider = ({ children }) => {
     }
   }, []);
 
-  // ---------------------------------------
-  // Login Handler
-  // ---------------------------------------
+// ---------------------------------------
+// Login Handler
+// ---------------------------------------
   const login = async (email, password) => {
     setLoading(true);
     try {
@@ -52,9 +52,9 @@ export const ProcessProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------------------
-  // Signup Handler
-  // ---------------------------------------
+// ---------------------------------------
+// Signup Handler
+// ---------------------------------------
   const signup = async (fullName, email, password, userType) => {
     setLoading(true);
     try {
@@ -67,9 +67,9 @@ export const ProcessProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------------------
-  // Logout Handler
-  // ---------------------------------------
+// ---------------------------------------
+// Logout Handler
+// ---------------------------------------
   const logout = async () => {
     try {
       const userType = user?.type || "customer";
@@ -83,9 +83,9 @@ export const ProcessProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------------------
-  // Provider Return
-  // ---------------------------------------
+// ---------------------------------------
+// Provider Return
+// ---------------------------------------
   return (
     <ProcessContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
@@ -93,5 +93,5 @@ export const ProcessProvider = ({ children }) => {
   );
 };
 
-// 3. Custom Hook
+//Custom Hook
 export const useProcess = () => useContext(ProcessContext);
