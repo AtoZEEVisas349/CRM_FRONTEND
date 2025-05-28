@@ -3,7 +3,10 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
+import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
+import { getEmailTemplates } from "../../static/emailTemplates"; 
 import Swal from "sweetalert2";
+import useCopyNotification from "../../hooks/useCopyNotification";
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -28,8 +31,12 @@ const ClientDetailsOverview = () => {
     refreshMeetings,
     followUpLoading,
     createFollowUpHistoryAPI,
+    executiveInfo,
+    fetchNotifications,
+    createCopyNotification,
   } = useApi();
 
+  useCopyNotification(createCopyNotification, fetchNotifications);
   const client = location.state?.client || {};
 
   const [clientInfo, setClientInfo] = useState(client);
@@ -299,6 +306,48 @@ const ClientDetailsOverview = () => {
     recognitionRef.current?.stop();
   };
 
+  const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
+  const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
+
+  //State for selecting email template
+  const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  const handleTemplateChange = (e) => {
+    setSelectedTemplateId(e.target.value);
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setSendingEmail(true);
+
+    const selectedTemplate = emailTemplates.find(
+      (template) => template.id === selectedTemplateId
+    );
+
+    if (!selectedTemplate) {
+      alert("Please select a template.");
+      return;
+    }
+
+    const emailPayload = {
+      templateId: selectedTemplate.id,
+      executiveName: executiveInfo.username,
+      executiveEmail: executiveInfo.email,
+      clientEmail: clientInfo.email,
+      emailBody: selectedTemplate.body,
+      emailSubject: selectedTemplate.subject,
+    };
+
+    try {
+      await handleSendEmail(emailPayload);
+      alert("Email sent successfully!");
+      setSendingEmail(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send email.");
+    }
+  }; 
   return (
     <div className="client-overview-wrapper">
       {/* Client Details */}
@@ -365,6 +414,78 @@ const ClientDetailsOverview = () => {
       {/* Client Interaction */}
       <div className="client-interaction-container">
         <div className="interaction-form">
+        <div>
+            <h4 style={{ marginBottom: "0.5rem" }}>Send Email to Client</h4>
+
+            <form
+              onSubmit={handleEmailSubmit}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                flexWrap: "wrap", // for responsiveness
+              }}
+            >
+              <div>
+                <label>
+                  From:
+                  <input
+                    type="email"
+                    value={executiveInfo.email}
+                    readOnly
+                    style={{
+                      marginLeft: "0.5rem",
+                      padding: "8px",
+                      borderRadius: "5px",
+                    }}
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label>
+                  To:
+                  <input
+                    type="email"
+                    value={clientInfo.email}
+                    // readOnly
+                    style={{
+                      marginLeft: "0.5rem",
+                      padding: "8px",
+                      borderRadius: "5px",
+                    }}
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label>
+                  Template:
+                  <select
+                    value={selectedTemplateId}
+                    onChange={handleTemplateChange}
+                    required
+                    style={{ marginLeft: "0.5rem" }}
+                  >
+                    <option value="">Select</option>
+                    {emailTemplates.map((template) => (
+                      <option key={template.id} value={template.id}>
+                        {template.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="sendEmail-btn"
+                disabled={sendingEmail}
+              >
+                {sendingEmail ? "Sending..." : "Send Email"}
+              </button>
+            </form>
+          </div>
           <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">

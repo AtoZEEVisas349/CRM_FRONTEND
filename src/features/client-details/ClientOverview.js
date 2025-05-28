@@ -444,11 +444,9 @@ const ClientOverview = () => {
 
       <div className="followup-detail-theme">
         <div className="followup-detail-container">
-          <h2>Follow-Up Details</h2>
           <div className="follow-up-reason">
             <h3>Reason for Follow-Up</h3>
             <div className="interaction-field">
-              <label>Interaction Description:</label>
               <div className="textarea-with-speech">
                 <textarea
                   value={reasonDesc}

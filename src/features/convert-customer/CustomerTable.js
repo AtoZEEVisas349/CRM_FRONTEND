@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useApi } from "../../context/ApiContext"; 
+import useCopyNotification from "../../hooks/useCopyNotification";
 
 const CustomerTable = () => {
-  const { convertedClients, fetchConvertedClientsAPI, convertedClientsLoading } = useApi(); 
+  const { convertedClients, fetchConvertedClientsAPI, convertedClientsLoading, 
+    fetchNotifications,
+    createCopyNotification,
+  } = useApi(); 
+  
+  useCopyNotification(createCopyNotification, fetchNotifications);
   const [customers, setCustomers] = useState([]); 
   const [isDataFetched, setIsDataFetched] = useState(false); 
 

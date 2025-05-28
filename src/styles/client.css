@@ -291,7 +291,9 @@ select {
   font-weight: 400;
   display: block;
 }
-
+.interaction-field{
+  margin-top: -15px;
+}
 .textarea-with-speech {
   display: flex;
   align-items: flex-start;

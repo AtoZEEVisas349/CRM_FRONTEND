@@ -1,10 +1,15 @@
 import React, { useEffect } from "react";
 import NavSearch from "./NavSearch";
 import { useApi } from "../../context/ApiContext";
+import useCopyNotification from "../../hooks/useCopyNotification";
 
 const Leads = () => {
-  const { closeLeads, fetchAllCloseLeadsAPI, closeLeadsLoading } = useApi();
-
+  const { closeLeads, fetchAllCloseLeadsAPI, closeLeadsLoading,
+    fetchNotifications,
+    createCopyNotification,
+   } = useApi();
+  
+   useCopyNotification(createCopyNotification, fetchNotifications);
   useEffect(() => {
     fetchAllCloseLeadsAPI();
   }, []);
