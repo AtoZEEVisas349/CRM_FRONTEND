@@ -95,8 +95,11 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
   const [interactionRating, setInteractionRating] = useState("");
-  const [interactionDate, setInteractionDate] = useState("");
-  const now = new Date();
+  const [interactionDate, setInteractionDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0]; // e.g. "2025-05-28"
+  });
+    const now = new Date();
   const defaultTime = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -250,28 +253,31 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             </div>
             {errors.interactionRating && <span className="error-text">{errors.interactionRating}</span>}
           </div>
-          <div className="form-group">
-            <label>Interaction Date</label>
-            <input
-              type="date"
-              value={interactionDate}
-              onChange={(e) => setInteractionDate(e.target.value)}
-              className="form-input"
-              required
-            />
-            {errors.interactionDate && <span className="error-text">{errors.interactionDate}</span>}
-          </div>
-          <div className="form-group">
-            <label>Interaction Time</label>
-            <TimePicker
-              onChange={setInteractionTime}
-              value={interactionTime}
-              format="hh:mm a"
-              disableClock={false}
-              clearIcon={null}
-              className="form-time-picker"
-            />
-          </div>
+          <div className="form-group-horizontal">
+  <div className="form-subgroup">
+    <label>Interaction Date</label>
+    <input
+      type="date"
+      value={interactionDate}
+      onChange={(e) => setInteractionDate(e.target.value)}
+      className="form-input"
+      required
+    />
+    {errors.interactionDate && <span className="error-text">{errors.interactionDate}</span>}
+  </div>
+  <div className="form-subgroup">
+    <label>Interaction Time</label>
+    <TimePicker
+      onChange={setInteractionTime}
+      value={interactionTime}
+      format="hh:mm a"
+      disableClock={false}
+      clearIcon={null}
+      className="form-time-picker"
+    />
+  </div>
+</div>
+
           <div className="form-actions">
             <button type="submit" className="submit-btn">
               Save Follow-Up
@@ -769,7 +775,6 @@ const ScheduleMeeting = () => {
           endTime: meeting.endTime || null,
           fresh_lead_id: freshLeadId,
         };
-        console.log("Updating meeting with ID:", meeting.id, "with payload:", meetingPayload);
         const updatedMeeting = await updateMeetingAPI(meeting.id, meetingPayload);
 
         setMeetings((prevMeetings) =>
@@ -787,8 +792,17 @@ const ScheduleMeeting = () => {
         );
 
         setRecentlyUpdatedMeetingId(meeting.id);
-
         Swal.fire({ icon: "success", title: "Meeting Updated" });
+      } else if (follow_up_type === "interested") {
+        // Add a specific API call here if needed e.g., await createInterestedLeadAPI({ fresh_lead_id: freshLeadId });
+        Swal.fire({ icon: "success", title: "Marked as Interested" });
+        navigate("/follow-up", { state: { lead: leadDetails } });
+        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
+      } else if (follow_up_type === "not interested") {
+        // Add a specific API call here if needed e.g., await markLeadNotInterestedAPI({ fresh_lead_id: freshLeadId });
+        Swal.fire({ icon: "success", title: "Marked as Not Interested" });
+        navigate("/follow-up", { state: { lead: leadDetails } });
+        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
       } else {
         Swal.fire({ icon: "success", title: "Follow-Up Updated" });
       }
