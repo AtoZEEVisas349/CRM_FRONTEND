@@ -581,7 +581,22 @@ const verifyNumberAPI = async (index, phone) => {
     setVerificationLoading(false);
   }
 };
-
+// Update Meeting
+const updateMeetingAPI = async (meetingId, updatedData) => {
+  try {
+    const response = await apiService.updateMeeting(meetingId, updatedData);
+    setMeetings((prevMeetings) => {
+      const updatedMeetings = prevMeetings.map((meeting) =>
+        meeting.id === meetingId ? { ...meeting, ...response } : meeting
+      );
+      return updatedMeetings;
+    });
+    return response; // Return the updated meeting data
+  } catch (error) {
+    console.error("❌ Error updating meeting:", error);
+    throw error;
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -625,6 +640,7 @@ const verifyNumberAPI = async (index, phone) => {
     // Follow-ups
     createFollowUp,
     fetchFreshLeadsAPI,
+    updateMeetingAPI,
     
     createCloseLeadAPI,
     fetchAllCloseLeadsAPI,

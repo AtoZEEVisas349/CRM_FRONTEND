@@ -505,4 +505,21 @@ export const verifyNumber = async (number) => {
     throw error;
   }
 };
+// ✅ Update a meeting by ID
+export const updateMeeting = async (meetingId, updatedData) => {
+  try {
+    const response = await apiService.put(
+      `/meetings/${meetingId}`,
+      updatedData
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `❌ Error updating meeting ID ${meetingId}:`,
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
 export default apiService;

@@ -883,6 +883,10 @@ background:#f3daf3 ;
    text-decoration: underline;
   text-decoration-color: #007bff;
 }
+
+
+
+
 /* BeepSound.css */
 
 .beep-sound-settings {
@@ -923,7 +927,7 @@ background:#f3daf3 ;
 .settings-section {
   background: var(--bg-secondary, #f8f9fa);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1.25rem 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border, #e1e5e9);
   transition: all 0.3s ease;
