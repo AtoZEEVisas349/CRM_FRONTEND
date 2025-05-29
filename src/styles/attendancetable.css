@@ -16,12 +16,12 @@
 }
 
 .attendance-title {
-  font-size: clamp(24px, 4vw, 36px);
-  font-weight: 800;
-  color: #1f2b3a;
+  font-weight: 600;
+  color: var(--text-color);
   text-align: center;
   margin-bottom: 30px;
   line-height: 1.2;
+  font-size: 30px;
 }
 
 .select-wrapper {

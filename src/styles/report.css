@@ -1,4 +1,3 @@
-
 /* Main container responsive design */
 .eod-container {
   width: 100%;
@@ -13,21 +12,22 @@
 
 .eod-main-title {
   font-size: clamp(28px, 4vw, 48px);
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   text-align: center;
   margin: 0 0 40px 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--text-color);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+  font-size: 35px;
 }
 
 /* Cards wrapper for responsive grid */
 .eod-cards-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(2, 1fr);;
   gap: 24px;
   width: 100%;
   max-width: 100%;
@@ -386,7 +386,6 @@
   }
 
   .eod-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 24px;
   }
 
@@ -405,7 +404,6 @@
   }
 
   .eod-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
     gap: 28px;
   }
 
@@ -428,7 +426,6 @@
   }
 
   .eod-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
     gap: 32px;
   }
 
@@ -456,7 +453,6 @@
   }
 
   .eod-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
     gap: 36px;
   }
 
@@ -493,7 +489,6 @@
   }
 
   .eod-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
     gap: 40px;
   }
 
@@ -565,7 +560,8 @@
     right: 16px;
   }
 }
-
-
-
-
+@media screen and (max-width: 500px) {
+  .eod-cards-wrapper {
+    grid-template-columns: 1fr; /* fallback only for extra small screens if needed */
+  }
+}

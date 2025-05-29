@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
@@ -14,7 +15,8 @@ const AssignTask = () => {
   const { theme } = useContext(ThemeContext);
   const { uploadFileAPI } = useApi();
 
-  const isSidebarExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
+  const isSidebarExpanded =
+    localStorage.getItem("adminSidebarExpanded") === "true";
 
   // ----------------------------
   // File Change Handler
@@ -66,44 +68,127 @@ const AssignTask = () => {
 
   return (
     <div
-      className={`assign-task-container ${isSidebarExpanded ? "sidebar-expanded" : "sidebar-collapsed"}`}
+      className={`assign-task-container ${
+        isSidebarExpanded ? "sidebar-expanded" : "sidebar-collapsed"
+      }`}
       data-theme={theme}
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+        boxSizing: "border-box",
+      }}
     >
       <SidebarToggle />
 
-      <div className="assign-task-content">
-        <div className="background-text">AtoZeeVisas</div>
+      <div
+        className="assign-task-content"
+        style={{ width: "100%", maxWidth: "600px" }}
+      >
+        <div
+          className="background-text"
+          style={{
+            textAlign: "center",
+            marginBottom: "10px",
+            fontWeight: "bold",
+          }}
+        >
+          AtoZeeVisas
+        </div>
 
-        <div className="assign-task-glass-card">
-          <h2>Upload Task File</h2>
+        <div
+          className="assign-task-glass-card"
+          style={{
+            backdropFilter: "blur(15px) saturate(150%)",
+            background:
+              theme === "dark"
+                ? "linear-gradient(135deg, rgba(50, 50, 50, 0.4), rgba(80, 80, 80, 0.2))"
+                : "linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(240, 240, 240, 0.5))",
+            padding: "40px 30px",
+            borderRadius: "24px",
+            boxShadow:
+              theme === "dark"
+                ? "0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1)"
+                : "0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8)",
+            border:
+              theme === "dark"
+                ? "1px solid rgba(255, 255, 255, 0.2)"
+                : "1px solid rgba(0, 0, 0, 0.1)",
+            width: "100%",
+            boxSizing: "border-box",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "25px",
+              fontSize: "1.8rem",
+              fontWeight: "600",
+              color: theme === "dark" ? "#f0f0f0" : "#222222",
+            }}
+          >
+            Upload Task File
+          </h2>
 
-          {/* Status Messages */}
-          {error && <p className="error-message">{error}</p>}
-          {success && <p className="success-message">{success}</p>}
+          {error && (
+            <p className="error-message" style={{ color: "red" }}>
+              {error}
+            </p>
+          )}
+          {success && (
+            <p className="success-message" style={{ color: "green" }}>
+              {success}
+            </p>
+          )}
 
-          {/* File Upload Box */}
-          <div className="upload-box">
+          <div className="upload-box" style={{ marginBottom: "15px" }}>
             <input
               id="file-upload"
               type="file"
               onChange={handleFileChange}
               accept=".csv, .xlsx, .xls"
               disabled={uploading}
+              style={{ display: "none" }}
             />
-            <label htmlFor="file-upload" className="upload-label">
+            <label
+              htmlFor="file-upload"
+              className="upload-label"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "2px dashed #ccc",
+                padding: "20px",
+                cursor: "pointer",
+                borderRadius: "10px",
+                textAlign: "center",
+              }}
+            >
               <FontAwesomeIcon
                 icon={uploading ? faSpinner : faCloudUploadAlt}
                 spin={uploading}
                 className="upload-icon"
                 color={theme === "dark" ? "#f0f0f0" : "#333333"}
+                size="2x"
               />
-              <span className="upload-text">
+              <span
+                className="upload-text"
+                style={{ marginTop: "10px", fontWeight: "500" }}
+              >
                 {file ? file.name : "Drag & drop or click to browse"}
               </span>
               {file && (
                 <span
                   className="file-size"
-                  style={{ color: theme === "dark" ? "#d1d1d1" : "#666666" }}
+                  style={{
+                    marginTop: "5px",
+                    fontSize: "0.85em",
+                    color: theme === "dark" ? "#d1d1d1" : "#666666",
+                  }}
                 >
                   {(file.size / 1024).toFixed(2)} KB
                 </span>
@@ -111,22 +196,47 @@ const AssignTask = () => {
             </label>
           </div>
 
-          {/* Upload Button */}
           <button
             onClick={handleUpload}
             className="upload-button"
             disabled={uploading || !file}
             style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              backgroundColor: theme === "dark" ? "#444" : "#007bff",
-              color: "#fff",
+              width: "100%",
+              padding: "14px 20px",
+              fontSize: "1.1rem",
+              fontWeight: "600",
               border: "none",
-              borderRadius: "5px",
+              borderRadius: "12px",
               cursor: uploading || !file ? "not-allowed" : "pointer",
+              background:
+                uploading || !file
+                  ? "linear-gradient(135deg, #888, #aaa)"
+                  : "linear-gradient(135deg, #667eea, #764ba2)",
+              color: "#fff",
+              boxShadow:
+                uploading || !file
+                  ? "none"
+                  : "0 4px 15px rgba(102, 126, 234, 0.4)",
+              transition: "all 0.3s ease",
+              position: "relative",
+              overflow: "hidden",
+            }}
+            onMouseOver={(e) => {
+              if (!uploading && file) {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow =
+                  "0 6px 20px rgba(102, 126, 234, 0.5)";
+              }
+            }}
+            onMouseOut={(e) => {
+              if (!uploading && file) {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 15px rgba(102, 126, 234, 0.4)";
+              }
             }}
           >
-            {uploading ? "Uploading..." : "Upload File"}
+            {uploading ? "Uploading..." : "🚀 Upload File"}
           </button>
         </div>
       </div>
@@ -135,3 +245,4 @@ const AssignTask = () => {
 };
 
 export default AssignTask;
+
