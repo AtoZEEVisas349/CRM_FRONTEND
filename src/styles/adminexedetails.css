@@ -1,4 +1,5 @@
 
+
 /* Toggle Switch */
 .switch {
   position: relative;
@@ -8,7 +9,7 @@
   margin-top: -5px;
 }
 
-.slider {
+.sliderexe {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -26,7 +27,7 @@
   color: white;
 }
 
-.slider:before {
+.sliderexe:before {
   display: none;
   position: absolute;
   content: "";
@@ -40,7 +41,7 @@
   z-index: 2;
 }
 
-input:checked + .slider {
+input:checked + .sliderexe {
   background-color: green;
   justify-content: flex-start;
 }
@@ -51,8 +52,8 @@ input:checked + .slider {
   height: 0;
 }
 
-/* The slider background */
-.slider {
+/* The sliderexe background */
+.sliderexe {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -64,7 +65,7 @@ input:checked + .slider {
   border-radius: 34px;
 }
 
-.slider:before {
+.sliderexe:before {
   position: absolute;
   content: "";
   height: 18px;
@@ -76,22 +77,22 @@ input:checked + .slider {
   border-radius: 50%;
 }
 
-/* When checked, turn slider green */
-input:checked + .slider {
+/* When checked, turn sliderexe green */
+input:checked + .sliderexe {
   background-color: green;
 }
 
 /* Move the circle when checked */
-input:checked + .slider:before {
+input:checked + .sliderexe:before {
   transform: translateX(38px);
 }
 
-/* Rounded slider */
-.slider.round {
+/* Rounded sliderexe */
+.sliderexe.round {
   border-radius: 34px;
 }
 
-.slider.round:before {
+.sliderexe.round:before {
   border-radius: 50%;
 }
 
@@ -137,12 +138,12 @@ input:checked + .slider:before {
   }
 }
 
-.switch.cooldown .slider {
+.switch.cooldown .sliderexe {
   background-color: #ff0000 !important;
   cursor: not-allowed;
 }
 
-.switch.cooldown input:checked + .slider {
+.switch.cooldown input:checked + .sliderexe {
   background-color: #ff0000 !important;
 }
 
@@ -301,19 +302,19 @@ input:checked + .slider:before {
     height: 25px;
   }
 
-  .slider {
+  .sliderexe {
     font-size: 12px;
     padding: 0 4px;
   }
 
-  .slider:before {
+  .sliderexe:before {
     height: 15px;
     width: 15px;
     left: 2px;
     bottom: 2px;
   }
 
-  input:checked + .slider:before {
+  input:checked + .sliderexe:before {
     transform: translateX(30px);
   }
 }
@@ -396,7 +397,7 @@ input:checked + .slider:before {
 /* Small laptops (e.g., MacBook Air 13", Lenovo laptops) */
 @media screen and (min-width: 1200px) and (max-width: 1439px) {
   .boxes-container {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 45px; /* Larger gap for better spacing */
     padding: 20px 40px;
   }
@@ -620,4 +621,7 @@ input:checked + .slider:before {
     padding-right: -50px;
   }
 }
+
+
+
 

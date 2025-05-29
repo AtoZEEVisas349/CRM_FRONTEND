@@ -1,22 +1,27 @@
+
+/* Container adjusts to sidebar state and screen size */
 .attendance-container {
   padding: 32px;
-  max-width: 1200px;
-  margin: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(12px);
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   font-family: "Inter", "Segoe UI", sans-serif;
-  overflow-x: auto;
   transition: all 0.3s ease-in-out;
+  min-height: calc(100vh - 64px);
+  box-sizing: border-box;
 }
 
 .attendance-title {
-  font-size: 32px;
+  font-size: clamp(24px, 4vw, 36px);
   font-weight: 800;
   color: #1f2b3a;
   text-align: center;
   margin-bottom: 30px;
+  line-height: 1.2;
 }
 
 .select-wrapper {
@@ -24,24 +29,27 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .select-label {
   font-weight: 600;
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
   color: #2c3e50;
+  white-space: nowrap;
 }
 
 .select-dropdown {
-  padding: 10px 16px;
+  padding: 12px 18px;
   border-radius: 10px;
   border: none;
   background: #eaf0f8;
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  min-width: 280px;
+  max-width: 400px;
 }
 
 .select-dropdown:focus {
@@ -50,88 +58,135 @@
   background: #ffffff;
 }
 
+/* Table wrapper for horizontal scrolling on small screens */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
 .attendance-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
   border-radius: 16px;
   overflow: hidden;
+  min-width: 600px; /* Minimum width for readability */
 }
 
 .attendance-table thead {
   background: linear-gradient(to right, #6a11cb, #9638fb);
   color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .attendance-table th {
-  padding: 16px;
-  font-size: 15px;
+  padding: 16px 12px;
+  font-size: clamp(13px, 1.5vw, 15px);
   font-weight: 700;
   border-right: 1px solid #ffffff30;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.executive-id-header {
+  min-width: 120px;
+  position: sticky;
+  left: 0;
+  background: linear-gradient(to right, #6a11cb, #9638fb);
+  z-index: 11;
+}
+
+.date-header {
+  min-width: 100px;
 }
 
 .attendance-table td {
-  padding: 8px;
-  font-size: 15px;
+  padding: 12px 8px;
+  font-size: clamp(13px, 1.4vw, 15px);
   text-align: center;
   color: #2e2e2e;
   background-color: #ffffff;
   transition: background-color 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.attendance-table tbody tr:nth-child(even) td {
+.executive-id-cell {
+  font-weight: 600;
+  background-color: #fafbfc;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  border-right: 2px solid #e9ecef;
+  min-width: 120px;
+}
+
+.status-cell {
+  min-width: 100px;
+}
+
+.attendance-table tbody tr:nth-child(even) .status-cell {
   background-color: #f9fbfd;
 }
 
-.attendance-table tbody tr:hover {
-  transform: scale(1.01);
-  background-color: #f0faff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: 0.3s ease;
+.attendance-table tbody tr:nth-child(even) .executive-id-cell {
+  background-color: #f5f7fa;
 }
 
-/* Status badge base */
+.attendance-table tbody tr:hover {
+  transform: scale(1.005);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.attendance-table tbody tr:hover .status-cell {
+  background-color: #f0faff;
+}
+
+.attendance-table tbody tr:hover .executive-id-cell {
+  background-color: #e8f4ff;
+}
+
+/* Status badge responsive design */
 .status-badge {
   display: inline-block;
-  padding: 6px 18px;
-  font-size: 13px;
+  padding: 6px 12px;
+  font-size: clamp(11px, 1.2vw, 13px);
   font-weight: 500;
-  border-radius: 999px;
+  border-radius: 20px;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
-  min-width: 90px;
+  min-width: 70px;
   text-align: center;
   white-space: nowrap;
-  border: 1.5px solid transparent; /* required */
+  border: 1.5px solid transparent;
+  margin: 2px 0;
 }
 
-/* ✅ Present Style */
+/* Present Style */
 .status-badge.present {
   background-color: #e9f9f0;
   color: #1e7e34;
   border-color: #28a745;
-  border-radius: 20px;
-  margin-top: 5px;
 }
 
-/* ❌ Absent Style */
+/* Absent Style */
 .status-badge.absent {
   background-color: #fdeeee;
   color: #b02a37;
   border-color: #dc3545;
-  border-radius: 20px;
-  margin-top: 5px;
 }
 
-/* Hover effect (optional) */
+/* Hover effect */
 .status-badge:hover {
-  transform: scale(1.04);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-
-/* Rounded top corners for header row */
+/* Rounded corners for header */
 .attendance-table th:first-child {
   border-top-left-radius: 12px;
 }
@@ -140,23 +195,232 @@
   border-top-right-radius: 12px;
 }
 
-/* Mobile responsiveness */
-@media screen and (max-width: 768px) {
-  .attendance-container {
-    padding: 16px;
-  }
+/* Responsive breakpoints */
 
+/* Small devices (phones, 576px and down) */
+@media screen and (max-width: 576px) {
+  .attendance-container {
+    padding: 16px 12px;
+    border-radius: 12px;
+  }
+  
   .select-wrapper {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 8px;
   }
-
+  
   .select-dropdown {
-    width: 100%;
+    min-width: 100%;
+    max-width: none;
   }
-
-  .attendance-table {
-    font-size: 14px;
-    min-width: unset;
+  
+  .attendance-table th,
+  .attendance-table td {
+    padding: 8px 6px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 100px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 80px;
+  }
+  
+  .status-badge {
+    min-width: 60px;
+    padding: 4px 8px;
   }
 }
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 577px) and (max-width: 992px) {
+  .attendance-container {
+    padding: 24px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 130px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 110px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 993px) and (max-width: 1399px) {
+  .attendance-container {
+    padding: 32px;
+    max-width: 95vw;
+    margin: 0 auto;
+  }
+  
+  .attendance-table {
+    min-width: 800px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 150px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 120px;
+  }
+}
+
+/* Extra large devices (large desktops, 1400px and up) */
+@media screen and (min-width: 1400px) and (max-width: 1919px) {
+  .attendance-container {
+    padding: 40px;
+    max-width: 90vw;
+    margin: 0 auto;
+  }
+  
+  .attendance-table {
+    min-width: 1000px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 180px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 140px;
+  }
+  
+  .attendance-table th,
+  .attendance-table td {
+    padding: 18px 16px;
+  }
+}
+
+/* Ultra-wide screens (1920px and up) */
+@media screen and (min-width: 1920px) and (max-width: 2559px) {
+  .attendance-container {
+    padding: 48px;
+    max-width: 85vw;
+    margin: 0 auto;
+  }
+  
+  .attendance-table {
+    min-width: 1200px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 200px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 160px;
+  }
+  
+  .attendance-table th,
+  .attendance-table td {
+    padding: 20px 18px;
+  }
+  
+  .status-badge {
+    min-width: 100px;
+    padding: 8px 16px;
+  }
+}
+
+/* Super ultra-wide screens (2560px and up) */
+@media screen and (min-width: 2560px) {
+  .attendance-container {
+    padding: 56px;
+    max-width: 80vw;
+    margin: 0 auto;
+  }
+  
+  .attendance-table {
+    min-width: 1400px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 220px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 180px;
+  }
+  
+  .attendance-table th,
+  .attendance-table td {
+    padding: 24px 20px;
+  }
+  
+  .status-badge {
+    min-width: 110px;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .attendance-title {
+    font-size: 42px;
+    margin-bottom: 40px;
+  }
+}
+
+/* 4K and beyond (3000px+) */
+@media screen and (min-width: 3000px) {
+  .attendance-container {
+    padding: 64px;
+    max-width: 75vw;
+    margin: 0 auto;
+  }
+  
+  .attendance-table {
+    min-width: 1600px;
+  }
+  
+  .executive-id-header,
+  .executive-id-cell {
+    min-width: 250px;
+  }
+  
+  .date-header,
+  .status-cell {
+    min-width: 200px;
+  }
+  
+  .attendance-table th,
+  .attendance-table td {
+    padding: 28px 24px;
+  }
+  
+  .status-badge {
+    min-width: 120px;
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+  
+  .attendance-title {
+    font-size: 48px;
+    margin-bottom: 48px;
+  }
+  
+  .select-dropdown {
+    padding: 16px 24px;
+    font-size: 18px;
+  }
+}
+
+
+
+
+

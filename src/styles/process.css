@@ -388,15 +388,6 @@ body {
   overflow-y: hidden;
   width: 100%;
 }
-
-.timeline-container {
-  position: relative;
-  padding: 80px 0;
-  min-height: 450px; /* previously 600 */
-  width: fit-content;
-  margin-bottom: 2rem;
-}
-
 .road-svg {
   min-width: 1300px;
   height: 400px; /* previously 500 */
@@ -452,19 +443,6 @@ body {
 
 .hexagon-container[data-row="bottom"] {
   top: 420px;
-}
-
-.stage-description-card {
-  position: absolute;
-  width: 240px;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  z-index: 3;
-  top: -150px;
-  left: -80px;
-  border-left: 4px solid #007bff;
 }
 
 .hexagon-container[data-row="bottom"] .stage-description-card {
@@ -1033,13 +1011,11 @@ cursor: pointer;
 
 .timeline-container {
   width: 100%;
-  min-height: 600px;
   position: relative;
   overflow-x: auto;
-  overflow-y: visible;
-  padding: 120px 2rem 2rem;
+  overflow-y: auto;
+  padding: 120px 8rem 2rem;
   margin-top: 100;
-
 }
 
 .road-svg {
@@ -1102,7 +1078,6 @@ cursor: pointer;
     inset 0 0 0 1px rgba(255,255,255,0.4);
   z-index: 20;
 }
-
 .stage-description-card {
   position: absolute;
   width: 220px;
@@ -1114,6 +1089,8 @@ cursor: pointer;
   z-index: 20;
   top: -90px;
   left: -70px;
+   word-wrap: break-word;      /* Break long words */
+  box-sizing: border-box;
 }
 .card-content {
   overflow: hidden;
@@ -1123,6 +1100,9 @@ cursor: pointer;
   max-height: 60px;
   overflow: hidden;
   transition: max-height 0.3s ease;
+  white-space: normal;        /* Wrap lines */
+  word-wrap: break-word;      /* Ensure long words break */
+  word-break: break-word; 
 }
 
 .stage-description-card.expanded .card-text {
@@ -1225,14 +1205,10 @@ cursor: pointer;
 }
 
 .hexagon-container[data-row="top"] .stage-description-card {
-  top: -111px;
+  top: -141px;
   left: -75px;
   bottom: auto;
 }
-
-
-
-
 .hexagon-description-box {
   position: absolute;
   background: white;

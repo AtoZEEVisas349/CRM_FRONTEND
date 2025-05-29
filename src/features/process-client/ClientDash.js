@@ -267,19 +267,19 @@ const handleSubmit = async () => {
   {/* Start user image */}
   <image
     href={img2}
-    x={-50}     // tweak this to move left/right
-    y={120}    // tweak this to move up/down
-    width={90}  // bigger size
-    height={160}
+    x={-160}     // tweak this to move left/right
+    y={270}    // tweak this to move up/down
+    width={150}  // bigger size
+    height={200}
   />
 
   {/* End user1 image */}
   <image
     href={img1}
-    x={280 + Math.ceil(stageCount / 2) * 260 - 290}
- y={120} 
-   width={90}  // bigger size
-    height={160}
+    x={280 + Math.ceil(stageCount / 2) * 260 - 230}
+ y={280} 
+   width={140}  // bigger size
+    height={200}
   />
 
           {hexagons.filter(h => h.row === 'top').map((hex) => (
@@ -331,7 +331,7 @@ const handleSubmit = async () => {
             className="hexagon-container"
             data-row={hex.row}
             style={{
-              left: `${hex.left - 35}px`,
+              left: `${hex.left + 55}px`,
               top: `${hex.top}px`,
             }}
           >

@@ -39,7 +39,7 @@ const ExecutiveDetails = () => {
         setPeople(mapped);
         const toggles = {};
         mapped.forEach((p) => {
-          toggles[p.id] = p.canLogin;
+          toggles[p.id] = true; // Default to ON
         });
         setToggleStates(toggles);
       } catch (error) {
@@ -58,46 +58,18 @@ const ExecutiveDetails = () => {
   );
 
   const handleToggle = async (id) => {
-    if (!isAuthenticated() || cooldowns[id] || loadingStates[id]) return;
+    if (!isAuthenticated() || loadingStates[id]) return;
 
     const current = toggleStates[id] ?? true;
     const next = !current;
 
     setToggleStates((prev) => ({ ...prev, [id]: next }));
 
+    // Show popup only when toggled to OFF
     if (!next) {
-      setPopupText(
-        "Hey, Your credentials will get off within 15 minutes. Thank you for waiting."
-      );
+      setPopupText("Hey, your credentials have been turned OFF.");
       setPopupVisible(true);
       setTimeout(() => setPopupVisible(false), 3000);
-    }
-
-    setLoadingStates((prev) => ({ ...prev, [id]: true }));
-
-    try {
-      await updateUserLoginStatus(id, next);
-
-      if (!next) {
-        setCooldowns((prev) => ({ ...prev, [id]: true }));
-        setTimeout(() => {
-          setCooldowns((prev) => {
-            const updated = { ...prev };
-            delete updated[id];
-            return updated;
-          });
-        }, 15 * 60 * 1000);
-      }
-    } catch (error) {
-      console.error("❌ Error updating login status:", error);
-      toast.error("Failed to update login status.");
-      setToggleStates((prev) => ({ ...prev, [id]: current }));
-    } finally {
-      setLoadingStates((prev) => {
-        const updated = { ...prev };
-        delete updated[id];
-        return updated;
-      });
     }
   };
 
@@ -144,11 +116,9 @@ const ExecutiveDetails = () => {
                       type="checkbox"
                       checked={toggleStates[person.id] ?? true}
                       onChange={() => handleToggle(person.id)}
-                      disabled={
-                        cooldowns[person.id] || loadingStates[person.id]
-                      }
+                      disabled={loadingStates[person.id]}
                     />
-                    <span className="slider round">
+                    <span className="sliderexe round">
                       <span className="switch-text">
                         {toggleStates[person.id] ?? true ? "ON" : "OFF"}
                       </span>
@@ -204,11 +174,9 @@ const ExecutiveDetails = () => {
                         type="checkbox"
                         checked={toggleStates[person.id] ?? true}
                         onChange={() => handleToggle(person.id)}
-                        disabled={
-                          cooldowns[person.id] || loadingStates[person.id]
-                        }
+                        disabled={loadingStates[person.id]}
                       />
-                      <span className="slider round">
+                      <span className="sliderexe round">
                         <span className="switch-text">
                           {toggleStates[person.id] ?? true ? "ON" : "OFF"}
                         </span>
