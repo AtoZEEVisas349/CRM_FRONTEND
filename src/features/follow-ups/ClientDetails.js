@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useApi } from "../../context/ApiContext";
 
@@ -77,8 +78,10 @@ const ClientDetails = ({ selectedClient, onClose }) => {
           ) : latestFollowUp ? (
             <div>
               <p>
+                <strong>
                   {new Date(latestFollowUp.follow_up_date).toLocaleDateString()} -{" "}
                   {latestFollowUp.follow_up_time}
+                </strong>
               </p>
               <p>{latestFollowUp.reason_for_follow_up || "No description available."}</p>
             </div>

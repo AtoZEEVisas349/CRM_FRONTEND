@@ -14,8 +14,14 @@ const ClientLogin = () => {
       await login(email, password);
       alert("Login successful!");
 
-      // ✅ Navigate to dashboard
+      const userType = localStorage.getItem("userType");
+
+    // ✅ Conditional navigation
+    if (userType === "customer") {
       navigate("/process/client/dashboard");
+    } else {
+      navigate("/process/client/all-clients");
+    }
     } catch (error) {
       alert(error.message);
     }

@@ -6,7 +6,9 @@ import {
   profileSettings,
   getprofileSettings,
   updateProfileSettings,
-  getAllConvertedClients
+  importConvertedClients,
+  getAllCustomers,
+  getCustomerStagesById
 } from "../services/processService";
 
 // 1. Create Context
@@ -159,21 +161,50 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
-  const fetchConvertedClients = async () => {
-    setConvertedLoading(true);
-    setConvertedError(null);
+
+  const [customers, setCustomers] = useState([]);
+   const[clients,setClients]=useState()
+   
+    const handleImportConvertedClients = async () => {
+       setLoading(true);
+    setError(null);
     try {
-      const response = await getAllConvertedClients();
-      setConvertedClients(response.data || []);
-      return response.data;
+      const result = await importConvertedClients();
+      setClients(result)
+      return result;
     } catch (err) {
-      setConvertedError(err.message || "Failed to fetch converted clients");
+      setError(err);
       throw err;
     } finally {
-      setConvertedLoading(false);
+      setLoading(false);
     }
   };
+
   
+  const fetchCustomers = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllCustomers();
+        setCustomers(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+  const handleGetCustomerStagesById = async (customerId) => {
+        try {
+    const res = await getCustomerStagesById(customerId) // ✅ Adjust endpoint if needed
+    console.log("Raw API response:", res); // This should now show an Axios response object
+    return res; // ✅ MUST return this
+  } catch (error) {
+    console.error("Error in handleGetCustomerStagesById:", error);
+    throw error;
+  }
+    
+
+  };
   // -----------------------
   // Provider Return
   // -----------------------
@@ -197,9 +228,13 @@ const [convertedError, setConvertedError] = useState(null);
         setProfile,
 
         convertedClients,
-    fetchConvertedClients,
     convertedLoading,
     convertedError,
+    fetchCustomers,
+    customers,
+    setCustomers,
+    handleImportConvertedClients,
+    handleGetCustomerStagesById
       }}
     >
       {children}

@@ -377,35 +377,35 @@ const ClientDetailsOverview = () => {
             </div>
 
             <div className="follow-up-column">
-              <div className="last-follow-up">
-                <h3>Last Follow-up</h3>
-                {isLoading ? (
-                  <p>Loading follow-up history...</p>
-                ) : histories.length > 0 ? (
-                  <div>
-                    <p>
-                        {new Date(histories[0].follow_up_date).toLocaleDateString()} -{" "}
-                        {histories[0].follow_up_time}
-                    </p>
-                    <p>{histories[0].reason_for_follow_up || "No description available."}</p>
-                  </div>
-                ) : (
-                  <p>No follow-up history available.</p>
-                )}
-              </div>
+  <div className="follow-up-box">
+    <div className="last-follow-up">
+      <h3>Last Follow-up</h3>
+      {isLoading ? (
+        <p>Loading follow-up history...</p>
+      ) : histories.length > 0 ? (
+        <div className="follow-up-entry">
+          <p>{new Date(histories[0].follow_up_date).toLocaleDateString()} - {histories[0].follow_up_time}</p>
+          <p>{histories[0].reason_for_follow_up || "No description available."}</p>
+        </div>
+      ) : (
+        <p>No follow-up history available.</p>
+      )}
+    </div>
 
-              {histories.length > 0 && (
-                <div className="follow-up-history-summary">
-                  <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
-                    {histories.slice(1).map((history, index) => (
-                      <div key={index} className="history-item" style={{ marginBottom: "10px", padding: "5px", borderBottom: "1px solid #eee" }}>
-                        <p>{new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}</p>
-                        <p>{history.reason_for_follow_up}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+    {histories.length > 0 && (
+      <div className="follow-up-history-summary">
+        <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+          {histories.slice(1).map((history, index) => (
+            <div key={index} className="history-item">
+              <p>{new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}</p>
+              <p>{history.reason_for_follow_up}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    </div>
+
             </div>
           </div>
         </div>

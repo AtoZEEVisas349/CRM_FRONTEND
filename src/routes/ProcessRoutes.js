@@ -21,6 +21,7 @@ const ProcessRoutes = () => {
         <Route path="client/upload" element={<ClientUpload />} />
         {user?.type === "processperson" && (
           <>
+             <Route path="client/dashboard/:id" element={<ClientDash />} />
             <Route path="client/create-client" element={<CreateClient />} />
             <Route path="client/all-clients" element={<AllClient />} />
           </>

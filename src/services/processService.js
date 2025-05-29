@@ -132,15 +132,14 @@ export const updateProfileSettings = async (payload) => {
     throw error.response?.data || { error: 'Network error' };
   }
 };
-// ✅ GET - All Converted Clients
-export const getAllConvertedClients = async () => {
+export const getAllCustomers = async () => {
   const token = localStorage.getItem("token");
 
   if (!token) {
     throw new Error("Token not found in localStorage");
   }
 
-  const res = await fetch(`${API_BASE_URL}/converted`, {
+  const res = await fetch(`${API_BASE_URL}/customer/getAllCustomer`, {
     method: "GET",
     headers: {
       ...BASE_HEADERS,
@@ -150,9 +149,36 @@ export const getAllConvertedClients = async () => {
   });
 
   const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || "Failed to fetch converted clients");
-  }
+  if (!res.ok) throw new Error(data.message || "Failed to fetch customers");
+  return data.customers;
+};
+export const importConvertedClients = async () => {
+  const res = await fetch(`${API_BASE_URL}/processperson/import-converted-customer`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+  });
 
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to import converted clients");
   return data;
+};
+
+export const getCustomerStagesById = async (customerId) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/customer-stages/customer-stages/${customerId}`, {
+      method: "GET",
+      headers: getHeaders(),
+      credentials: "include",
+    });
+
+    const data = await res.json(); // ✅ parse the JSON before using it
+
+    if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch customer stages by ID:", error);
+    throw error;
+  }
 };
