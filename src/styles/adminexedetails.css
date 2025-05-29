@@ -1,5 +1,3 @@
-
-
 /* Toggle Switch */
 .switch {
   position: relative;
@@ -395,9 +393,48 @@ input:checked + .sliderexe:before {
 }
 
 /* Small laptops (e.g., MacBook Air 13", Lenovo laptops) */
-@media screen and (min-width: 1200px) and (max-width: 1439px) {
+@media screen and (min-width: 1365px) and (max-width: 1439px) {
   .boxes-container {
     grid-template-columns: repeat(4, 1fr);
+    gap: 20px; /* Larger gap for better spacing */
+    padding: 20px 20px;
+  }
+
+  .avatar {
+    width: 110px;
+    height: 110px;
+  }
+  .box1 {
+    width: 250px;
+  }
+
+  @media screen and (min-width: 1200px) {
+    .people-table {
+      width: 98%;
+      table-layout: fixed;
+    }
+
+    .people-table th,
+    .people-table td {
+      padding: 12px;
+      font-size: 15px;
+      word-wrap: break-word;
+    }
+  }
+
+  body.sidebar-expanded .boxes-container {
+    padding-left: 10px;
+    padding-right: 40px;
+  }
+
+  body.sidebar-collapsed .boxes-container {
+    padding-left: 100px;
+    padding-right: 50px;
+  }
+}
+@media screen and (min-width: 1200px) and (max-width: 1364px) {
+  .boxes-container {
+    grid-template-columns: repeat(3, 1fr);
     gap: 45px; /* Larger gap for better spacing */
     padding: 20px 40px;
   }
@@ -434,14 +471,13 @@ input:checked + .sliderexe:before {
     padding-right: 50px;
   }
 }
-
 /* Medium laptops (e.g., MacBook Pro 14"-16") */
 @media screen and (min-width: 1440px) and (max-width: 1799px) {
   .boxes-container {
     grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
+    gap: 20px;
     max-width: 100%;
-    margin: 15px auto;
+    margin: 15px 10px;
   }
   .box1 {
     width:270px;
@@ -470,7 +506,7 @@ input:checked + .sliderexe:before {
     padding: 0 150px;
   }
    body.sidebar-expanded .boxes-container {
-    padding: 0 90px;
+    padding: 0 0;
   }
 }
 
@@ -478,7 +514,7 @@ input:checked + .sliderexe:before {
 @media screen and (min-width: 1800px) and (max-width: 1920px) {
   .boxes-container {
     grid-template-columns: repeat(5, 1fr);
-    gap: 50px; /* Maximum gap for large screens */
+    gap: 30px; /* Maximum gap for large screens */
     padding: 0px 100px;
 
     margin: 15px auto;
@@ -621,7 +657,3 @@ input:checked + .sliderexe:before {
     padding-right: -50px;
   }
 }
-
-
-
-

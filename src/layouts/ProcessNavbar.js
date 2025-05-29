@@ -28,7 +28,9 @@ const ProcessNavbar = () => {
         className={isMobile ? "process-nav-links-mobile" : "process-nav-links"}
         onClick={() => setIsMobile(false)}
       >
-        <li><Link to="/process/client/dashboard">Dashboard</Link></li>
+        {user?.type === "customer" && (
+          <li><Link to="/process/client/dashboard">Dashboard</Link></li>
+        )}
         <li><Link to="/process/client/upload">Upload</Link></li>
          {/* ✅ Only show this link to processperson */}
           {user?.type === 'processperson' && (
