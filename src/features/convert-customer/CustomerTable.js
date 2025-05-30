@@ -1,34 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { useApi } from "../../context/ApiContext"; 
+import React, { useEffect, useState, useContext } from "react";
+import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
+import { SearchContext } from "../../context/SearchContext"; // <-- added
 
 const CustomerTable = () => {
-  const { convertedClients, fetchConvertedClientsAPI, convertedClientsLoading, 
+  const {
+    convertedClients,
+    fetchConvertedClientsAPI,
+    convertedClientsLoading,
     fetchNotifications,
     createCopyNotification,
-  } = useApi(); 
-  
+  } = useApi();
+
+  const { searchQuery } = useContext(SearchContext); // <-- get search input
   useCopyNotification(createCopyNotification, fetchNotifications);
-  const [customers, setCustomers] = useState([]); 
-  const [isDataFetched, setIsDataFetched] = useState(false); 
+
+  const [customers, setCustomers] = useState([]);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
-      if (!isDataFetched) { 
-        const clients = await fetchConvertedClientsAPI(); 
-        setIsDataFetched(true); 
+      if (!isDataFetched) {
+        await fetchConvertedClientsAPI();
+        setIsDataFetched(true);
       }
     };
     fetchClients();
-  }, [isDataFetched, fetchConvertedClientsAPI]); 
+  }, [isDataFetched, fetchConvertedClientsAPI]);
 
   useEffect(() => {
     if (Array.isArray(convertedClients)) {
-      setCustomers(convertedClients); 
+      setCustomers(convertedClients);
     }
-  }, [convertedClients]); 
+  }, [convertedClients]);
 
-  const customerCount = Array.isArray(customers) ? customers.length : 0;
+  // 🔍 Filter customers by name/email/phone
+  const filteredCustomers = customers.filter((customer) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      customer.name?.toLowerCase().includes(query) ||
+      customer.email?.toLowerCase().includes(query) ||
+      customer.phone?.toString().includes(query)
+    );
+  });
+
+  const customerCount = filteredCustomers.length;
+
   return (
     <div className="table-container">
       <table className="table">
@@ -48,17 +65,17 @@ const CustomerTable = () => {
                 Loading...
               </td>
             </tr>
-          ) : customers.length > 0 ? (
-            customers.map((customer, index) => (
+          ) : customerCount > 0 ? (
+            filteredCustomers.map((customer, index) => (
               <tr key={index}>
                 <td className="name">
                   <input type="checkbox" className="checkbox" />
                   <i className="fa-solid fa-circle-user"></i>
-                  <p>{customer.name || "N/A"}</p> 
+                  <p>{customer.name || "N/A"}</p>
                 </td>
-                <td>{customer.email || "N/A"}</td> 
-                <td>{customer.phone || "N/A"}</td> 
-                <td>{customer.last_contacted || "N/A"}</td> 
+                <td>{customer.email || "N/A"}</td>
+                <td>{customer.phone || "N/A"}</td>
+                <td>{customer.last_contacted || "N/A"}</td>
                 <td><i className="fa-solid fa-ellipsis"></i></td>
               </tr>
             ))
@@ -74,4 +91,5 @@ const CustomerTable = () => {
     </div>
   );
 };
+
 export default CustomerTable;

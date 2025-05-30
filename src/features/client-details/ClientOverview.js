@@ -20,7 +20,7 @@ const ClientOverview = () => {
   const { clientId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const client = location.state?.client || {};
+  const client = useMemo(() => location.state?.client || {}, []);
   const createFollowUpFlag = location.state?.createFollowUp || false;
 
   const {
@@ -34,17 +34,14 @@ const ClientOverview = () => {
     executiveInfo,
     fetchNotifications,
     createCopyNotification,
-    createFollowUpHistoryAPI, // Added createFollowUpHistoryAPI
+    createFollowUpHistoryAPI, 
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
-  // Initialize date/time strings before state
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
-  const currentTimeStr = now.toTimeString().slice(0, 5); // e.g. "14:45"
+  const currentTimeStr = now.toTimeString().slice(0, 5); 
   
-  
-  // State hooks
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -480,11 +477,13 @@ const ClientOverview = () => {
                   <div>
                     <label style={{ fontWeight: "600" }}>Time:</label>
                     <TimePicker
-                    onChange={setInteractionTime}
-                    value={interactionTime}
-                    disableClock={true}
-                    clearIcon={null}
-                    format="h:mm a"  
+                      onChange={setInteractionTime}
+                      value={interactionTime}
+                      disableClock={true}
+                      clearIcon={null}
+                      format="h:mm a"
+                      clockIcon={null}
+                      locale="en-US"
                     />
                   </div>
                 </div>

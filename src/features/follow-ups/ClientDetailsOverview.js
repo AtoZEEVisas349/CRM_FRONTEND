@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useMemo } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import TimePicker from "react-time-picker";
@@ -37,8 +37,7 @@ const ClientDetailsOverview = () => {
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
-  const client = location.state?.client || {};
-
+  const client = useMemo(() => location.state?.client || {}, []);
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -56,9 +55,37 @@ const ClientDetailsOverview = () => {
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [speechError, setSpeechError] = useState(null);
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
 
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setReasonDesc((prev) => `${prev} ${transcript}`);
+      };
+
+      recognition.onerror = (event) => {
+        setSpeechError(`Speech error: ${event.error}`);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      recognitionRef.current = null;
+    }
+  }, []);
+  
   const capitalize = (text) => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
@@ -296,9 +323,22 @@ const ClientDetailsOverview = () => {
   };
 
   const toggleListening = () => {
-    if (!recognitionRef.current) return alert("Speech recognition not supported");
-    isListening ? stopListening() : recognitionRef.current.start();
-    setIsListening(!isListening);
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome.");
+      return;
+    }
+    setSpeechError(null); // Clear any previous errors
+    if (isListening) {
+      stopListening();
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (error) {
+        setSpeechError("Failed to start speech recognition. Please try again.");
+        console.error("Error starting speech recognition:", error);
+      }
+    }
   };
 
   const stopListening = () => {

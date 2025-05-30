@@ -9,6 +9,7 @@ import { ThemeContext } from "../features/admin/ThemeContext";
 import { useExecutiveActivity } from "../context/ExecutiveActivityContext";
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "../context/breakTimerContext";
+import { SearchContext } from "../context/SearchContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars, faHouse, faUserPlus, faUsers, faList, faClock, faCircleXmark,
@@ -36,7 +37,7 @@ const SidebarandNavbar = () => {
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { setSearchQuery } = useContext(SearchContext);
   const [isOpen, setIsOpen] = useState(() => location.pathname.startsWith("/freshlead") || location.pathname.startsWith("/follow-up") || location.pathname.startsWith("/customer") || location.pathname.startsWith("/close-leads"));
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
@@ -207,8 +208,11 @@ const handleDismissBeepNotification = () => {
       <div className="search_bar">
       <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{fontSize:"20px",cursor:"pointer",
       }} />
-    <input className="search-input-exec" placeholder="Search" />
-    </div>
+            <input
+                className="search-input-exec"
+                placeholder="Search"
+                onChange={(e) => setSearchQuery(e.target.value)} // ✅ Search handler
+              />    </div>
     </div>
 
     <div className="compact-timer">

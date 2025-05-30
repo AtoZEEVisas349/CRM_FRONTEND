@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useCopyNotification from "../../hooks/useCopyNotification";
-
+import { SearchContext } from "../../context/SearchContext";
 function FreshLead() {
   const {
     fetchFreshLeadsAPI,
@@ -24,6 +24,7 @@ function FreshLead() {
 
   useCopyNotification(createCopyNotification, fetchNotifications);
   const { leadtrack } = useExecutiveActivity();
+  const {searchQuery,setActivepage}=useContext(SearchContext);
   const [leadsData, setLeadsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -49,6 +50,7 @@ function FreshLead() {
     }
   }, []);
 
+  
   useEffect(() => {
     const loadLeads = async () => {
       if (hasLoaded) return;
@@ -105,9 +107,17 @@ function FreshLead() {
 
     loadLeads();
   }, [executiveInfo, executiveLoading, hasLoaded]);
+  const filteredLeadsData = leadsData.filter((lead) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      lead.name?.toLowerCase().includes(query) ||
+      lead.phone?.toString().includes(query) ||
+      lead.email?.toLowerCase().includes(query)
+    );
+  });
 
-  const totalPages = Math.ceil(leadsData.length / itemsPerPage);
-  const currentLeads = leadsData.slice(
+  const totalPages = Math.ceil(filteredLeadsData.length / itemsPerPage);
+  const currentLeads = filteredLeadsData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );

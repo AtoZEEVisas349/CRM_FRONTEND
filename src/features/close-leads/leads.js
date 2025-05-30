@@ -1,31 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
-
-const Leads = () => {
+import { SearchContext } from "../../context/SearchContext";
+const Leads = ({searchQuery}) => {
   const { closeLeads, fetchAllCloseLeadsAPI, closeLeadsLoading,
     fetchNotifications,
     createCopyNotification,
    } = useApi();
-  
+  const {activePage}= useContext(SearchContext);
    useCopyNotification(createCopyNotification, fetchNotifications);
   useEffect(() => {
     fetchAllCloseLeadsAPI();
   }, []);
 
   const leadsArray = closeLeads?.data || [];
-
+ // ✅ apply search only if this page is active
+ const filteredLeads =
+ activePage === "close-leads"
+   ? leadsArray.filter((lead) =>
+       [lead.name, lead.phone, lead.email]
+         .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
+     )
+   : leadsArray;
   return (
     <div className="close-leads-page">
       <h1 className="c-heading">CloseLeads</h1>
       <div className="leads_page_wrapper">
-        <h2 className="Total_leads">Total close leads: {leadsArray.length}</h2>
+        <h2 className="Total_leads">Total close leads: {filteredLeads.length}</h2>
         {closeLeadsLoading ? (
           <p>Loading close leads...</p>
-        ) : leadsArray.length > 0 ? (
+        ) : filteredLeads.length > 0 ? (
           <div className="scrollable-leads-container">
           <div className="country_container">
-            {leadsArray.map((lead, index) => (
+            {filteredLeads.map((lead, index) => (
               <div key={index} className="country_cards">
                 <div className="country_name">
                   <h3>{lead.name || "Unnamed Lead"}</h3>

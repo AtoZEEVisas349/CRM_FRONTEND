@@ -1,11 +1,12 @@
 // pages/ScheduleMeeting.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
   faSyncAlt
 } from "@fortawesome/free-solid-svg-icons";
+import { SearchContext } from "../../context/SearchContext"; // ✅ added
 import Swal from "sweetalert2";
 import { useApi } from "../../context/ApiContext";
 import { isSameDay } from "../../utils/helpers";
@@ -26,6 +27,7 @@ const ScheduleMeeting = () => {
     createConvertedClientAPI,
     createCloseLeadAPI
   } = useApi();
+  const { searchQuery } = useContext(SearchContext); // ✅ get query
 
   const navigate = useNavigate();
   const [meetings, setMeetings] = useState([]);
@@ -62,38 +64,89 @@ const ScheduleMeeting = () => {
 
             return {
               ...meeting,
+              leadId, // Add leadId for duplicate filtering
               interactionScheduleDate: recent?.follow_up_date,
               interactionScheduleTime: recent?.follow_up_time,
               followUpDetails: recent
             };
           } catch {
-            return meeting;
+            return {
+              ...meeting,
+              leadId // Add leadId even if history fetch fails
+            };
           }
         })
       );
 
+      // Remove duplicates based on fresh_lead_id, keeping the most recent meeting
+      const uniqueMeetings = enriched.reduce((unique, meeting) => {
+        const existingMeeting = unique.find(m => 
+          String(m.leadId) === String(meeting.leadId) && m.leadId && meeting.leadId
+        );
+        
+        if (!existingMeeting) {
+          unique.push(meeting);
+        } else {
+          // Keep the meeting with the most recent startTime
+          const existingStartTime = new Date(existingMeeting.startTime);
+          const currentStartTime = new Date(meeting.startTime);
+          
+          if (currentStartTime > existingStartTime) {
+            // Replace the existing meeting with the more recent one
+            const index = unique.indexOf(existingMeeting);
+            unique[index] = meeting;
+          }
+        }
+        
+        return unique;
+      }, []);
+
       const now = new Date();
-      const filtered = enriched.filter((m) => {
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
+      
+      const filtered = uniqueMeetings.filter((m) => {
         const start = new Date(m.startTime);
+        
+        // Always show recently updated meetings regardless of filter
         if (recentlyUpdatedMeetingId && m.id === recentlyUpdatedMeetingId) return true;
-        if (activeFilter === "today") return isSameDay(start, now);
+        
+        if (activeFilter === "today") {
+          // Show meetings for today only (current date)
+          return isSameDay(start, now);
+        }
+        
         if (activeFilter === "week") {
-          const weekAgo = new Date(now);
-          weekAgo.setDate(now.getDate() - 7);
-          return start >= weekAgo && start <= now;
+          // Show meetings for the next 7 days (including today)
+          const weekFromNow = new Date(today);
+          weekFromNow.setDate(today.getDate() + 7);
+          return start >= today && start < weekFromNow;
         }
+        
         if (activeFilter === "month") {
-          return start.getFullYear() === now.getFullYear() && start.getMonth() === now.getMonth();
+          // Show meetings for the next 30 days (including today)
+          const monthFromNow = new Date(today);
+          monthFromNow.setDate(today.getDate() + 30);
+          return start >= today && start < monthFromNow;
         }
+        
         return true;
       });
 
-      setMeetings(filtered);
-    } catch (error) {
-      console.error("Failed to load meetings:", error);
-      setMeetings([]);
-    }
-  };
+    // ✅ Filter meetings using searchQuery
+    const query = searchQuery.toLowerCase();
+    const searchFiltered = filtered.filter((m) => {
+      return (
+        m.clientName?.toLowerCase().includes(query) ||
+        m.clientEmail?.toLowerCase().includes(query) ||
+        m.clientPhone?.toString().includes(query)
+      );
+    });
+
+    setMeetings(searchFiltered);
+  } catch (error) {
+    console.error("Failed to load meetings:", error);
+    setMeetings([]);
+  }};
   const handleFollowUpSubmit = async (formData) => {
     const {
       clientName,
@@ -179,21 +232,28 @@ const ScheduleMeeting = () => {
         navigate("/close-leads", { state: { lead: leadDetails } });
         setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
       } else if (follow_up_type === "appointment") {
+        const newStartTime = new Date(`${follow_up_date}T${follow_up_time}`).toISOString();
+        
         const updated = await updateMeetingAPI(meeting.id, {
           clientName,
           clientEmail: email,
           clientPhone: meeting.clientPhone,
           reasonForFollowup: reason_for_follow_up,
-          startTime: new Date(`${follow_up_date}T${follow_up_time}`).toISOString(),
+          startTime: newStartTime,
           endTime: meeting.endTime || null,
           fresh_lead_id: freshLeadId,
         });
+        
+        // Set the recently updated meeting ID to ensure it shows in the UI
+        setRecentlyUpdatedMeetingId(meeting.id);
+        
         setMeetings((prev) =>
           prev.map((m) =>
             m.id === meeting.id
               ? {
                   ...m,
                   ...updated,
+                  startTime: newStartTime, // Update the startTime for date display
                   interactionScheduleDate: follow_up_date,
                   interactionScheduleTime: follow_up_time,
                 }
@@ -227,9 +287,11 @@ const ScheduleMeeting = () => {
   const handleShowHistory = (meeting) => setSelectedMeetingForHistory(meeting);
   const handleCloseHistory = () => setSelectedMeetingForHistory(null);
 
+ 
   useEffect(() => {
     loadMeetings();
-  }, [activeFilter]);
+  }, [activeFilter, searchQuery]); // ✅ reload if search changes
+
 
   return (
     <div className="task-management-container">

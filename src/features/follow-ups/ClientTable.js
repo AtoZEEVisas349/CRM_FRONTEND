@@ -1,10 +1,11 @@
 
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState,useContext } from "react";
+import { useNavigate,useLocation } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone,faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { SearchContext } from "../../context/SearchContext";
 
 const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   const { followUps, getAllFollowUps, followUpLoading } = useApi();
@@ -12,10 +13,16 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [tableHeight, setTableHeight] = useState("500px");
   const navigate = useNavigate();
+  const { searchQuery, setActivePage } = useContext(SearchContext);
+  const location = useLocation(); // ✅ Replace global reference
 
   useEffect(() => {
     getAllFollowUps();
   }, []);
+
+  useEffect(() => {
+    setActivePage("follow-up");
+  }, [setActivePage]);
 
   useEffect(() => {
     const updateTableHeight = () => {
@@ -35,12 +42,22 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
     const type = (client.follow_up_type || "").toLowerCase().trim();
     const status = (client.clientLeadStatus || "").toLowerCase().trim();
 
-    if (status === "follow-up") {
-      if (filter === "Interested") return type === "interested";
-      if (filter === "Not Interested") return type === "not interested";
-      return true;
+    if (status !== "follow-up") return false;
+
+    if (filter === "Interested" && type !== "interested") return false;
+    if (filter === "Not Interested" && type !== "not interested") return false;
+
+    // 🔍 Apply search filter only on follow-up page
+    if (location.pathname.includes("follow-up") && searchQuery.trim()) {
+      const search = searchQuery.toLowerCase();
+      const name = client.freshLead?.name?.toLowerCase() || "";
+      const phone = client.freshLead?.phone?.toString() || "";
+      const email = client.freshLead?.email?.toLowerCase() || "";
+
+      return name.includes(search) || phone.includes(search) || email.includes(search);
     }
-    return false;
+
+    return true;
   });
 
   const handleEdit = (client) => {

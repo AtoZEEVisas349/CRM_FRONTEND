@@ -73,10 +73,11 @@ function Notification() {
                   </div>
                 </div>
                 <p className="notification-message">
-                  {/* You have been assigned a new lead # */}
-                  {n.message.split(":")[1].trim()}
-                  {/* {(currentPage - 1) * itemsPerPage + index + 1} */}
-                </p>
+  {n.message.toLowerCase().includes("meeting")
+    ? n.message.split(":")[1].trim() // show full meeting details
+    : `Notification #${(currentPage - 1) * itemsPerPage + index + 1}`} {/* show numbered message */}
+</p>
+
               </li>
             ))}
           </ul>

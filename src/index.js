@@ -12,6 +12,7 @@ import { ThemeProvider } from './features/admin/ThemeContext';
 import { ProcessProvider } from './context/ProcessAuthContext';
 import { ProcessServiceProvider } from './context/ProcessServiceContext';
 import { BeepSettingsProvider } from './context/BeepSettingsContext';
+import { SearchProvider } from './context/SearchContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -27,7 +28,9 @@ root.render(
           <CompanyProvider>
             <ProcessProvider>
               <ProcessServiceProvider>
+                <SearchProvider>
             <App />
+            </SearchProvider>
             </ProcessServiceProvider>
             </ProcessProvider>
             </CompanyProvider>

@@ -1,11 +1,23 @@
 /* notification */
-/* Wrapper layout around everything */
 .notification-page-wrapper {
   display: flex;
   flex-direction: row;
   background-color: #f5f7fa;
   min-height: 200px;
 }
+/* Hide scrollbar for Webkit (Chrome, Safari, Edge) */
+.notification-container::-webkit-scrollbar,
+.notification-content-area::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.notification-container,
+.notification-content-area {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE and Edge */
+}
+
 /* Sidebar is handled inside SidebarandNavbar */
 .notification-sidebar {
   width: 250px;
