@@ -7,13 +7,14 @@
   background: #4f52bb;
   z-index: 1000;
   transition: all 0.5s ease;
-  overflow-y: auto;
+  overflow:hidden;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   border-radius: 0 40px 10px 0;
 }
 
 .admin-sidebar.collapsed {
   width: 68px;
+  overflow: hidden !important;
 }
 
 .admin-header-wrapper {

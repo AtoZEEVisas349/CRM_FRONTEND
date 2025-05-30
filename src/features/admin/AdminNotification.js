@@ -9,7 +9,7 @@ function AdminNotification() {
     fetchNotifications,
     markNotificationReadAPI,
   } = useApi();
-
+  const [activeTab, setActiveTab] = useState("notifications");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -43,46 +43,98 @@ function AdminNotification() {
   return (
     <div className="admin-notification-wrapper">
       <h2 className="admin-notification-title">Notifications</h2>
+      <div className="admin-tab-buttons">
+  <button
+    className={`admin-tab-btn ${activeTab === "notifications" ? "active" : ""}`}
+    onClick={() => setActiveTab("notifications")}
+  >
+    Notifications
+  </button>
+  <button
+    className={`admin-tab-btn ${activeTab === "meetings" ? "active" : ""}`}
+    onClick={() => setActiveTab("meetings")}
+  >
+    Meetings
+  </button>
+</div>
 
-      {notificationsLoading ? (
-        <p className="admin-notification-loading">Loading notifications...</p>
-      ) : notifications.length === 0 ? (
-        <p className="admin-notification-empty">No notifications</p>
-      ) : (
-        <div className="admin-notification-content">
-          <ul className="admin-notification-list">
-            {currentNotifications.map((n) => {
-              const [title, messageBody] = n.message.split(":");
-              return (
-                <li
-                key={n.id}
-                className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}
-              >
-              
-                  <div className="admin-notification-item-header">
-                    <strong>{title?.trim()}</strong>
-                    <div className="admin-notification-meta">
-                      <span className="admin-notification-time">
-                        {new Date(n.createdAt).toLocaleTimeString()}
-                      </span>
-                      <label className="admin-notification-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={n.is_read}
-                          disabled={n.is_read}
-                          onChange={() => handleMarkAsRead(n.id)}
-                        />
-                        Mark as read
-                      </label>
-                    </div>
-                  </div>
-                  <p className="admin-notification-message">
-                    Executive {n.userId} copied {messageBody?.trim()}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
+{notificationsLoading ? (
+  <p className="admin-notification-loading">Loading notifications...</p>
+) : activeTab === "notifications" ? (
+  <div className="admin-notification-content">
+  <ul className="admin-notification-list">
+    {currentNotifications
+      .filter(n => !n.message.toLowerCase().includes("meeting")) // filter out meeting notifications
+      .map((n) => {
+        const [title, messageBody] = n.message.split(":");
+        return (
+          <li
+            key={n.id}
+            className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}
+          >
+            <div className="admin-notification-item-header">
+              <strong>{title?.trim()}</strong>
+              <div className="admin-notification-meta">
+                <span className="admin-notification-time">
+                  {new Date(n.createdAt).toLocaleTimeString()}
+                </span>
+                <label className="admin-notification-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={n.is_read}
+                    disabled={n.is_read}
+                    onChange={() => handleMarkAsRead(n.id)}
+                  />
+                  Mark as read
+                </label>
+              </div>
+            </div>
+            <p className="admin-notification-message">
+              {messageBody?.trim()}
+            </p>
+          </li>
+        );
+      })}
+  </ul>
+</div>
+
+) : (
+  <div className="admin-meeting-notification-content">
+    <ul className="admin-notification-list">
+      {notifications
+        .filter(n => n.message.toLowerCase().includes("meeting"))
+        .map(n => {
+          const [title, messageBody] = n.message.split(":");
+          return (
+            <li
+              key={n.id}
+              className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}
+            >
+              <div className="admin-notification-item-header">
+                <strong>{title?.trim()}</strong>
+                <div className="admin-notification-meta">
+                  <span className="admin-notification-time">
+                    {new Date(n.createdAt).toLocaleTimeString()}
+                  </span>
+                  <label className="admin-notification-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={n.is_read}
+                      disabled={n.is_read}
+                      onChange={() => handleMarkAsRead(n.id)}
+                    />
+                    Mark as read
+                  </label>
+                </div>
+              </div>
+              <p className="admin-notification-message">{messageBody?.trim()}</p>
+            </li>
+          );
+        })}
+    </ul>
+  </div>
+)}
+
 
           {/* Pagination */}
           <div className="admin-notification-pagination">
@@ -105,8 +157,7 @@ function AdminNotification() {
             </button>
           </div>
         </div>
-      )}
-    </div>
+
   );
 }
 
