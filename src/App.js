@@ -34,6 +34,7 @@ import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
 import ExecutiveFormRoutes from "./routes/ExecutiveFormRoutes";
 import BeepSound from "./features/settings/BeepSound";
+import CustomerLogin from "./features/process-client/CustomerLogin";
 
 const App = () => {
   const [followUpText, setFollowUpText] = useState(() => {
@@ -63,6 +64,7 @@ useEffect(() => {
         <Route path="/master/signupmaster" element={<SignupMaster />} />
         <Route path="/process/client/login" element={<ClientLogin />} />
         <Route path="/process/client/signup" element={<ClientSignup />} />
+        <Route path="/customer/client/login" element={<CustomerLogin />} />
         <Route 
           path="/follow-up/*" 
           element={

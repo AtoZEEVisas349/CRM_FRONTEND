@@ -2,26 +2,29 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // ✅ import useNavigate
 import { useProcess } from "../../context/ProcessAuthContext";
 
-const ClientLogin = () => {
+const CustomerLogin = () => {
   const { login } = useProcess();
   const navigate = useNavigate(); // ✅ initialize navigate hook
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("customer");
+const handleLogin = async () => {
+  try {
+    await login(email, password);
+    alert("Login successful!");
 
-  const handleLogin = async () => {
-    try {
-      await login(email, password);
-      alert("Login successful!");
-  
-      localStorage.setItem("userType", "processperson");
-  
-        navigate("/process/client/all-clients");
-  
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+    localStorage.setItem("userType", "customer");
+
+    // ✅ Conditional navigation
+ 
+      navigate("/process/client/dashboard");
+    
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
 
   return (
     <div className="process-auth-wrapper">
@@ -48,12 +51,10 @@ const ClientLogin = () => {
 
         <a href="#" className="process-link">Forgot password?</a>
 
-        <p className="process-footer-text">
-          Don't have an account? <Link to="/process/client/signup">Sign up</Link>
-        </p>
+       
       </div>
     </div>
   );
 };
 
-export default ClientLogin;
+export default CustomerLogin;

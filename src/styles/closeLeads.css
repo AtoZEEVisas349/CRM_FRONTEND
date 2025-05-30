@@ -15,6 +15,28 @@ html, body, #root {
 .close-leads-main{
   margin-top: 40px;
 }
+.scrollable-leads-container {
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+.scrollable-leads-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Optional: Add custom scrollbar styling */
+.scrollable-leads-container::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollable-leads-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.scrollable-leads-container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
 .c-heading{
   padding-bottom: 30px;
 }

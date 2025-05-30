@@ -55,17 +55,17 @@ export const ProcessProvider = ({ children }) => {
 // ---------------------------------------
 // Signup Handler
 // ---------------------------------------
-  const signup = async (fullName, email, password, userType) => {
-    setLoading(true);
-    try {
-      const data = await signupUser(fullName, email, password, userType);
-      return data;
-    } catch (error) {
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+const signup = async (fullName, email, password, userType) => {
+  setLoading(true);
+  try {
+    const data = await signupUser(fullName, email, password, userType);
+    return data;
+  } catch (error) {
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+};
 
 // ---------------------------------------
 // Logout Handler

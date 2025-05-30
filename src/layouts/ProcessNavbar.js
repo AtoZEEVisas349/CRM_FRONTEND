@@ -12,12 +12,21 @@ const ProcessNavbar = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/process/client/login");
+  
+      const userType = localStorage.getItem("userType");
+  
+      if (userType === "customer") {
+        navigate("/customer/client/login");
+      } else if (userType === "processperson") {
+        navigate("/process/client/login");
+      } else {
+        // Fallback if userType is not set or unknown
+        navigate("/");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
-
   const dashboardTitle = user?.type === 'processperson' ? 'Process Dashboard' : 'Client Dashboard';
 
   return (

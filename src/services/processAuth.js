@@ -35,7 +35,7 @@ export const loginUser = async (email, password) => {
 };
 
 /*------------------------------SIGNUP---------------------------*/
-export const signupUser = async (fullName, email, password, userType = "customer") => {
+export const signupUser = async (fullName, email, password, userType = "processperson") => {
   const res = await fetch(`${API_BASE_URL}/${userType}/signup`, {
     method: "POST",
     headers: BASE_HEADERS,
@@ -44,6 +44,8 @@ export const signupUser = async (fullName, email, password, userType = "customer
   });
 
   const responseBody = await res.json();
+  localStorage.setItem("userType", userType);
+
   if (!res.ok) {
     console.error("Signup API error details:", responseBody);
     throw new Error(responseBody.error || "Signup failed");
@@ -51,6 +53,7 @@ export const signupUser = async (fullName, email, password, userType = "customer
 
   return responseBody;
 };
+
 /*------------------------------LOGOUT---------------------------*/
 export const logoutUser = async (userType = "customer") => {
   const token = localStorage.getItem("token");

@@ -6,6 +6,7 @@ import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import useCopyNotification from "../../hooks/useCopyNotification";
 
 function FreshLead() {
   const {
@@ -17,8 +18,11 @@ function FreshLead() {
     verifyNumberAPI,
     verificationResults,
     verificationLoading,
+    fetchNotifications,
+    createCopyNotification
   } = useApi();
 
+  useCopyNotification(createCopyNotification, fetchNotifications);
   const { leadtrack } = useExecutiveActivity();
   const [leadsData, setLeadsData] = useState([]);
   const [loading, setLoading] = useState(true);

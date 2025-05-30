@@ -13,7 +13,7 @@ const ClientSignup = () => {
 
   const handleSignup = async () => {
     try {
-      await signup(fullName, email, password, role);
+      await signup(fullName, email, password);
       alert("Signup successful!");
 
       // ✅ Redirect to login after 2 seconds
@@ -48,16 +48,6 @@ const ClientSignup = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          style={{ marginBottom: "10px" }}
-        >
-          <option value="customer">Customer</option>
-          <option value="processperson">Process Person</option>
-        </select>
-
         <button className="process-primary-btn" onClick={handleSignup}>
           Sign up
         </button>

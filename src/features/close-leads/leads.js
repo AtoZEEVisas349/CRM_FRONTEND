@@ -23,6 +23,7 @@ const Leads = () => {
         {closeLeadsLoading ? (
           <p>Loading close leads...</p>
         ) : leadsArray.length > 0 ? (
+          <div className="scrollable-leads-container">
           <div className="country_container">
             {leadsArray.map((lead, index) => (
               <div key={index} className="country_cards">
@@ -43,6 +44,7 @@ const Leads = () => {
               </div>
             ))}
           </div>
+</div>
         ) : (
           <p>No close leads found.</p>
         )}
