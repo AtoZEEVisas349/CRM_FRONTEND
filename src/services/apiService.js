@@ -394,10 +394,15 @@ export const createConvertedClient = async (convertedData) => {
   }
 };
 //fetch Converted clients
-export const fetchConvertedClients = async () => {
+
+// Fetch converted clients dynamically based on executiveId or username
+export const fetchConvertedClients = async (executiveId = null) => {
   try {
-    const response = await apiService.get('/converted/exec'); 
-    return response.data; 
+    const endpoint = executiveId ? '/converted/exec' : '/converted';
+    const response = await apiService.get(endpoint, {
+      headers: executiveId ? { 'x-executive-id': executiveId } : {},
+    });
+    return response.data;
   } catch (error) {
     console.error("Error fetching converted clients:", error.response?.data || error.message);
     throw error;
@@ -518,6 +523,19 @@ export const updateMeeting = async (meetingId, updatedData) => {
       `❌ Error updating meeting ID ${meetingId}:`,
       error.response?.data || error.message
     );
+    throw error;
+  }
+};
+// New function to update ClientLead status
+export const updateClientLeadStatus = async (leadId, status) => {
+  try {
+    const response = await apiService.put("/freshleads/update-clientlead", {
+      leadId,
+      status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating ClientLead status:", error);
     throw error;
   }
 };

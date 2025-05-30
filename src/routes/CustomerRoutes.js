@@ -1,27 +1,47 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For navigation
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "../features/convert-customer/SearchBar";
 import CustomerTable from "../features/convert-customer/CustomerTable";
 import SidebarandNavbar from "../layouts/SidebarandNavbar";
+import { useApi } from "../context/ApiContext";
 import "../styles/customer.css";
 
 const CustomerRoutes = () => {
+  const { convertedClients, fetchConvertedClientsAPI } = useApi();
   const [filteredCustomers, setFilteredCustomers] = useState([]);
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchConvertedClientsAPI();
+    console.log("Fetched converted clients in CustomerRoutes:", convertedClients);
+  }, []);
+
+  useEffect(() => {
+    if (Array.isArray(convertedClients)) {
+      setFilteredCustomers(convertedClients);
+    }
+  }, [convertedClients]);
 
   const handleSearch = (query) => {
-    setFilteredCustomers(
-      CustomerTable.filter((customer) =>
-        customer.name.toLowerCase().includes(query.toLowerCase()) ||
-        customer.email.toLowerCase().includes(query.toLowerCase())
-      )
+    if (!query) {
+      setFilteredCustomers(convertedClients);
+      return;
+    }
+    const filtered = convertedClients.filter(
+      (customer) =>
+        (customer.name &&
+          customer.name.toLowerCase().includes(query.toLowerCase())) ||
+        (customer.email &&
+          customer.email.toLowerCase().includes(query.toLowerCase()))
     );
+    setFilteredCustomers(filtered);
+    console.log("Filtered customers:", filtered);
   };
 
   const openInvoiceInNewTab = () => {
-    window.open("/invoice.html", "_blank"); 
+    window.open("/invoice.html", "_blank");
   };
-  
 
   return (
     <div className="customer-container">
@@ -32,11 +52,7 @@ const CustomerRoutes = () => {
           <button className="button">Export List</button>
         </div>
         <SearchBar onSearch={handleSearch} />
-        <CustomerTable
-          customers={filteredCustomers.length > 0 ? filteredCustomers : CustomerTable}
-        />
-
-        {/* ✅ Invoice Button Outside Invoice */}
+        <CustomerTable customers={filteredCustomers} />
         <div className="generate-btn-wrapper">
           <button className="button invoice-btn" onClick={openInvoiceInNewTab}>
             Generate Invoice

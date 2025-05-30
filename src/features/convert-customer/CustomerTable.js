@@ -1,40 +1,20 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import { SearchContext } from "../../context/SearchContext"; // <-- added
 
 const CustomerTable = () => {
-  const {
-    convertedClients,
-    fetchConvertedClientsAPI,
-    convertedClientsLoading,
-    fetchNotifications,
-    createCopyNotification,
-  } = useApi();
-
-  const { searchQuery } = useContext(SearchContext); // <-- get search input
-  useCopyNotification(createCopyNotification, fetchNotifications);
-
+  const { convertedClients, convertedClientsLoading, fetchNotifications, createCopyNotification } = useApi();
   const [customers, setCustomers] = useState([]);
-  const [isDataFetched, setIsDataFetched] = useState(false);
+  const { searchQuery } = useContext(SearchContext); // <-- get search input
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      if (!isDataFetched) {
-        await fetchConvertedClientsAPI();
-        setIsDataFetched(true);
-      }
-    };
-    fetchClients();
-  }, [isDataFetched, fetchConvertedClientsAPI]);
+  useCopyNotification(createCopyNotification, fetchNotifications);
 
   useEffect(() => {
     if (Array.isArray(convertedClients)) {
       setCustomers(convertedClients);
     }
   }, [convertedClients]);
-
-  // 🔍 Filter customers by name/email/phone
   const filteredCustomers = customers.filter((customer) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -43,7 +23,6 @@ const CustomerTable = () => {
       customer.phone?.toString().includes(query)
     );
   });
-
   const customerCount = filteredCustomers.length;
 
   return (
@@ -65,7 +44,7 @@ const CustomerTable = () => {
                 Loading...
               </td>
             </tr>
-          ) : customerCount > 0 ? (
+          ) : customers.length > 0 ? (
             filteredCustomers.map((customer, index) => (
               <tr key={index}>
                 <td className="name">

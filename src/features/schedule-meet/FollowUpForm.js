@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import TimePicker from "react-time-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { convertTo24HrFormat, capitalize } from "../../utils/helpers";
+
 // FollowUpForm component for adding a new follow-up
 const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
   const [clientName, setClientName] = useState(meeting.clientName || "");
@@ -16,7 +18,7 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
     const today = new Date();
     return today.toISOString().split("T")[0]; // e.g. "2025-05-28"
   });
-    const now = new Date();
+  const now = new Date();
   const defaultTime = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -63,6 +65,30 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
     });
   };
 
+  const getFollowUpTypeLabel = (type) => {
+    const labels = {
+      "interested": "Interested",
+      "appointment": "Appointment",
+      "no response": "No Response",
+      "converted": "Converted",
+      "not interested": "Not Interested",
+      "close": "Close Lead"
+    };
+    return labels[type] || type;
+  };
+
+  const getFollowUpTypeDescription = (type) => {
+    const descriptions = {
+      "interested": "Mark lead as interested and move to follow-up list",
+      "appointment": "Schedule/reschedule meeting with client",
+      "no response": "Client did not respond to contact attempts",
+      "converted": "Convert lead to customer",
+      "not interested": "Mark lead as not interested",
+      "close": "Close this lead permanently"
+    };
+    return descriptions[type] || "";
+  };
+
   return (
     <div className="followup-form-overlay">
       <div className="followup-form-modal">
@@ -85,6 +111,7 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             />
             {errors.clientName && <span className="error-text">{errors.clientName}</span>}
           </div>
+          
           <div className="form-group">
             <label>Email</label>
             <input
@@ -97,6 +124,7 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
+          
           <div className="form-group">
             <label>Follow-Up Reason</label>
             <textarea
@@ -108,6 +136,7 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             />
             {errors.reasonDesc && <span className="error-text">{errors.reasonDesc}</span>}
           </div>
+          
           <div className="form-group">
             <label>Connected Via</label>
             <div className="radio-group">
@@ -127,30 +156,44 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             </div>
             {errors.contactMethod && <span className="error-text">{errors.contactMethod}</span>}
           </div>
+          
           <div className="form-group">
             <label>Follow-Up Type</label>
             <div className="radio-group">
               {[
                 "interested",
-                "appointment",
+                "appointment", 
                 "no response",
                 "converted",
                 "not interested",
                 "close"
               ].map((type) => (
-                <label key={type} className="radio-container">
+                <label key={type} className="radio-container" title={getFollowUpTypeDescription(type)}>
                   <input
                     type="radio"
                     name="followUpType"
                     checked={followUpType === type}
                     onChange={() => setFollowUpType(type)}
                   />
-                  <span className="radio-label">{type.replace("-", " ")}</span>
+                  <span className="radio-label">{getFollowUpTypeLabel(type)}</span>
                 </label>
               ))}
             </div>
             {errors.followUpType && <span className="error-text">{errors.followUpType}</span>}
+            {followUpType && (
+              <div className="follow-up-type-info" style={{ 
+                marginTop: "8px", 
+                padding: "8px 12px", 
+                backgroundColor: "#f8f9fa", 
+                borderRadius: "4px", 
+                fontSize: "14px", 
+                color: "#6c757d" 
+              }}>
+                {getFollowUpTypeDescription(followUpType)}
+              </div>
+            )}
           </div>
+          
           <div className="form-group">
             <label>Interaction Rating</label>
             <div className="radio-group">
@@ -170,34 +213,40 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             </div>
             {errors.interactionRating && <span className="error-text">{errors.interactionRating}</span>}
           </div>
+          
           <div className="form-group-horizontal">
-  <div className="form-subgroup">
-    <label>Interaction Date</label>
-    <input
-      type="date"
-      value={interactionDate}
-      onChange={(e) => setInteractionDate(e.target.value)}
-      className="form-input"
-      required
-    />
-    {errors.interactionDate && <span className="error-text">{errors.interactionDate}</span>}
-  </div>
-  <div className="form-subgroup">
-    <label>Interaction Time</label>
-    <TimePicker
-      onChange={setInteractionTime}
-      value={interactionTime}
-      format="hh:mm a"
-      disableClock={false}
-      clearIcon={null}
-      className="form-time-picker"
-    />
-  </div>
-</div>
+            <div className="form-subgroup">
+              <label>Interaction Date</label>
+              <input
+                type="date"
+                value={interactionDate}
+                onChange={(e) => setInteractionDate(e.target.value)}
+                className="form-input"
+                required
+              />
+              {errors.interactionDate && <span className="error-text">{errors.interactionDate}</span>}
+            </div>
+            <div className="form-subgroup">
+              <label>Interaction Time</label>
+              <TimePicker
+                onChange={setInteractionTime}
+                value={interactionTime}
+                format="hh:mm a"
+                disableClock={false}
+                clearIcon={null}
+                className="form-time-picker"
+              />
+            </div>
+          </div>
 
           <div className="form-actions">
             <button type="submit" className="submit-btn">
-              Save Follow-Up
+              {followUpType === "converted" ? "Convert Lead" :
+               followUpType === "close" ? "Close Lead" :
+               followUpType === "appointment" ? "Update Meeting" :
+               followUpType === "interested" ? "Mark as Interested" :
+               followUpType === "not interested" ? "Mark as Not Interested" :
+               "Save Follow-Up"}
             </button>
             <button type="button" className="cancel-btn" onClick={onClose}>
               Cancel
@@ -208,4 +257,5 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
     </div>
   );
 };
+
 export default FollowUpForm;

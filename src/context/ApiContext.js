@@ -597,6 +597,16 @@ const updateMeetingAPI = async (meetingId, updatedData) => {
     throw error;
   }
 };
+const updateClientLeadStatus = async (leadId, status) => {
+  try {
+    const response = await apiService.updateClientLeadStatus(leadId, status);
+    return response;
+  } catch (error) {
+    console.error("❌ Error updating client lead status:", error);
+    throw error;
+  }
+};
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -638,6 +648,7 @@ const updateMeetingAPI = async (meetingId, updatedData) => {
 
     updateUserLoginStatus,
     // Follow-ups
+    updateClientLeadStatus,
     createFollowUp,
     fetchFreshLeadsAPI,
     updateMeetingAPI,

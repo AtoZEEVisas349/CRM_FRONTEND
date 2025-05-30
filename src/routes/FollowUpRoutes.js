@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import ClientDetails from "../features/follow-ups/ClientDetails";
 import ClientTable from "../features/follow-ups/ClientTable";
 import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
+import { useLocation } from "react-router-dom";
 
 const FollowUpRoutes = () => {
-  const [activeTab, setActiveTab] = useState("All Follow Ups");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(
+    location.state?.activeTab || "All Follow Ups"
+  );
   const [selectedClient, setSelectedClient] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
 
   return (
     <div className="follow-app-container">
@@ -29,6 +40,6 @@ const FollowUpRoutes = () => {
       </div>
     </div>
   );
-}
+};
 
 export default FollowUpRoutes;
