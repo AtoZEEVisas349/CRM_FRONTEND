@@ -161,10 +161,11 @@ body {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-bottom: 20px;
 }
+
 
 @media (min-width: 768px) {
   .form-row {
@@ -173,8 +174,9 @@ body {
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 0; /* or a small value like 10px */
 }
+
 
 .form-group label {
   display: block;
