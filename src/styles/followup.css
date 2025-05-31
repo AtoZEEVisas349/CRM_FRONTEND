@@ -176,17 +176,18 @@ color: #fff;
   border: 1px solid var(--border-color);
 }
 
-/* .last-followup {
-  flex: 1;
-  margin-left: 40px;
-  font-size: 16px;
-  color: var(--text-color);
-  margin-top: 10px;
+select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
 }
 
-.last-followup h5 {
-  margin-bottom: 10px;
-} */
 .c-layout {
   display: flex;
   align-items: stretch; /* Align both left and right sections at the top */

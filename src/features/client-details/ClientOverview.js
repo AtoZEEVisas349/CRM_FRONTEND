@@ -3,9 +3,6 @@ import { useLocation, useParams,useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { getEmailTemplates } from "../../static/emailTemplates";    
-import TimePicker from "react-time-picker";
-import "react-time-picker/dist/TimePicker.css";
-import "react-clock/dist/Clock.css";
 import useCopyNotification from "../../hooks/useCopyNotification";
 
 
@@ -49,11 +46,18 @@ const ClientOverview = () => {
   const [reasonDesc, setReasonDesc] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [interactionDate, setInteractionDate] = useState(todayStr);
-  const [interactionTime, setInteractionTime] = useState(currentTimeStr);
-
+  const [timeOnly, setTimeOnly] = useState("12:00");
+  const [ampm, setAmPm] = useState("AM");
+  
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
-
+  const interactionTime = useMemo(() => {
+    let [hr, min] = timeOnly.split(":").map(Number);
+    if (ampm === "PM" && hr !== 12) hr += 12;
+    if (ampm === "AM" && hr === 12) hr = 0;
+    return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
+  }, [timeOnly, ampm]);
+  
   const minDate = useMemo(() => todayStr, []);
   const maxDate = useMemo(() => {
     const d = new Date(now);
@@ -133,8 +137,9 @@ const ClientOverview = () => {
 
       setFollowUpType("");
       setInteractionDate("");
-      setInteractionTime("");
-      setReasonDesc("");
+      setTimeOnly("12:00");
+      setAmPm("AM");
+            setReasonDesc("");
     } catch (error) {
       console.error("Error in handleTextUpdate:", error);
       alert("❌ Something went wrong. Please try again.");
@@ -207,8 +212,9 @@ const ClientOverview = () => {
         setFollowUpType("");
         setInteractionRating("");
         setInteractionDate(todayStr);
-        setInteractionTime(currentTimeStr);
-        setTimeout(() => navigate("/freshlead"), 2000);
+        setTimeOnly("12:00");
+        setAmPm("AM");
+                setTimeout(() => navigate("/freshlead"), 2000);
 
       })
       .catch((error) => {
@@ -476,15 +482,25 @@ const ClientOverview = () => {
                   </div>
                   <div>
                     <label style={{ fontWeight: "600" }}>Time:</label>
-                    <TimePicker
-                      onChange={setInteractionTime}
-                      value={interactionTime}
-                      disableClock={true}
-                      clearIcon={null}
-                      format="h:mm a"
-                      clockIcon={null}
-                      locale="en-US"
-                    />
+                    <div>
+  <label style={{ fontWeight: "600" }}>Time:</label>
+  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+    <select value={timeOnly} onChange={(e) => setTimeOnly(e.target.value)}>
+      {[
+        "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
+        "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
+        "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
+      ].map((opt) => (
+        <option key={opt} value={opt}>{opt}</option>
+      ))}
+    </select>
+    <select value={ampm} onChange={(e) => setAmPm(e.target.value)}>
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
+  </div>
+</div>
+
                   </div>
                 </div>
               </div>

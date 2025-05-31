@@ -1,11 +1,14 @@
-
 import React, { useState, useEffect } from "react";
 import { useApi } from "../../context/ApiContext";
 
 const ClientDetails = ({ selectedClient, onClose }) => {
   const { fetchFollowUpHistoriesAPI } = useApi();
-  const [latestFollowUp, setLatestFollowUp] = useState(null);
+  const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hour, setHour] = useState("12");
+const [minute, setMinute] = useState("00");
+const [ampm, setAmPm] = useState("AM");
+
 
   useEffect(() => {
     if (selectedClient) {
@@ -15,35 +18,44 @@ const ClientDetails = ({ selectedClient, onClose }) => {
         fetchFollowUpHistoriesAPI(freshLeadId)
           .then((histories) => {
             if (histories && Array.isArray(histories)) {
-              // Filter histories to only include those matching the current fresh_lead_id
               const filteredHistories = histories.filter(
                 (history) => history.fresh_lead_id === freshLeadId
               );
-              // Sort by createdAt to ensure the most recent history is first
+
+              // Sort by creation date (newest first)
               filteredHistories.sort(
                 (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
               );
-              // Set the most recent follow-up (first item after sorting)
-              if (filteredHistories.length > 0) {
-                setLatestFollowUp(filteredHistories[0]);
-              } else {
-                setLatestFollowUp(null);
+
+              // Deduplicate by date, time, and reason
+              const unique = [];
+              const seen = new Set();
+
+              for (const history of filteredHistories) {
+                const key = `${history.follow_up_date}-${history.follow_up_time}-${history.reason_for_follow_up}`;
+                if (!seen.has(key)) {
+                  unique.push(history);
+                  seen.add(key);
+                }
+                if (unique.length === 2) break;
               }
+
+              setRecentFollowUps(unique);
             } else {
-              setLatestFollowUp(null);
+              setRecentFollowUps([]);
             }
           })
           .catch((error) => {
             console.error("Error fetching follow-up histories:", error);
-            setLatestFollowUp(null);
+            setRecentFollowUps([]);
           })
           .finally(() => setLoading(false));
       } else {
         console.warn("No valid freshLeadId found for client:", selectedClient);
-        setLatestFollowUp(null);
+        setRecentFollowUps([]);
       }
     } else {
-      setLatestFollowUp(null);
+      setRecentFollowUps([]);
     }
   }, [selectedClient]);
 
@@ -57,7 +69,7 @@ const ClientDetails = ({ selectedClient, onClose }) => {
 
   return (
     <div className="client-details-container">
-      <h3 className="client-details-title">Clients Details</h3>
+      <h3 className="client-details-title">Client Details</h3>
       <div className="client-details">
         <div className="client-info">
           <div className="user-icon-bg">
@@ -65,30 +77,32 @@ const ClientDetails = ({ selectedClient, onClose }) => {
           </div>
           <div className="client-text">
             <h4>{selectedClient.freshLead?.name || "No Name"}</h4>
-            <p>{selectedClient.freshLead?.profession || "No Profession"}</p>
             <div className="lead-info">
               <span className="lead-badge">Lead</span>
             </div>
           </div>
         </div>
+
         <div className="last-followup">
-          <h5>Last Follow-up</h5>
+          <h4>Last Follow-ups</h4>
           {loading ? (
             <p>Loading...</p>
-          ) : latestFollowUp ? (
-            <div>
-              <p>
-                <strong>
-                  {new Date(latestFollowUp.follow_up_date).toLocaleDateString()} -{" "}
-                  {latestFollowUp.follow_up_time}
-                </strong>
-              </p>
-              <p>{latestFollowUp.reason_for_follow_up || "No description available."}</p>
-            </div>
+          ) : recentFollowUps.length > 0 ? (
+            recentFollowUps.map((followUp, index) => (
+              <div key={followUp.id || index} className="followup-entry">
+                <p>
+                    {new Date(followUp.follow_up_date).toLocaleDateString()} -{" "}
+                    {followUp.follow_up_time}
+                </p>
+                <p>{followUp.reason_for_follow_up || "No description available."}</p>
+                {index < recentFollowUps.length - 1 && <hr />}
+              </div>
+            ))
           ) : (
-            <p>No previous follow-up available.</p>
+            <p>No previous follow-ups available.</p>
           )}
         </div>
+
         <div className="close-btn" onClick={onClose}>✖</div>
       </div>
     </div>
