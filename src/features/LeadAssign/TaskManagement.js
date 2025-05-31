@@ -3,6 +3,7 @@ import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
 import SidebarToggle from "../admin/SidebarToggle";
 import "../../styles/leadassign.css";
+import AdminNavbar from "../../layouts/AdminNavbar";
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
@@ -216,6 +217,8 @@ const TaskManagement = () => {
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
+      <AdminNavbar/>
+
       <div className="leads-dashboard" data-theme={theme}>
         <div className="Logo">Lead Assign</div>
         <div className="taskmanage-header">

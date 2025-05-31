@@ -68,6 +68,7 @@ function AdminNavbar() {
   };
 
   return (
+    <div className="admin-navbar">
     <div className="header-icons" style={{ position: 'relative' }}>
       {/* Theme Toggle */}
       <button
@@ -137,6 +138,7 @@ function AdminNavbar() {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

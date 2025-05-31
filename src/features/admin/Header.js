@@ -15,7 +15,6 @@ const Header = () => {
 
   return (
     <>
-      <AdminNavbar />
       <header className="header">
         <div className="header-left">
           <FaBars className="sidebar-toggle-btn" onClick={toggleSidebar} />

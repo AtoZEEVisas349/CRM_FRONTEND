@@ -13,6 +13,7 @@ import AdminSidebar from "../layouts/AdminSidebar";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
+import AdminNavbar from "./AdminNavbar";
 
 const AdminLayout = () => {
   const { topExecutive, fetchExecutives } = useApi();
@@ -32,6 +33,7 @@ const AdminLayout = () => {
     <div className="admin-dashboard-container">
       <AdminSidebar className="admin-sidebar" />
       <main className="admin-main-content">
+        <AdminNavbar/>
         {isDashboard ? (
           <div className="dashboard-wrapper">
             <Header />

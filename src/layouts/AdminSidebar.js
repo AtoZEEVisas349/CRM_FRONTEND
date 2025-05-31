@@ -108,7 +108,7 @@ const AdminSidebar = () => {
             <li>
               <Link to="/leadassign" className="admin-aside-link">
                 <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
-                <span className="sidebar-label">Task Management</span>
+                <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
