@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef,useMemo } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
-import TimePicker from "react-time-picker";
-import "react-time-picker/dist/TimePicker.css";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { getEmailTemplates } from "../../static/emailTemplates"; 
 import Swal from "sweetalert2";
@@ -45,16 +43,25 @@ const ClientDetailsOverview = () => {
   const [reasonDesc, setReasonDesc] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [interactionDate, setInteractionDate] = useState("");
+  const [timeOnly, setTimeOnly] = useState("12:00");
+    const [ampm, setAmPm] = useState("AM");
+      const interactionTime = useMemo(() => {
+        let [hr, min] = timeOnly.split(":").map(Number);
+        if (ampm === "PM" && hr !== 12) hr += 12;
+        if (ampm === "AM" && hr === 12) hr = 0;
+        return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
+      }, [timeOnly, ampm]);
+      
   const now = new Date();
   const defaultTime = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   });
-  const [interactionTime, setInteractionTime] = useState(defaultTime);
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const timeSelectRef = useRef(null);
+  const ampmSelectRef = useRef(null);  
   const [speechError, setSpeechError] = useState(null);
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
@@ -105,7 +112,7 @@ const ClientDetailsOverview = () => {
     { key: "state", label: "State" },
     { key: "dob", label: "DOB" },
     { key: "country", label: "Country" },
-    { key: "assignDate", label: "Assign Date" },
+    // { key: "assignDate", label: "Assign Date" },
   ];
 
   useEffect(() => {
@@ -157,8 +164,15 @@ const ClientDetailsOverview = () => {
     setInteractionRating(history.interaction_rating?.toLowerCase() || "");
     setReasonDesc(history.reason_for_follow_up || "");
     setInteractionDate(history.follow_up_date || "");
-    setInteractionTime(history.follow_up_time || "");
-  };
+    const [hour, minute] = (history.follow_up_time || "12:00").split(":");
+    let hr = parseInt(hour, 10);
+    const ampmValue = hr >= 12 ? "PM" : "AM";
+    if (hr === 0) hr = 12;
+    if (hr > 12) hr -= 12;
+  
+    setTimeOnly(`${hr.toString().padStart(2, "0")}:${minute}`);
+    setAmPm(ampmValue);
+    };
 
   const handleChange = (field, value) => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
@@ -624,16 +638,93 @@ const ClientDetailsOverview = () => {
                       onChange={(e) => setInteractionDate(e.target.value)}
                     />
                   </div>
-                  <div>
-                    <label style={{ fontWeight: "400" }}>Time:</label>
-                    <TimePicker
-                      onChange={setInteractionTime}
-                      value={interactionTime}
-                      format="hh:mm a"
-                      disableClock={true}
-                      clearIcon={null}
-                    />
-                  </div>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+  <label style={{ marginBottom: "4px" }}>Time:</label>
+
+  <div
+    style={{
+      display: "flex",
+      border: "1px solid #ccc",
+      borderRadius: "6px",
+      overflow: "hidden",
+      width: "180px",
+      backgroundColor: "white"
+    }}
+  >
+    {/* Time dropdown */}
+    <div style={{ position: "relative", flex: 1 }}>
+      <select
+        ref={timeSelectRef}
+        value={timeOnly}
+        onChange={(e) => setTimeOnly(e.target.value)}
+        style={{
+          border: "none",
+          padding: "6px 30px 6px 10px",
+          width: "90%",
+          appearance: "none",
+          backgroundColor: "transparent",
+          cursor: "pointer",
+        }}
+      >
+        {[
+          "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
+          "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
+          "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
+        ].map((opt) => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+      <span
+        onClick={() => timeSelectRef.current?.focus()}
+        style={{
+          position: "absolute",
+          right: "8px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          pointerEvents: "none",
+          fontSize: "12px",
+          color: "#888"
+        }}
+      >
+        ▼
+      </span>
+    </div>
+
+    {/* AM/PM dropdown */}
+    <div style={{ position: "relative", width: "70px", borderLeft: "1px solid #ccc" }}>
+      <select
+        ref={timeSelectRef}
+        value={ampm}
+        onChange={(e) => setAmPm(e.target.value)}
+        style={{
+          border: "none",
+          padding: "6px 30px 6px 10px",
+          width: "100%",
+          appearance: "none",
+          backgroundColor: "transparent",
+          cursor: "pointer",
+        }}
+      >
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+      <span
+        onClick={() => ampmSelectRef.current?.focus()}
+        style={{
+          position: "absolute",
+          right: "8px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          pointerEvents: "none",
+          fontSize: "12px",
+          color: "#888"
+        }}
+      >
+        ▼
+      </span>
+    </div>
+  </div>
+</div>
                 </div>
               </div>
 
