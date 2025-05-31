@@ -402,6 +402,14 @@ const ClientDetailsOverview = () => {
       alert("Failed to send email.");
     }
   }; 
+  const isMeetingInPast = useMemo(() => {
+    if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
+    const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
+    const now = new Date();
+    return selectedDateTime < now;
+  }, [followUpType, interactionDate, interactionTime]);
+  
+
   return (
     <div className="client-overview-wrapper">
       {/* Client Details */}
@@ -437,10 +445,17 @@ const ClientDetailsOverview = () => {
       {isLoading ? (
         <p>Loading follow-up history...</p>
       ) : histories.length > 0 ? (
-        <div className="follow-up-entry">
-          <p>{new Date(histories[0].follow_up_date).toLocaleDateString()} - {histories[0].follow_up_time}</p>
-          <p>{histories[0].reason_for_follow_up || "No description available."}</p>
-        </div>
+        <div className="followup-entry-horizontal">
+        <p className="followup-reason">
+          {histories[0].reason_for_follow_up || "No description available."}
+        </p>
+        <strong>
+        <p className="followup-time">
+          {new Date(histories[0].follow_up_date).toLocaleDateString()} - {histories[0].follow_up_time}
+        </p>
+        </strong>
+      </div>
+      
       ) : (
         <p>No follow-up history available.</p>
       )}
@@ -449,12 +464,15 @@ const ClientDetailsOverview = () => {
     {histories.length > 0 && (
       <div className="follow-up-history-summary">
         <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
-          {histories.slice(1).map((history, index) => (
-            <div key={index} className="history-item">
-              <p>{new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}</p>
-              <p>{history.reason_for_follow_up}</p>
-            </div>
-          ))}
+        {histories.slice(1).map((history, index) => (
+  <div key={index} className="followup-entry-plain">
+    <p className="followup-reason">{history.reason_for_follow_up}</p>
+    <p className="followup-time">
+      {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
+    </p>
+  </div>
+))}
+
         </div>
       </div>
     )}
@@ -642,14 +660,14 @@ const ClientDetailsOverview = () => {
   <label style={{ marginBottom: "4px" }}>Time:</label>
 
   <div
-    style={{
-      display: "flex",
-      border: "1px solid #ccc",
-      borderRadius: "6px",
-      overflow: "hidden",
-      width: "180px",
-      backgroundColor: "white"
-    }}
+   style={{
+    display: "flex",
+    border: "1px solid #ccc",
+    borderRadius: "6px",
+    overflow: "hidden",
+    width: "140px",
+    backgroundColor: "white"
+  }}
   >
     {/* Time dropdown */}
     <div style={{ position: "relative", flex: 1 }}>
@@ -659,8 +677,8 @@ const ClientDetailsOverview = () => {
         onChange={(e) => setTimeOnly(e.target.value)}
         style={{
           border: "none",
-          padding: "6px 30px 6px 10px",
-          width: "90%",
+          padding: "8px 4px", // reduced horizontal padding
+          width: "100%",       // let it stretch inside the flex item
           appearance: "none",
           backgroundColor: "transparent",
           cursor: "pointer",
@@ -678,7 +696,7 @@ const ClientDetailsOverview = () => {
         onClick={() => timeSelectRef.current?.focus()}
         style={{
           position: "absolute",
-          right: "8px",
+          right: "9px",
           top: "50%",
           transform: "translateY(-50%)",
           pointerEvents: "none",
@@ -698,8 +716,8 @@ const ClientDetailsOverview = () => {
         onChange={(e) => setAmPm(e.target.value)}
         style={{
           border: "none",
-          padding: "6px 30px 6px 10px",
-          width: "100%",
+          padding: "8px 4px", // reduced horizontal padding
+          width: "50px",
           appearance: "none",
           backgroundColor: "transparent",
           cursor: "pointer",
@@ -727,7 +745,19 @@ const ClientDetailsOverview = () => {
 </div>
                 </div>
               </div>
-
+              {followUpType === "appointment" && isMeetingInPast && (
+          <div style={{
+            marginTop: "12px",
+            color: "#b71c1c",
+            background: "#fff4f4",
+            borderLeft: "4px solid #e57373",
+            padding: "10px 15px",
+            borderRadius: "6px",
+            fontSize: "14px"
+          }}>
+            ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+          </div>
+        )}
               <div className="button-group" style={{ marginTop: "20px" }}>
                 {/* Update Follow-Up button */}
                 <button

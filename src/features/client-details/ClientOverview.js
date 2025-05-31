@@ -279,7 +279,12 @@ const ampmSelectRef = useRef(null);
       alert("Failed to send email.");
     }
   }; 
-
+  const isMeetingInPast = useMemo(() => {
+    if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
+    const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
+    const now = new Date();
+    return selectedDateTime < now;
+  }, [followUpType, interactionDate, interactionTime]);
   return (
     <div className="client-overview-wrapper">
       <div className="c-container">
@@ -497,7 +502,7 @@ const ampmSelectRef = useRef(null);
       border: "1px solid #ccc",
       borderRadius: "6px",
       overflow: "hidden",
-      width: "180px",
+      width: "140px",
       backgroundColor: "white"
     }}
   >
@@ -509,8 +514,8 @@ const ampmSelectRef = useRef(null);
         onChange={(e) => setTimeOnly(e.target.value)}
         style={{
           border: "none",
-          padding: "6px 30px 6px 10px",
-          width: "90%",
+          padding: "8px 4px", // reduced horizontal padding
+          width: "100%",       // let it stretch inside the flex item
           appearance: "none",
           backgroundColor: "transparent",
           cursor: "pointer",
@@ -528,7 +533,7 @@ const ampmSelectRef = useRef(null);
         onClick={() => timeSelectRef.current?.focus()}
         style={{
           position: "absolute",
-          right: "8px",
+          right: "9px",
           top: "50%",
           transform: "translateY(-50%)",
           pointerEvents: "none",
@@ -548,8 +553,8 @@ const ampmSelectRef = useRef(null);
         onChange={(e) => setAmPm(e.target.value)}
         style={{
           border: "none",
-          padding: "6px 30px 6px 10px",
-          width: "100%",
+          padding: "8px 4px", // reduced horizontal padding
+          width: "50px",
           appearance: "none",
           backgroundColor: "transparent",
           cursor: "pointer",
@@ -582,7 +587,19 @@ const ampmSelectRef = useRef(null);
   </div>
 </div>
 
-
+{followUpType === "appointment" && isMeetingInPast && (
+          <div style={{
+            marginTop: "12px",
+            color: "#b71c1c",
+            background: "#fff4f4",
+            borderLeft: "4px solid #e57373",
+            padding: "10px 15px",
+            borderRadius: "6px",
+            fontSize: "14px"
+          }}>
+            ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+          </div>
+        )}
 
               <div className="client-btn">
               <button

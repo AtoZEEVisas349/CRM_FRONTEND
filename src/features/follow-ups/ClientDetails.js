@@ -89,15 +89,17 @@ const [ampm, setAmPm] = useState("AM");
             <p>Loading...</p>
           ) : recentFollowUps.length > 0 ? (
             recentFollowUps.map((followUp, index) => (
-              <div key={followUp.id || index} className="followup-entry">
-                <p>
-                    {new Date(followUp.follow_up_date).toLocaleDateString()} -{" "}
-                    {followUp.follow_up_time}
-                </p>
-                <p>{followUp.reason_for_follow_up || "No description available."}</p>
-                {index < recentFollowUps.length - 1 && <hr />}
-              </div>
+              <div key={followUp.id || index} className="followup-entry-horizontal">
+              <p className="followup-reason">{followUp.reason_for_follow_up || "No description available."}</p>
+              <strong>
+              <p className="followup-time">
+                {new Date(followUp.follow_up_date).toLocaleDateString()} - {followUp.follow_up_time}
+              </p>
+              </strong>
+            </div>
+            
             ))
+            
           ) : (
             <p>No previous follow-ups available.</p>
           )}
