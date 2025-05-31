@@ -17,6 +17,7 @@
     "ajv": "^8.17.1",
     "axios": "^1.8.4",
     "chart.js": "^4.4.8",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.7.4",
     "html2canvas": "^1.4.1",

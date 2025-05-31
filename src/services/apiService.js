@@ -539,5 +539,15 @@ export const updateClientLeadStatus = async (leadId, status) => {
     throw error;
   }
 };
+//EOD Report
+export const sendEodReport = async ({ email, content }) => {
+  try {
+    const response = await apiService.post("/report", { email, content });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error sending EOD report:", error);
+    throw error;
+  }
+};
 
 export default apiService;

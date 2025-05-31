@@ -140,7 +140,7 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
           <div className="form-group">
             <label>Connected Via</label>
             <div className="radio-group">
-              {["call", "email", "whatsapp"].map((method) => (
+              {["call", "email"].map((method) => (
                 <label key={method} className="radio-container">
                   <input
                     type="radio"

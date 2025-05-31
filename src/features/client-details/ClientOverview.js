@@ -48,7 +48,9 @@ const ClientOverview = () => {
   const [interactionDate, setInteractionDate] = useState(todayStr);
   const [timeOnly, setTimeOnly] = useState("12:00");
   const [ampm, setAmPm] = useState("AM");
-  
+  const timeSelectRef = useRef(null);
+const ampmSelectRef = useRef(null);
+
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
   const interactionTime = useMemo(() => {
@@ -502,12 +504,13 @@ const ClientOverview = () => {
     {/* Time dropdown */}
     <div style={{ position: "relative", flex: 1 }}>
       <select
+        ref={timeSelectRef}
         value={timeOnly}
         onChange={(e) => setTimeOnly(e.target.value)}
         style={{
           border: "none",
           padding: "6px 30px 6px 10px",
-          width: "70%",
+          width: "90%",
           appearance: "none",
           backgroundColor: "transparent",
           cursor: "pointer",
@@ -522,6 +525,7 @@ const ClientOverview = () => {
         ))}
       </select>
       <span
+        onClick={() => timeSelectRef.current?.focus()}
         style={{
           position: "absolute",
           right: "8px",
@@ -539,6 +543,7 @@ const ClientOverview = () => {
     {/* AM/PM dropdown */}
     <div style={{ position: "relative", width: "70px", borderLeft: "1px solid #ccc" }}>
       <select
+        ref={ampmSelectRef}
         value={ampm}
         onChange={(e) => setAmPm(e.target.value)}
         style={{
@@ -554,6 +559,7 @@ const ClientOverview = () => {
         <option value="PM">PM</option>
       </select>
       <span
+        onClick={() => ampmSelectRef.current?.focus()}
         style={{
           position: "absolute",
           right: "8px",

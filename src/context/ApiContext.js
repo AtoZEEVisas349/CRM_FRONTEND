@@ -645,6 +645,7 @@ const updateClientLeadStatus = async (leadId, status) => {
     // Executives
     fetchExecutivesAPI: apiService.fetchExecutivesAPI,
     fetchExecutiveInfo: apiService.fetchExecutiveInfo,
+    sendEodReport: apiService.sendEodReport,
 
     updateUserLoginStatus,
     // Follow-ups

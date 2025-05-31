@@ -49,7 +49,7 @@ const DealFunnel = () => {
         transition={{ duration: 0.8 }}
       >
         <div className="chart">
-          <h2 className="exec-section-title">🚀 Deal Funnel</h2>
+          <h2 className="exec-section-title">🚀 Lead Funnel</h2>
           <ResponsiveContainer width={300} height={220}>
             <FunnelChart>
               <Tooltip

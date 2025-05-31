@@ -83,10 +83,13 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
 
   return (
     <div className="exec-activity">
-      <h2 className="exec-section-title">
-        <span>Executive Activity</span>
-        <span className="executive-name">{executiveName || "Loading..."}</span>
-      </h2>
+     <h2 className="exec-section-title">
+  Executive Activity:{" "}
+  <span className="executive-name">
+    {executiveName || "Loading..."}
+  </span>
+</h2>
+
       {activities.map((activity, index) => (
         <div key={index} className="activity-item">
           <div className="activity-label">
