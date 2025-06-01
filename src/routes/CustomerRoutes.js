@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import SearchBar from "../features/convert-customer/SearchBar";
 import CustomerTable from "../features/convert-customer/CustomerTable";
 import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import { useApi } from "../context/ApiContext";
@@ -36,7 +35,6 @@ const CustomerRoutes = () => {
           customer.email.toLowerCase().includes(query.toLowerCase()))
     );
     setFilteredCustomers(filtered);
-    console.log("Filtered customers:", filtered);
   };
 
   const openInvoiceInNewTab = () => {
@@ -51,7 +49,6 @@ const CustomerRoutes = () => {
           <h2>Convert Customers</h2>
           <button className="button">Export List</button>
         </div>
-        <SearchBar onSearch={handleSearch} />
         <CustomerTable customers={filteredCustomers} />
         <div className="generate-btn-wrapper">
           <button className="button invoice-btn" onClick={openInvoiceInNewTab}>
