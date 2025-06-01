@@ -235,3 +235,6 @@ body.sidebar-collapsed .exec-grid {
   object-fit: cover;
   max-height: 300px;
 }
+.mt-neg-20 {
+  margin-top: -20px;
+}

@@ -39,9 +39,23 @@ body {
 /* Main container layout */
 .create-executive-container {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: linear-gradient(135deg, #f6f9fc 0%, #edf2ff 100%);
 }
+
+.create-executive-content-area {
+  display: flex;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.executive-form-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: -20px;
+}
+
 
 .create-executive-sidebar {
   position: fixed;
@@ -62,20 +76,10 @@ body {
   margin-left: var(--sidebar-width);
   transition: margin-left var(--transition-speed) ease;
   min-height: 100vh;
-  padding: 20px;
 }
 
 .create-executive-container.sidebar-collapsed .create-executive-content {
   margin-left: var(--sidebar-collapsed-width);
-}
-
-/* Executive form container */
-.executive-form-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  width: 100%;
-  animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -87,18 +91,17 @@ body {
   }
 }
 
-.form-card {
-  background-color: var(--card-background);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  width: 100%;
-  max-width: 1200px;
-  overflow: hidden;
-  animation: slideUp 0.4s ease-out;
-  padding: 0 30px 30px 30px;
-  transition: max-width var(--transition-speed) ease;
-}
 
+/* Gradient card background */
+.form-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 30px auto;
+}
 /* Expanded form when sidebar is collapsed */
 .create-executive-container.sidebar-collapsed .form-card {
   max-width: 1400px;
@@ -115,17 +118,21 @@ body {
   }
 }
 
-.form-header {
-  padding: 30px 0 30px 0;
-  border-bottom: 1px solid var(--border-color);
-  text-align: left;
+.form-header h1 {
+  font-size: 20px;
+  margin-bottom: 6px;
 }
 
-.form-header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-color);
-  margin-bottom: 8px;
+.form-header {
+  padding: 20px 0 15px;
+}
+.input-with-icon input:hover {
+  border-color: #b3b3ff;
+}
+
+.input-with-icon input:focus {
+  border-color: #4f52bb;
+  box-shadow: 0 0 0 3px rgba(79, 82, 187, 0.1);
 }
 
 .form-header p {
@@ -150,20 +157,23 @@ body {
   margin-bottom: 30px;
 }
 
+/* Enhanced look for section header */
 .form-section h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: var(--text-color);
-  font-weight: 600;
+  font-size: 20px;
+  background: linear-gradient(to right, #4f52bb, #667eea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  border-bottom: 2px dashed #e0e0e0;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 

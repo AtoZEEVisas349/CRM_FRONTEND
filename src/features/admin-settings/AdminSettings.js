@@ -351,7 +351,10 @@ const AdminSettings = () => {
             </div>
           </div>
         );
+        case"team":
         return (
+          <div className="blur-overlay-wrapper">
+
           <div className="section-block">
             <h3>Team Members</h3>
             <ul className="team-list">
@@ -367,9 +370,11 @@ const AdminSettings = () => {
               </li>
             </ul>
           </div>
+          </div>
         );
       case "plan":
         return (
+          <div className="blur-overlay-wrapper">
           <div className="section-block">
             <h3>Current Plan</h3>
             <p>
@@ -378,9 +383,12 @@ const AdminSettings = () => {
             </p>
             <button className="primary-btn">Upgrade Plan</button>
           </div>
+          </div>
         );
       case "billing":
         return (
+          <div className="blur-overlay-wrapper">
+
           <div className="section-block">
             <h3>Billing History</h3>
             <table className="billing-table">
@@ -412,9 +420,11 @@ const AdminSettings = () => {
               </tbody>
             </table>
           </div>
+          </div>
         );
       case "integrations":
         return (
+          <div className="blur-overlay-wrapper">
           <div className="section-block">
             <h3>Connected Apps</h3>
             <ul className="integration-list">
@@ -430,10 +440,13 @@ const AdminSettings = () => {
               </li>
             </ul>
           </div>
+          </div>
         );
       case "password":
         return (
           <>
+           <div className="blur-overlay-wrapper">
+
             <h3>Change Password</h3>
             <form className="profile-form">
               <div className="form-group full">
@@ -456,6 +469,7 @@ const AdminSettings = () => {
                 </button>
               </div>
             </form>
+            </div>
           </>
         );
       case "profile":

@@ -5,6 +5,7 @@ import SidebarToggle from "./SidebarToggle";
 import StreamPlayer from "../../pages/StreamPlayer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDesktop, faVideo, faVolumeUp, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import AdminNavbar from "../../layouts/AdminNavbar";
 
 function Monitoring() {
   const [executives, setExecutives] = useState([]);
@@ -51,7 +52,9 @@ function Monitoring() {
 
   return (
     <>
-      <SidebarToggle />
+    
+    <AdminNavbar className="mt-neg-20" />
+    <SidebarToggle />
 
       <div>
         <h1 style={{ textAlign: "center", marginTop: "20px" }}>Choose Executives</h1>

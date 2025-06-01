@@ -606,7 +606,19 @@ const updateClientLeadStatus = async (leadId, status) => {
     throw error;
   }
 };
+const createExecutive = async (executiveData) => {
+  setLoading(true);
+  
+  try {
+    const result = await apiService.createExecutiveAPI(executiveData);
+    return result;
+  } catch (err) {
 
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -711,7 +723,7 @@ const updateClientLeadStatus = async (leadId, status) => {
         freshLeads,
         freshLeadsLoading,
         fetchFreshLeadsAPI,
-
+        createExecutive,
         // ✅ Notifications
         notifications,
         notificationsLoading,

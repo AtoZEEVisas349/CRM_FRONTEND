@@ -549,5 +549,11 @@ export const sendEodReport = async ({ email, content }) => {
     throw error;
   }
 };
+export const createExecutiveAPI = async (executiveData) => {
+  const response = await apiService.post("/create-exec", executiveData, {
+  
+  });
+  return response.data;
+};
 
 export default apiService;

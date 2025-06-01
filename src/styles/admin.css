@@ -1580,23 +1580,52 @@ body.sidebar-collapsed .assign-task-container {
   color: var(--primary-color);
 }
 
-.notification_wrapper {
-  position: relative;
-}
-.notification_badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  border-radius: 50%;
-  padding: 2px 6px;
-}
-
 .admin-menu_toggle .theme-toggle:hover {
   background-color: var(--border-color);
   transform: scale(1.1);
+}
+.admin-notification_wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-notification_badge {
+  position: absolute;
+  top: -11px;
+  right: -2px;
+  background-color: var(--danger-color, #ef4444);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: 12px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px var(--bg-color, #fff); /* for outline effect */
+  transform: scale(1);
+  transition: transform 0.1s ease-in-out;
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+  70% {
+    transform: translateY(-2px);
+  }
+}
+
+.admin-notification_badge.bounce {
+  animation: bounce 0.6s ease;
 }
 
 .admin-logo_name {

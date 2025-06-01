@@ -12,7 +12,7 @@ function Notification() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-
+  const [readIds, setReadIds] = useState(new Set());
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -76,11 +76,23 @@ function Notification() {
   );
 
   const handleMarkAsRead = (notification) => {
+    const newReadIds = new Set(readIds);
+  
     if (notification.type === "grouped-leads") {
-      notification.originalIds.forEach((id) => markNotificationReadAPI(id));
+      notification.originalIds.forEach((id) => {
+        if (!newReadIds.has(id)) {
+          markNotificationReadAPI(id);
+          newReadIds.add(id);
+        }
+      });
     } else {
-      markNotificationReadAPI(notification.id);
+      if (!newReadIds.has(notification.id)) {
+        markNotificationReadAPI(notification.id);
+        newReadIds.add(notification.id);
+      }
     }
+  
+    setReadIds(newReadIds);
   };
 
   const handlePrevPage = () => {
