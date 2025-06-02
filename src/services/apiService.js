@@ -503,7 +503,7 @@ export const fetchOpportunities = async () => {
 export const verifyNumber = async (number) => {
   try {
     const cleanedNumber = number.replace(/\D/g, "");
-    const response = await apiService.get(`/get-name?number=${cleanedNumber}`);
+    const response = await apiService.get(`/get-name?number1=${cleanedNumber}`);
     return response.data;
   } catch (error) {
     console.error("❌ Error verifying number:", error);
