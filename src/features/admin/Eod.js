@@ -4,6 +4,7 @@ import logo from "../../assets/logo.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useApi } from "../../context/ApiContext";
+import SidebarToggle from "./SidebarToggle";
 
 const options = ["Lead Visit", "Executive Activity", "Profit", "Meeting", "Others"];
 
@@ -168,9 +169,17 @@ const Eod = () => {
       toast.error("Failed to send email.");
     }
   };
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    localStorage.getItem("adminSidebarExpanded") === "false"
+  );
   
 
   return (
+    <div className={`eod-layout-wrapper ${sidebarCollapsed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
+    <aside className="eod-sidebar">
+      <SidebarToggle /> {/* ✅ This goes inside sidebar */}
+      {/* Optional: sidebar icons, nav links etc */}
+    </aside>
     <div className="eod-container">
       <ToastContainer />
       <h1 className="eod-main-title">Send Reports</h1>
@@ -273,6 +282,7 @@ const Eod = () => {
           );
         })}
       </div>
+    </div>
     </div>
   );
 };

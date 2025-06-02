@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useApi } from "../../context/ApiContext";
 import "../../styles/adminNotification.css";
-
+import SidebarToggle from "./SidebarToggle"; // Ensure path is correct
 function AdminNotification() {
   const {
     notifications = [],
@@ -12,7 +12,9 @@ function AdminNotification() {
   const [activeTab, setActiveTab] = useState("notifications");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    localStorage.getItem("adminSidebarExpanded") === "false"
+  );
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
 
   useEffect(() => {
@@ -41,6 +43,11 @@ function AdminNotification() {
   };
 
   return (
+    <div className={`admin-notification-layout ${sidebarCollapsed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
+      <aside className="admin-notification-sidebar">
+        <SidebarToggle />
+        {/* You can add nav icons here if needed */}
+      </aside>
     <div className="admin-notification-wrapper">
       <h2 className="admin-notification-title">Notifications</h2>
       <div className="admin-tab-buttons">
@@ -157,7 +164,7 @@ function AdminNotification() {
             </button>
           </div>
         </div>
-
+</div>
   );
 }
 
