@@ -758,8 +758,7 @@ const ClientDetailsOverview = () => {
             ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
           </div>
         )}
-              <div className="button-group" style={{ marginTop: "20px" }}>
-                {/* Update Follow-Up button */}
+<div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>                {/* Update Follow-Up button */}
                 <button
                   onClick={handleUpdateFollowUp}
                   className="crm-button update-follow-btn"
@@ -799,7 +798,7 @@ const ClientDetailsOverview = () => {
                 {followUpType === "close" && (
                   <button
                     onClick={handleFollowUpAction}
-                    className="crm-button close-btn"
+                    className="crm-button flw-close-btn"
                     disabled={followUpLoading}
                     style={{
                       backgroundColor: "#dc3545",
