@@ -20,14 +20,14 @@
   height: 100vh;
   background-color: var(--bg-color);
 }
-
 .client-app-container {
   display: flex;
-  height: 100vh;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: auto; /* allows scroll */
 }
-
 .client-main-content {
-  position: absolute;
+  position: relative;
   top: 60px;
   left: 250px;
   width: calc(100% - 250px);
@@ -35,7 +35,15 @@
   padding: 20px;
   background-color: var(--card-bg);
   color: var(--text-color);
-  overflow: auto;
+  overflow-y: scroll; /* allow vertical scrolling */
+  overflow-x: hidden; /* prevent horizontal scroll if not needed */
+
+  /* Hide scrollbar in all major browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+.client-main-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }
 
 /* === COMMON STYLES === */
