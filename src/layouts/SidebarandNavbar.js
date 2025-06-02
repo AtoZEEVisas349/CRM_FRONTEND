@@ -264,7 +264,7 @@ const handleDismissBeepNotification = () => {
       <div
   className="user-icon-wrapper"
   ref={popoverRef}
-  onMouseLeave={() => setShowUserPopover(false)}
+  // onMouseLeave={() => setShowUserPopover(false)}
 >
   <FontAwesomeIcon
     ref={userIconRef}

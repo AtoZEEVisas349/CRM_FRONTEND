@@ -3,10 +3,28 @@ import { FaUserFriends, FaEllipsisV } from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
 
 const Meetings = ({ selectedExecutiveId }) => {
-  const { adminMeeting } = useApi();
+  const { adminMeeting, fetchExecutivesAPI } = useApi();
   const [meetings, setMeetings] = useState([]);
   const [meetingsLoading, setMeetingsLoading] = useState(false);
+  const [executives, setExecutives] = useState([]);
 
+  // Fetch executives when the component mounts
+  useEffect(() => {
+    const fetchExecutives = async () => {
+      try {
+        const execData = await fetchExecutivesAPI();
+        console.log("Fetched executives:", execData);
+        setExecutives(Array.isArray(execData) ? execData : []);
+      } catch (error) {
+        console.error("❌ Error fetching executives:", error);
+        setExecutives([]);
+      }
+    };
+
+    fetchExecutives();
+  }, [fetchExecutivesAPI]);
+
+  // Fetch meetings when selectedExecutiveId changes
   useEffect(() => {
     const fetchMeetingsData = async () => {
       setMeetingsLoading(true);
@@ -37,7 +55,7 @@ const Meetings = ({ selectedExecutiveId }) => {
     };
 
     fetchMeetingsData();
-  }, [selectedExecutiveId]);
+  }, [selectedExecutiveId, adminMeeting]);
 
   if (meetingsLoading) {
     return <div className="meetings-container">Loading meetings...</div>;
@@ -50,6 +68,12 @@ const Meetings = ({ selectedExecutiveId }) => {
       return `${meetingsCount} Executive Meetings`;
     }
     return `${meetingsCount} Meetings`;
+  };
+
+  // Function to get executive name by ID
+  const getExecutiveName = (executiveId) => {
+    const executive = executives.find((exec) => String(exec.id) === String(executiveId));
+    return executive ? executive.username : "Unknown Executive";
   };
 
   return (
@@ -68,9 +92,17 @@ const Meetings = ({ selectedExecutiveId }) => {
               <p>{new Date(meeting.startTime).toLocaleString()}</p>
             </div>
             <div className="meeting-icons">
-              <FaUserFriends className="icon" />
-              <FaUserFriends className="icon" />
-              <FaUserFriends className="icon" />
+              {selectedExecutiveId === "all" ? (
+                <span className="executive-name">
+                  {getExecutiveName(meeting.executiveId)}
+                </span>
+              ) : (
+                <>
+                  <FaUserFriends className="icon" />
+                  <FaUserFriends className="icon" />
+                  <FaUserFriends className="icon" />
+                </>
+              )}
               <FaEllipsisV className="icon" />
             </div>
           </div>
