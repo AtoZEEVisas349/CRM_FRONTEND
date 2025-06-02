@@ -1,78 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaMicrophone, FaPaperPlane, FaUser } from "react-icons/fa";
+import { FaMicrophone, FaPaperPlane, FaUser, FaStopCircle } from "react-icons/fa";
 import { MdSmartToy } from "react-icons/md";
+import { BsRecordCircle } from "react-icons/bs";
 
 const Chat = ({ isCallActive }) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordTime, setRecordTime] = useState(0);
+
   const chatContainerRef = useRef(null);
   const recognitionRef = useRef(null);
-  const wakeWordRecognitionRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const recordChunksRef = useRef([]);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    chatContainerRef.current?.scrollTo(
-      0,
-      chatContainerRef.current.scrollHeight
-    );
+    chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
   }, [messages]);
-
-  const stopWakeWordRecognition = () => {
-    if (wakeWordRecognitionRef.current) {
-      wakeWordRecognitionRef.current.abort();
-      wakeWordRecognitionRef.current.onend = null;
-      wakeWordRecognitionRef.current = null;
-    }
-  };
-
-  const startWakeWordListening = () => {
-    if (isListening || isCallActive) return;
-
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-
-    if (wakeWordRecognitionRef.current) return;
-
-    wakeWordRecognitionRef.current = new SpeechRecognition();
-    wakeWordRecognitionRef.current.lang = "en-US";
-    wakeWordRecognitionRef.current.continuous = true;
-    wakeWordRecognitionRef.current.interimResults = false;
-
-    wakeWordRecognitionRef.current.onresult = (event) => {
-      if (isListening || isCallActive) return;
-      const transcript =
-        event.results[event.results.length - 1][0].transcript.toLowerCase();
-      if (
-        transcript.includes("hello") ||
-        transcript.includes("how can i help you")
-      ) {
-        stopWakeWordRecognition();
-        startSpeechRecognition();
-      }
-    };
-
-    wakeWordRecognitionRef.current.onerror = (event) => {
-      console.error("Wake word recognition error:", event.error);
-    };
-
-    wakeWordRecognitionRef.current.onend = () => {
-      if (!isListening && !isCallActive) {
-        setTimeout(startWakeWordListening, 2000);
-      }
-    };
-
-    try {
-      wakeWordRecognitionRef.current.start();
-    } catch (error) {
-      console.warn("Wake word start error:", error);
-    }
-  };
-
-  useEffect(() => {
-    startWakeWordListening();
-  }, []);
 
   const handleMicClick = () => {
     if (isListening) {
@@ -83,9 +30,7 @@ const Chat = ({ isCallActive }) => {
   };
 
   const startSpeechRecognition = () => {
-    stopWakeWordRecognition();
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Speech recognition is not supported in this browser.");
       return;
@@ -101,8 +46,7 @@ const Chat = ({ isCallActive }) => {
     };
 
     recognitionRef.current.onresult = (event) => {
-      let transcript =
-        event.results[event.results.length - 1][0].transcript.trim();
+      let transcript = event.results[event.results.length - 1][0].transcript.trim();
       setUserInput(transcript);
       if (event.results[event.results.length - 1].isFinal) {
         handleSend(transcript);
@@ -114,7 +58,7 @@ const Chat = ({ isCallActive }) => {
     };
 
     recognitionRef.current.onend = () => {
-      if (!isCallActive) {
+      if (!isCallActive && isListening) {
         recognitionRef.current.start();
       }
     };
@@ -129,7 +73,6 @@ const Chat = ({ isCallActive }) => {
       recognitionRef.current = null;
     }
     setIsListening(false);
-    startWakeWordListening();
   };
 
   const handleSend = async (input) => {
@@ -145,17 +88,51 @@ const Chat = ({ isCallActive }) => {
         body: JSON.stringify({ prompt: input }),
       });
       const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Failed to fetch response");
+      if (!response.ok) throw new Error(data.error || "Failed to fetch response");
       setMessages((prev) => [...prev, { text: data.message, isUser: false }]);
     } catch (error) {
       console.error("Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { text: "Error: Unable to get response.", isUser: false },
-      ]);
+      setMessages((prev) => [...prev, { text: "Error: Unable to get response.", isUser: false }]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  const toggleRecording = async () => {
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+
+        mediaRecorderRef.current.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            recordChunksRef.current.push(e.data);
+          }
+        };
+
+        mediaRecorderRef.current.onstop = () => {
+          const blob = new Blob(recordChunksRef.current, { type: "audio/webm" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `call_recording_${Date.now()}.webm`;
+          a.click();
+          URL.revokeObjectURL(url);
+          recordChunksRef.current = [];
+        };
+
+        mediaRecorderRef.current.start();
+        setIsRecording(true);
+        setRecordTime(0);
+        timerRef.current = setInterval(() => setRecordTime((time) => time + 1), 1000);
+      } catch (err) {
+        console.error("Error accessing microphone:", err);
+      }
+    } else {
+      mediaRecorderRef.current?.stop();
+      clearInterval(timerRef.current);
+      setIsRecording(false);
+      setRecordTime(0);
     }
   };
 
@@ -192,7 +169,6 @@ const Chat = ({ isCallActive }) => {
               </div>
             </div>
           ))}
-
           {isTyping && <div className="typing-indicator">...</div>}
         </div>
 
@@ -201,18 +177,30 @@ const Chat = ({ isCallActive }) => {
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(userInput);
+              }
+            }}
             placeholder="Type your message..."
           />
           <button onClick={() => handleSend(userInput)} className="send-button">
             <FaPaperPlane />
           </button>
-          <button
-            onClick={handleMicClick}
-            className={`mic-button ${isListening ? "active" : ""}`}
-          >
+          <button onClick={handleMicClick} className={`mic-button ${isListening ? "active" : ""}`}>
             <FaMicrophone />
           </button>
+          <button onClick={toggleRecording} className={`record-button ${isRecording ? "active" : ""}`}>
+            {isRecording ? <FaStopCircle /> : <BsRecordCircle />}
+          </button>
         </div>
+
+        {isRecording && (
+          <div style={{ textAlign: "center", color: "red", marginTop: "5px" }}>
+            Recording Time: {recordTime}s
+          </div>
+        )}
       </div>
     </div>
   );

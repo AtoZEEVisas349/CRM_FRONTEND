@@ -160,39 +160,59 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                   )}
                 </td>
 
-                <td className="call-cell">
-                  <button
-                    className="call-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActivePopoverIndex(activePopoverIndex === index ? null : index);
-                    }}
-                  >
-                    📞
-                  </button>
-                  {activePopoverIndex === index && (
-                    <div className="popover">
-                      <button className="popover-option">
-                        <FontAwesomeIcon icon={faWhatsapp} className="icon" 
-                        style={{
-                          color: "#25D366",
-                          marginRight: "6px",
-                          fontSize: "18px",
-                        }}/>
-                        WhatsApp
-                      </button>
-                      <button className="popover-option">
-                        <FontAwesomeIcon icon={faPhone} className="icon" 
-                        style={{
-                          color: "#25D366",
-                          marginRight: "6px",
-                          fontSize: "16px",
-                        }}/>
-                        Normal Call
-                      </button>
-                    </div>
-                  )}
-                </td>
+  <td className="call-cell">
+                        <button
+                          className="call-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActivePopoverIndex(
+                              activePopoverIndex === index ? null : index
+                            );
+                          }}
+                        >
+                          📞
+                        </button>
+                        {activePopoverIndex === index && (
+                          <div className="popover">
+                            <button
+                              className="popover-option"
+                              onClick={() => {
+                                const cleaned = (client.freshLead?.phone || "").replace(/[^\d]/g, "");
+                                window.open(`https://wa.me/91${cleaned}`, "_blank");
+                                setActivePopoverIndex(null);
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faWhatsapp}
+                                style={{
+                                  color: "#25D366",
+                                  marginRight: "6px",
+                                  fontSize: "18px",
+                                }}
+                              />
+                              WhatsApp
+                            </button>
+                            <button
+                              className="popover-option"
+                              onClick={() => {
+                                const cleaned = (client.freshLead?.phone || "").replace(/[^\d]/g, "");
+                                window.open(`tel:${cleaned}`);
+                                setActivePopoverIndex(null);
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faPhone}
+                                style={{
+                                  color: "#4285F4",
+                                  marginRight: "6px",
+                                  fontSize: "16px",
+                                }}
+                              />
+                              Normal Call
+                            </button>
+                          </div>
+                        )}
+                      </td>
               </tr>
             ))
           )}

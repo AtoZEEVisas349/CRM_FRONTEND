@@ -225,3 +225,19 @@
 .mic-button:hover {
     box-shadow: 0px 0px 10px rgba(245, 158, 11, 0.5);
 }
+
+.mic-button, .record-button {
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.mic-button.active {
+  color: #007bff;
+}
+
+.record-button.active {
+  color: red;
+}

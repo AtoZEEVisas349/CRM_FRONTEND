@@ -55,7 +55,7 @@ const Meetings = ({ selectedExecutiveId }) => {
     };
 
     fetchMeetingsData();
-  }, [selectedExecutiveId, adminMeeting]);
+  }, [selectedExecutiveId]);
 
   if (meetingsLoading) {
     return <div className="meetings-container">Loading meetings...</div>;

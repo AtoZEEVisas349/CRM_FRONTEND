@@ -247,7 +247,14 @@ function FreshLead() {
                         </button>
                         {activePopoverIndex === index && (
                           <div className="popover">
-                            <button className="popover-option">
+                            <button
+                              className="popover-option"
+                              onClick={() => {
+                                const cleaned = lead.phone.replace(/[^\d]/g, "");
+                                window.open(`https://wa.me/91${cleaned}`, "_blank");
+                                setActivePopoverIndex(null);
+                              }}
+                            >
                               <FontAwesomeIcon
                                 icon={faWhatsapp}
                                 style={{
@@ -258,11 +265,18 @@ function FreshLead() {
                               />
                               WhatsApp
                             </button>
-                            <button className="popover-option">
+                            <button
+                              className="popover-option"
+                              onClick={() => {
+                                const cleaned = lead.phone.replace(/[^\d]/g, "");
+                                window.open(`tel:${cleaned}`);
+                                setActivePopoverIndex(null);
+                              }}
+                            >
                               <FontAwesomeIcon
                                 icon={faPhone}
                                 style={{
-                                  color: "#25D366",
+                                  color: "#4285F4",
                                   marginRight: "6px",
                                   fontSize: "16px",
                                 }}

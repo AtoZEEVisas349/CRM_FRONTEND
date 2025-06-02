@@ -222,11 +222,11 @@ h2 {
 }
 
 /* Icon styling */
-.fa-circle-user {
-  /* font-size: 24px !important; */
+/* .fa-circle-user {
+  font-size: 24px !important;
   color: #8e24aa;
   margin-right: 8px;
-}
+} */
 
 .table-body-scroll {
   max-height: 620px;

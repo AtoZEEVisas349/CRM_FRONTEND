@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
@@ -20,26 +21,33 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedExecutiveId) return;
-
       setLoading(true);
       try {
         const allActivities = await fetchExecutiveDashboardData();
-        const executiveActivity = allActivities.find(
-          (activity) => activity.ExecutiveId === selectedExecutiveId
-        );
-
         const todayIndex = getTodayIndex();
         const updatedWeeklyData = [0, 0, 0, 0, 0, 0, 0];
 
-        if (executiveActivity?.leadSectionVisits > 0) {
-          updatedWeeklyData[todayIndex] = executiveActivity.leadSectionVisits;
-        }
+        let totalVisits = 0;
 
-        const totalVisits = updatedWeeklyData.reduce(
-          (sum, visits) => sum + visits,
-          0
-        );
+        if (selectedExecutiveId) {
+          // Fetch data for a specific executive
+          const executiveActivity = allActivities.find(
+            (activity) => activity.ExecutiveId === selectedExecutiveId
+          );
+
+          if (executiveActivity?.leadSectionVisits > 0) {
+            updatedWeeklyData[todayIndex] = executiveActivity.leadSectionVisits;
+          }
+          totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
+        } else {
+          // Aggregate data for all executives
+          allActivities.forEach((activity) => {
+            if (activity?.leadSectionVisits > 0) {
+              updatedWeeklyData[todayIndex] += activity.leadSectionVisits;
+            }
+          });
+          totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
+        }
 
         setChartData({
           weeklyData: updatedWeeklyData.map((v) => Math.max(0, v)),
@@ -112,55 +120,60 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   };
 
   return (
-<div className="lead-graph-container">
-  <div className="lead-graph-header">
-  <h2 className="lead-graph-title">
-  Lead Visit:{" "}
-  <span className={loading ? "lead-graph-loading" : executiveName ? "lead-graph-executive-name" : "lead-graph-placeholder-name"}>
-  {executiveName || "Loading..."}
-  </span>
-</h2>
+    <div className="lead-graph-container">
+      <div className="lead-graph-header">
+        <h2 className="lead-graph-title">
+          Lead Visit:{" "}
+          <span
+            className={
+              loading
+                ? "lead-graph-loading"
+                : executiveName
+                ? "lead-graph-executive-name"
+                : "lead-graph-placeholder-name"
+            }
+          >
+            {executiveName || "Loading..."}
+          </span>
+        </h2>
 
+        <button
+          onClick={() => setChartType((prev) => (prev === "line" ? "bar" : "line"))}
+          className="lead-graph-button"
+        >
+          Switch to {chartType === "line" ? "Bar" : "Line"} Graph
+        </button>
+      </div>
 
+      <div className="lead-graph-summary">
+        Total Visits This Week (from dashboard):{" "}
+        <span>{loading ? "Loading..." : chartData.totalVisits}</span>
+      </div>
 
-    <button
-      onClick={() => setChartType((prev) => (prev === "line" ? "bar" : "line"))}
-      className="lead-graph-button"
-    >
-      Switch to {chartType === "line" ? "Bar" : "Line"} Graph
-    </button>
-  </div>
-
-  <div className="lead-graph-summary">
-    Total Visits This Week (from dashboard):{" "}
-    <span>{loading ? "Loading..." : chartData.totalVisits}</span>
-  </div>
-
-  {chartType === "line" ? (
-    <Line
-      data={{ labels, datasets: [baseDataset] }}
-      options={commonOptions}
-      plugins={[ChartDataLabels]}
-    />
-  ) : (
-    <Bar
-      data={{
-        labels,
-        datasets: [
-          {
-            ...baseDataset,
-            backgroundColor: "#8b5cf6",
-            borderRadius: 4,
-            borderWidth: 0,
-          },
-        ],
-      }}
-      options={commonOptions}
-      plugins={[ChartDataLabels]}
-    />
-  )}
-</div>
-
+      {chartType === "line" ? (
+        <Line
+          data={{ labels, datasets: [baseDataset] }}
+          options={commonOptions}
+          plugins={[ChartDataLabels]}
+        />
+      ) : (
+        <Bar
+          data={{
+            labels,
+            datasets: [
+              {
+                ...baseDataset,
+                backgroundColor: "#8b5cf6",
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+            ],
+          }}
+          options={commonOptions}
+          plugins={[ChartDataLabels]}
+        />
+      )}
+    </div>
   );
 };
 

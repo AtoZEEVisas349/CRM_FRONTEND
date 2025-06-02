@@ -10,10 +10,8 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
     callTime: 0,
   });
 
-  // ✅ Move this line to top
   const FULL_DAY_SECONDS = 8 * 3600;
 
-  // Convert time from seconds to hours and minutes
   const convertTime = (seconds) => {
     if (seconds > 0) {
       const hours = Math.floor(seconds / 3600);
@@ -23,51 +21,47 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
     return "0h 0m";
   };
 
-  // Fetch data on executive change
   useEffect(() => {
-    if (selectedExecutiveId) {
-      const fetchData = async () => {
-        try {
-          const allData = await fetchExecutiveDashboardData();
-          const executiveData = allData.find(exec => exec.ExecutiveId === selectedExecutiveId);
+    const fetchData = async () => {
+      try {
+        const allData = await fetchExecutiveDashboardData();
+        let workTime = 0;
+        let breakTime = 0;
+        let callTime = 0;
+
+        if (selectedExecutiveId) {
+          // Fetch data for a specific executive
+          const executiveData = allData.find(
+            (exec) => exec.ExecutiveId === selectedExecutiveId
+          );
 
           if (executiveData) {
-            setActivityData({
-              workTime: executiveData.workTime || 0,
-              breakTime: executiveData.breakTime || 0,
-              callTime: executiveData.dailyCallTime || 0,
-            });
-          } else {
-            setActivityData({ workTime: 0, breakTime: 0, callTime: 0 });
+            workTime = executiveData.workTime || 0;
+            breakTime = executiveData.breakTime || 0;
+            callTime = executiveData.dailyCallTime || 0;
           }
-        } catch (error) {
-          console.error("Error fetching activity data:", error);
+        } else {
+          // Aggregate data for all executives
+          allData.forEach((exec) => {
+            workTime += exec.workTime || 0;
+            breakTime += exec.breakTime || 0;
+            callTime += exec.dailyCallTime || 0;
+          });
         }
-      };
-      fetchData();
-    }
-  }, [selectedExecutiveId]);
 
-  // Simulate timer if workTime is 0
-  useEffect(() => {
-    let interval;
-    if (activityData.workTime === 0) {
-      interval = setInterval(() => {
-        setActivityData((prevState) => {
-          if (prevState.workTime < FULL_DAY_SECONDS) {
-            return {
-              ...prevState,
-              workTime: prevState.workTime + 1,
-            };
-          } else {
-            clearInterval(interval);
-            return prevState;
-          }
+        setActivityData({
+          workTime,
+          breakTime,
+          callTime,
         });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, []); // Run once
+      } catch (error) {
+        console.error("Error fetching activity data:", error);
+        setActivityData({ workTime: 0, breakTime: 0, callTime: 0 });
+      }
+    };
+
+    fetchData();
+  }, [selectedExecutiveId]);
 
   const activitiesRaw = [
     { name: "Break Time", value: activityData.breakTime, icon: <FaCoffee />, color: "#8b5cf6" },
@@ -83,12 +77,12 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
 
   return (
     <div className="exec-activity">
-     <h2 className="exec-section-title">
-  Executive Activity:{" "}
-  <span className="executive-name">
-    {executiveName || "Loading..."}
-  </span>
-</h2>
+      <h2 className="exec-section-title">
+        Executive Activity:{" "}
+        <span className="executive-name">
+          {executiveName || "Loading..."}
+        </span>
+      </h2>
 
       {activities.map((activity, index) => (
         <div key={index} className="activity-item">

@@ -1,14 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { FaUserPlus, FaTimesCircle, FaClipboardCheck, FaUsers } from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
+import { useNavigate } from "react-router-dom";
 import "../../styles/admin.css";
 
 const Summary = () => {
   const [activeBox, setActiveBox] = useState(null);
+  const navigate = useNavigate();
 
   const handleBoxClick = (index) => {
     setActiveBox(activeBox === index ? null : index);
-  };
+    // Redirect to TaskManagement page with status filter
+    let status = "";
+    switch(index) {
+      case 0:
+        status = "New";
+        break;
+      case 1:
+        status = "Follow-Up";
+        break;
+      case 2:
+        status = "Converted";
+        break;
+      case 3:
+        status = "Closed";
+        break;
+      default:
+        status = "";
+    }
+  navigate("/leadassign/task-management", { 
+    state: { filterStatus: status } 
+  });
+};
 
   const { dealFunnel, getDealFunnel } = useApi();
 

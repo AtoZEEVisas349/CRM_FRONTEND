@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
@@ -23,7 +24,7 @@ const AdminLayout = () => {
   const [timeRange, setTimeRange] = useState("last30days");
   const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   const [executives, setExecutives] = useState([]);
- 
+
   useEffect(() => {
     fetchExecutives();
     fetchExecutivesList();
@@ -45,25 +46,31 @@ const AdminLayout = () => {
 
   const handleTimeRangeChange = (e) => {
     setTimeRange(e.target.value);
-    // Add your logic here to filter data based on time range
   };
 
   const handleExecutiveChange = (e) => {
-    setSelectedExecutiveId(e.target.value);
-    // Add your logic here to filter data based on selected executive
-    console.log("Selected Executive ID:", e.target.value);
+    const selectedId = e.target.value;
+    setSelectedExecutiveId(selectedId);
+
+    // Find the selected executive from the executives list
+    if (selectedId === "all") {
+      setSelectedExecutive(null); // Reset to show data for all executives
+    } else {
+      const exec = executives.find((exec) => exec.id === parseInt(selectedId));
+      setSelectedExecutive(exec || null); // Update selectedExecutive state
+    }
   };
 
   return (
     <div className="admin-dashboard-container">
       <AdminSidebar className="admin-sidebar" />
       <main className="admin-main-content">
-        <AdminNavbar/>
+        <AdminNavbar />
         {isDashboard ? (
           <div className="dashboard-wrapper">
             <Header />
             <Summary />
-            
+
             {/* Selectors Section */}
             <div className="dashboard-selectors">
               <div className="selector-group">
@@ -112,16 +119,16 @@ const AdminLayout = () => {
               <div className="chart-row">
                 <DealFunnel />
                 <ExecutiveActi
-                  selectedExecutiveId={currentExecutive?.id}
-                  executiveName={currentExecutive?.username}
+                  selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
+                  executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />
               </div>
               <div className="chart-row">
                 <LeadGraph
-                  selectedExecutiveId={currentExecutive?.id}
-                  executiveName={currentExecutive?.username}
+                  selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
+                  executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />
-                <ExecutiveList onSelectExecutive={setSelectedExecutive}/>
+                <ExecutiveList onSelectExecutive={setSelectedExecutive} />
               </div>
             </div>
             <div className="revenue-executive-container">
@@ -133,7 +140,7 @@ const AdminLayout = () => {
             </div>
           </div>
         ) : (
-          <Outlet /> // ✅ This will now only render sub-pages like "Assign Task"
+          <Outlet />
         )}
       </main>
     </div>
