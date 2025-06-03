@@ -24,9 +24,9 @@ const Leads = ({searchQuery}) => {
    : leadsArray;
   return (
     <div className="close-leads-page">
-      <h1 className="c-heading">CloseLeads</h1>
+      <h2 className="c-heading">CloseLeads</h2>
       <div className="leads_page_wrapper">
-        <h2 className="Total_leads">Total close leads: {filteredLeads.length}</h2>
+        <h4 className="Total_leads">Total close leads: {filteredLeads.length}</h4>
         {closeLeadsLoading ? (
           <p>Loading close leads...</p>
         ) : filteredLeads.length > 0 ? (

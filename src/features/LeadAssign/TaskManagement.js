@@ -193,10 +193,11 @@ const TaskManagement = () => {
         const createdLead = await createLeadAPI(leadPayload);
         if (!createdLead?.id) throw new Error("Lead creation failed");
 
-        finalLeadId = createdLead.id;
+        finalLeadId = createdLead.clientLeadId;
 
         if (!lead.assignedToExecutive) {
           await assignLeadAPI(Number(finalLeadId), executive.username);
+          alert("✅ Leads assigned successfully.");
         } else {
           if (lead.previousAssignedTo) {
             alert("❌ Lead ID was already reassigned. Cannot reassign again.");
@@ -204,6 +205,7 @@ const TaskManagement = () => {
             continue;
           } else {
             await reassignLead(Number(lead.id), executive.username);
+            alert("Lead reassigned successfully!")
           }
         }
 
@@ -239,7 +241,7 @@ const TaskManagement = () => {
     setSelectedExecutive("");
 
     if (successCount > 0 && failCount === 0) {
-      alert("✅ Leads reassigned successfully.");
+      // alert("✅ Leads assigned successfully.");
     } else if (successCount > 0 && failCount > 0) {
       alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
     } else {

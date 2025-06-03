@@ -361,7 +361,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 32px;
+  padding: 18px 19px !important;
   border-bottom: 2px solid #f0f7f6;
   background: linear-gradient(135deg, #f8fdfc, #e6f0ef);
 }
@@ -372,7 +372,7 @@
   font-weight: 700;
   margin: 0;
 }
-
+/* 
 .close-history-btn {
   background: #f0f7f6;
   border: none;
@@ -386,13 +386,8 @@
   color: #7f9b9a;
   font-size: 16px;
   transition: all 0.3s ease;
-}
+} */
 
-.close-history-btn:hover {
-  background: #1ea593;
-  color: white;
-  transform: rotate(90deg);
-}
 
 .followup-history-content {
   flex: 1;
@@ -749,7 +744,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 14px;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 
 .close-history-btn:hover {

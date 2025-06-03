@@ -41,7 +41,7 @@ const ExecutiveCredentialsForm = () => {
     state: "",
     postal_code: "",
     tax_id: "",
-    team_id: "",
+    // team_id: "",
     profile_picture: null,
     role: "Executive",
   });
@@ -132,7 +132,7 @@ const handleSubmit = async (e) => {
                   <h2>Executive Information</h2>
 
                   <div className="profile-upload">
-                    <div className="form-profile-image">
+                    {/* <div className="form-profile-image">
                       {previewImage ? (
                         <img src={previewImage} alt="Preview" />
                       ) : (
@@ -140,8 +140,8 @@ const handleSubmit = async (e) => {
                           <FontAwesomeIcon icon={faUser} size="2x" />
                         </div>
                       )}
-                    </div>
-                    <div className="upload-controls">
+                    </div> */}
+                    {/* <div className="upload-controls">
                       <h3>Profile Photo</h3>
                       <p>Upload a professional profile photo (optional)</p>
                       <label className="upload-button" htmlFor="profile_picture">Upload Image</label>
@@ -153,7 +153,7 @@ const handleSubmit = async (e) => {
                         accept="image/*"
                         hidden
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="form-grid">
@@ -341,10 +341,10 @@ const handleSubmit = async (e) => {
               </div>
 
               <div className="form-actions">
-                <button type="reset" className="cancel-button">
+                {/* <button type="reset" className="cancel-button">
                   <FontAwesomeIcon icon={faTimes} />
                   Reset
-                </button>
+                </button> */}
                 <button
                   type="submit"
                   className={`submit-button ${isLoading ? "loading" : ""}`}

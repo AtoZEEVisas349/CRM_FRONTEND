@@ -30,10 +30,7 @@ const FollowUpHistory = ({ meeting, onClose }) => {
                          meeting.clientLead?.fresh_lead_id ||
                          meeting.freshLead?.lead?.id ||
                          meeting.id;
-  
-      console.log("Meeting data for history:", meeting);
-      console.log("Extracted freshLeadId:", freshLeadId);
-  
+    
       if (freshLeadId) {
         loadFollowUpHistories(freshLeadId);
       } else {

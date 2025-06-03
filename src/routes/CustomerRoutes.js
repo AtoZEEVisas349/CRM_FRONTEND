@@ -47,13 +47,13 @@ const CustomerRoutes = () => {
       <div className="customer-main-content">
         <div className="heading">
           <h2>Convert Customers</h2>
-          <button className="button">Export List</button>
+          {/* <button className="button">Export List</button> */}
         </div>
         <CustomerTable customers={filteredCustomers} />
         <div className="generate-btn-wrapper">
-          <button className="button invoice-btn" onClick={openInvoiceInNewTab}>
+          {/* <button className="button invoice-btn" onClick={openInvoiceInNewTab}>
             Generate Invoice
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

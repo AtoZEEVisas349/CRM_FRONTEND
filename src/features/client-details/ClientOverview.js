@@ -290,7 +290,6 @@ const ampmSelectRef = useRef(null);
       <div className="c-container">
         <div className="c-header">
           <h2>Client Details</h2>
-          <button className="c-button">×</button>
         </div>
         <div className="c-content">
           <div className="c-layout">

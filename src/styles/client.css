@@ -88,7 +88,10 @@
 .heading {
   margin-left: 45px;
 }
+.heading h2{
+  margin-top: -15px;
 
+}
 .report-cards {
   display: flex;
   flex-direction: row;
@@ -212,13 +215,6 @@
   font-size: 18px;
   font-weight: 400;
 }
-
-.c-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
 .interaction-datetime{
   margin-top: 30px;
 }
@@ -267,11 +263,17 @@ select {
 }
 
 /* === CLIENT INTERACTIONS & FOLLOW-UP === */
-.client-interaction-container,
 .followup-detail-container {
   background-color: var(--card-bg);
-  padding: 30px;
-  margin-top: 40px;
+  padding: 10px;
+  margin-top: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.client-interaction-container{
+  background-color: var(--card-bg);
+  padding: 20px;
+  margin-top: 30px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }

@@ -1,4 +1,3 @@
-
 /* ExecutiveForm.css - Styles for Executive Credentials creation form */
 
 :root {
@@ -22,7 +21,7 @@
   --sidebar-collapsed-width: 70px;
 }
 
-* {
+•⁠  ⁠{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -35,7 +34,18 @@ body {
   color: var(--text-color);
   line-height: 1.5;
 }
-
+body.sidebar-expanded .create-executive-content-area  {
+  margin-left: 260px;
+}
+body.sidebar-mobile-active .create-executive-content-area {
+  margin-left: 100px;
+}
+body.sidebar-mobile-active .form-grid {
+ width:80vw;
+}
+body.sidebar-expanded .form-grid {
+  width: 70vw;
+}
 /* Main container layout */
 .create-executive-container {
   display: flex;
@@ -68,18 +78,20 @@ body {
 }
 
 .create-executive-container.sidebar-collapsed .create-executive-sidebar {
-  width: var(--sidebar-collapsed-width);
+  /* width: var(--sidebar-collapsed-width); */
 }
-
+.create-executive-container.sidebar-expanded .form-grid {
+  width: 70vw;
+}
 .create-executive-content {
   flex: 1;
-  margin-left: var(--sidebar-width);
-  transition: margin-left var(--transition-speed) ease;
+  /* margin-left: var(--sidebar-width); */
+  /* transition: margin-left var(--transition-speed) ease; */
   min-height: 100vh;
 }
 
 .create-executive-container.sidebar-collapsed .create-executive-content {
-  margin-left: var(--sidebar-collapsed-width);
+  /* margin-left: var(--sidebar-collapsed-width); */
 }
 
 @keyframes fadeIn {
@@ -142,7 +154,7 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 30px;
   padding-top: 30px;
 }
@@ -587,7 +599,7 @@ body {
   }
   
   .create-executive-content {
-    margin-left: var(--sidebar-collapsed-width);
+    /* margin-left: var(--sidebar-collapsed-width); */
   }
   
   .form-grid {

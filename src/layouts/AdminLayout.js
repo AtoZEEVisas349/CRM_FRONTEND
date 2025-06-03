@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
@@ -73,28 +72,6 @@ const AdminLayout = () => {
 
             {/* Selectors Section */}
             <div className="dashboard-selectors">
-              <div className="selector-group">
-                <label htmlFor="time-range-select" className="selector-label">
-                  Time Range
-                </label>
-                <select
-                  id="time-range-select"
-                  value={timeRange}
-                  onChange={handleTimeRangeChange}
-                  className="dashboard-select"
-                >
-                  <option value="today">Today</option>
-                  <option value="yesterday">Yesterday</option>
-                  <option value="last7days">Last 7 Days</option>
-                  <option value="last30days">Last 30 Days</option>
-                  <option value="last90days">Last 90 Days</option>
-                  <option value="thismonth">This Month</option>
-                  <option value="lastmonth">Last Month</option>
-                  <option value="thisyear">This Year</option>
-                  <option value="custom">Custom Range</option>
-                </select>
-              </div>
-
               <div className="selector-group">
                 <label htmlFor="executive-select" className="selector-label">
                   Executive

@@ -8,6 +8,36 @@
   --accent-color: #4f46e5;
   --accent-color-hover: #3730a3;
 }
+.follow-history-btn {
+  background: linear-gradient(135deg, #e7dfea, #f2dceb);
+  color: #020202;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.follow-history-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.history-icon {
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
 
 /* Main Content - FIXED: Changed overflow-y to auto and adjusted height */
 .customer-main-content {
@@ -35,13 +65,34 @@
   padding: 0;
   margin: 0;
 }
-
 .customer-name-section {
+  display: grid;
+  grid-template-columns: 40px 100px 180px 300px 200px;
+  gap: 0px;
+  align-items: center;
+}
+
+.customer-name-section .col {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1;
 }
+
+.name-col h3,
+.phone-col p,
+.email-col p,
+.last-contacted-col p {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+}
+
+.checkbox-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .customer-name-section p{
   margin-left: 70px;
@@ -57,7 +108,7 @@
 }
 
 .customer-actions p {
-  margin: 2px 0;
+margin-top:15px ;
   font-size: 14px;
   color: #666;
   line-height: 1.4;
@@ -220,13 +271,6 @@ h2 {
   cursor: pointer;
   margin-right: 10px;
 }
-
-/* Icon styling */
-/* .fa-circle-user {
-  font-size: 24px !important;
-  color: #8e24aa;
-  margin-right: 8px;
-} */
 
 .table-body-scroll {
   max-height: 620px;
@@ -449,6 +493,10 @@ h2 {
  --text-color: #3c6ba9;
  height:100vh;
 }
+[data-theme="red"] .follow-history-btn{
+  background: linear-gradient(135deg, #9b59b6, #d291bc);
+  color: #ffff;
+}
 [data-theme="red"] .button{
   font-weight: 600;
   color: white;
@@ -496,6 +544,10 @@ h2 {
   --bg-color: rgb(186, 186, 232); 
   height:100vh;
 }
+[data-theme="blue"] .follow-history-btn{
+  background: linear-gradient(135deg, #0c088a, grey);
+  color: #ffffff;
+}
 [data-theme="blue"] .button{
   background: linear-gradient(135deg, #080567, grey);
 }
@@ -534,6 +586,10 @@ h2 {
 [data-theme="brown"] .customer-main-content {
   --bg-color: #d9cac4;
   height:100vh;
+}
+[data-theme="brown"] .follow-history-btn{
+  background: linear-gradient(135deg, #754632, rgb(92, 141, 140));
+  color: #ffffff;
 }
 [data-theme="brown"] .name p{
   color: #080808;
@@ -677,4 +733,106 @@ h2 {
 
 [data-theme="dark"] .generate-btn-wrapper {
   background: var(--bg-color, #1a1a1a); /* Match dark theme background */
+}
+.h-followup-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.h-followup-modal {
+  width: 50%;
+  max-height: 80vh;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+  background: linear-gradient(to bottom, #f3daf3, white);
+}
+
+.h-followup-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.h-close-btn {
+  font-size: 22px;
+  background: #c76edb;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  color: white;
+}
+
+.h-followup-modal-body {
+  padding: 10px 0;
+}
+
+.h-followup-entry-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.h-followup-date {
+  display: flex;
+  gap: 12px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.h-latest-tag {
+  background: #d291bc;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.h-followup-tags {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.h-tag {
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: #f3daf3;
+  border: none;
+  font-weight: 500;
+  cursor: default;
+}
+
+.h-tag.hot {
+  background: #2196f3;
+  color: white;
+}
+
+.h-followup-reason-box {
+  margin-top: 5px;
+}
+
+.h-reason-text {
+  background: #f4f4f4;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 6px;
+  font-weight: 400;
 }

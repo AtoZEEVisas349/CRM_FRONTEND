@@ -158,6 +158,11 @@ function FreshLead() {
 
   return (
     <div className="fresh-leads-main-content">
+      <div className="fresh-leads-header">
+        <h2 className="fresh-leads-title">Fresh leads list</h2>
+        <h4 className="fresh-leads-subtitle">Click on Add followup to view details</h4>
+      </div>
+
       {loading && <p className="loading-text">Loading leads...</p>}
       {error && <p className="error-text">{error}</p>}
 
