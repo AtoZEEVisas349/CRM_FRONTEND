@@ -1,17 +1,18 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
-import { ThemeContext } from '../admin/ThemeContext';
-import { BeepSettingsContext } from '../../context/BeepSettingsContext';
-import { SoundGenerator, soundOptions } from './SoundGenerator';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import React, { useState, useContext, useRef, useEffect } from "react";
+import { ThemeContext } from "../admin/ThemeContext";
+import { BeepSettingsContext } from "../../context/BeepSettingsContext";
+import { SoundGenerator, soundOptions } from "./SoundGenerator";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 function BeepSound() {
   const { theme } = useContext(ThemeContext);
-  const { settings: committedSettings, setSettings: setCommittedSettings } = useContext(BeepSettingsContext);
+  const { settings: committedSettings, setSettings: setCommittedSettings } =
+    useContext(BeepSettingsContext);
   const [draftSettings, setDraftSettings] = useState(committedSettings);
   const soundGeneratorRef = useRef(null);
 
   useEffect(() => {
-    const savedSettings = localStorage.getItem('beepSoundSettings');
+    const savedSettings = localStorage.getItem("beepSoundSettings");
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
       setDraftSettings(parsed);
@@ -34,79 +35,82 @@ function BeepSound() {
   }, []);
 
   const timingOptions = [
-    { value: 1, label: '1 second' },
-    { value: 3, label: '3 seconds' },
-    { value: 5, label: '5 seconds' },
-    { value: 10, label: '10 seconds' },
-    { value: 15, label: '15 seconds' },
-    { value: 30, label: '30 seconds' },
-    { value: 60, label: '1 minute' }
+    { value: 1, label: "1 second" },
+    { value: 3, label: "3 seconds" },
+    { value: 5, label: "5 seconds" },
+    { value: 10, label: "10 seconds" },
+    { value: 15, label: "15 seconds" },
+    { value: 30, label: "30 seconds" },
+    { value: 60, label: "1 minute" },
   ];
 
   const handleSoundChange = (soundId) => {
-    setDraftSettings(prev => ({
+    setDraftSettings((prev) => ({
       ...prev,
-      selectedSound: soundId
+      selectedSound: soundId,
     }));
   };
 
   const handleVolumeChange = (e) => {
-    setDraftSettings(prev => ({
+    setDraftSettings((prev) => ({
       ...prev,
-      volume: parseInt(e.target.value)
+      volume: parseInt(e.target.value),
     }));
   };
 
   const handleTimingChange = (timing) => {
-    setDraftSettings(prev => ({
+    setDraftSettings((prev) => ({
       ...prev,
-      timing: timing
+      timing: timing,
     }));
   };
 
   const handleEnabledChange = (e) => {
-    setDraftSettings(prev => ({
+    setDraftSettings((prev) => ({
       ...prev,
-      enabled: e.target.checked
+      enabled: e.target.checked,
     }));
   };
 
   const handleReminderDelayChange = (e) => {
-    setDraftSettings(prev => ({
+    setDraftSettings((prev) => ({
       ...prev,
-      reminderDelay: parseInt(e.target.value)
+      reminderDelay: parseInt(e.target.value),
     }));
   };
 
   const testSound = async (soundId = null) => {
     const soundToTest = soundId || draftSettings.selectedSound;
-    const selectedSound = soundOptions.find(s => s.id === soundToTest);
+    const selectedSound = soundOptions.find((s) => s.id === soundToTest);
 
     if (selectedSound && soundGeneratorRef.current) {
       try {
-        await selectedSound.generator(soundGeneratorRef.current, draftSettings.volume);
+        await selectedSound.generator(
+          soundGeneratorRef.current,
+          draftSettings.volume
+        );
       } catch (error) {
-        console.log('Sound test failed:', error);
+        console.log("Sound test failed:", error);
       }
     }
   };
 
   const saveSettings = () => {
     setCommittedSettings(draftSettings);
-    localStorage.setItem('beepSoundSettings', JSON.stringify(draftSettings));
+    localStorage.setItem("beepSoundSettings", JSON.stringify(draftSettings));
     Swal.fire({
-      icon: 'success',
-      title: 'Settings Saved',
-      text: 'Settings saved successfully!',
-      confirmButtonColor: '#28a745',
-      background: '#f4f4f4',
+      icon: "success",
+      title: "Settings Saved",
+      text: "Settings saved successfully!",
+      confirmButtonColor: "#28a745",
+      background: "#f4f4f4",
       timer: 2000,
     });
   };
 
   const resetSettings = () => {
     const defaultSettings = {
-      selectedSound: 'beep1',
+      selectedSound: "beep1",
       volume: 50,
       timing: 5,
       enabled: true,
@@ -114,14 +118,18 @@ function BeepSound() {
     };
     setDraftSettings(defaultSettings);
     setCommittedSettings(defaultSettings);
-    localStorage.setItem('beepSoundSettings', JSON.stringify(defaultSettings));
+    localStorage.setItem("beepSoundSettings", JSON.stringify(defaultSettings));
   };
 
   return (
     <div className="beep-sound-settings" data-theme={theme}>
       <div className="settings-header">
-        <h2>Beep Sound Settings</h2>
-        <p>Customize your notification sounds and timing preferences</p>
+        <div>
+          <h2>Beep Sound Settings</h2>
+          <p>
+            Customize your notification sounds and timing preferences
+          </p>
+        </div>
       </div>
 
       <div className="settings-sections">
@@ -135,7 +143,9 @@ function BeepSound() {
             {soundOptions.map((sound) => (
               <div
                 key={sound.id}
-                className={`sound-option ${draftSettings.selectedSound === sound.id ? 'selected' : ''}`}
+                className={`sound-option ${
+                  draftSettings.selectedSound === sound.id ? "selected" : ""
+                }`}
                 onClick={() => handleSoundChange(sound.id)}
               >
                 <div className="sound-info">
@@ -151,7 +161,9 @@ function BeepSound() {
                   </button>
                 </div>
                 <div className="sound-indicator">
-                  {draftSettings.selectedSound === sound.id && <span className="checkmark">✓</span>}
+                  {draftSettings.selectedSound === sound.id && (
+                    <span className="checkmark">✓</span>
+                  )}
                 </div>
               </div>
             ))}
@@ -181,11 +193,15 @@ function BeepSound() {
             {timingOptions.map((option) => (
               <div
                 key={option.value}
-                className={`timing-option ${draftSettings.timing === option.value ? 'selected' : ''}`}
+                className={`timing-option ${
+                  draftSettings.timing === option.value ? "selected" : ""
+                }`}
                 onClick={() => handleTimingChange(option.value)}
               >
                 <span className="timing-label">{option.label}</span>
-                {draftSettings.timing === option.value && <span className="checkmark">✓</span>}
+                {draftSettings.timing === option.value && (
+                  <span className="checkmark">✓</span>
+                )}
               </div>
             ))}
           </div>
@@ -195,9 +211,7 @@ function BeepSound() {
               <h3>Reminder Message Timing</h3>
               <p>Control how long after dismissing the popup to remind again</p>
             </div>
-            <h3>
-              Reminder Delay: {draftSettings.reminderDelay} seconds
-            </h3>
+            <h3>Reminder Delay: {draftSettings.reminderDelay} seconds</h3>
             <input
               type="range"
               id="reminderDelay"

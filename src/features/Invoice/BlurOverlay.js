@@ -45,7 +45,7 @@ const BlurOverlay = ({ isLoading, children }) => {
                   textAlign: "center"
                 }}
               >
-                Contact to Administrater for adding Invoice
+                Contact to Administrater
               </p>
             </div>
           </div>

@@ -59,7 +59,9 @@
   /* color: #1a2e35; */
   margin: 0;
 }
-
+[data-theme="dark"] .meetings-title{
+  color:"#fff" !important;
+}
 /* Date Section */
 .date-section {
   display: flex;

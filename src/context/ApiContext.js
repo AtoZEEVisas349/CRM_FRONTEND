@@ -619,6 +619,22 @@ const createExecutive = async (executiveData) => {
     setLoading(false);
   }
 };
+const [followUpClients, setFollowUpClients] = useState([]);
+const [followUpClientsLoading, setFollowUpClientsLoading] = useState(false);
+const fetchFollowUpClientsAPI = async () => {
+  setFollowUpClientsLoading(true);
+  try {
+    const data = await apiService.fetchFollowUpLeadsAPI();
+    setFollowUpClients(data || []);
+    return data || [];
+  } catch (error) {
+    console.error("❌ Error fetching follow-up clients:", error);
+    return [];
+  } finally {
+    setFollowUpClientsLoading(false);
+  }
+};
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -711,7 +727,10 @@ const createExecutive = async (executiveData) => {
         verifyNumberAPI,
       verificationResults,
       verificationLoading,
-
+      followUpClients,
+      followUpClientsLoading,
+      fetchFollowUpClientsAPI,
+      
         closeLeads, // Add the state for Close Leads
         closeLeadsLoading,
         closeLeadsError,

@@ -15,12 +15,9 @@ const TaskManagement = () => {
   const [leadsPerPage, setLeadsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
+  const [filterType, setFilterType] = useState("all"); // State for filter type
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
   const paginatedLeads = leads;
-
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    localStorage.getItem("adminSidebarExpanded") === "false"
-  );
 
   const { theme } = useContext(ThemeContext);
   const {
@@ -30,7 +27,14 @@ const TaskManagement = () => {
     assignLeadAPI,
     createFreshLeadAPI,
     createLeadAPI,
+    fetchFollowUpClientsAPI, // Used as fetchFollowUpsAPI
+    fetchConvertedClientsAPI,
+    fetchAllCloseLeadsAPI, // Used as fetchCloseLeadsAPI
   } = useApi();
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    localStorage.getItem("adminSidebarExpanded") === "false"
+  );
 
   useEffect(() => {
     const updateSidebarState = () => {
@@ -45,16 +49,39 @@ const TaskManagement = () => {
   useEffect(() => {
     fetchLeads();
     fetchExecutives();
-  }, [currentPage, leadsPerPage]);
+  }, [currentPage, leadsPerPage, filterType]);
 
   const fetchLeads = async () => {
     try {
       const offset = (currentPage - 1) * leadsPerPage;
-      const data = await fetchLeadsAPI(leadsPerPage, offset);
-      setLeads(data.leads);
-      setTotalLeads(data.pagination.total);
+      let data;
+      switch (filterType) {
+        case "fresh":
+          // Fetch unassigned fresh leads
+          data = await fetchLeadsAPI(leadsPerPage, offset, { assignedToExecutive: null });
+          break;
+        case "followup":
+          data = await fetchFollowUpClientsAPI(); // Using fetchFollowUpClientsAPI from ApiContext
+          break;
+        case "converted":
+          data = await fetchConvertedClientsAPI(); // Using fetchConvertedClientsAPI
+          break;
+        case "closed":
+          data = await fetchAllCloseLeadsAPI(); // Using fetchAllCloseLeadsAPI
+          break;
+        case "all":
+        default:
+          data = await fetchLeadsAPI(leadsPerPage, offset);
+          break;
+      }
+      // Normalize data to ensure consistent structure
+      const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
+      setLeads(normalizedLeads);
+      setTotalLeads(data.pagination?.total || normalizedLeads.length);
     } catch (error) {
-      console.error("❌ Failed to load leads:", error);
+      console.error(`❌ Failed to load ${filterType} leads:`, error);
+      setLeads([]);
+      setTotalLeads(0);
     }
   };
 
@@ -65,6 +92,12 @@ const TaskManagement = () => {
     } catch (error) {
       console.error("❌ Failed to load executives:", error);
     }
+  };
+
+  const handleFilterChange = (type) => {
+    setFilterType(type);
+    setCurrentPage(1); // Reset to first page when filter changes
+    setSelectedLeads([]); // Clear selected leads
   };
 
   const handlePrev = () => {
@@ -151,7 +184,7 @@ const TaskManagement = () => {
         source: lead.source || "Unknown",
         clientLeadId: Number(clientLeadId),
         assignedToExecutive: executive.username,
-        previousAssignedTo: lead.previousAssignedTo
+        previousAssignedTo: lead.previousAssignedTo,
       };
 
       try {
@@ -210,14 +243,14 @@ const TaskManagement = () => {
     } else if (successCount > 0 && failCount > 0) {
       alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
     } else {
-      alert("❌ Leads was already reassigned.");
+      alert("❌ Leads were already reassigned.");
     }
   };
 
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
-      <AdminNavbar/>
+      <AdminNavbar />
 
       <div className="leads-dashboard" data-theme={theme}>
         <div className="Logo">Lead Assign</div>
@@ -265,6 +298,38 @@ const TaskManagement = () => {
                 Reset
               </button>
             </div>
+            <div className="filter-buttons">
+              <button
+                className={`filter-btn ${filterType === "all" ? "active" : ""}`}
+                onClick={() => handleFilterChange("all")}
+              >
+                All Leads
+              </button>
+              <button
+                className={`filter-btn ${filterType === "fresh" ? "active" : ""}`}
+                onClick={() => handleFilterChange("fresh")}
+              >
+                Fresh Leads
+              </button>
+              <button
+                className={`filter-btn ${filterType === "followup" ? "active" : ""}`}
+                onClick={() => handleFilterChange("followup")}
+              >
+                Follow-up
+              </button>
+              <button
+                className={`filter-btn ${filterType === "converted" ? "active" : ""}`}
+                onClick={() => handleFilterChange("converted")}
+              >
+                Converted
+              </button>
+              <button
+                className={`filter-btn ${filterType === "closed" ? "active" : ""}`}
+                onClick={() => handleFilterChange("closed")}
+              >
+                Closed
+              </button>
+            </div>
           </div>
         </div>
 
@@ -291,12 +356,12 @@ const TaskManagement = () => {
                       <span>Name: {lead.name}</span>
                       <span>Email: {lead.email}</span>
                       <span>Phone No: {lead.phone}</span>
-                      <span>Education: {lead.education}</span>
+                      <span>Education: {lead.education || "N/A"}</span>
                       {expandedLeads[lead.id] && (
                         <>
-                          <span>Experience: {lead.experience}</span>
-                          <span>State: {lead.state}</span>
-                          <span>Country: {lead.country}</span>
+                          <span>Experience: {lead.experience || "N/A"}</span>
+                          <span>State: {lead.state || "N/A"}</span>
+                          <span>Country: {lead.country || "N/A"}</span>
                           <span>DOB: {lead.dob || "N/A"}</span>
                           <span>Lead Assign Date: {lead.leadAssignDate || "N/A"}</span>
                           <span>Country Preference: {lead.countryPreference || "N/A"}</span>
@@ -307,7 +372,7 @@ const TaskManagement = () => {
                       </button>
                     </div>
                   </div>
-                  <div className="lead-source">{lead.source}</div>
+                  <div className="lead-source">{lead.source || "Unknown"}</div>
                   <div className="lead-assign">{lead.assignedToExecutive || "Unassigned"}</div>
                   <div className="lead-actions">
                     <button className="edit">Edit</button>

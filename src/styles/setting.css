@@ -22,7 +22,7 @@
 
 .settings-sidebar {
   width: 30%;
-  padding: 30px 20px;
+  padding: 30px 0px;
   background: linear-gradient(135deg, #ebecec, #f4eeee);
   border-right: 1px solid #d0d7de;
   box-shadow: 4px 0 8px rgba(0, 0, 0, 0.03);
@@ -47,8 +47,6 @@
 .settings-sidebar a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
   text-decoration: none;
   color: #333;
   font-weight: 500;
@@ -392,7 +390,7 @@ flex-direction: column;
 justify-content: flex-start;
 align-items: center;
 height: 100vh;
-padding-top: 100px;
+padding-top: 50px;
 }
 
 .theme-options {
@@ -677,7 +675,7 @@ background:#f3daf3 ;
 [data-theme="red"] .profile-box h3 {
   color: #3c6ba9;
 }[data-theme="red"] .edit-btn{
-  color: #3c6ba9;
+  color: #fff;
 }
 [data-theme="red"] .profile-image {
   border:3px solid #3c6ba9;
@@ -751,7 +749,7 @@ background:#f3daf3 ;
   background: #c6e7c8; /* Light green background */
   border-right: 1px solid #c8e6c9;
   box-shadow: 8px 0 8px rgba(0, 0, 0, 0.03);
-  border: 5px solid #c8e6c9;
+  border: 0 solid #c8e6c9;
 }
 
 [data-theme="green"] .settings-sidebar a {
@@ -891,16 +889,14 @@ background:#f3daf3 ;
 
 .beep-sound-settings {
   padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 2000px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.6;
 }
 
 /* Header Styling */
 .settings-header {
-  margin-bottom: 2.5rem;
-  text-align: center;
+  text-align: left;
 }
 
 .settings-header h2 {
@@ -911,9 +907,10 @@ background:#f3daf3 ;
 }
 
 .settings-header p {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--text-secondary, #666);
   margin: 0;
+  font-style: italic;
 }
 
 /* Sections Container */
@@ -1358,7 +1355,6 @@ background:#f3daf3 ;
 
 /* === Main Content Area === */
 .settings-main-content {
-  padding-top: var(--navbar-height);
   min-height: calc(100vh - var(--navbar-height));
 }
 
@@ -1405,8 +1401,7 @@ background:#f3daf3 ;
 
 /* === Enhanced Sidebar === */
 .settings-sidebar {
-  width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
+  min-width: 340px;
   background: linear-gradient(135deg, #f8f9fa, #ffffff);
   border-right: 1px solid var(--border-color);
   padding: var(--content-padding);
@@ -1422,7 +1417,6 @@ background:#f3daf3 ;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-left: 8%;
 }
 
 .settings-sidebar li {
@@ -1893,4 +1887,39 @@ background:#f3daf3 ;
     /* Prevent content interaction when sidebar is open */
     pointer-events: none;
   }
+}
+/* Base settings-content color (light theme) */
+.settings-content {
+  background-color: #fcfcfc;
+  color: #1a1a1a;
+}
+
+/* Dark theme */
+[data-theme="dark"] .settings-content {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+/* Red theme */
+[data-theme="red"] .settings-content {
+  background-color: #ecc5ec;
+  color: #3c3c3c;
+}
+
+/* Blue theme */
+[data-theme="blue"] .settings-content {
+  background-color: rgb(202, 202, 247);
+  color: #1a1a3c;
+}
+
+/* Green theme */
+[data-theme="green"] .settings-content {
+  background-color: #c6e7c8;
+  color: #1a3a1a;
+}
+
+/* Brown theme */
+[data-theme="brown"] .settings-content {
+  background-color: #d9cac4;
+  color: #3d2f29;
 }

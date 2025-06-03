@@ -72,8 +72,6 @@ const ExecutiveCredentialsForm = () => {
   }
 };
 
-
-
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
@@ -235,7 +233,6 @@ const handleSubmit = async (e) => {
           placeholder="Enter Team ID"
           value={formData.team_id}
           onChange={handleInputChange}
-          required
         />
       </div>
     </div>

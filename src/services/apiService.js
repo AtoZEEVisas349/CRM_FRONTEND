@@ -64,6 +64,16 @@ export const fetchAssignedLeads = async (executiveName) => {
     throw error;
   }
 };
+// ✅ Function to fetch leads with status "Follow-Up"
+export const fetchFollowUpLeadsAPI = async () => {
+  try {
+    const response = await apiService.get("/client-leads/followup-leads");
+    return response.data.leads || []; // Assuming you're using only the leads array
+  } catch (error) {
+    console.error("❌ Error fetching follow-up leads:", error);
+    throw error;
+  }
+};
 
 // ✅ Fetch notifications for a specific user (executive)
 export const fetchNotificationsByUser = async ({ userId, userRole }) => {

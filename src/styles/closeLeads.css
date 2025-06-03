@@ -43,7 +43,9 @@ html, body, #root {
 .country_container {
   margin-top: 10px;
 }
-
+[data-theme="dark"] .c-heading{
+  color: #fff;
+}
 .country_cards {
   margin-bottom: 20px;
 }
