@@ -682,3 +682,40 @@ input:checked + .slider {
 .blur-overlay-wrapper.dark::after {
   background-color: rgba(31, 41, 55, 0.5);
 }
+/* Fix dark mode text visibility */
+[data-theme="dark"] h3,
+[data-theme="dark"] h2,
+[data-theme="dark"] label,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] button,
+[data-theme="dark"] small,
+[data-theme="dark"] .form-group,
+[data-theme="dark"] .row-cell,
+[data-theme="dark"] .header-cell,
+[data-theme="dark"] .group-title,
+[data-theme="dark"] .mini-btn,
+[data-theme="dark"] .save-btn,
+[data-theme="dark"] .primary-btn{
+  color: whitesmoke !important;
+}
+[data-theme="dark"] .pic-actions button{
+  color: rgb(0, 0, 0) !important;
+}
+[data-theme="dark"] .form-group input{
+  color: rgb(0, 0, 0) !important;
+}
+/* Optional: improve contrast for inputs and backgrounds */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color:#dee3fc;
+  border-color: var(--input-border);
+}
+
+/* Optional: adjust mini button hover */
+[data-theme="dark"] .mini-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--btn-text);
+}

@@ -1,7 +1,10 @@
+//AdminSettings.js
+
 import React, { useState, useEffect } from "react";
 import "../../styles/adminsettings.css";
 import { FaBars } from "react-icons/fa";
 import SidebarToggle from "../admin/SidebarToggle";
+import img2 from "../../assets/img3.jpg"; // Example image, replace with actual path
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -481,7 +484,7 @@ const AdminSettings = () => {
               <div className="form-group full profile-pic">
                 <label>Your Photo</label>
                 <div className="pic-wrapper">
-                  <img src="https://via.placeholder.com/80" alt="Profile" />
+                  <img src={img2} alt="Profile" />
                   <div className="pic-actions">
                     <button type="button">Delete</button>
                     <button type="button">Update</button>

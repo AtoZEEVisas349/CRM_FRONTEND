@@ -18,45 +18,79 @@ const ReportCard = () => {
   const [convertedCounts, setConvertedCounts] = useState(0);
   const [meetingsCount, setMeetings] = useState(0);
 
-  const fetchAllCounts = async () => {
+  const fetchFreshLeads = async () => {
     try {
-      const [freshLeads, followUps, convertedClients, meetings] = await Promise.all([
-        fetchFreshLeadsAPI(),
-        getAllFollowUps(),
-        fetchConvertedClientsAPI(),
-        fetchMeetings()
-      ]);
+      const freshLeads = await fetchFreshLeadsAPI();
 
       const assignedFreshLeads = freshLeads.data.filter(
         (lead) =>
           lead.clientLead?.status === "New" ||
           lead.clientLead?.status === "Assigned"
       );
+
       setFreshLeadCounts(assignedFreshLeads.length);
-
-      const followUpLeads = followUps.data.filter(
-        (lead) => lead.clientLeadStatus === "Follow-Up"
-      );
-      setFollowupCounts(followUpLeads.length);
-
-      const filteredConvertedClients = convertedClients.filter(
-        (client) => client.status === "Converted"
-      );
-      setConvertedCounts(filteredConvertedClients.length);
-
-      const filteredMeetingCount = meetings.filter(
-        (client) => client.clientLead.status === "Meeting"
-      );
-      setMeetings(filteredMeetingCount.length);
-
+      console.log(assignedFreshLeads)
     } catch (error) {
-      console.error("❌ Failed to fetch data:", error);
+      console.error("Failed to fetch fresh leads:", error);
     }
   };
 
-  useEffect(() => {
-    fetchAllCounts();
-  }, []);
+
+  const fetchFollowup = async () => {
+    try {
+      const followup = await getAllFollowUps();
+
+      const assignedFollowup = followup.data.filter(
+        (lead) =>
+          lead.clientLeadStatus === "Follow-Up" 
+        
+      );
+
+      setFollowupCounts(assignedFollowup.length);
+      console.log(assignedFollowup)
+    } catch (error) {
+      console.error("Failed to fetch fresh leads:", error);
+    }
+  };
+    const fetchConverted = async () => {
+    try {
+      const converted = await fetchConvertedClientsAPI();
+
+      const assignedConverted = converted.filter(
+        (lead) =>
+          lead.status === "Converted" 
+        
+      );
+
+      setConvertedCounts(assignedConverted.length);
+      console.log(assignedConverted)
+    } catch (error) {
+      console.error("Failed to fetch fresh leads:", error);
+    }
+  };
+
+    const getMeetings = async () => {
+    try {
+      const meeting = await fetchMeetings();
+
+      const assignedMeetings = meeting.filter(
+        (lead) =>
+         lead.clientLead.status === "Meeting" 
+        
+      );
+
+      setMeetings(assignedMeetings.length);
+      console.log(assignedMeetings)
+    } catch (error) {
+      console.error("Failed to fetch fresh leads:", error);
+    }
+  };
+useEffect(()=>{
+  getMeetings();
+  fetchConverted();
+  fetchFollowup();
+  fetchFreshLeads();
+},[])
 
   const cards = [
     {

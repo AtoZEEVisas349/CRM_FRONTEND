@@ -649,6 +649,28 @@ const[allClients,setAllClients]=useState();
       setallClientsLoading(false);
     }
   };
+  
+const createSingleLeadAPI = async (leadData) => {
+  if (!leadData || !leadData.name) {
+    setUploadError("Name is required for lead creation!");
+    throw new Error("Name is required for lead creation!");
+  }
+
+  setUploading(true);
+  setUploadError("");
+  setUploadSuccess("");
+
+  try {
+    const response = await upload.uploadFile(leadData);
+    setUploadSuccess("Lead created successfully!");
+    return response;
+  } catch (error) {
+    setUploadError(error.message || "Failed to create lead!");
+    throw error;
+  } finally {
+    setUploading(false);
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -688,7 +710,7 @@ const[allClients,setAllClients]=useState();
     fetchExecutivesAPI: apiService.fetchExecutivesAPI,
     fetchExecutiveInfo: apiService.fetchExecutiveInfo,
     sendEodReport: apiService.sendEodReport,
-
+    createSingleLeadAPI,
     updateUserLoginStatus,
     // Follow-ups
     updateClientLeadStatus,
