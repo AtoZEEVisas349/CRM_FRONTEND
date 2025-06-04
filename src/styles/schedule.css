@@ -16,7 +16,7 @@
 .task-management-wrapper {
   background-color: #ffffff;
   width: 100%; /* ✅ Let wrapper inherit parent's width */
-  max-width: 1200px; /* ✅ Limit max width only, not fixed */
+  max-width: 1500px; /* ✅ Limit max width only, not fixed */
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -175,6 +175,9 @@
   align-items: center;
   gap: 24px;
   transition: all 0.3s ease;
+  flex-wrap: wrap; /* Allow wrapping to prevent overflow */
+  padding: 16px; /* Ensure enough padding */
+  box-sizing: border-box; /* Include padding in width */
 }
 
 .meeting-item:hover {
@@ -231,6 +234,19 @@
   flex-direction: column;
   gap: 8px;
   min-width: 100px;
+  max-width: 100%; /* Prevent overflow */
+  overflow: hidden; /* Hide overflow */
+}
+
+.meeting-details .metadata {
+  margin: 0;
+  font-size: 18px; /* Bold and prominent size */
+  font-weight: 600; /* Extra bold */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* Modern font stack */
+  text-align: center;
+  letter-spacing: 0.05em; /* Slight spacing for readability */
+  color: grey; /* Dark slate for strong contrast */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
 }
 
 .meeting-title {
@@ -361,7 +377,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 19px !important;
+  padding: 24px 32px;
   border-bottom: 2px solid #f0f7f6;
   background: linear-gradient(135deg, #f8fdfc, #e6f0ef);
 }
@@ -372,7 +388,7 @@
   font-weight: 700;
   margin: 0;
 }
-/* 
+
 .close-history-btn {
   background: #f0f7f6;
   border: none;
@@ -386,8 +402,13 @@
   color: #7f9b9a;
   font-size: 16px;
   transition: all 0.3s ease;
-} */
+}
 
+.close-history-btn:hover {
+  background: #1ea593;
+  color: white;
+  transform: rotate(90deg);
+}
 
 .followup-history-content {
   flex: 1;
@@ -487,7 +508,8 @@
   background: #f8f9ff;
   border-radius: 12px;
   border: 1px solid #e1e8ff;
-  width: 200px;
+  width: 320px;
+  max-width: 100%; /* Prevent overflow */
 }
 
 .contact-item {
@@ -499,7 +521,12 @@
   border-radius: 8px;
   transition: all 0.3s ease;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
+
 
 .contact-item:hover {
   transform: translateX(4px);
@@ -744,7 +771,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 14px;
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .close-history-btn:hover {
@@ -2403,4 +2430,143 @@
         padding: 8px 16px;
         font-size: 0.9rem;
     }
+}
+
+
+/* Loading Overlay Styles */
+.loading-overlay {
+  position: fixed; /* Changed to fixed to cover the entire viewport */
+  top: 0;
+  left: 0;
+  width: 100vw; /* Full viewport width */
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Blur effect for the background */
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+/* Loading Container Styles */
+.loading-container {
+  position: relative; /* Ensure it's positioned above the blurred overlay */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1001; /* Higher than overlay to appear above it */
+}
+
+/* Loading Spinner Styles */
+.loading-spinner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.spinner-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  border-top-color: #4f46e5;
+  animation-delay: 0s;
+}
+
+.spinner-ring:nth-child(2) {
+  border-right-color: #7c3aed;
+  animation-delay: -0.3s;
+  transform: scale(0.8);
+}
+
+.spinner-ring:nth-child(3) {
+  border-bottom-color: #ec4899;
+  animation-delay: -0.6s;
+  transform: scale(0.6);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading Text Styles */
+.loading-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4b5563;
+  text-align: center;
+  letter-spacing: 0.025em;
+  background-clip: text;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Disabled state for filter buttons during loading */
+.filter-controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Darker semi-transparent background */
+    backdrop-filter: blur(10px);
+  }
+  
+  .loading-container {
+    background: rgba(31, 41, 55, 0.9); /* Dark semi-transparent background */
+    border-color: rgba(75, 85, 99, 0.2);
+  }
+  
+  .loading-text {
+    color: #d1d5db;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .loading-overlay {
+    margin-left: 0; /* Remove margin for mobile */
+  }
+  
+  .loading-container {
+    padding: 32px 24px;
+    gap: 20px;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+  }
 }

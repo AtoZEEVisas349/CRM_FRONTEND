@@ -488,10 +488,10 @@ export const fetchDealFunnelData = async () => {
   }
 };
 //Reassigned Leads 
-export const reassignLead = async (leadId, newExecutive) => {
+export const reassignLead = async (clientLeadId, newExecutive) => {
   try {
     const response = await apiService.put(`leads/reassign`, {
-      leadId: Number(leadId),
+      clientLeadId: Number(clientLeadId),
       newExecutive,
     });
     return response.data;
@@ -500,6 +500,7 @@ export const reassignLead = async (leadId, newExecutive) => {
     throw error;
   }
 };
+
 // Function to fetch all opportunities
 export const fetchOpportunities = async () => {
   try {
@@ -565,5 +566,13 @@ export const createExecutiveAPI = async (executiveData) => {
   });
   return response.data;
 };
-
+export const fetchAllClientLeads = async () => {
+  try {
+    const response = await apiService.get("/client-leads/getAllClientLeads");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching all executive activities:", error);
+    throw error;
+  }
+};
 export default apiService;

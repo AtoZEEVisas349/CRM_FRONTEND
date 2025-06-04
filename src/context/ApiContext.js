@@ -634,7 +634,21 @@ const fetchFollowUpClientsAPI = async () => {
     setFollowUpClientsLoading(false);
   }
 };
-
+const [allClientsLoading, setallClientsLoading] = useState(false);
+const[allClients,setAllClients]=useState();
+  const fetchAllClients= async () => {
+    setallClientsLoading(true);
+    try {
+      const data = await apiService.fetchAllClientLeads(); // already defined in your services
+      setAllClients(data|| [])
+      return data || [];
+    } catch (error) {
+      console.error("❌ Error fetching executive dashboard data:", error);
+      return [];
+    } finally {
+      setallClientsLoading(false);
+    }
+  };
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -723,7 +737,7 @@ const fetchFollowUpClientsAPI = async () => {
         followUpLoading,
         getAllFollowUps,
         updateFollowUp,
-
+        fetchAllClients,
         verifyNumberAPI,
       verificationResults,
       verificationLoading,

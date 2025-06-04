@@ -36,28 +36,60 @@ const ClientDetailsOverview = () => {
 
   useCopyNotification(createCopyNotification, fetchNotifications);
   const client = useMemo(() => location.state?.client || {}, []);
+  
+  // Initialize current time properly
+  const now = new Date();
+  const todayStr = now.toISOString().split("T")[0];
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const ampmValue = currentHour >= 12 ? "PM" : "AM";
+  const hour12 = currentHour % 12 || 12;
+  const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
   const [interactionRating, setInteractionRating] = useState("");
   const [reasonDesc, setReasonDesc] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [interactionDate, setInteractionDate] = useState("");
-  const [timeOnly, setTimeOnly] = useState("12:00");
-    const [ampm, setAmPm] = useState("AM");
-      const interactionTime = useMemo(() => {
-        let [hr, min] = timeOnly.split(":").map(Number);
-        if (ampm === "PM" && hr !== 12) hr += 12;
-        if (ampm === "AM" && hr === 12) hr = 0;
-        return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
-      }, [timeOnly, ampm]);
-      
-  const now = new Date();
-  const defaultTime = now.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const [interactionDate, setInteractionDate] = useState(todayStr);
+  const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
+  const [ampm, setAmPm] = useState(ampmValue);
+  const [isTimeEditable, setIsTimeEditable] = useState(false);
+
+  // Add time conversion functions
+  const convertTo24Hour = (time12h, amPm) => {
+    let [hours, minutes] = time12h.split(':').map(Number);
+    if (amPm === 'PM' && hours !== 12) hours += 12;
+    if (amPm === 'AM' && hours === 12) hours = 0;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
+  const convertTo12Hour = (time24h) => {
+    let [hours, minutes] = time24h.split(':').map(Number);
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return {
+      time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
+      amPm: amPm
+    };
+  };
+
+  const interactionTime = useMemo(() => {
+    let [hr, min] = timeOnly.split(":").map(Number);
+    if (ampm === "PM" && hr !== 12) hr += 12;
+    if (ampm === "AM" && hr === 12) hr = 0;
+    return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
+  }, [timeOnly, ampm]);
+
+  // Add date constraints
+  const minDate = useMemo(() => todayStr, []);
+  const maxDate = useMemo(() => {
+    const d = new Date(now);
+    d.setFullYear(d.getFullYear() + 5);
+    return d.toISOString().split("T")[0];
+  }, []);
+
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const timeSelectRef = useRef(null);
@@ -402,6 +434,7 @@ const ClientDetailsOverview = () => {
       alert("Failed to send email.");
     }
   }; 
+  
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
@@ -416,6 +449,7 @@ const ClientDetailsOverview = () => {
       <div className="c-container">
         <div className="c-header">
           <h2>Client Details</h2>
+          <button className="c-button">×</button>
         </div>
         <div className="c-content">
           <div className="c-layout">
@@ -646,118 +680,138 @@ const ClientDetailsOverview = () => {
 
               <div className="interaction-datetime" style={{ marginTop: "20px" }}>
                 <h4>Interaction Schedule and Time</h4>
-                <div style={{ display: "flex", gap: "10px" }}>
+                <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
                   <div>
-                    <label style={{ fontWeight: "400" }}>Date:</label>
+                    <label style={{ display: "block" }}>Date:</label>
                     <input
                       type="date"
                       value={interactionDate}
+                      min={minDate}
+                      max={maxDate}
                       onChange={(e) => setInteractionDate(e.target.value)}
+                      style={{ padding: "8px", borderRadius: "4px" }}
                     />
                   </div>
+
                   <div style={{ display: "flex", flexDirection: "column" }}>
-  <label style={{ marginBottom: "4px" }}>Time:</label>
-
-  <div
-   style={{
-    display: "flex",
-    border: "1px solid #ccc",
-    borderRadius: "6px",
-    overflow: "hidden",
-    width: "140px",
-    backgroundColor: "white"
-  }}
-  >
-    {/* Time dropdown */}
-    <div style={{ position: "relative", flex: 1 }}>
-      <select
-        ref={timeSelectRef}
-        value={timeOnly}
-        onChange={(e) => setTimeOnly(e.target.value)}
-        style={{
-          border: "none",
-          padding: "8px 4px", // reduced horizontal padding
-          width: "100%",       // let it stretch inside the flex item
-          appearance: "none",
-          backgroundColor: "transparent",
-          cursor: "pointer",
-        }}
-      >
-        {[
-          "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
-          "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
-          "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
-        ].map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
-      <span
-        onClick={() => timeSelectRef.current?.focus()}
-        style={{
-          position: "absolute",
-          right: "9px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          pointerEvents: "none",
-          fontSize: "12px",
-          color: "#888"
-        }}
-      >
-        ▼
-      </span>
-    </div>
-
-    {/* AM/PM dropdown */}
-    <div style={{ position: "relative", width: "70px", borderLeft: "1px solid #ccc" }}>
-      <select
-        ref={timeSelectRef}
-        value={ampm}
-        onChange={(e) => setAmPm(e.target.value)}
-        style={{
-          border: "none",
-          padding: "8px 4px", // reduced horizontal padding
-          width: "50px",
-          appearance: "none",
-          backgroundColor: "transparent",
-          cursor: "pointer",
-        }}
-      >
-        <option value="AM">AM</option>
-        <option value="PM">PM</option>
-      </select>
-      <span
-        onClick={() => ampmSelectRef.current?.focus()}
-        style={{
-          position: "absolute",
-          right: "8px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          pointerEvents: "none",
-          fontSize: "12px",
-          color: "#888"
-        }}
-      >
-        ▼
-      </span>
-    </div>
-  </div>
-</div>
+                    <label style={{ marginBottom: "4px" }}>Time:</label>
+                    <div
+                      style={{
+                        display: "flex",
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        overflow: "hidden",
+                        width: "150px",
+                        backgroundColor: "white"
+                      }}
+                    >
+                      <div style={{ position: "relative", flex: 1 }}>
+                        {!isTimeEditable ? (
+                          <>
+                            <select
+                              ref={timeSelectRef}
+                              value={timeOnly}
+                              onChange={(e) => {
+                                setTimeOnly(e.target.value);
+                                setIsTimeEditable(true);
+                              }}
+                              style={{
+                                border: "none",
+                                padding: "8px 4px",
+                                width: "100%",
+                                appearance: "none",
+                                backgroundColor: "transparent",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <option value={timeOnly}>{timeOnly}</option>
+                              {[
+                                "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
+                                "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
+                                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
+                              ].filter(opt => opt !== timeOnly).map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                            <span
+                              onClick={() => timeSelectRef.current?.focus()}
+                              style={{
+                                position: "absolute",
+                                right: "9px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                pointerEvents: "none",
+                                fontSize: "12px",
+                                color: "#888"
+                              }}
+                            >
+                              ▼
+                            </span>
+                          </>
+                        ) : (
+                          <input
+                            type="time"
+                            value={convertTo24Hour(timeOnly, ampm)}
+                            onChange={(e) => {
+                              const time24 = e.target.value;
+                              if (time24) {
+                                const converted = convertTo12Hour(time24);
+                                setTimeOnly(converted.time);
+                                setAmPm(converted.amPm);
+                              }
+                            }}
+                            onBlur={() => {
+                              // setIsTimeEditable(false);
+                            }}
+                            style={{
+                              border: "none",
+                              padding: "8px 4px",
+                              width: "100%",
+                              backgroundColor: "transparent",
+                              cursor: "text",
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                    {isTimeEditable && (
+                      <button
+                        type="button"
+                        onClick={() => setIsTimeEditable(false)}
+                        style={{
+                          fontSize: "11px",
+                          color: "#666",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          marginTop: "4px",
+                          alignSelf: "flex-start"
+                        }}
+                      >
+                        Use preset times
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+              
               {followUpType === "appointment" && isMeetingInPast && (
-          <div style={{
-            marginTop: "12px",
-            color: "#b71c1c",
-            background: "#fff4f4",
-            borderLeft: "4px solid #e57373",
-            padding: "10px 15px",
-            borderRadius: "6px",
-            fontSize: "14px"
-          }}>
-            ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
-          </div>
-        )}
-<div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>                {/* Update Follow-Up button */}
+                <div style={{
+                  marginTop: "12px",
+                  color: "#b71c1c",
+                  background: "#fff4f4",
+                  borderLeft: "4px solid #e57373",
+                  padding: "10px 15px",
+                  borderRadius: "6px",
+                  fontSize: "14px"
+                }}>
+                  ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+                </div>
+              )}
+
+              <div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {/* Update Follow-Up button */}
                 <button
                   onClick={handleUpdateFollowUp}
                   className="crm-button update-follow-btn"

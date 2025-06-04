@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -10,7 +10,6 @@ import FollowUpForm from "./FollowUpForm";
 import FollowUpHistory from "./FollowUpHistory";
 import MeetingList from "./MeetingList";
 import { SearchContext } from "../../context/SearchContext"; // ✅ added
-
 
 const ScheduleMeeting = () => {
   const {
@@ -31,6 +30,7 @@ const ScheduleMeeting = () => {
   const { searchQuery } = useContext(SearchContext); // ✅ get query
   const navigate = useNavigate();
   const [meetings, setMeetings] = useState([]);
+  const [loading, setLoading] = useState(true); // ✅ Add loading state
   const [activeFilter, setActiveFilter] = useState("today");
   const [selectedMeetingForHistory, setSelectedMeetingForHistory] = useState(null);
   const [selectedMeetingForFollowUp, setSelectedMeetingForFollowUp] = useState(null);
@@ -38,6 +38,7 @@ const ScheduleMeeting = () => {
 
   const loadMeetings = async () => {
     try {
+      setLoading(true); // ✅ Set loading to true at start
       const allMeetings = await fetchMeetings();
       if (!Array.isArray(allMeetings)) {
         setMeetings([]);
@@ -122,22 +123,26 @@ const ScheduleMeeting = () => {
         }
         return true;
       });
- // ✅ Filter meetings using searchQuery
- const query = searchQuery.toLowerCase();
- const searchFiltered = filtered.filter((m) => {
-   return (
-     m.clientName?.toLowerCase().includes(query) ||
-     m.clientEmail?.toLowerCase().includes(query) ||
-     m.clientPhone?.toString().includes(query)
-   );
- });
 
- setMeetings(searchFiltered);
-} catch (error) {
- console.error("Failed to load meetings:", error);
- setMeetings([]);
-}
-};
+      // ✅ Filter meetings using searchQuery
+      const query = searchQuery.toLowerCase();
+      const searchFiltered = filtered.filter((m) => {
+        return (
+          m.clientName?.toLowerCase().includes(query) ||
+          m.clientEmail?.toLowerCase().includes(query) ||
+          m.clientPhone?.toString().includes(query)
+        );
+      });
+
+      setMeetings(searchFiltered);
+    } catch (error) {
+      console.error("Failed to load meetings:", error);
+      setMeetings([]);
+    } finally {
+      setLoading(false); // ✅ Set loading to false when done
+    }
+  };
+
   const handleFollowUpSubmit = async (formData) => {
     const {
       clientName,
@@ -325,6 +330,20 @@ const ScheduleMeeting = () => {
     loadMeetings();
   }, [activeFilter, searchQuery]); // ✅ reload if search changes
 
+  // ✅ Loading Component
+  const LoadingSpinner = () => (
+    <div className="loading-overlay">
+      <div className="loading-container">
+        <div className="loading-spinner">
+          <div className="spinner-ring"></div>
+          <div className="spinner-ring"></div>
+          <div className="spinner-ring"></div>
+        </div>
+        <p className="loading-text">Loading meetings...</p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="task-management-container">
       <div className="task-management-wrapper">
@@ -344,19 +363,21 @@ const ScheduleMeeting = () => {
                   key={key}
                   className={activeFilter === key ? "active-filter" : ""}
                   onClick={() => setActiveFilter(key)}
+                  disabled={loading} // ✅ Disable filters while loading
                 >
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </button>
               ))}
-              <button className="refresh-button" onClick={loadMeetings}>
-                <FontAwesomeIcon icon={faSyncAlt} />
-              </button>
             </div>
           </div>
         </div>
 
         <div className="meetings-content">
-          <MeetingList meetings={meetings} onAddFollowUp={handleAddFollowUp} onShowHistory={handleShowHistory} />
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <MeetingList meetings={meetings} onAddFollowUp={handleAddFollowUp} onShowHistory={handleShowHistory} />
+          )}
         </div>
       </div>
 

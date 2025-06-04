@@ -52,10 +52,23 @@ body, html {
 /* Leads Dashboard */
 .leads-dashboard {
   width: 100%;
-  padding: 20px;
+  padding: 10px;
   height: 95vh;
   display: flex;
   flex-direction: column;
+}
+.see-more-btn-inline {
+  background: none;
+  border: none;
+  color: #3f51b5;
+  font-weight: 500;
+  margin-left: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.see-more-btn-inline:hover {
+  text-decoration: underline;
 }
 
 .Logo {
@@ -91,7 +104,7 @@ body, html {
 }
 
 .header-sort-filter button {
-  padding: 8px 16px;
+  padding: 5px 10px;
   border: 2px solid #4f52bb;
   color: #4f52bb;
   border-radius: 4px;
@@ -100,6 +113,35 @@ body, html {
   font-weight: 500;
   transition: all 0.2s ease;
   height: 40px;
+}
+.lead-filter-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 0px;
+  flex-wrap: wrap;
+}
+
+.lead-filter-btn {
+  background-color: #ffffff;
+  color: #4f52bb;
+  border: 2px solid #4f52bb; /* match your existing button outline */
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.lead-filter-btn:hover {
+  background-color: #4f52bb;
+  color: white;
+}
+
+.lead-filter-btn.active {
+  background-color: #4f52bb;
+  color: #ffffff;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(63, 81, 181, 0.3);
 }
 
 .header-sort-filter button:hover {

@@ -18,6 +18,22 @@ import {
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
   faHeadphones, faYinYang, faStopCircle
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  Home,
+  UserPlus,
+  Users,
+  List,
+  Clock3,
+  XCircle,
+  FileText,
+  Receipt,
+  Settings,
+  Bell,
+  Bot,
+  UserCircle,
+  LogOut
+} from "lucide-react";
+
 import { FaPlay,FaPause ,BeepNo} from "react-icons/fa";
 // Break timer icons
 const breakIcons = [
@@ -147,10 +163,11 @@ const handleDismissBeepNotification = () => {
     <div><h3 className="sidebar_crm">CRM</h3></div>
     <nav className="navbar_container">
     <ul>
-        <li><Link to="/executive" className="sidebar_nav"><FontAwesomeIcon icon={faHouse} /> Dashboard</Link></li>
+        <li><Link to="/executive" className="sidebar_nav"><Home size={20} strokeWidth={2} />
+        Dashboard</Link></li>
         <li  style={{ position: "relative" }}>
           <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
-            <FontAwesomeIcon icon={faUserPlus} /> Leads
+          <UserPlus size={20} /> Leads
             <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼
             </span>
           </Link>
@@ -162,7 +179,7 @@ const handleDismissBeepNotification = () => {
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
-                <FontAwesomeIcon icon={faUsers} /> Fresh Leads
+              <Users size={18} /> Fresh Leads
               </Link>
             </li>
             <li>
@@ -171,7 +188,7 @@ const handleDismissBeepNotification = () => {
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
-                <FontAwesomeIcon icon={faList} /> Follow ups
+                 <List size={18} /> Follow ups
               </Link>
             </li>
             <li>
@@ -180,7 +197,7 @@ const handleDismissBeepNotification = () => {
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
-                <FontAwesomeIcon icon={faClock} /> Convert
+                <Clock3 size={18} /> Convert
               </Link>
             </li>
             <li>
@@ -189,13 +206,13 @@ const handleDismissBeepNotification = () => {
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
-                <FontAwesomeIcon icon={faCircleXmark} /> Close
+               <XCircle size={18} />  Close
               </Link>
             </li>
           </ul>
         )}
         </li>
-        <li><Link to="/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
+        <li><Link to="/schedule" className="sidebar_nav">   <FileText size={20} />Scheduled Meetings</Link></li>
         <li><Link to="/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
         <li><Link to="/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
       </ul>

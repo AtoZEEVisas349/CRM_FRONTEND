@@ -15,21 +15,20 @@ const TaskManagement = () => {
   const [leadsPerPage, setLeadsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
-  const [filterType, setFilterType] = useState("all"); // State for filter type
+  const [filterType, setFilterType] = useState("all"); 
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
-  const paginatedLeads = leads;
-
+  const [filteredClients, setFilteredClients] = useState([]);
+  const paginatedLeads = filteredClients;
   const { theme } = useContext(ThemeContext);
   const {
+
+    fetchAllClients,
     reassignLead,
-    fetchLeadsAPI,
     fetchExecutivesAPI,
     assignLeadAPI,
     createFreshLeadAPI,
     createLeadAPI,
-    fetchFollowUpClientsAPI, // Used as fetchFollowUpsAPI
-    fetchConvertedClientsAPI,
-    fetchAllCloseLeadsAPI, // Used as fetchCloseLeadsAPI
+
   } = useApi();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -47,43 +46,35 @@ const TaskManagement = () => {
   }, []);
 
   useEffect(() => {
-    fetchLeads();
     fetchExecutives();
-  }, [currentPage, leadsPerPage, filterType]);
-
-  const fetchLeads = async () => {
+  }, []);
+  const[allClients,setAllClients]=useState([]);
+  useEffect(() => {
+  const getAllLeads = async () => {
     try {
-      const offset = (currentPage - 1) * leadsPerPage;
-      let data;
-      switch (filterType) {
-        case "fresh":
-          // Fetch unassigned fresh leads
-          data = await fetchLeadsAPI(leadsPerPage, offset, { assignedToExecutive: null });
-          break;
-        case "followup":
-          data = await fetchFollowUpClientsAPI(); // Using fetchFollowUpClientsAPI from ApiContext
-          break;
-        case "converted":
-          data = await fetchConvertedClientsAPI(); // Using fetchConvertedClientsAPI
-          break;
-        case "closed":
-          data = await fetchAllCloseLeadsAPI(); // Using fetchAllCloseLeadsAPI
-          break;
-        case "all":
-        default:
-          data = await fetchLeadsAPI(leadsPerPage, offset);
-          break;
-      }
-      // Normalize data to ensure consistent structure
-      const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
+      const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
+
+     const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
       setLeads(normalizedLeads);
       setTotalLeads(data.pagination?.total || normalizedLeads.length);
+      if (Array.isArray(data?.leads)) {
+        setAllClients(data.leads);             
+        setFilteredClients(allClients);     
+      } else {
+        setAllClients([]); // fallback to empty array
+        setFilteredClients([]);
+      
+      }
     } catch (error) {
-      console.error(`❌ Failed to load ${filterType} leads:`, error);
+      console.error("Error fetching leads:", error);
       setLeads([]);
       setTotalLeads(0);
     }
   };
+
+  getAllLeads(); // Call the async function
+}, [currentPage, leadsPerPage, filterType]); 
+
 
   const fetchExecutives = async () => {
     try {
@@ -149,105 +140,134 @@ const TaskManagement = () => {
 
     setSelectedLeads(selectedIds);
   }, [leads, selectedRange, currentPage]);
+const assignLeads = async () => {
+  if (!selectedExecutive) return alert("⚠️ Please select an executive.");
+  if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
 
-  const assignLeads = async () => {
-    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
-    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
+  const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
+  if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
 
-    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-    if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
+  let successCount = 0;
+  let failCount = 0;
+  const updatedLeads = [...leads];
 
-    let successCount = 0;
-    let failCount = 0;
-    const updatedLeads = [...leads];
+  for (const leadId of selectedLeads) {
+    const lead = leads.find((l) => String(l.id) === leadId);
+    if (!lead) {
+      failCount++;
+      continue;
+    }
 
-    for (const leadId of selectedLeads) {
-      const lead = leads.find((l) => String(l.id) === leadId);
-      if (!lead) {
-        failCount++;
-        continue;
-      }
+    const clientLeadId = lead.id; // since this is the actual ID from your API
+    if (!clientLeadId) {
+      console.warn("❌ Missing clientLeadId or lead.id:", lead);
+      failCount++;
+      continue;
+    }
 
-      const clientLeadId = lead.clientLeadId || lead.id;
-      if (!clientLeadId) {
-        console.warn("❌ Missing clientLeadId or lead.id:", lead);
-        failCount++;
-        continue;
-      }
+    const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
 
-      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
+    const leadPayload = {
+      name: lead.name,
+      email: lead.email || "default@example.com",
+      phone,
+      source: lead.source || "Unknown",
+      clientLeadId: Number(clientLeadId),
+      assignedToExecutive: executive.username,
+    };
+      
+    try {
+   
+   let finalLeadId = leadId;
 
-      const leadPayload = {
-        name: lead.name,
-        email: lead.email || "default@example.com",
-        phone,
-        source: lead.source || "Unknown",
-        clientLeadId: Number(clientLeadId),
-        assignedToExecutive: executive.username,
-        previousAssignedTo: lead.previousAssignedTo,
-      };
+  // Assign or Reassign based on whether lead was already assigned
+  if (!lead.assignedToExecutive) {
+      // Always create the lead first
+  const createdLead = await createLeadAPI(leadPayload);
+  if (!createdLead?.id) throw new Error("Lead creation failed");
 
-      try {
-        let finalLeadId = leadId;
+  finalLeadId = createdLead.clientLeadId;
+    await assignLeadAPI(Number(finalLeadId), executive.username);
+    const freshLeadPayload = {
+      leadId: createdLead.id,
+      name: createdLead.name,
+      email: createdLead.email,
+      phone: String(createdLead.phone),
+      assignedTo: executive.username,
+      assignedToId: executive.id,
+      assignDate: new Date().toISOString(),
+    };
+  
+    await createFreshLeadAPI(freshLeadPayload);
+  
+  } else {
+    await reassignLead(lead.id, executive.username);
+    alert("Lead resassigned successfully!!");
+  }
 
-        const createdLead = await createLeadAPI(leadPayload);
-        if (!createdLead?.id) throw new Error("Lead creation failed");
-
-        finalLeadId = createdLead.clientLeadId;
-
-        if (!lead.assignedToExecutive) {
-          await assignLeadAPI(Number(finalLeadId), executive.username);
-          alert("✅ Leads assigned successfully.");
-        } else {
-          if (lead.previousAssignedTo) {
-            alert("❌ Lead ID was already reassigned. Cannot reassign again.");
-            failCount++;
-            continue;
-          } else {
-            await reassignLead(Number(lead.id), executive.username);
-            alert("Lead reassigned successfully!")
-          }
-        }
-
-        const freshLeadPayload = {
-          leadId: createdLead.id,
-          name: createdLead.name,
-          email: createdLead.email,
-          phone: String(createdLead.phone),
-          assignedTo: executive.username,
-          assignedToId: executive.id,
-          assignDate: new Date().toISOString(),
+      const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
+      if (index !== -1) {
+        updatedLeads[index] = {
+          ...updatedLeads[index],
+          assignedToExecutive: executive.username,
         };
-
-        await createFreshLeadAPI(freshLeadPayload);
-
-        const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
-        if (index !== -1) {
-          updatedLeads[index] = {
-            ...updatedLeads[index],
-            assignedToExecutive: executive.username,
-          };
-        }
-
-        successCount++;
-      } catch (err) {
-        console.error(`❌ Error processing lead ID ${leadId}:`, err);
-        failCount++;
       }
-    }
 
-    setLeads(updatedLeads);
-    setSelectedLeads([]);
-    setSelectedExecutive("");
-
-    if (successCount > 0 && failCount === 0) {
-      // alert("✅ Leads assigned successfully.");
-    } else if (successCount > 0 && failCount > 0) {
-      alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
-    } else {
-      alert("❌ Leads were already reassigned.");
+      successCount++;
+    } catch (err) {
+      console.error(`❌ Error processing lead ID ${leadId}:`, err);
+      failCount++;
     }
-  };
+  }
+
+  setLeads(updatedLeads);
+  setAllClients(updatedLeads); // ✅ update the full list
+  setFilteredClients(updatedLeads); // ✅ re-filter so the UI refreshes
+  setSelectedLeads([]);
+  setSelectedExecutive("");
+
+  if (successCount > 0 && failCount === 0) {
+    alert("✅ Leads assigned successfully.");
+  } else if (successCount > 0 && failCount > 0) {
+    alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console`);
+  } else {
+    alert("❌ All lead assignments failed.");
+  }
+};
+useEffect(() => {
+  let filtered = [...allClients];
+
+  switch (filterType) {
+    case "converted":
+      filtered = filtered.filter((lead) => lead.status === "Converted");
+      break;
+    case "followup":
+      filtered = filtered.filter((lead) => lead.status === "Follow-Up");
+      break;
+       case "fresh":
+      filtered = filtered.filter((lead) => lead.status === "New");
+      break;
+       case "meeting":
+      filtered = filtered.filter((lead) => lead.status === "Meeting");
+      break;
+    case "closed":
+      filtered = filtered.filter((lead) => lead.status === "Closed");
+      break;
+    
+    default:
+      break;
+  }
+
+  setFilteredClients(filtered);
+  setTotalLeads(filtered.length);
+  setCurrentPage(1);
+}, [filterType, allClients]);
+
+const handleFilterChangee = (type) => {
+  setFilterType(type);
+    setCurrentPage(1); 
+    setSelectedLeads([]); 
+};
 
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
@@ -265,20 +285,6 @@ const TaskManagement = () => {
                   {exec.username}
                 </option>
               ))}
-            </select>
-
-            <select className="lead-type-dropdown">
-              <option value="">-- Fresh Type --</option>
-              <option value="hot">Hot</option>
-              <option value="warm">Warm</option>
-              <option value="cold">Cold</option>
-            </select>
-
-            <select className="lead-status-dropdown">
-              <option value="">-- Lead Status --</option>
-              <option value="followup">Follow-Up</option>
-              <option value="converted">Converted</option>
-              <option value="closed">Closed</option>
             </select>
 
             <select value={selectedRange} onChange={handleRangeChange}>
@@ -300,41 +306,19 @@ const TaskManagement = () => {
                 Reset
               </button>
             </div>
-            <div className="filter-buttons">
-              <button
-                className={`filter-btn ${filterType === "all" ? "active" : ""}`}
-                onClick={() => handleFilterChange("all")}
-              >
-                All Leads
-              </button>
-              <button
-                className={`filter-btn ${filterType === "fresh" ? "active" : ""}`}
-                onClick={() => handleFilterChange("fresh")}
-              >
-                Fresh Leads
-              </button>
-              <button
-                className={`filter-btn ${filterType === "followup" ? "active" : ""}`}
-                onClick={() => handleFilterChange("followup")}
-              >
-                Follow-up
-              </button>
-              <button
-                className={`filter-btn ${filterType === "converted" ? "active" : ""}`}
-                onClick={() => handleFilterChange("converted")}
-              >
-                Converted
-              </button>
-              <button
-                className={`filter-btn ${filterType === "closed" ? "active" : ""}`}
-                onClick={() => handleFilterChange("closed")}
-              >
-                Closed
-              </button>
-            </div>
+            <div className="lead-filter-buttons">
+              {["all", "fresh", "followup", "converted", "closed","meeting"].map(type => (
+                <button
+                  key={type}
+                  className={`lead-filter-btn ${filterType === type ? "active" : ""}`}
+                  onClick={() => handleFilterChangee(type)}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)} 
+                </button>
+              ))}
+            </div>        
           </div>
         </div>
-
         <div className="scrollable-container">
           <div className="leads-table">
             <div className="leads-header">
@@ -357,21 +341,36 @@ const TaskManagement = () => {
                     <div className="lead-info">
                       <span>Name: {lead.name}</span>
                       <span>Email: {lead.email}</span>
-                      <span>Phone No: {lead.phone}</span>
-                      <span>Education: {lead.education || "N/A"}</span>
+                      <span>Phone No: {lead.phone}
+                        {!expandedLeads[lead.id] && (
+                          <button
+                            className="see-more-btn-inline"
+                            onClick={() => toggleExpandLead(lead.id)}
+                          >
+                            See more...
+                          </button>
+                        )}
+                      </span>
                       {expandedLeads[lead.id] && (
-                        <>
+                        <div>
+                          <span>Education: {lead.education || "N/A"}</span>
                           <span>Experience: {lead.experience || "N/A"}</span>
                           <span>State: {lead.state || "N/A"}</span>
                           <span>Country: {lead.country || "N/A"}</span>
                           <span>DOB: {lead.dob || "N/A"}</span>
                           <span>Lead Assign Date: {lead.leadAssignDate || "N/A"}</span>
-                          <span>Country Preference: {lead.countryPreference || "N/A"}</span>
-                        </>
+                          <span>Country Preference: {lead.countryPreference || "N/A"}
+                          <button
+                          className="see-more-btn-inline"
+                          onClick={() => toggleExpandLead(lead.id)}
+                        >
+                          See less...
+                        </button>
+                          </span>
+                      
+                        </div>
                       )}
-                      <button className="see-more-btn" onClick={() => toggleExpandLead(lead.id)}>
-                        {expandedLeads[lead.id] ? "See less..." : "See more..."}
-                      </button>
+                    
                     </div>
                   </div>
                   <div className="lead-source">{lead.source || "Unknown"}</div>

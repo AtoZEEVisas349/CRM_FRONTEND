@@ -69,7 +69,7 @@ const AttendanceTable = () => {
             <tbody>
               {attendanceData.map((exec) => (
                 <tr key={exec.executiveId}>
-                  <td>{exec.executiveId}</td>
+                  <td>{exec.executiveId}{exec.executiveName}</td>
                   {dates.map((date) => (
                     <td key={date}>
                       <span
