@@ -23,10 +23,16 @@ const DealFunnel = () => {
   const fetchData = async () => {
     try {
       const { statusCounts, totalLeads } = await fetchDealFunnelData();
-      // Build array dynamically
-      const transformed = Object.entries(statusCounts).map(
-        ([name, value]) => ({ name, value })
-      );
+      
+      // Define the desired sequence
+      const desiredSequence = ['New', 'Assigned', 'Follow-Up', 'Meeting', 'Converted', 'Closed'];
+      
+      // Build array in the specified order
+      const transformed = desiredSequence.map(status => ({
+        name: status,
+        value: statusCounts[status] || 0
+      }));
+      
       // Add percent
       const enriched = transformed.map((item) => ({
         ...item,

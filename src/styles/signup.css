@@ -67,7 +67,7 @@
 .login-form p {
   font-size: 16px;
   margin-bottom: 30px;
-  color: #666;
+  color: #666 !important;
 }
 .create{
   font-weight: 600;
