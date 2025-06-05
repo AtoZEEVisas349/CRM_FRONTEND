@@ -6,7 +6,7 @@ import { FaUser,FaPlus } from "react-icons/fa";
 
 const CustomerTable = () => {
   const { convertedClients, convertedClientsLoading, fetchNotifications, createCopyNotification,
-    fetchFollowUpHistoriesAPI
+    fetchFollowUpHistoriesAPI,setConvertedCustomerCount
    } = useApi();
   const [customers, setCustomers] = useState([]);
   const { searchQuery } = useContext(SearchContext);
@@ -83,7 +83,9 @@ const CustomerTable = () => {
       customer.phone?.toString().includes(query)
     );
   });
-
+  useEffect(() => {
+    setConvertedCustomerCount(filteredCustomers.length); // ✅ update global count
+  }, [filteredCustomers]);
   const customerCount = filteredCustomers.length;
 
   return (

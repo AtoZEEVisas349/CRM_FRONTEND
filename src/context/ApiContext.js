@@ -413,7 +413,7 @@ const adminMeeting = async () => {
   }
 };
 
-
+const [convertedCustomerCount, setConvertedCustomerCount] = useState(0);
 const [convertedClients, setConvertedClients] = useState([]);
 const [convertedClientsLoading, setConvertedClientsLoading] = useState(false);
 // Create a new converted client
@@ -754,6 +754,8 @@ const createSingleLeadAPI = async (leadData) => {
         executiveDashboardLoading,
         fetchExecutiveDashboardData,
         adminMeeting,
+        convertedCustomerCount, // ✅ add this
+    setConvertedCustomerCount, // ✅ and this
         // ✅ Follow-ups
         followUps,
         followUpLoading,

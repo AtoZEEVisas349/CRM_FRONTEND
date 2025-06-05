@@ -3,6 +3,8 @@ import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
 import SidebarToggle from "../admin/SidebarToggle";
 import "../../styles/leadassign.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import AdminNavbar from "../../layouts/AdminNavbar";
 
 const TaskManagement = () => {
@@ -17,11 +19,9 @@ const TaskManagement = () => {
   const [totalLeads, setTotalLeads] = useState(0);
   const [filterType, setFilterType] = useState("all"); 
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
-  const [filteredClients, setFilteredClients] = useState([]);
-  const paginatedLeads = filteredClients;
+  const paginatedLeads = leads;
   const { theme } = useContext(ThemeContext);
   const {
-
     fetchAllClients,
     reassignLead,
     fetchExecutivesAPI,
@@ -48,9 +48,12 @@ const TaskManagement = () => {
   useEffect(() => {
     fetchExecutives();
   }, []);
+
   const[allClients,setAllClients]=useState([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
   const getAllLeads = async () => {
+    setLoading(true);
     try {
       const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
 
@@ -59,10 +62,10 @@ const TaskManagement = () => {
       setTotalLeads(data.pagination?.total || normalizedLeads.length);
       if (Array.isArray(data?.leads)) {
         setAllClients(data.leads);             
-        setFilteredClients(allClients);     
+        setLeads(allClients);     
       } else {
         setAllClients([]); // fallback to empty array
-        setFilteredClients([]);
+        setLeads([]);
       
       }
     } catch (error) {
@@ -70,10 +73,13 @@ const TaskManagement = () => {
       setLeads([]);
       setTotalLeads(0);
     }
+    finally{
+      setLoading(false);
+    }
   };
 
   getAllLeads(); // Call the async function
-}, [currentPage, leadsPerPage, filterType]); 
+},  [filterType]); 
 
 
   const fetchExecutives = async () => {
@@ -222,7 +228,6 @@ const assignLeads = async () => {
 
   setLeads(updatedLeads);
   setAllClients(updatedLeads); // ✅ update the full list
-  setFilteredClients(updatedLeads); // ✅ re-filter so the UI refreshes
   setSelectedLeads([]);
   setSelectedExecutive("");
 
@@ -234,9 +239,12 @@ const assignLeads = async () => {
     alert("❌ All lead assignments failed.");
   }
 };
+
 useEffect(() => {
+  // Start with the full dataset
   let filtered = [...allClients];
 
+  // Apply filter type
   switch (filterType) {
     case "converted":
       filtered = filtered.filter((lead) => lead.status === "Converted");
@@ -244,30 +252,63 @@ useEffect(() => {
     case "followup":
       filtered = filtered.filter((lead) => lead.status === "Follow-Up");
       break;
-       case "fresh":
+    case "fresh":
       filtered = filtered.filter((lead) => lead.status === "New");
       break;
-       case "meeting":
+    case "meeting":
       filtered = filtered.filter((lead) => lead.status === "Meeting");
       break;
     case "closed":
       filtered = filtered.filter((lead) => lead.status === "Closed");
       break;
-    
     default:
       break;
   }
 
-  setFilteredClients(filtered);
-  setTotalLeads(filtered.length);
-  setCurrentPage(1);
-}, [filterType, allClients]);
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / leadsPerPage);
 
-const handleFilterChangee = (type) => {
-  setFilterType(type);
-    setCurrentPage(1); 
-    setSelectedLeads([]); 
-};
+  // Ensure current page is within valid bounds after filtering
+  const newPage = currentPage > totalPages ? 1 : currentPage;
+
+  const offset = (newPage - 1) * leadsPerPage;
+  const paginated = filtered.slice(offset, offset + leadsPerPage);
+
+  setLeads(paginated);
+  setTotalLeads(total);
+  setCurrentPage(newPage); // Ensures pagination is stable
+}, [filterType, allClients, currentPage, leadsPerPage]);
+
+// useEffect(() => {
+//   let filtered = [...allClients];
+
+//   switch (filterType) {
+//     case "converted":
+//       filtered = filtered.filter((lead) => lead.status === "Converted");
+//       break;
+//     case "followup":
+//       filtered = filtered.filter((lead) => lead.status === "Follow-Up");
+//       break;
+//        case "fresh":
+//       filtered = filtered.filter((lead) => lead.status === "New");
+//       break;
+//        case "meeting":
+//       filtered = filtered.filter((lead) => lead.status === "Meeting");
+//       break;
+//     case "closed":
+//       filtered = filtered.filter((lead) => lead.status === "Closed");
+//       break;
+    
+//     default:
+//       break;
+//   }
+
+//   setLeads(filtered);
+//   setTotalLeads(filtered.length);
+//   setCurrentPage(1);
+// }, [filterType, allClients]);
+
+
 
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
@@ -311,7 +352,7 @@ const handleFilterChangee = (type) => {
                 <button
                   key={type}
                   className={`lead-filter-btn ${filterType === type ? "active" : ""}`}
-                  onClick={() => handleFilterChangee(type)}
+                  onClick={() => handleFilterChange(type)}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)} 
                 </button>
@@ -319,6 +360,11 @@ const handleFilterChangee = (type) => {
             </div>        
           </div>
         </div>
+        {loading ? (
+  <div style={{textAlign:"center",marginTop:"2rem"}}>
+    <FontAwesomeIcon icon={faSpinner} spin size="2x" style={{color:"blue"}} />
+  </div>
+) : (
         <div className="scrollable-container">
           <div className="leads-table">
             <div className="leads-header">
@@ -402,6 +448,7 @@ const handleFilterChangee = (type) => {
             </div>
           )}
         </div>
+)}
       </div>
     </div>
   );

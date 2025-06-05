@@ -8,7 +8,7 @@ const ReportCard = () => {
     fetchMeetings,
     fetchConvertedClientsAPI,
     getAllFollowUps,
-    fetchFreshLeadsAPI
+    fetchFreshLeadsAPI,convertedCustomerCount
   } = useApi();
 
   const navigate = useNavigate();
@@ -109,9 +109,8 @@ useEffect(()=>{
     },
     {
       title: "Converted Clients",
-      value: <div>{convertedCounts}</div>,
+      value: <div>{convertedCustomerCount}</div>, // ✅ use context count
       route: "/customer",
-      change: "-5.38%",
       icon: <FaUsers />,
     },
     {
