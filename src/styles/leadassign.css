@@ -214,7 +214,7 @@ body, html {
 /* Lead Row */
 .lead-row {
   border: 1px solid #ddd;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   width: 100%;
   background-color: white;
   border-radius: 5px;
@@ -224,7 +224,9 @@ body, html {
 .lead-details {
   display: grid;
   grid-template-columns: 1fr 150px 150px 130px;
-  padding: 15px;
+  padding:5px;
+  padding-left: 15px;
+  padding-right: 15px;
   width: 100%;
   align-items: center;
 }
