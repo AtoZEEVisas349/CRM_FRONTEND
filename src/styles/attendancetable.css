@@ -7,11 +7,10 @@
   margin: 0;
   background: rgba(245, 245, 245, 0.75);
   backdrop-filter: blur(12px);
-  border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   font-family: "Inter", "Segoe UI", sans-serif;
   transition: all 0.3s ease-in-out;
-  min-height: calc(100vh - 64px);
+  min-height: calc(120vh - 64px);
   box-sizing: border-box;
 }
 
@@ -281,7 +280,7 @@
   .attendance-container {
     padding: 40px;
     max-width: 90vw;
-    margin: 0 auto;
+    margin: 0;
   }
   
   .attendance-table {
@@ -420,7 +419,107 @@
   }
 }
 
+/* Dark Mode Comprehensive Compatibility */
+[data-theme="dark"] .attendance-container,
+.dark-mode .attendance-container {
+  background: rgba(30, 30, 47, 0.95) !important; /* Dark semi-transparent background */
+  color: #e0e0e0 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
 
+/* Title visibility */
+[data-theme="dark"] .attendance-title,
+.dark-mode .attendance-title {
+  color: #ffffff !important;
+}
+
+/* Dropdown and labels */
+[data-theme="dark"] .select-label,
+.dark-mode .select-label {
+  color: #cfcfcf !important;
+}
+
+[data-theme="dark"] .select-dropdown,
+.dark-mode .select-dropdown {
+  background-color: #2a2a40 !important;
+  color: #f5f5f5 !important;
+  border: 1px solid #555 !important;
+}
+
+[data-theme="dark"] .select-dropdown:focus,
+.dark-mode .select-dropdown:focus {
+  background: #333354 !important;
+  border: 1px solid #007bff !important;
+}
+
+/* Table wrapper dark background */
+[data-theme="dark"] .table-wrapper,
+.dark-mode .table-wrapper {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Table header remains the same gradient but slightly darker */
+[data-theme="dark"] .attendance-table thead,
+.dark-mode .attendance-table thead {
+  background: linear-gradient(to right, #4b0082, #7b68ee) !important;
+}
+
+[data-theme="dark"] .executive-id-header,
+.dark-mode .executive-id-header {
+  background: linear-gradient(to right, #4b0082, #7b68ee) !important;
+}
+
+/* Table cell adjustments */
+[data-theme="dark"] .attendance-table td,
+.dark-mode .attendance-table td {
+  background-color: #2b2b3d !important;
+  color: #f0f0f0 !important;
+  border-bottom: 1px solid #444 !important;
+}
+
+[data-theme="dark"] .executive-id-cell,
+.dark-mode .executive-id-cell {
+  background-color: #2f2f44 !important;
+  color: #ffffff !important;
+  border-right: 2px solid #555 !important;
+}
+
+/* Even row backgrounds */
+[data-theme="dark"] .attendance-table tbody tr:nth-child(even) .status-cell,
+.dark-mode .attendance-table tbody tr:nth-child(even) .status-cell {
+  background-color: #333344 !important;
+}
+
+[data-theme="dark"] .attendance-table tbody tr:nth-child(even) .executive-id-cell,
+.dark-mode .attendance-table tbody tr:nth-child(even) .executive-id-cell {
+  background-color: #363650 !important;
+}
+
+/* Hover effects for dark mode */
+[data-theme="dark"] .attendance-table tbody tr:hover .status-cell,
+.dark-mode .attendance-table tbody tr:hover .status-cell {
+  background-color: #404060 !important;
+}
+
+[data-theme="dark"] .attendance-table tbody tr:hover .executive-id-cell,
+.dark-mode .attendance-table tbody tr:hover .executive-id-cell {
+  background-color: #454570 !important;
+}
+
+/* Status badge overrides for dark mode */
+[data-theme="dark"] .status-badge.present,
+.dark-mode .status-badge.present {
+  background-color: #224d38 !important;
+  color: #a3f7bf !important;
+  border-color: #28a745 !important;
+}
+
+[data-theme="dark"] .status-badge.absent,
+.dark-mode .status-badge.absent {
+  background-color: #5a1d1d !important;
+  color: #fdb3b3 !important;
+  border-color: #dc3545 !important;
+}
 
 
 

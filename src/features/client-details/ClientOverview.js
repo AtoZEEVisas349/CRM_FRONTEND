@@ -152,6 +152,7 @@ const ClientOverview = () => {
         });
         
         setTimeout(() => navigate("/freshlead"), 1000);
+        return;
       } else {
         const updatedData = {
           followUpStatus: followUpType,

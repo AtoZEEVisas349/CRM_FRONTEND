@@ -1,3 +1,5 @@
+
+
 /* Toggle Switch */
 .switch {
   position: relative;
@@ -74,7 +76,6 @@ input:checked + .sliderexe {
   transition: 0.4s;
   border-radius: 50%;
 }
-
 /* When checked, turn sliderexe green */
 input:checked + .sliderexe {
   background-color: green;
@@ -657,3 +658,111 @@ input:checked + .sliderexe:before {
     padding-right: -50px;
   }
 }
+/* Dark mode wrapper */
+[data-theme="dark"] .boxes-container {
+  background-color: #1e1e2f;
+}
+
+/* Individual executive cards */
+[data-theme="dark"] .box1 {
+  background-color: #2a2a3c;
+  color: #f0f0f0;
+  border: 1px solid #444;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Text inside cards */
+[data-theme="dark"] .box1 .field-value {
+  color: #ffffff;
+}
+
+/* Popup message */
+[data-theme="dark"] .popup-message {
+  background-color: #2c2f3a;
+  color: #f0f0f0;
+}
+
+/* Filter buttons */
+[data-theme="dark"] .filter-buttons button {
+  background-color: #383b50;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+/* Cooldown banner */
+[data-theme="dark"] .active-cooldowns-banner {
+  background-color: #2a2a3c;
+  color: #fff;
+  border-left: 4px solid #ffc107;
+}
+
+/* Toggle label and slider */
+[data-theme="dark"] .switch-text {
+  color: #fff;
+}
+[data-theme="dark"] h1 {
+  color: #fff;
+}
+[data-theme="dark"] .sliderexe {
+  background-color: #444;
+}
+
+/* Table styles */
+[data-theme="dark"] .people-table {
+  background-color: #1e1e2f;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .people-table th,
+[data-theme="dark"] .people-table td {
+  border: 1px solid #444;
+}
+
+/* Cooldown alert */
+[data-theme="dark"] .cooldown-alert {
+  background-color: #2f2f3f;
+  color: #fff;
+  border-left: 5px solid #ff9800;
+}
+
+/* Pagination section */
+[data-theme="dark"] .invoice-pagination {
+  color: #f0f0f0;
+  background-color: #2c2c3c;
+}
+
+[data-theme="dark"] .invoice-page-nav {
+  color: #66b2ff;
+}
+/* Ensure top border matches theme in dark mode */
+[data-theme="dark"] .box1 {
+  border-top: 5px solid #4f52bb; /* or match the same color used in light mode */
+}
+/* Light mode fix for Prev and Next buttons */
+.invoice-page-nav {
+  color: #1a1a1a; /* Dark text for visibility on light bg */
+  font-weight: 600;
+}
+
+/* Optional: style hover for better UX */
+.invoice-page-nav:hover {
+  color: #4f52bb;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,3 +1,5 @@
+/*admin.css*/
+
 :root {
   /* Light Theme */
   --bg-color: #f5f7fa;
@@ -36,14 +38,11 @@
   --executive-text: #333333;
 
   --section-title-color: #1e293b;
-
-
 }
 
 /* ==================== */
 /* Theme Variables */
 /* ==================== */
-
 
 [data-theme="dark"] {
   /* Dark Theme Overrides */
@@ -82,9 +81,7 @@
   --executive-text: #ffffff;
 
   --section-title-color: #f5f5f5;
-
 }
-
 
 ::-webkit-scrollbar {
   display: none;
@@ -92,7 +89,7 @@
 
 body {
   overflow-y: auto;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: var(--bg-color);
   padding: 20px;
   margin: 0;
@@ -107,7 +104,7 @@ body {
   padding: 15px;
   background-color: var(--chart-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .selector-group {
@@ -180,7 +177,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #3731ac, #4b8cf4);;
+  background: linear-gradient(135deg, #3731ac, #4b8cf4);
   color: white;
   font-size: 20px;
 }
@@ -192,10 +189,10 @@ body {
   margin-right: 20px;
   cursor: pointer;
 }
-.performance{
+.performance {
   margin-left: 20px;
 }
-.executives-alldetails{
+.executives-alldetails {
   margin-bottom: 20px;
 }
 .sidebar-label {
@@ -209,7 +206,7 @@ body {
   overflow: hidden;
   pointer-events: none;
 }
-[data-theme="dark"] .header-left h1{
+[data-theme="dark"] .header-left h1 {
   color: #ffff;
 }
 .header-left {
@@ -235,7 +232,6 @@ body {
   /* Define a cut effect color */
 }
 
-
 body.sidebar-expanded .navbar {
   padding-left: 250px;
 }
@@ -243,9 +239,6 @@ body.sidebar-expanded .navbar {
 body.sidebar-collapsed .navbar {
   padding-left: 80px;
 }
-
-
-
 
 @media (max-width: 768px) {
   .navbar {
@@ -261,9 +254,6 @@ body.sidebar-collapsed .navbar {
   }
 }
 
-
-
-
 /* Admin Container */
 .admin-dashboard-container {
   width: 100%;
@@ -272,8 +262,6 @@ body.sidebar-collapsed .navbar {
   display: flex;
   background: var(--bg-color);
 }
-
-
 
 /* Sidebar — Make sure you have a sidebar CSS like this */
 .sidebar {
@@ -287,14 +275,11 @@ body.sidebar-collapsed .navbar {
   z-index: 100;
 }
 
-
 .sidebar-collapsed .sidebar {
   transform: translateX(-100px);
-
 }
 
 /* Toggle button */
-
 
 /* When sidebar is closed */
 body:not(.sidebar-open) .sidebar {
@@ -302,7 +287,6 @@ body:not(.sidebar-open) .sidebar {
   opacity: 0;
   pointer-events: none;
 }
-
 
 /* Main content */
 
@@ -338,7 +322,6 @@ body.sidebar-expanded .admin-main-content {
   color: var(--primary-color);
 }
 
-
 /* Cards */
 .admin-card {
   padding: 20px;
@@ -362,7 +345,6 @@ body.sidebar-expanded .admin-main-content {
   color: #4fc3f7;
   /* Light Blue for card 1 */
 }
-
 [data-theme="dark"] .box-title.title-1 {
   color: #81c784;
   /* Green for card 2 */
@@ -377,7 +359,6 @@ body.sidebar-expanded .admin-main-content {
   color: #ff8a65;
   /* Coral/Orange for card 4 */
 }
-
 
 h1 {
   font-size: 29px;
@@ -394,7 +375,6 @@ h1 {
   align-items: center;
   gap: 20px;
 }
-
 
 /* Icons styling */
 .header-icons .icon {
@@ -438,7 +418,6 @@ h1 {
   color: var(--primary-color);
   /* Change to your theme's accent color */
 }
-
 
 .date-picker {
   display: flex;
@@ -520,7 +499,6 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-
 .box:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -546,7 +524,6 @@ h1 {
 .box small {
   font-size: 16px;
   display: block;
-
 }
 
 .box-hover-0:hover {
@@ -572,7 +549,6 @@ h1 {
   /* Pink/Red */
   transform: translateY(-5px);
 }
-
 
 /* Chart Section */
 .chart img {
@@ -606,25 +582,75 @@ h1 {
 [data-theme="dark"] .chart-data p {
   color: #e0e7ff;
 }
-
+[data-theme="dark"] .chart-container {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .dashboard-selectors,
+[data-theme="dark"] .lead-graph-container,
+[data-theme="dark"] .executive-container,
+[data-theme="dark"] .profit-container,
+[data-theme="dark"] .meetings-container {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .card-hover-0:hover h4,
+[data-theme="dark"] .card-hover-1:hover h4,
+[data-theme="dark"] .card-hover-2:hover h4,
+[data-theme="dark"] .card-hover-3:hover h4,
+[data-theme="dark"] .card-hover-4:hover h4
+ {
+    color: #ffffff;
+}
+[data-theme="dark"] .card-hover-0:hover p,
+[data-theme="dark"] .card-hover-1:hover p,
+[data-theme="dark"] .card-hover-2:hover p,
+[data-theme="dark"] .card-hover-3:hover p,
+[data-theme="dark"] .card-hover-4:hover p
+ {
+    color: #ffffff;
+}
+[data-theme="dark"] .chart-container h2 {
+  color: #fff;
+}
+[data-theme="dark"] .lead-graph-container h2 {
+  color: #fff;
+}
+[data-theme="dark"] .lead-graph-summary span {
+  color: #fff;
+}
+[data-theme="dark"] .revenue-executive-container,
+[data-theme="dark"] .meeting-details p {
+  color: #c3d6ff;
+}
+[data-theme="dark"] .meeting-details h4 {
+  color: #f1bbff;
+}
 [data-theme="dark"] .bar {
   box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
+[data-theme="dark"] .profit-header .year-dropdown {
+  color: #000000;
 }
 
 [data-theme="dark"] .revenue:hover,
 [data-theme="dark"] .lead:hover {
   transform: scale(1.1);
 }
-
+[data-theme="dark"] .lead-graph-container {
+  background: var(--activity-bg);
+}
 [data-theme="dark"] .exec-activity {
   background: var(--activity-bg);
 }
-
+[data-theme="dark"] .exec-activity h2 {
+  color: #fff;
+}
 [data-theme="dark"] .activity-name,
 [data-theme="dark"] .activity-percentage {
   color: #fff;
 }
-
+[data-theme="dark"].admin-icons-group{
+  color: #ffffff;
+}
 [data-theme="dark"] .executive-title {
   color: #fff;
 }
@@ -636,7 +662,6 @@ h1 {
 
 .activity-icon {
   color: #8b5cf6;
-
 }
 
 .bars {
@@ -849,7 +874,6 @@ h1 {
   cursor: pointer;
 }
 
-
 /* Add a custom dropdown arrow on the right */
 .year-dropdown-container::after {
   content: "▼";
@@ -890,8 +914,6 @@ h1 {
   min-height: 80px;
   /* Default height */
 }
-
-
 
 .meeting-card.upcoming {
   border-left: 5px solid #4a90e2;
@@ -1009,8 +1031,6 @@ h1 {
 .meeting-icons .icon:hover {
   color: #222;
 }
-
-
 
 .background-text {
   position: absolute;
@@ -1184,9 +1204,6 @@ h1 {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-
-
-
 /* Search Input Styling */
 .search-input {
   padding: 8px 12px;
@@ -1262,7 +1279,7 @@ h1 {
 }
 
 .admin_user_popover::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -10px;
   right: 24px;
@@ -1501,7 +1518,7 @@ h1 {
 }
 
 .success-message {
-  color: #00C851;
+  color: #00c851;
   margin-bottom: 15px;
   font-size: 14px;
 }
@@ -1610,7 +1627,8 @@ body.sidebar-collapsed .assign-task-container {
   transition: transform 0.1s ease-in-out;
 }
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   30% {
@@ -1795,10 +1813,9 @@ body.sidebar-collapsed .assign-task-container {
   display: flex;
   flex-direction: row;
   gap: 20px;
-
 }
 
-.chart-row>div {
+.chart-row > div {
   flex: 1;
   /* Keep equal flex growth */
   max-width: 500px;
@@ -1819,7 +1836,7 @@ body.sidebar-collapsed .assign-task-container {
     flex-direction: column;
   }
 
-  .chart-row>div {
+  .chart-row > div {
     max-width: 100% !important;
     width: 100% !important;
   }
@@ -1830,7 +1847,7 @@ body.sidebar-collapsed .assign-task-container {
   }
 }
 
-.chart-row>div {
+.chart-row > div {
   flex: 1;
   /* Ensure equal space for both charts */
   max-width: 58%;
@@ -1841,10 +1858,7 @@ body.sidebar-collapsed .assign-task-container {
   display: flex;
   width: 100%;
   /* Ensure full width */
-
 }
-
-
 
 @media (max-width: 1024px) {
   .revenue-executive-container {
@@ -1976,7 +1990,6 @@ body.sidebar-collapsed .assign-task-container {
   margin-left: 6px; /* optional spacing */
 }
 
-
 .executive-id {
   font-size: 0.9rem;
   color: gray;
@@ -1993,7 +2006,7 @@ body.sidebar-collapsed .assign-task-container {
 
 body {
   overflow-y: auto;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: var(--bg-color);
   padding: 20px;
   margin: 0;
@@ -2006,7 +2019,6 @@ body {
 /* ==================== */
 
 /* Navbar (now theme-aware) */
-
 
 /* Admin Container */
 .admin-dashboard-container {
@@ -2042,7 +2054,7 @@ body.sidebar-collapsed .admin-main-content {
 }
 
 /* Collapsed sidebar state */
-.admin-sidebar.collapsed+.admin-main-content {
+.admin-sidebar.collapsed + .admin-main-content {
   margin-left: 80px;
   width: calc(100% - 80px);
 }
@@ -2115,14 +2127,10 @@ body.sidebar-collapsed .admin-main-content {
   color: var(--activity-text);
 }
 
-
-•⁠  ⁠{
-  transition: background-color 0.3s ease,
-    color 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
+•⁠ ⁠ {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 
 /* =============================== */
 /* 🌐 RESPONSIVE ENHANCEMENTS - START */
@@ -2200,9 +2208,8 @@ body.sidebar-collapsed .admin-main-content {
     }
   }
 
-
   body.sidebar-mobile-active::after {
-    content: '';
+    content: "";
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
@@ -2264,7 +2271,6 @@ body.sidebar-collapsed .admin-main-content {
     box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
   }
 }
-
 
 /* ====================================================== */
 /* 🎯 Executive Details Section (From ExecutiveDetails.js) */
@@ -2506,8 +2512,6 @@ body.sidebar-collapsed .admin-main-content {
 }
 
 @media (max-width: 480px) {
- 
-
   .box1 {
     padding: 15px;
   }
@@ -2575,7 +2579,7 @@ body.sidebar-collapsed .admin-main-content {
   }
 
   body.sidebar-mobile-active::after {
-    content: '';
+    content: "";
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
@@ -2674,7 +2678,7 @@ body.sidebar-collapsed .admin-main-content {
     /* Stack vertically below 1024px */
   }
 
-  .chart-row>div {
+  .chart-row > div {
     flex: 1 1 100%;
     /* Full width for each child */
     max-width: 100%;
@@ -2803,3 +2807,12 @@ body.sidebar-collapsed .admin-main-content {
   color: #000;
   font-weight: 500;
 }
+
+
+
+
+
+
+
+
+

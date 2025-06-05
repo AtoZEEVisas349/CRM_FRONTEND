@@ -1,3 +1,4 @@
+
 /* Main container responsive design */
 .eod-container {
   width: 100%;
@@ -565,3 +566,86 @@
     grid-template-columns: 1fr; /* fallback only for extra small screens if needed */
   }
 }
+/* Dark mode for the EOD section */
+[data-theme="dark"] .eod-container {
+  background-color: #1e1e2f;
+  color: #f0f0f0;
+}
+
+/* Card dark background */
+[data-theme="dark"] .eod-cards {
+  background: #2a2a3c;
+  border: 1px solid #444;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Title in dark mode */
+[data-theme="dark"] .eod-main-title {
+  color: #ffffff;
+  -webkit-text-fill-color: unset;
+}
+
+/* Card header elements */
+[data-theme="dark"] .eod-card-header {
+  border-bottom: 2px solid #444;
+}
+
+[data-theme="dark"] .eod-user-name {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .eod-logo {
+  background: #ffffff; /* or #333 for full dark effect */
+  border: 3px solid #667eea;
+}
+
+/* Inputs & dropdowns */
+[data-theme="dark"] .eod-label {
+  color: #dddddd;
+}
+
+[data-theme="dark"] .eod-email-input,
+[data-theme="dark"] .eod-date-input,
+[data-theme="dark"] .eod-time-input,
+[data-theme="dark"] .eod-dropdown-button {
+  background-color: #33394f;
+  color: #ffffff;
+  border: 2px solid #555;
+}
+
+[data-theme="dark"] .eod-dropdown-button:after {
+  color: #aaa;
+}
+
+/* Dropdown list */
+[data-theme="dark"] .eod-dropdown-list {
+  background-color: #2f2f3f;
+  border: 2px solid #555;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .eod-dropdown-label {
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .eod-dropdown-label:hover {
+  background-color: #3a3a4d;
+}
+
+/* Submit button (no change, looks fine) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

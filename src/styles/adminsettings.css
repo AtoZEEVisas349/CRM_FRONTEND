@@ -1,4 +1,5 @@
 
+
 :root {
   /* Light Theme Defaults */
   --bg-color: #f9fafb;
@@ -52,7 +53,6 @@
 /* BASE STYLES */
 .admin-settings {
   width: 100%;
-  padding: 2rem 3rem;
   background: var(--bg-color);
   color: var(--text-color);
   display: flex;
@@ -682,40 +682,51 @@ input:checked + .slider {
 .blur-overlay-wrapper.dark::after {
   background-color: rgba(31, 41, 55, 0.5);
 }
-/* Fix dark mode text visibility */
-[data-theme="dark"] h3,
-[data-theme="dark"] h2,
-[data-theme="dark"] label,
-[data-theme="dark"] input,
-[data-theme="dark"] textarea,
-[data-theme="dark"] select,
-[data-theme="dark"] button,
-[data-theme="dark"] small,
-[data-theme="dark"] .form-group,
-[data-theme="dark"] .row-cell,
-[data-theme="dark"] .header-cell,
-[data-theme="dark"] .group-title,
-[data-theme="dark"] .mini-btn,
-[data-theme="dark"] .save-btn,
-[data-theme="dark"] .primary-btn{
+/* Fix dark mode text visibility only for settings page */
+[data-theme="dark"] .admin-settings h3,
+[data-theme="dark"] .admin-settings h2,
+[data-theme="dark"] .admin-settings label,
+[data-theme="dark"] .admin-settings input,
+[data-theme="dark"] .admin-settings textarea,
+[data-theme="dark"] .admin-settings select,
+[data-theme="dark"] .admin-settings button,
+[data-theme="dark"] .admin-settings small,
+[data-theme="dark"] .admin-settings .form-group,
+[data-theme="dark"] .admin-settings .row-cell,
+[data-theme="dark"] .admin-settings .header-cell,
+[data-theme="dark"] .admin-settings .group-title,
+[data-theme="dark"] .admin-settings .mini-btn,
+[data-theme="dark"] .admin-settings .save-btn,
+[data-theme="dark"] .admin-settings .primary-btn {
   color: whitesmoke !important;
 }
-[data-theme="dark"] .pic-actions button{
-  color: rgb(0, 0, 0) !important;
+
+/* Make action buttons inside profile image section dark-safe */
+[data-theme="dark"] .admin-settings .pic-actions button {
+  color: black !important;
 }
-[data-theme="dark"] .form-group input{
-  color: rgb(0, 0, 0) !important;
+
+/* Make form input text black inside settings in dark mode */
+[data-theme="dark"] .admin-settings .form-group input {
+  color: black !important;
 }
-/* Optional: improve contrast for inputs and backgrounds */
-[data-theme="dark"] input,
-[data-theme="dark"] textarea,
-[data-theme="dark"] select {
-  background-color:#dee3fc;
+[data-theme="dark"] .admin-settings input::placeholder,
+[data-theme="dark"] .admin-settings textarea::placeholder {
+  color: #adb0b2; /* soft light gray for dark background */
+}
+
+/* Improve input field contrast */
+[data-theme="dark"] .admin-settings input,
+[data-theme="dark"] .admin-settings textarea,
+[data-theme="dark"] .admin-settings select {
+  background-color: rgba(74, 85, 104, 0.8);
   border-color: var(--input-border);
 }
 
-/* Optional: adjust mini button hover */
-[data-theme="dark"] .mini-btn:hover {
+/* Improve hover state of mini buttons */
+[data-theme="dark"] .admin-settings .mini-btn:hover {
   background-color: var(--primary-color);
   color: var(--btn-text);
 }
+
+

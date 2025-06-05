@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
@@ -13,6 +12,9 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   });
   const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState("line");
+
+  // Determine the current theme
+  const isDarkMode = document.documentElement.getAttribute("data-theme") === "dark";
 
   const getTodayIndex = () => {
     const jsDay = new Date().getDay();
@@ -72,7 +74,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   const baseDataset = {
     label: "Lead Visits",
     data: chartData.weeklyData,
-    borderColor: "#8b5cf6",
+    borderColor:  "#8b5cf6",
     backgroundColor: "rgba(139, 92, 246, 0.3)",
     tension: 0.4,
     pointRadius: 3,
@@ -90,7 +92,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
         },
       },
       datalabels: {
-        color: "#000",
+        color: isDarkMode ? "#ffffff" : "#000000",
         font: { size: 12, weight: "bold" },
         anchor: "end",
         align: "top",
@@ -101,7 +103,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       x: {
         grid: { display: false },
         ticks: {
-          color: "#333",
+          color: isDarkMode ? "#ffffff" : "#333", 
           font: { size: 13, weight: "500" },
         },
       },
@@ -111,10 +113,12 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
         max: 36,
         ticks: {
           stepSize: 3,
-          color: "#333",
+          color: isDarkMode ? "#ffffff" : "#333", 
           font: { size: 13, weight: "500" },
         },
-        grid: { color: "rgba(200, 200, 200, 0.2)" },
+        grid: { 
+          color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim() // Use CSS variable for grid color
+        },
       },
     },
   };
@@ -178,3 +182,4 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
 };
 
 export default LeadGraph;
+

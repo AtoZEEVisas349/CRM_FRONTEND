@@ -1,27 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-  height: 100%;
-  background: #1d3ede;
-  position: relative;
-  overflow-x: hidden;
-}  */
-
-/* body::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 55%;
-  height: 50%;
-  background: white;
-  clip-path: polygon(100% 0, 0 100%, 100% 100%);
-  z-index: 1;
-} */
 
 .page-wrapper {
   display: flex;
@@ -32,25 +11,53 @@
   z-index: 2;
 }
 
-.dark-mode .page-wrapper {
+[data-theme="dark"] .page-wrapper {
   background-color: #1a202c;
   color: #fff;
 }
 
-/* Also for specific elements if needed */
-.contact-left h2,
-.contact-left p,
-.contact-form h3,
-.contact-form p,
-.contact-form label {
-  color: inherit; /* inherit from parent OR set explicitly */
+[data-theme="dark"] .contact-left h2 {
+  color: #4fd1c7;
 }
+
+[data-theme="dark"] .contact-left p {
+  color: #68d391;
+}
+
+[data-theme="dark"] .contact-form {
+  background: rgba(45, 55, 72, 0.9);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .contact-form h3,
+[data-theme="dark"] .contact-form p,
+[data-theme="dark"] .contact-form label {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .contact-form input,
+[data-theme="dark"] .contact-form textarea {
+  background: rgba(74, 85, 104, 0.8);
+  color: #e2e8f0;
+  border-bottom: 1px solid #4a5568;
+}
+
+[data-theme="dark"] .contact-form input::placeholder,
+[data-theme="dark"] .contact-form textarea::placeholder {
+  color: #a0aec0;
+}
+
+[data-theme="dark"] .address-box {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+
 .contact-container {
   display: flex;
   width: 90%;
   max-width: 1200px;
   background: transparent;
-  margin-top: 50px;
   gap: 100px;
   position: relative;
   z-index: 2;
@@ -74,7 +81,6 @@
   line-height: 1.6;
   color: #2ded57; 
   margin-bottom: 30px;
-
 }
 
 .address-box {
@@ -235,6 +241,17 @@
     gap: 10px;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
