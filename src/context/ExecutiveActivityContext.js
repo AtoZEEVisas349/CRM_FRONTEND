@@ -206,10 +206,10 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
-  const handleGetAttendance = async (weekStart) => {
+  const handleGetAttendance = async (startDate, endDate) => {
     try {
       setLoading(true);
-      const data = await getAttendance(weekStart);
+      const data = await getAttendance(startDate, endDate);
       return data || [];
     } catch (error) {
       console.error("Error fetching attendance:", error.message);

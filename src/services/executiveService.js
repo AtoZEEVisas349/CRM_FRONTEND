@@ -217,14 +217,15 @@ export const sendEmail = async ({
     throw new Error(error.response?.data?.message || 'Failed to send email');
   }
 };
-export const getAttendance = async (weekStart) => {
+export const getAttendance = async (startDate, endDate) => {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/executive-activities/attendance`,
       {
         headers: getHeaders(),
         params: {
-          weekStart: weekStart.format("YYYY-MM-DD"), // Ensure weekStart is a Day.js object
+          startDate, // pass raw string YYYY-MM-DD
+          endDate,
         },
       }
     );

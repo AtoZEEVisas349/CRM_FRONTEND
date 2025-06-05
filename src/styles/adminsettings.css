@@ -367,6 +367,7 @@ body.sidebar-collapsed .admin-settings {
     padding: 2rem;
   }
 }
+
 @media (max-width: 1200px) {
   body.sidebar-expanded .admin-settings {
     margin-left: 20px;

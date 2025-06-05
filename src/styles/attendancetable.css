@@ -82,7 +82,7 @@
 }
 
 .attendance-table th {
-  padding: 16px 12px;
+  padding: 10px 7px;
   font-size: clamp(13px, 1.5vw, 15px);
   font-weight: 700;
   border-right: 1px solid #ffffff30;
@@ -299,7 +299,7 @@
   
   .attendance-table th,
   .attendance-table td {
-    padding: 18px 16px;
+    padding: 10px 7px;
   }
 }
 
