@@ -13,7 +13,6 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState("line");
 
-  // Determine the current theme
   const isDarkMode = document.documentElement.getAttribute("data-theme") === "dark";
 
   const getTodayIndex = () => {
@@ -28,11 +27,9 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
         const allActivities = await fetchExecutiveDashboardData();
         const todayIndex = getTodayIndex();
         const updatedWeeklyData = [0, 0, 0, 0, 0, 0, 0];
-
         let totalVisits = 0;
 
         if (selectedExecutiveId) {
-          // Fetch data for a specific executive
           const executiveActivity = allActivities.find(
             (activity) => activity.ExecutiveId === selectedExecutiveId
           );
@@ -42,7 +39,6 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
           }
           totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
         } else {
-          // Aggregate data for all executives
           allActivities.forEach((activity) => {
             if (activity?.leadSectionVisits > 0) {
               updatedWeeklyData[todayIndex] += activity.leadSectionVisits;
@@ -70,11 +66,13 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   }, [selectedExecutiveId]);
 
   const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const maxLead = Math.max(...chartData.weeklyData);
+  const dynamicMax = Math.max(70, Math.ceil((maxLead + 10) / 10) * 10);
 
   const baseDataset = {
     label: "Lead Visits",
     data: chartData.weeklyData,
-    borderColor:  "#8b5cf6",
+    borderColor: "#8b5cf6",
     backgroundColor: "rgba(139, 92, 246, 0.3)",
     tension: 0.4,
     pointRadius: 3,
@@ -84,6 +82,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
 
   const commonOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -93,7 +92,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       },
       datalabels: {
         color: isDarkMode ? "#ffffff" : "#000000",
-        font: { size: 12, weight: "bold" },
+        font: { size: 10, weight: "bold" },
         anchor: "end",
         align: "top",
         formatter: (value) => value,
@@ -103,21 +102,21 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       x: {
         grid: { display: false },
         ticks: {
-          color: isDarkMode ? "#ffffff" : "#333", 
-          font: { size: 13, weight: "500" },
+          color: isDarkMode ? "#ffffff" : "#333",
+          font: { size: 16, weight: "500" },
         },
       },
       y: {
         beginAtZero: true,
         min: 0,
-        max: 36,
+        max: dynamicMax,
         ticks: {
-          stepSize: 3,
-          color: isDarkMode ? "#ffffff" : "#333", 
-          font: { size: 13, weight: "500" },
+          stepSize: 10,
+          color: isDarkMode ? "#ffffff" : "#333",
+          font: { size: 10, weight: "500" },
         },
-        grid: { 
-          color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim() // Use CSS variable for grid color
+        grid: {
+          color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim() || "#e5e7eb",
         },
       },
     },
@@ -154,32 +153,33 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
         <span>{loading ? "Loading..." : chartData.totalVisits}</span>
       </div>
 
-      {chartType === "line" ? (
-        <Line
-          data={{ labels, datasets: [baseDataset] }}
-          options={commonOptions}
-          plugins={[ChartDataLabels]}
-        />
-      ) : (
-        <Bar
-          data={{
-            labels,
-            datasets: [
-              {
-                ...baseDataset,
-                backgroundColor: "#8b5cf6",
-                borderRadius: 4,
-                borderWidth: 0,
-              },
-            ],
-          }}
-          options={commonOptions}
-          plugins={[ChartDataLabels]}
-        />
-      )}
+      <div style={{ height: "77%" }}>
+        {chartType === "line" ? (
+          <Line
+            data={{ labels, datasets: [baseDataset] }}
+            options={commonOptions}
+            plugins={[ChartDataLabels]}
+          />
+        ) : (
+          <Bar
+            data={{
+              labels,
+              datasets: [
+                {
+                  ...baseDataset,
+                  backgroundColor: "#8b5cf6",
+                  borderRadius: 4,
+                  borderWidth: 0,
+                },
+              ],
+            }}
+            options={commonOptions}
+            plugins={[ChartDataLabels]}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
 export default LeadGraph;
-
