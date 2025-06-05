@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SidebarToggle from "./SidebarToggle";
 import {
   faSave,
-  faTimes,
   faEye,
   faEyeSlash,
   faUser,
@@ -23,7 +22,7 @@ const ExecutiveCredentialsForm = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
-  const { createExecutive } = useApi();
+  const { createExecutive,createAdmin,createTeamLead } = useApi();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -43,7 +42,7 @@ const ExecutiveCredentialsForm = () => {
     tax_id: "",
     // team_id: "",
     profile_picture: null,
-    role: "Executive",
+    role: "",
   });
 
   const handleInputChange = (e) => {
@@ -75,30 +74,44 @@ const ExecutiveCredentialsForm = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
-
 const handleSubmit = async (e) => {
   e.preventDefault();
   setIsLoading(true);
 
   try {
     const formPayload = new FormData();
-
     Object.entries(formData).forEach(([key, value]) => {
       if (value !== null && value !== "") {
         formPayload.append(key, value);
       }
     });
 
-    // Optional: log FormData contents to debug
+    // Optional: Debug payload
     for (let pair of formPayload.entries()) {
       console.log(`${pair[0]}:`, pair[1]);
     }
 
-    await createExecutive(formPayload);  // Must support multipart/form-data
-    alert("Executive created successfully!");
+    // 👇 Role-based API call
+    const role = formData.role.trim();
+    switch (role) {
+      case "Executive":
+        await createExecutive(formPayload);
+        break;
+      case "TL":
+        await createTeamLead(formPayload);
+        break;
+      case "Admin":
+        await createAdmin(formPayload);
+        break;
+      default:
+        throw new Error("Invalid role selected.");
+    }
+
+    alert(`${formData.role} created successfully!`);
     setFormSubmitted(true);
   } catch (err) {
-    console.error("Failed to create executive:", err.message);
+    console.error(`Failed to create ${formData.role}:`, err.message || err);
+    alert(`Error creating ${formData.role}: ${err.message || "Unknown error"}`);
   } finally {
     setIsLoading(false);
   }
@@ -113,13 +126,13 @@ const handleSubmit = async (e) => {
       <div className="executive-form-container">
         <div className="form-card">
           <div className="form-header">
-            <h1>Create Executive Credentials</h1>
-            <p>Add a new executive to your CRM with appropriate access permissions</p>
+            <h1>Create User Credentials</h1>
+            <p>Add a new user to your CRM with appropriate access permissions</p>
           </div>
 
           {formSubmitted ? (
             <div className="success-message">
-              <h2>Executive Account Created!</h2>
+              <h2>{formData.role} Account Created!</h2>
               <p>
                 Credentials have been created successfully and a welcome email has been sent to{" "}
                 {formData.email}
@@ -129,7 +142,7 @@ const handleSubmit = async (e) => {
             <form onSubmit={handleSubmit}>
               <div className="form-grid">
                 <div className="form-section profile-section">
-                  <h2>Executive Information</h2>
+                  <h2>User Information</h2>
 
                   <div className="profile-upload">
                     {/* <div className="form-profile-image">
@@ -228,10 +241,10 @@ const handleSubmit = async (e) => {
         <FontAwesomeIcon icon={faUsers} className="input-icon" />
         <input
           type="text"
-          id="team_id"
-          name="team_id"
+          // id="team_id"
+          // name="team_id"
           placeholder="Enter Team ID"
-          value={formData.team_id}
+          // value={formData.team_id}
           onChange={handleInputChange}
         />
       </div>
@@ -301,20 +314,27 @@ const handleSubmit = async (e) => {
         />
       </div>
     </div>
+<div className="form-group">
+  <label htmlFor="role">Role</label>
+  <div className="input-with-icon">
+    <FontAwesomeIcon icon={faBriefcase} className="input-icon" />
+ <select
+  id="role"
+  name="role"
+  value={formData.role}
+  onChange={handleInputChange}
+  required
+>
+  <option value="" disabled>
+     Select Role 
+  </option>
+  <option value="Executive">Executive</option>
+  <option value="TL">Team Lead</option>
+  <option value="Admin">Admin</option>
+</select>
 
-    <div className="form-group">
-      <label htmlFor="role">Role</label>
-      <div className="input-with-icon">
-        <FontAwesomeIcon icon={faBriefcase} className="input-icon" />
-        <input
-          type="text"
-          id="role"
-          name="role"
-          value={formData.role}
-          disabled
-        />
-      </div>
-    </div>
+  </div>
+</div>
   </div>
 
   <div className="form-group" style={{ gridColumn: "span 2" }}>
@@ -341,10 +361,7 @@ const handleSubmit = async (e) => {
               </div>
 
               <div className="form-actions">
-                {/* <button type="reset" className="cancel-button">
-                  <FontAwesomeIcon icon={faTimes} />
-                  Reset
-                </button> */}
+               
                 <button
                   type="submit"
                   className={`submit-button ${isLoading ? "loading" : ""}`}
@@ -358,7 +375,7 @@ const handleSubmit = async (e) => {
                   ) : (
                     <>
                       <FontAwesomeIcon icon={faSave} />
-                      Create Executive Account
+                      Create User Account
                     </>
                   )}
                 </button>

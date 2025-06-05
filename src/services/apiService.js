@@ -575,4 +575,22 @@ export const fetchAllClientLeads = async () => {
     throw error;
   }
 };
+export const createTeamLeadApi = async (adminData) => {
+  try {
+    const response = await apiService.post("/create-tl",adminData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error ", error);
+    throw error;
+  }
+};
+export const createAdminApi = async (adminData) => {
+  try {
+    const response = await apiService.post("/create-admin",adminData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error ", error);
+    throw error;
+  }
+};
 export default apiService;

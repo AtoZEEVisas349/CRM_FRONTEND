@@ -1,3 +1,4 @@
+
 .exec-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -58,7 +59,7 @@
 }
 
 .exec-box {
-  background-color: var(--exec-box-bg);
+  background-color: #99c6e6;
   height: 300px;
   min-width: 350px;
   display: flex;
@@ -86,7 +87,7 @@
 }
 
 .exec-box-wrapper {
-  background-color: var(--exec-box-bg);
+  background-color: #99c6e6;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 10px var(--exec-shadow);

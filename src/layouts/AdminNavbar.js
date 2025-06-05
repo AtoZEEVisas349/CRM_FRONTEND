@@ -20,8 +20,9 @@ function AdminNavbar() {
     loading,
     fetchAdmin,
     fetchNotifications,
-    unreadCount,
     notifications,
+    unreadCount,
+    unreadMeetingsCount
   } = useApi();
 
   const navigate = useNavigate();
@@ -115,14 +116,13 @@ function AdminNavbar() {
               tabIndex="0"
               onClick={() => navigate("/admin/notification")}
             />
-            {unreadCount > 0 && (
-              <span
-                ref={badgeRef}
-                className="admin-notification_badge"
-              >
-                {unreadCount}
-              </span>
-            )}
+{(unreadCount + unreadMeetingsCount) > 0 && (
+  <span ref={badgeRef} className="admin-notification_badge">
+    {unreadCount + unreadMeetingsCount}
+  </span>
+)}
+
+
           </div>
 
           {/* User Popover */}

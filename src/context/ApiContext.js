@@ -403,15 +403,44 @@ const refreshMeetings = async () => {
   setMeetings(all);
   return all; 
 }
-const adminMeeting = async () => {
+const adminMeeting = useCallback(async () => {
   try {
-    const meetings = await apiService.adminMeeting();  // This is already the array
-    return meetings;  // Return directly
+    const meetings = await apiService.adminMeeting();
+    return meetings;
   } catch (error) {
     console.error("❌ Error fetching meetings:", error);
     return [];
   }
+}, []);
+
+const [readMeetings, setReadMeetings] = useState(() => {
+  const stored = localStorage.getItem("readMeetings");
+  return stored ? JSON.parse(stored) : {};
+});
+const markMeetingAsRead = (meetingId) => {
+  setReadMeetings((prev) => {
+    const updated = { ...prev, [meetingId]: true };
+    localStorage.setItem("readMeetings", JSON.stringify(updated));
+    return updated;
+  });
 };
+const unreadMeetingsCount = useMemo(() => {
+  return meetings.filter((m) => !readMeetings[m.id]).length;
+}, [meetings, readMeetings]);
+
+// ✅ Preload meetings for global access (for bell icon count)
+useEffect(() => {
+  const preloadMeetings = async () => {
+    try {
+      const data = await adminMeeting(); // already defined
+      setMeetings(data || []);
+    } catch (err) {
+      console.error("❌ Error preloading meetings for unread count:", err);
+    }
+  };
+
+  preloadMeetings();
+}, []);
 
 const [convertedCustomerCount, setConvertedCustomerCount] = useState(0);
 const [convertedClients, setConvertedClients] = useState([]);
@@ -671,6 +700,34 @@ const createSingleLeadAPI = async (leadData) => {
     setUploading(false);
   }
 };
+
+const createTeamLead = async (teamData) => {
+  setLoading(true);
+  
+  try {
+    const result = await apiService.createTeamLeadApi(teamData);
+    return result;
+  } catch (err) {
+
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+const createAdmin = async (adminData) => {
+  setLoading(true);
+  
+  try {
+    const result = await apiService.createAdminApi(adminData);
+    return result;
+  } catch (err) {
+
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -746,6 +803,10 @@ const createSingleLeadAPI = async (leadData) => {
         // ✅ Executive Info State
         executiveInfo,
         executiveLoading,
+        unreadMeetingsCount,
+        readMeetings,
+        markMeetingAsRead,
+        unreadMeetingsCount,
         fetchExecutiveData,
         createFreshLeadAPI,
         createLeadAPI,
@@ -768,7 +829,8 @@ const createSingleLeadAPI = async (leadData) => {
       followUpClients,
       followUpClientsLoading,
       fetchFollowUpClientsAPI,
-      
+      createAdmin,
+        createTeamLead,
         closeLeads, // Add the state for Close Leads
         closeLeadsLoading,
         closeLeadsError,
