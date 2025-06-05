@@ -521,7 +521,7 @@ const ClientOverview = () => {
                   value={reasonDesc}
                   onChange={(e) => setReasonDesc(e.target.value)}
                   className="interaction-textarea"
-                  placeholder="Describe the follow-up reason..."
+                  placeholder="Type or speak your follow-up reason using the mic"
                 />
                 <button
                   type="button"

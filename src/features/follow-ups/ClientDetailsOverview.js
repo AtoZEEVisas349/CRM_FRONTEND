@@ -449,7 +449,6 @@ const ClientDetailsOverview = () => {
       <div className="c-container">
         <div className="c-header">
           <h2>Client Details</h2>
-          <button className="c-button">×</button>
         </div>
         <div className="c-content">
           <div className="c-layout">
@@ -666,7 +665,7 @@ const ClientDetailsOverview = () => {
                   value={reasonDesc}
                   onChange={(e) => setReasonDesc(e.target.value)}
                   className="interaction-textarea"
-                  placeholder="Describe the follow-up reason..."
+                  placeholder="Type or speak your follow-up reason using the mic"
                 />
                 <button
                   type="button"

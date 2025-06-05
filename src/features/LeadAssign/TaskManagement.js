@@ -20,6 +20,7 @@ const TaskManagement = () => {
   const [filterType, setFilterType] = useState("all"); 
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
   const paginatedLeads = leads;
+  const [showPagination, setShowPagination] = useState(false);
   const { theme } = useContext(ThemeContext);
   const {
     fetchAllClients,
@@ -34,7 +35,28 @@ const TaskManagement = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
-
+  useEffect(() => {
+    const container = document.querySelector(".scrollable-container");
+  
+    const handleScroll = () => {
+      if (!container) return;
+      const threshold = 50; // small buffer from bottom
+      const isBottom =
+        container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
+      setShowPagination(isBottom);
+    };
+  
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+  
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+  
   useEffect(() => {
     const updateSidebarState = () => {
       const isExpanded = localStorage.getItem("adminSidebarExpanded") === "true";
@@ -279,37 +301,6 @@ useEffect(() => {
   setCurrentPage(newPage); // Ensures pagination is stable
 }, [filterType, allClients, currentPage, leadsPerPage]);
 
-// useEffect(() => {
-//   let filtered = [...allClients];
-
-//   switch (filterType) {
-//     case "converted":
-//       filtered = filtered.filter((lead) => lead.status === "Converted");
-//       break;
-//     case "followup":
-//       filtered = filtered.filter((lead) => lead.status === "Follow-Up");
-//       break;
-//        case "fresh":
-//       filtered = filtered.filter((lead) => lead.status === "New");
-//       break;
-//        case "meeting":
-//       filtered = filtered.filter((lead) => lead.status === "Meeting");
-//       break;
-//     case "closed":
-//       filtered = filtered.filter((lead) => lead.status === "Closed");
-//       break;
-    
-//     default:
-//       break;
-//   }
-
-//   setLeads(filtered);
-//   setTotalLeads(filtered.length);
-//   setCurrentPage(1);
-// }, [filterType, allClients]);
-
-
-
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
@@ -430,8 +421,8 @@ useEffect(() => {
             ))}
           </div>
 
-          {leads.length > 0 && (
-            <div className="pagination-controls">
+          {leads.length > 0 && showPagination && (
+              <div className="pagination-controls">
               <button onClick={handlePrev} disabled={currentPage === 1} aria-label="Previous page">
                 Prev
               </button>
