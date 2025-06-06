@@ -102,8 +102,19 @@ const Login = () => {
          {loading ? "Logging in..." : "SIGN IN"}
             </button>
             <div className="text-bottom">
-            <p className="small-text">
-             Don't have an account? <a href="/signup" style={{color:"black"}}>Signup</a>   </p>
+            {(() => {
+  const user = localStorage.getItem("user");
+  const role = user ? JSON.parse(user).role : null;
+  if (role === "Admin") {
+    return (
+      <p className="small-text">
+        Don't have an account? <a href="/signup" style={{ color: "black" }}>Signup</a>
+      </p>
+    );
+  }
+  return null;
+})()}
+
              <Link to= "/forgot-password"  style={{color:"black",marginTop:"10px"}}>Forgot Password</Link>
             </div>
          </form>

@@ -40,6 +40,20 @@ const Signup = () => {
     e.preventDefault();
     signup(username, email, password, role); // Removed companyId
   };
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      toast.error("Signup allowed for Admins only. Please login first.");
+      navigate("/login");
+      return;
+    }
+  
+    const { role } = JSON.parse(userData);
+    if (role !== "Admin") {
+      toast.error("Access denied. Only Admins can access the signup page.");
+      navigate("/login");
+    }
+  }, []);
   
   return (
     <div className="main-container">
@@ -105,11 +119,8 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-<select value={role} onChange={(e) => setRole(e.target.value)} className="Role">
-  <option value="Admin">Admin</option>
-  <option value="Executive">Executive</option>
-  <option value="TL">Team Lead</option>
-</select>
+<input type="hidden" value="Admin" />
+
 
 
              <button type="submit" disabled={loading}>

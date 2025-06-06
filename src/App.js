@@ -70,7 +70,14 @@ useEffect(() => {
       <Routes>
         <Route path="/" element={<Navigate replace to="/signup" />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route
+  path="/signup"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <Signup />
+    </PrivateRoute>
+  }
+/>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         {/* Public master routes - login & signup */}
