@@ -82,7 +82,7 @@ const Chat = ({ isCallActive }) => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("https://crmbackend-yho0.onrender.com/api/chatbot", {
+      const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: input }),
