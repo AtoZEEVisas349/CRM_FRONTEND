@@ -18,7 +18,7 @@ export const loginUser = async (email, password) => {
   });
 
   if (!res.ok) {
-    
+
     const err = await res.json();
     throw new Error(err.message || "Login failed");
   }
@@ -96,7 +96,7 @@ export const logoutUser = async (executiveName) => {
   }
 };
 
-// Add this to services/auth.js
+ //Add this to services/auth.js
 export const isAuthenticated = () => {
   const token = localStorage.getItem("token");
   return Boolean(token);

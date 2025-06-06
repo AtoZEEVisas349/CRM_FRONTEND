@@ -176,7 +176,6 @@ const ScheduleMeeting = () => {
     }
 
     try {
-      console.log("Submitting follow-up with data:", { ...formData, freshLeadId });
 
       let followUpId;
       const histories = await fetchFollowUpHistoriesAPI();
@@ -203,21 +202,32 @@ const ScheduleMeeting = () => {
 
       if (followUpId) {
         await updateFollowUp(followUpId, payload);
-        console.log("Follow-up updated with ID:", followUpId, "Payload:", payload);
       } else {
         const res = await createFollowUp(payload);
         followUpId = res.data.id;
-        console.log("Follow-up created with ID:", followUpId, "Payload:", payload);
       }
+      console.log("Updating client lead status to Follow-Up for lead ID:", freshLeadId);
 
-      // Update ClientLead status to Follow-Up for specific follow-up types
       if (["interested", "not interested", "no response"].includes(follow_up_type)) {
-        await updateClientLeadStatus(freshLeadId, "Follow-Up");
-        console.log("ClientLead status updated to Follow-Up for freshLeadId:", freshLeadId);
+        const clientLeadId = meeting?.clientLead?.id;
+        if (clientLeadId) {
+          await updateClientLeadStatus(clientLeadId, "Follow-Up");
+        } else {
+          console.warn("Missing clientLeadId: status not updated");
+        }
+                if (meeting.clientLead) {
+          meeting.clientLead.status = "Follow-Up"; // Update local reference
+        }
       }
+      else if (follow_up_type === "appointment") {
+        await updateClientLeadStatus(freshLeadId, "Meeting");
+        if (meeting.clientLead) {
+          meeting.clientLead.status = "Meeting";
+        }
+      }
+      
 
       await createFollowUpHistoryAPI({ ...payload, follow_up_id: followUpId });
-      console.log("Follow-up history created for followUpId:", followUpId);
 
       const leadDetails = {
         fresh_lead_id: freshLeadId,
@@ -304,7 +314,6 @@ const ScheduleMeeting = () => {
         refreshMeetings(),
         getAllFollowUps(),
       ]);
-      console.log("Data refreshed after follow-up submission for type:", follow_up_type);
 
       navigate("/follow-up", {
         state: { lead: leadDetails, activeTab: targetTab },

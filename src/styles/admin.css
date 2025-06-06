@@ -55,7 +55,7 @@
   color: #f5c518; /* golden glow for sun/moon */
   font-size: 15px;
 }
-[data-theme="dark"] .theme-toggle{
+[data-theme="dark"] .theme-toggle {
   background-color: #ffffff;
 }
 [data-theme="dark"] .icon-wrapper {
@@ -431,6 +431,7 @@ body.sidebar-expanded .admin-main-content {
   color: var(--text-color);
   transition: color 0.3s ease;
   z-index: 1000;
+  color: #ffffff;
   /* Ensure it's always clickable */
   position: relative;
 }
@@ -1691,31 +1692,6 @@ body.sidebar-collapsed .assign-task-container {
   }
 }
 
-/* 
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  height: 40px;
-  width: 40px;
-}
-
-.theme-toggle svg {
-  font-size: 1.2rem;
-  color: var(--icon-color);
-  transition: color 0.3s ease;
-}
-
-.theme-toggle:hover svg {
-  color: var(--primary-color);
-}
-
-.admin-menu_toggle .theme-toggle:hover {
-  background-color: var(--border-color);
-  transform: scale(1.1);
-} */
 .admin-notification_wrapper {
   position: relative;
   display: inline-block;

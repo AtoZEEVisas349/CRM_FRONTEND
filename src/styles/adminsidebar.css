@@ -26,9 +26,7 @@
   cursor: pointer;
   z-index: 1001;
 }
-[data-theme="dark"] .sidebar-toggle-btn{
-  color: #ffffff;
-}
+
 /* Slide up on hover */
 .admin-sidebar ul li:hover .admin-aside-icon {
   transform: translateY(-3px) scale(1.1);

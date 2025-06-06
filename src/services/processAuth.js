@@ -9,176 +9,139 @@ const BASE_HEADERS = {
   "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
 };
 
-/*------------------------------LOGIN---------------------------*/
+// ------------------------------LOGIN--------------------------- //
 export const loginUser = async (email, password) => {
-  const res = await fetch(`${API_BASE_URL}/login`, {
+  const tryLogin = async (userType) => {
+    const res = await fetch(`${API_BASE_URL}/${userType}/login`, {
+      method: "POST",
+      headers: BASE_HEADERS,
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) throw await res.json();
+    const data = await res.json();
+    localStorage.setItem("userType", userType);
+    return { ...data, type: userType };
+  };
+
+  try {
+    return await tryLogin("customer");
+  } catch (err1) {
+    try {
+      return await tryLogin("processperson");
+    } catch (err2) {
+      const errorMessage =
+        err2?.message || err1?.message || "Login failed for both user types.";
+      throw new Error(errorMessage);
+    }
+  }
+};
+
+// ------------------------------SIGNUP--------------------------- //
+export const signupUser = async (fullName, email, password, userType = "processperson") => {
+  const res = await fetch(`${API_BASE_URL}/${userType}/signup`, {
     method: "POST",
     headers: BASE_HEADERS,
-    body: JSON.stringify({ email, password }),
+    credentials: "include",
+    body: JSON.stringify({ fullName, email, password }),
   });
 
+  const responseBody = await res.json();
+  localStorage.setItem("userType", userType);
+
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || "Login failed");
+    console.error("Signup API error details:", responseBody);
+    throw new Error(responseBody.error || "Signup failed");
   }
 
+  return responseBody;
+};
+
+// ------------------------------LOGOUT--------------------------- //
+export const logoutUser = async (userType = "customer") => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_BASE_URL}/${userType}/logout`, {
+    method: "POST",
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+
   const data = await res.json();
-
-  // Save user and type
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("user", JSON.stringify(data.user));
-  localStorage.setItem("userType", data.user.role?.toLowerCase());
-
+  if (!res.ok) throw new Error(data.message || "Logout failed");
   return data;
 };
 
-/*------------------------------SIGNUP---------------------------*/
-export const signupUser = async (username, email, password, role) => {
-  const res = await fetch(`${API_BASE_URL}/signup`, {
-    method: "POST",
-    headers: BASE_HEADERS,
-    body: JSON.stringify({ username, email, password, role }),
-  });
-
-  const response = await res.json();
-
-  if (!res.ok) {
-    console.error("Signup API error details:", response);
-    throw new Error(response.message || "Signup failed");
-  }
-
-  // Save role after signup (optional)
-  localStorage.setItem("userType", role.toLowerCase());
-
-  return response;
-};
-
-/*------------------------------FORGOT PASSWORD---------------------------*/
-export const forgotPassword = async (email) => {
-  try {
-    const response = await apiService.post(
-      "/forgot-password",
-      { email },
-      { headers: BASE_HEADERS }
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.error || "Failed to send reset link!");
-  }
-};
-
-/*------------------------------RESET PASSWORD---------------------------*/
-export const resetPassword = async (token, newPassword) => {
-  try {
-    const response = await apiService.post(
-      "/reset-password",
-      { token, newPassword },
-      { headers: BASE_HEADERS }
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.error || "Failed to reset password!");
-  }
-};
-
-/*------------------------------LOGOUT---------------------------*/
-export const logoutUser = async (executiveName) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const response = await apiService.post(
-      "/logout",
-      { executiveName },
-      {
-        headers: {
-          ...BASE_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      }
-    );
-    return response;
-  } catch (error) {
-    console.error("Error in logoutUser:", error);
-    throw error;
-  }
-};
-
-// ---------------------- UTILITY --------------------------
+// ------------------------------UTILITIES--------------------------- //
 export const isAuthenticated = () => {
   return !!localStorage.getItem("token");
 };
 
-/*------------------------------PRIVATE ROUTE---------------------------*/
-export const PrivateRoute = ({ children, allowedRoles = [] }) => {
+export const getUserType = () => {
+  const data = localStorage.getItem("userType");
+  return data || null;
+};
+
+// ------------------------------PRIVATE ROUTES--------------------------- //
+export const ProcessPrivateRoute = ({ children }) => {
+  return isAuthenticated()
+    ? children
+    : <Navigate to="/process/client/login" replace />;
+};
+
+export const ProcessPublicRoute = ({ children }) => {
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const location = useLocation();
+  const userType = localStorage.getItem("userType");
 
-  if (!token || !user?.role) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!token) return children;
 
-  const role = user.role.toLowerCase();
+  if (userType === "customer") return <Navigate to="/process/client/dashboard" replace />;
+  if (userType === "processperson") return <Navigate to="/process/client/all-clients" replace />;
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    const fallbackPath = getFallbackPath(role);
-    return <Navigate to={fallbackPath} replace />;
-  }
-
-  return children;
+  return <Navigate to="/process/client/dashboard" replace />;
 };
 
-/*------------------------------PUBLIC ROUTE---------------------------*/
-export const PublicRoute = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
-  const path = window.location.pathname;
+// ------------------------------LEGACY PUBLIC ROUTE EXAMPLE--------------------------- //
+// Uncomment and update if needed
+// export const PublicRoute = ({ children }) => {
+//   const user = JSON.parse(localStorage.getItem("user"));
+//   const token = localStorage.getItem("token");
+//   const path = window.location.pathname;
 
-  if (!token || !user?.role) return children;
+//   if (!token || !user?.role) return children;
 
-  const role = user.role.toLowerCase();
-  const expectedPrefix = getRoutePrefix(role);
+//   const role = user.role.toLowerCase();
+//   const expectedPrefix = getRoutePrefix(role);
 
-  // If already in correct role-based section, prevent public access
-  if (!path.startsWith(expectedPrefix)) {
-    return <Navigate to={getFallbackPath(role)} replace />;
-  }
+//   if (!path.startsWith(expectedPrefix)) {
+//     return <Navigate to={getFallbackPath(role)} replace />;
+//   }
 
-  return <Navigate to={path} replace />;
-};
+//   return <Navigate to={path} replace />;
+// };
 
-// ---------------------- HELPERS --------------------------
-const getFallbackPath = (role) => {
-  switch (role) {
-    case "admin":
-      return "/admin";
-    case "executive":
-      return "/executive";
-    case "hr":
-      return "/hr";
-    case "manager":
-      return "/manager";
-    case "tl":
-      return "/tl";
-    default:
-      return "/dashboard"; // default fallback
-  }
-};
+// const getFallbackPath = (role) => {
+//   switch (role) {
+//     case "admin": return "/admin";
+//     case "executive": return "/executive";
+//     case "hr": return "/hr";
+//     case "manager": return "/manager";
+//     case "tl": return "/tl";
+//     default: return "/dashboard";
+//   }
+// };
 
-const getRoutePrefix = (role) => {
-  switch (role) {
-    case "admin":
-      return "/admin";
-    case "executive":
-      return "/executive";
-    case "hr":
-      return "/hr";
-    case "manager":
-      return "/manager";
-    case "tl":
-      return "/tl";
-    default:
-      return "/";
-  }
-};
+// const getRoutePrefix = (role) => {
+//   switch (role) {
+//     case "admin": return "/admin";
+//     case "executive": return "/executive";
+//     case "hr": return "/hr";
+//     case "manager": return "/manager";
+//     case "tl": return "/tl";
+//     default: return "/";
+//   }
+// };
