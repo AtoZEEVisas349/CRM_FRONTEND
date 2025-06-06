@@ -26,13 +26,12 @@ function AdminNavbar() {
   } = useApi();
 
   const navigate = useNavigate();
-  const location = useLocation(); // 👈 Route detection
+  const location = useLocation();
   const localStorageUser = JSON.parse(localStorage.getItem("user"));
   const hoverTimeout = useRef(null);
   const isHovering = useRef(false);
   const badgeRef = useRef(null);
 
-  // 🔄 Fetch notifications on mount
   useEffect(() => {
     if (
       localStorageUser?.id &&
@@ -44,9 +43,8 @@ function AdminNavbar() {
         userRole: localStorageUser.role,
       });
     }
-  }, []); // Only on mount
+  }, []);
 
-  // 🎯 Bounce animation on every route change
   useEffect(() => {
     if (unreadCount > 0 && badgeRef.current) {
       badgeRef.current.classList.add("bounce");
@@ -55,7 +53,7 @@ function AdminNavbar() {
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [location.pathname]); // 👈 triggers on route change
+  }, [location.pathname]);
 
   const handleMouseEnter = async () => {
     clearTimeout(hoverTimeout.current);
@@ -103,69 +101,67 @@ function AdminNavbar() {
 
         {/* Icon Group */}
         <div className="admin-icons-group">
-          <FaComment className="admin-logo_name icon-hover-zoom" />
+  {/* 💬 Message Icon */}
+  <div className="icon-wrapper icon-comment">
+    <FaComment size={20} />
+  </div>
 
-          {/* Notification Icon */}
-          <div
-            className="admin-notification_wrapper"
-            style={{ position: "relative" }}
-          >
-            <FaBell
-              className="admin-logo_name icon-hover-zoom bell-align"
-              title="Notifications"
-              tabIndex="0"
-              onClick={() => navigate("/admin/notification")}
-            />
-{(unreadCount + unreadMeetingsCount) > 0 && (
-  <span ref={badgeRef} className="admin-notification_badge">
-    {unreadCount + unreadMeetingsCount}
-  </span>
-)}
+  {/* 🔔 Bell Icon */}
+  <div
+    className="icon-wrapper icon-bell"
+    style={{ position: "relative" }}
+    onClick={() => navigate("/admin/notification")}
+  >
+    <FaBell size={20} />
+    {(unreadCount + unreadMeetingsCount) > 0 && (
+     <span
+     key={location.key} // 👈 Forces re-render
+     ref={badgeRef}
+     className="admin-notification_badge bounce"
+   >
+     {unreadCount + unreadMeetingsCount}
+   </span>
+    )}
+  </div>
+
+  {/* 👤 User Icon */}
+  <div
+    className="icon-wrapper icon-user"
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+  >
+    <FaUser size={20} />
+  </div>
 
 
-          </div>
-
-          {/* User Popover */}
-          <div
-            className="user-icon-wrapper"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            style={{ position: "relative", display: "inline-block" }}
-          >
-            <FaUser
-              className="admin-logo_name icon-hover-zoom"
-              style={{ cursor: "pointer" }}
-            />
-
-            {showPopover && (
-              <div
-                className="admin_user_popover"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                style={{ position: "absolute", top: "100%", right: 0 }}
-              >
-                {loading ? (
-                  <div>Loading...</div>
-                ) : (
-                  adminProfile && (
-                    <div className="admin_user_details">
-                      <div className="admin_user_avatar">
-                        {adminProfile.name?.charAt(0).toUpperCase() || "U"}
-                      </div>
-                      <div>
-                        <p className="admin_user_name">{adminProfile.name}</p>
-                        <p className="admin_user_email">{adminProfile.email}</p>
-                        <p className="admin_user_role">{adminProfile.role}</p>
-                      </div>
+          {showPopover && (
+            <div
+              className="admin_user_popover"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              style={{ position: "absolute", top: "100%", right: 0 }}
+            >
+              {loading ? (
+                <div>Loading...</div>
+              ) : (
+                adminProfile && (
+                  <div className="admin_user_details">
+                    <div className="admin_user_avatar">
+                      {adminProfile.name?.charAt(0).toUpperCase() || "U"}
                     </div>
-                  )
-                )}
-                <button className="logout_btn" onClick={handleLogout}>
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
+                    <div>
+                      <p className="admin_user_name">{adminProfile.name}</p>
+                      <p className="admin_user_email">{adminProfile.email}</p>
+                      <p className="admin_user_role">{adminProfile.role}</p>
+                    </div>
+                  </div>
+                )
+              )}
+              <button className="logout_btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

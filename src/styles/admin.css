@@ -1,4 +1,121 @@
-/*admin.css*/
+/* ========================== */
+/* 🔁 Animation Keyframes */
+/* ========================== */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
+}
+
+@keyframes pulseZoom {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes iconRotate {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(30deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255,255,255,0.1);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255,255,255,0.1);
+  }
+}
+
+/* ========================== */
+/* 🎨 Icon Base Style */
+/* ========================== */
+.admin-logo_name {
+  transition: transform 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--icon-color);
+  position: relative;
+ 
+}
+
+/* ========================== */
+/* 🌗 Theme Toggle (Sun / Moon) */
+/* ========================== */
+.theme-toggle:hover svg {
+  animation: iconRotate 0.6s ease-in-out;
+  color: #f5c518; /* golden glow for sun/moon */
+  font-size: 15px;
+}
+[data-theme="dark"] .theme-toggle{
+  background-color: #ffffff;
+}
+[data-theme="dark"] .icon-wrapper {
+  color: #ffffff;
+}
+/* Optional Glow Circle Around Toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  height: 40px;
+  width: 40px;
+  font-size: 18px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px #f5c518;
+}
+
+/* ========================== */
+/* 🌈 Icon Specific Effects */
+/* ========================== */
+
+/* Base icon container */
+.icon-wrapper {
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 💬 Message Icon */
+.icon-comment:hover {
+  animation: pulseZoom 0.5s ease-in-out, glowPulse 1.5s infinite;
+  color: #50e3c2;
+  filter: drop-shadow(0 0 6px #50e3c2);
+}
+
+/* 🔔 Bell Icon */
+.icon-bell:hover {
+  animation: shake 0.5s ease-in-out, glowPulse 1.5s infinite;
+  color: #f44336;
+  filter: drop-shadow(0 0 6px #f44336);
+}
+
+/* 👤 User Icon */
+.icon-user:hover {
+  animation: pulseZoom 0.5s ease-in-out, glowPulse 1.5s infinite;
+  color: #4a90e2;
+  filter: drop-shadow(0 0 6px #4a90e2);
+}
+
+
 
 :root {
   /* Light Theme */
@@ -1328,8 +1445,9 @@ h1 {
 .admin-icons-group {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px; /* Adjust gap for spacing */
 }
+
 .admin-icon {
   font-size: 20px;
   color: var(--text-color);
@@ -1573,10 +1691,7 @@ body.sidebar-collapsed .assign-task-container {
   }
 }
 
-.admin-logo_name:hover {
-  color: #0f5472;
-}
-
+/* 
 .theme-toggle {
   background: none;
   border: none;
@@ -1600,7 +1715,7 @@ body.sidebar-collapsed .assign-task-container {
 .admin-menu_toggle .theme-toggle:hover {
   background-color: var(--border-color);
   transform: scale(1.1);
-}
+} */
 .admin-notification_wrapper {
   position: relative;
   display: inline-block;
@@ -1608,43 +1723,46 @@ body.sidebar-collapsed .assign-task-container {
 
 .admin-notification_badge {
   position: absolute;
-  top: -11px;
-  right: -2px;
+  top: -12px;
+  right: -6px;
   background-color: var(--danger-color, #ef4444);
   color: white;
   font-size: 10px;
   font-weight: 600;
   line-height: 1;
-  padding: 2px 5px;
-  border-radius: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
   min-width: 18px;
   height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 2px var(--bg-color, #fff); /* for outline effect */
-  transform: scale(1);
-  transition: transform 0.1s ease-in-out;
+  box-shadow: 0 0 0 2px var(--bg-color, #fff);
 }
 @keyframes bounce {
-  0%,
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-8px);
+  }
+  40% {
+    transform: translateY(4px);
+  }
+  60% {
+    transform: translateY(-4px);
+  }
+  80% {
+    transform: translateY(2px);
+  }
   100% {
     transform: translateY(0);
   }
-  30% {
-    transform: translateY(-6px);
-  }
-  50% {
-    transform: translateY(2px);
-  }
-  70% {
-    transform: translateY(-2px);
-  }
+}
+.admin-notification_badge.bounce {
+  animation: bounce 0.9s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
 }
 
-.admin-notification_badge.bounce {
-  animation: bounce 0.6s ease;
-}
 
 .admin-logo_name {
   display: flex;

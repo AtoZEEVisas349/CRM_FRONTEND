@@ -16,7 +16,19 @@
   transition: transform 0.3s ease, color 0.3s ease;
   will-change: transform;
 }
-
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+}
+[data-theme="dark"] .sidebar-toggle-btn{
+  color: #ffffff;
+}
 /* Slide up on hover */
 .admin-sidebar ul li:hover .admin-aside-icon {
   transform: translateY(-3px) scale(1.1);
