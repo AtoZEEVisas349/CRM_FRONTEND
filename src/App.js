@@ -68,16 +68,9 @@ useEffect(() => {
   return (
     <ThemeProvider>
       <Routes>
-        <Route path="/" element={<Navigate replace to="/signup" />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-  path="/signup"
-  element={
-    <PrivateRoute allowedRoles={["admin"]}>
-      <Signup />
-    </PrivateRoute>
-  }
-/>
+      <Route path="/admin/login" element={<Login userType="admin" />} />
+      <Route path="/admin/signup" element={<Signup userType="admin" />} />
+      <Route path="/login" element={<Login userType="executive" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         {/* Public master routes - login & signup */}

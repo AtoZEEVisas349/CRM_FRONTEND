@@ -1,5 +1,9 @@
-import { Navigate } from "react-router-dom";
+import apiService from "./apiService";
+import { Navigate, useLocation } from "react-router-dom";
+
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
+
+// Shared headers
 const BASE_HEADERS = {
   "Content-Type": "application/json",
   "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
@@ -7,95 +11,174 @@ const BASE_HEADERS = {
 
 /*------------------------------LOGIN---------------------------*/
 export const loginUser = async (email, password) => {
-  const tryLogin = async (userType) => {
-    const res = await fetch(`${API_BASE_URL}/${userType}/login`, {
-      method: "POST",
-      headers: BASE_HEADERS,
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) throw await res.json();
-    const data = await res.json();
-    localStorage.setItem("userType", userType);
-    return { ...data, type: userType };
-  };
-
-  try {
-    return await tryLogin("customer");
-  } catch (err1) {
-    try {
-      return await tryLogin("processperson");
-    } catch (err2) {
-      const errorMessage =
-        err2?.message || err1?.message || "Login failed for both user types.";
-      throw new Error(errorMessage);
-    }
-  }
-};
-
-/*------------------------------SIGNUP---------------------------*/
-export const signupUser = async (fullName, email, password, userType = "processperson") => {
-  const res = await fetch(`${API_BASE_URL}/${userType}/signup`, {
+  const res = await fetch(`${API_BASE_URL}/login`, {
     method: "POST",
     headers: BASE_HEADERS,
-    credentials: "include",
-    body: JSON.stringify({ fullName, email, password }),
+    body: JSON.stringify({ email, password }),
   });
-
-  const responseBody = await res.json();
-  localStorage.setItem("userType", userType);
 
   if (!res.ok) {
-    console.error("Signup API error details:", responseBody);
-    throw new Error(responseBody.error || "Signup failed");
+    const err = await res.json();
+    throw new Error(err.message || "Login failed");
   }
 
-  return responseBody;
-};
-
-/*------------------------------LOGOUT---------------------------*/
-export const logoutUser = async (userType = "customer") => {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_BASE_URL}/${userType}/logout`, {
-    method: "POST",
-    headers: {
-      ...BASE_HEADERS,
-      Authorization: `Bearer ${token}`,
-    },
-    credentials: "include", // still needed for cookie fallback
-  });
-
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Logout failed");
+
+  // Save user and type
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  localStorage.setItem("userType", data.user.role?.toLowerCase());
+
   return data;
 };
 
-// export const isAuthenticated = () => {
-//   return !!localStorage.getItem("token");
-// };
-// export const getUserType = () => {
-//   const data = localStorage.getItem("userType");
-//   return data || null;
-// };
+/*------------------------------SIGNUP---------------------------*/
+export const signupUser = async (username, email, password, role) => {
+  const res = await fetch(`${API_BASE_URL}/signup`, {
+    method: "POST",
+    headers: BASE_HEADERS,
+    body: JSON.stringify({ username, email, password, role }),
+  });
 
-// export const ProcessPrivateRoute = ({ children }) => {
-//   return isAuthenticated()
-//     ? children
-//     : <Navigate to="/process/client/login" replace />;
-// };
-// export const ProcessPublicRoute = ({ children }) => {
-//   const token = localStorage.getItem("token");
-//   const userType = localStorage.getItem("userType");
+  const response = await res.json();
 
-//   // If user is not logged in, allow access to login/signup
-//   if (!token) return children;
+  if (!res.ok) {
+    console.error("Signup API error details:", response);
+    throw new Error(response.message || "Signup failed");
+  }
 
-//   // Redirect authenticated users based on their type
-//   if (userType === "customer") return <Navigate to="/process/client/dashboard" replace />;
-//   if (userType === "processperson") return <Navigate to="/process/person/dashboard" replace />;
+  // Save role after signup (optional)
+  localStorage.setItem("userType", role.toLowerCase());
 
-//   // Default fallback redirect (if type is unknown or missing)
-//   return <Navigate to="/process/client/dashboard" replace />;
-// };
+  return response;
+};
+
+/*------------------------------FORGOT PASSWORD---------------------------*/
+export const forgotPassword = async (email) => {
+  try {
+    const response = await apiService.post(
+      "/forgot-password",
+      { email },
+      { headers: BASE_HEADERS }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Failed to send reset link!");
+  }
+};
+
+/*------------------------------RESET PASSWORD---------------------------*/
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await apiService.post(
+      "/reset-password",
+      { token, newPassword },
+      { headers: BASE_HEADERS }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Failed to reset password!");
+  }
+};
+
+/*------------------------------LOGOUT---------------------------*/
+export const logoutUser = async (executiveName) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await apiService.post(
+      "/logout",
+      { executiveName },
+      {
+        headers: {
+          ...BASE_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error in logoutUser:", error);
+    throw error;
+  }
+};
+
+// ---------------------- UTILITY --------------------------
+export const isAuthenticated = () => {
+  return !!localStorage.getItem("token");
+};
+
+/*------------------------------PRIVATE ROUTE---------------------------*/
+export const PrivateRoute = ({ children, allowedRoles = [] }) => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const location = useLocation();
+
+  if (!token || !user?.role) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const role = user.role.toLowerCase();
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    const fallbackPath = getFallbackPath(role);
+    return <Navigate to={fallbackPath} replace />;
+  }
+
+  return children;
+};
+
+/*------------------------------PUBLIC ROUTE---------------------------*/
+export const PublicRoute = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  const path = window.location.pathname;
+
+  if (!token || !user?.role) return children;
+
+  const role = user.role.toLowerCase();
+  const expectedPrefix = getRoutePrefix(role);
+
+  // If already in correct role-based section, prevent public access
+  if (!path.startsWith(expectedPrefix)) {
+    return <Navigate to={getFallbackPath(role)} replace />;
+  }
+
+  return <Navigate to={path} replace />;
+};
+
+// ---------------------- HELPERS --------------------------
+const getFallbackPath = (role) => {
+  switch (role) {
+    case "admin":
+      return "/admin";
+    case "executive":
+      return "/executive";
+    case "hr":
+      return "/hr";
+    case "manager":
+      return "/manager";
+    case "tl":
+      return "/tl";
+    default:
+      return "/dashboard"; // default fallback
+  }
+};
+
+const getRoutePrefix = (role) => {
+  switch (role) {
+    case "admin":
+      return "/admin";
+    case "executive":
+      return "/executive";
+    case "hr":
+      return "/hr";
+    case "manager":
+      return "/manager";
+    case "tl":
+      return "/tl";
+    default:
+      return "/";
+  }
+};
