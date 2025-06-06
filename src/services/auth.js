@@ -1,5 +1,5 @@
 import apiService from "./apiService";
-import { Navigate } from "react-router-dom";
+import { Navigate,useLocation } from "react-router-dom";
 
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
 
@@ -95,27 +95,55 @@ export const logoutUser = async (executiveName) => {
   }
 };
 
+// Add this to services/auth.js
+export const isAuthenticated = () => {
+  const token = localStorage.getItem("token");
+  return Boolean(token);
+};
 
 /*------------------------------AUTH HELPERS---------------------------*/
-export const isAuthenticated = () => {
-  return !!localStorage.getItem("token");
-};
+export const PrivateRoute = ({ children, allowedRoles = [] }) => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const location = useLocation();
 
-export const PrivateRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" replace />;
+  if (!token || !user?.role) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const role = user.role.toLowerCase();
+
+  // If route has allowedRoles and user is not in them, restrict access
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    const fallback = role === "admin" ? "/admin" : "/executive";
+    return <Navigate to={fallback} replace />;
+  }
+
+  return children;
 };
 /*-------------------------------PUBLIC ROUTES-----------------*/
-// export const PublicRoute = ({ children }) => {
-//   const user = JSON.parse(localStorage.getItem("user"));
-//   const token = localStorage.getItem("token");
+export const PublicRoute = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
 
-//   // If no user is logged in, allow access to the public page
-//   if (!token) return children;
+  const currentPath = window.location.pathname;
 
-//   // Redirect logged-in users based on their role
-//   if (user?.role === "admin") return <Navigate to="/admin" replace />;
-//   if (user?.role === "executive") return <Navigate to="/executive" replace />;
-  
-//   // Optionally fallback to a default route
-//   return <Navigate to="/executive" replace />;
-// };
+  // If no token, allow access to public routes
+  if (!token || !user?.role) return children;
+
+  const role = user.role;
+
+  // Prevent role-based access to wrong route
+  if (role === "admin" && !currentPath.startsWith("/admin")) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  if (role === "executive" && !currentPath.startsWith("/executive")) {
+    return <Navigate to="/executive" replace />;
+  }
+
+
+
+  // If the current path already matches the role, block public route access
+  return <Navigate to={currentPath} replace />;
+};

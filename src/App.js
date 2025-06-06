@@ -50,7 +50,21 @@ useEffect(() => {
   useEffect(() => {
     localStorage.setItem('followUpText', followUpText);
   }, [followUpText]);
-
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        // Prevent going back to public routes
+        const restrictedPaths = ["/login", "/signup", "/forgot-password", "/reset-password"];
+        if (restrictedPaths.includes(window.location.pathname)) {
+          window.history.go(1); // Push forward
+        }
+      }
+    };
+  
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
   return (
     <ThemeProvider>
       <Routes>
@@ -99,9 +113,22 @@ useEffect(() => {
         <Route path="/schedule" element={<PrivateRoute><ScheduleRoutes/></PrivateRoute>} />
         <Route path="/invoice" element={<PrivateRoute><InvoiceRoutes/></PrivateRoute>} />
         <Route path="/notification" element={<PrivateRoute><NotificationRoutes/></PrivateRoute>} />
-        <Route path="/admin/*" element={<PrivateRoute><AdminRoutes /></PrivateRoute>} />
-        <Route path="/executive/*" element={<PrivateRoute><ExecutiveRoutes /></PrivateRoute>} />
-        <Route path="/customer/*" element={<PrivateRoute><CustomerRoutes /></PrivateRoute>} />
+        <Route 
+  path="/admin/*" 
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminRoutes />
+    </PrivateRoute>
+  } 
+/>
+<Route 
+  path="/executive/*" 
+  element={
+    <PrivateRoute allowedRoles={["executive"]}>
+      <ExecutiveRoutes />
+    </PrivateRoute>
+  } 
+/>        <Route path="/customer/*" element={<PrivateRoute><CustomerRoutes /></PrivateRoute>} />
         <Route path="/close-leads/*" element={<PrivateRoute><CloseLeadRoutes /></PrivateRoute>} />
         <Route path="/chatBot/*" element={<PrivateRoute><ChatBotRoutes /></PrivateRoute>} />
         <Route path="/leadassign/*" element={<PrivateRoute><LeadAssignRoutes /></PrivateRoute>} />
