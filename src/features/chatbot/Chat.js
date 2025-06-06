@@ -84,7 +84,10 @@ const Chat = ({ isCallActive }) => {
     try {
       const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/chatbot", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",  // <-- Add this line
+        },
         body: JSON.stringify({ prompt: input }),
       });
       const data = await response.json();
