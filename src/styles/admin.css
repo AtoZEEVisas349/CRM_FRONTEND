@@ -146,7 +146,7 @@ body {
 }
 
 .admin-sidebar.expanded {
-  width: 250px;
+  width: 240px;
 }
 
 .admin-sidebar.collapsed {
@@ -373,7 +373,7 @@ h1 {
 .header-icons {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
 /* Icons styling */
@@ -2042,20 +2042,19 @@ body {
 
 /* Main Content */
 .admin-main-content {
-  padding-left: 20px;
-  margin-left: 250px;
+  margin-left: 240px;
   transition: margin-left 0.3s ease;
-  width: calc(100% - 250px);
+  width: calc(100% - 240px);
 }
 
 body.sidebar-collapsed .admin-main-content {
-  margin-left: 68px;
+  margin-left: 65px;
   width: calc(100% - 68px);
 }
 
 /* Collapsed sidebar state */
 .admin-sidebar.collapsed + .admin-main-content {
-  margin-left: 80px;
+  margin-left: 70px;
   width: calc(100% - 80px);
 }
 
@@ -2807,12 +2806,4 @@ body.sidebar-collapsed .admin-main-content {
   color: #000;
   font-weight: 500;
 }
-
-
-
-
-
-
-
-
 

@@ -3,17 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFolderOpen,
-  faGauge,
-  faClipboardList,
-  faUserTie,
-  faCircleQuestion,
-  faSliders,
-  faChartPie,
-  faUserGear,
-  faUserPlus,
-  faCalendarCheck
-} from "@fortawesome/free-solid-svg-icons";
+  PieChart,
+  FolderOpen,
+  ClipboardList,
+  UserPlus,
+  Users,
+  CalendarCheck,
+  Settings,
+  HelpCircle,
+  UserCog,
+  FileText,
+  Gauge,
+} from "lucide-react";
+
 
 const AdminSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -81,7 +83,7 @@ const AdminSidebar = () => {
         onClick={toggleSidebar}
         aria-label={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
       >
-        <FontAwesomeIcon icon={faGauge} />
+        <Gauge className="admin-aside-icon"/>
       </button>
       <aside className={`admin-sidebar ${isExpanded ? "expanded active" : "collapsed"}`}>
         <div className="admin-header-wrapper">
@@ -95,31 +97,31 @@ const AdminSidebar = () => {
           <ul>
             <li className="active">
               <Link to="/admin" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faChartPie} />
+                <PieChart className="admin-aside-icon"/>
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/assign-task" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faFolderOpen} />
+                <FolderOpen className="admin-aside-icon"/>
                 <span className="sidebar-label">Assign Task</span>
               </Link>
             </li>
             <li>
               <Link to="/leadassign" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+                <ClipboardList className="admin-aside-icon"/>
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
               <Link to="/executiveform" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faUserPlus} />
+                <UserPlus className="admin-aside-icon"/>
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
             <li>
               <Link to="/monitoring" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faUserGear} />
+                <UserCog className="admin-aside-icon"/>
                 <span className="sidebar-label">Monitoring</span>
               </Link>
             </li>
@@ -129,7 +131,7 @@ const AdminSidebar = () => {
           <ul>
           <li>
           <Link to="/admin/eod-report" className="admin-aside-link">
-            <FontAwesomeIcon className="admin-aside-icon" icon={faClipboardList} />
+            <FileText className="admin-aside-icon"/>
             <span className="sidebar-label">EOD Report</span>
           </Link>
         </li>
@@ -137,7 +139,7 @@ const AdminSidebar = () => {
           <ul>
             <li>
               <Link to="/admin/executive-details" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faUserTie} />
+                <Users className="admin-aside-icon"/>
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
@@ -145,7 +147,7 @@ const AdminSidebar = () => {
           <ul>
             <li>
               <Link to="/admin/executive-attendance" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faCalendarCheck} />
+                <CalendarCheck className="admin-aside-icon"/>
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
@@ -153,13 +155,13 @@ const AdminSidebar = () => {
           <ul>
             <li>
             <Link to="/admin/help-support" className="admin-aside-link">
-            <FontAwesomeIcon className="admin-aside-icon" icon={faCircleQuestion} />
+            <HelpCircle className="admin-aside-icon"/>
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/settings" className="admin-aside-link">
-                <FontAwesomeIcon className="admin-aside-icon" icon={faSliders} />
+                <Settings className="admin-aside-icon"/>
                 <span className="sidebar-label">Settings</span>
               </Link>
             </li>
