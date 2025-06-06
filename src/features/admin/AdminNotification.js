@@ -14,6 +14,7 @@ function AdminNotification() {
     readMeetings,
     markMeetingAsRead
   } = useApi();
+
   const [hasFetchedMeetings, setHasFetchedMeetings] = useState(false);
   const [activeTab, setActiveTab] = useState("notifications");
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,10 +26,6 @@ function AdminNotification() {
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
   const sidebarCollapsed = localStorage.getItem("adminSidebarExpanded") === "false";
 
-  const unreadMeetingsCount = useMemo(() => {
-    return meetings.filter(m => !readMeetings[m.id]).length;
-  }, [meetings, readMeetings]);
-
   useEffect(() => {
     if (user?.id && user?.role) {
       fetchNotifications({ userId: user.id, userRole: user.role });
@@ -39,9 +36,8 @@ function AdminNotification() {
         const execs = await fetchExecutivesAPI();
         const map = {};
         execs.forEach(exec => {
-          map[String(exec.id)] = exec.name;
+          map[String(exec.id)] = exec.username;
         });
-        
         setExecutiveMap(map);
       } catch (err) {
         console.error("❌ Failed to load executive names:", err);
@@ -53,7 +49,7 @@ function AdminNotification() {
 
   useEffect(() => {
     const loadMeetings = async () => {
-      if (activeTab === "meetings") {
+      if (activeTab === "meetings" && !hasFetchedMeetings) {
         setMeetingsLoading(true);
         try {
           const data = await adminMeeting();
@@ -68,8 +64,9 @@ function AdminNotification() {
       }
     };
     loadMeetings();
-  }, [activeTab, adminMeeting,hasFetchedMeetings]);
-   const currentNotifications = notifications.slice(
+  }, [activeTab, adminMeeting, hasFetchedMeetings]);
+
+  const currentNotifications = notifications.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -87,7 +84,27 @@ function AdminNotification() {
     markNotificationReadAPI(notificationId);
   };
 
- 
+  const formatCopyMessage = (userId, message, createdAt) => {
+    const copiedText = message.split(":")[1] || "something";
+    const cleanedText = copiedText.replace(/['"]+/g, "").trim();
+    const executiveName = executiveMap[userId] || `#${userId}`;
+    const time = new Date(createdAt).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  
+    return (
+      <>
+        Executive <strong>{executiveName}</strong> has copied <strong>{cleanedText}</strong> at {time}
+      </>
+    );
+  };
+  
+
+  const unreadMeetingsCount = useMemo(() => {
+    return meetings.filter(m => !readMeetings[m.id]).length;
+  }, [meetings, readMeetings]);
 
   return (
     <div className={`admin-notification-layout ${sidebarCollapsed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
@@ -100,11 +117,17 @@ function AdminNotification() {
 
         {/* Tabs */}
         <div className="admin-tab-buttons">
-          <button className={`admin-tab-btn ${activeTab === "notifications" ? "active" : ""}`} onClick={() => setActiveTab("notifications")}>
+          <button
+            className={`admin-tab-btn ${activeTab === "notifications" ? "active" : ""}`}
+            onClick={() => setActiveTab("notifications")}
+          >
             Notifications
           </button>
-          <button className={`admin-tab-btn ${activeTab === "meetings" ? "active" : ""}`} onClick={() => setActiveTab("meetings")}>
-            Meetings
+          <button
+            className={`admin-tab-btn ${activeTab === "meetings" ? "active" : ""}`}
+            onClick={() => setActiveTab("meetings")}
+          >
+            Meetings: {unreadMeetingsCount > 0 && <span className="m-badge">{unreadMeetingsCount}</span>}
           </button>
         </div>
 
@@ -116,38 +139,39 @@ function AdminNotification() {
             <ul className="admin-notification-list">
               {currentNotifications
                 .filter(n => !n.message.toLowerCase().includes("meeting"))
-                .map(n => {
-                  const [title, copiedTextWithQuotes] = n.message.split(":");
-                  const [fullTitle, copiedText] = n.message.split(":");
-                  const [executiveName] = fullTitle.trim().split(" ");
-                  return (
-                    <li key={n.id} className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}>
-                      <div className="admin-notification-item-header">
-                        <strong>Copied</strong>
-                        <div className="admin-notification-meta">
-                          <span className="admin-notification-time">{new Date(n.createdAt).toLocaleTimeString()}</span>
-                          <label className="admin-notification-checkbox">
-                            <input type="checkbox" checked={n.is_read} disabled={n.is_read} onChange={() => handleMarkAsRead(n.id)} />
-                            Mark as read
-                          </label>
-                        </div>
+                .map(n => (
+                  <li key={n.id} className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}>
+                    <div className="admin-notification-item-header">
+                      <strong>Copied</strong>
+                      <div className="admin-notification-meta">
+                        <span className="admin-notification-time">
+                          {new Date(n.createdAt).toLocaleTimeString()}
+                        </span>
+                        <label className="admin-notification-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={n.is_read}
+                            disabled={n.is_read}
+                            onChange={() => handleMarkAsRead(n.id)}
+                          />
+                          Mark as read
+                        </label>
                       </div>
-                      <p className="admin-notification-message">
-                      Exceutive {n.userId} {executiveName} copied-
-                      {copiedText?.trim()}
-                      </p>
-                    </li>
-                  );
-                })}
+                    </div>
+                    <p className="admin-notification-message">
+                      {formatCopyMessage(n.userId, n.message, n.createdAt)}
+                    </p>
+                  </li>
+                ))}
             </ul>
 
             {/* Pagination */}
             <div className="admin-notification-pagination">
-              <button className="admin-notification-pagination-btn" onClick={handlePrevPage} disabled={currentPage === 1}>
+              <button onClick={handlePrevPage} disabled={currentPage === 1} className="admin-notification-pagination-btn">
                 Prev
               </button>
               <span className="admin-notification-page-info">Page {currentPage} of {totalPages}</span>
-              <button className="admin-notification-pagination-btn" onClick={handleNextPage} disabled={currentPage === totalPages}>
+              <button onClick={handleNextPage} disabled={currentPage === totalPages} className="admin-notification-pagination-btn">
                 Next
               </button>
             </div>
@@ -165,11 +189,11 @@ function AdminNotification() {
                     Total Meetings: {meetings.length}
                   </p>
                   {meetings.map(meeting => {
-const executiveName = executiveMap[String(meeting.executiveId)] || "Unknown";
-const clientName = meeting.clientName || "Unnamed";
+                    const executiveName = executiveMap[String(meeting.executiveId)] || "Unknown";
+                    const clientName = meeting.clientName || "Unnamed";
                     const time = new Date(meeting.startTime).toLocaleTimeString([], {
                       hour: "2-digit",
-                      minute: "2-digit",
+                      minute: "2-digit"
                     });
                     const isRead = readMeetings[meeting.id];
 
@@ -180,7 +204,7 @@ const clientName = meeting.clientName || "Unnamed";
                           <div className="admin-notification-meta">
                             <span className="admin-notification-time">{time}</span>
                             <label className="admin-notification-checkbox">
-                            <input
+                              <input
                                 type="checkbox"
                                 checked={isRead}
                                 disabled={isRead}
@@ -191,9 +215,8 @@ const clientName = meeting.clientName || "Unnamed";
                           </div>
                         </div>
                         <p className="admin-notification-message">
-                        {executiveMap[String(meeting.executiveId)] || "Unknown"} has a meeting with {clientName} at {time}
+                          <strong>{executiveName} </strong>has a meeting with <strong>{clientName}</strong> at {time}
                         </p>
-
                       </li>
                     );
                   })}
