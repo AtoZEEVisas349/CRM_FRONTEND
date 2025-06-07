@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ThemeContext } from "../admin/ThemeContext";
+import RequirePermission from "../admin-settings/RequirePermission";
 
 const SettingsLayout = () => {
   const { theme } = useContext(ThemeContext);
@@ -112,6 +113,7 @@ const SettingsLayout = () => {
 
   return (
     <>
+ <RequirePermission requiredKey="settings">
       <style>
         {`
           .settings-layout {
@@ -425,6 +427,7 @@ const SettingsLayout = () => {
           <Outlet />
         </main>
       </div>
+      </RequirePermission>
     </>
   );
 };

@@ -13,6 +13,7 @@ import { ProcessProvider } from './context/ProcessAuthContext';
 import { ProcessServiceProvider } from './context/ProcessServiceContext';
 import { BeepSettingsProvider } from './context/BeepSettingsContext';
 import { SearchProvider } from './context/SearchContext';
+import { PermissionProvider } from './context/PermissionContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -29,7 +30,9 @@ root.render(
             <ProcessProvider>
               <ProcessServiceProvider>
                 <SearchProvider>
-            <App />
+                  <PermissionProvider>
+                <App />
+            </PermissionProvider>
             </SearchProvider>
             </ProcessServiceProvider>
             </ProcessProvider>

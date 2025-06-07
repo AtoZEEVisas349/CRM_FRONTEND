@@ -56,8 +56,9 @@ useEffect(() => {
       const token = localStorage.getItem("token");
       if (token) {
         // Prevent going back to public routes
-        const restrictedPaths = ["/login", "/signup", "/forgot-password", "/reset-password"];
-        if (restrictedPaths.includes(window.location.pathname)) {
+        const restrictedPaths = ["/login", "/signup", "/forgot-password",
+           "/reset-password","/process/client/login","/process/customer/login"];     
+         if (restrictedPaths.includes(window.location.pathname)) {
           window.history.go(1); // Push forward
         }
       }
