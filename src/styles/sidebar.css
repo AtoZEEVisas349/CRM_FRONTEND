@@ -1,4 +1,4 @@
-/* Sidebar Navbar */
+/* Sidebar.css */
 
 .sidebar_nav {
   padding: 12px 20px;
@@ -18,7 +18,7 @@
   border-radius: 12px;
 }
 
-/* .sidebar-toggle-btn {
+.sidebar-toggle-btn {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -27,7 +27,7 @@
   font-size: 24px;
   cursor: pointer;
   z-index: 1001;
-} */
+}
 
 
 .sidebar_heading h1 {
@@ -113,17 +113,6 @@
 
 
 
-
-.submenu_item:hover {
-  background: var(--accent-color);
-  color: #ffffff;
-  padding-left: 20px;
-}
-
-.submenu_item:hover .submenu_icon {
-  color: white;
-}
-
 .sidebar_icon,
 .submenu_icon {
   margin-right: 10px;
@@ -132,6 +121,12 @@
   display: flex;
   justify-content: center;
   color: var(--accent-color);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: center;
+}
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1.2) rotate(10deg); }
+  50% { transform: scale(1.35) rotate(-5deg); }
 }
 
 .navbar {
@@ -1389,4 +1384,525 @@ margin-top:0px;
     font-size: 16px;
     max-width: 90%;
   }
+}
+/* 🌸 Light Theme - Sidebar & Navbar Enhanced with Light Purple Gradient & Glow */
+[data-theme="light"] .sidebar_container {
+  background: linear-gradient(135deg, #f3e8ff, #e5e5f7); /* very light purple gradient */
+  box-shadow: 2px 0 20px rgba(144, 99, 255, 0.08);
+  border-right: 1px solid #e0dff1;
+}
+
+/* Sidebar Navigation Item */
+[data-theme="light"] .sidebar_nav {
+  color: #3a2b6a;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  border-radius: 10px;
+}
+
+[data-theme="light"] .sidebar_nav:hover {
+  background: linear-gradient(135deg, #e0d7ff, #f5f0ff);
+  color: #4c2d91;
+  transform: perspective(600px) rotateY(5deg) scale(1.03);
+  box-shadow: 0 6px 14px rgba(119, 59, 255, 0.2);
+}
+
+/* Sidebar Icons - Glow + Tilt */
+[data-theme="light"] .sidebar_icon {
+  color: #7b4dfc;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .sidebar_nav:hover .sidebar_icon {
+  color: #7b4dfc;
+  text-shadow: 0 0 6px rgba(123, 77, 252, 0.4);
+  transform: rotateY(10deg);
+}
+
+/* Sidebar Heading */
+[data-theme="light"] .sidebar_heading h1 {
+  color: #472b8c;
+  text-shadow: 0 1px 3px rgba(75, 0, 130, 0.1);
+}
+
+/* Submenu Styling */
+[data-theme="light"] .submenu_nav li a:hover {
+  background: #ece4ff;
+  color: #4b3090;
+  box-shadow: inset 0 0 8px rgba(123, 77, 252, 0.1);
+  transform: translateX(5px);
+}
+
+/* 🌸 Light Theme - Navbar Gradient + Icon Effects */
+[data-theme="light"] .navbar {
+  background: linear-gradient(to right, #f8f1ff, #f0e7ff);
+  color: #3a2b6a;
+  box-shadow: 0 4px 12px rgba(123, 77, 252, 0.1);
+  border-bottom: 1px solid #e0dff1;
+}
+
+/* Navbar Icons Hover */
+[data-theme="light"] .navbar_icon {
+  color: #6a30c0;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .navbar_icon:hover {
+  background: #7b4dfc;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(123, 77, 252, 0.3);
+  transform: scale(1.15);
+}
+
+/* Avatar Glow */
+[data-theme="light"] .user_avatar {
+  background-color: #7b4dfc;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(123, 77, 252, 0.3);
+}
+
+
+
+
+/* ===============================================
+   SIDEBAR ICON EFFECTS - Mystical & Dfynamic
+   =============================================== */
+
+/* Base sidebar icon styling */
+.sidebar_nav svg, .submenu_item svg {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: drop-shadow(0 0 18px rgba(74, 144, 226, 0.5)); /* 🔥 Increased glow */
+  transform-origin: center;
+  position: relative;
+}
+
+
+/* Menu Toggle - Cosmic Spin */
+.menuToggle svg {
+  transition: all 0.5s ease-in-out;
+  filter: drop-shadow(0 0 8px rgba(255, 107, 107, 0.4));
+}
+
+.menuToggle:hover svg {
+  transform: rotate(180deg) scale(1.3);
+  filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.8)) 
+          drop-shadow(0 0 25px rgba(255, 255, 255, 0.3));
+  animation: cosmicPulse 1.5s infinite alternate;
+}
+
+@keyframes cosmicPulse {
+  0% { transform: rotate(180deg) scale(1.3); }
+  100% { transform: rotate(180deg) scale(1.4) rotateY(15deg); }
+}
+
+/* Dashboard Icon - Home Glow */
+.sidebar_nav:nth-child(1) svg {
+  filter: drop-shadow(0 0 5px rgba(52, 211, 153, 0.4));
+}
+
+.sidebar_nav:nth-child(1):hover svg {
+  transform: scale(1.2) translateY(-3px);
+  filter: drop-shadow(0 0 15px rgba(52, 211, 153, 0.8))
+          drop-shadow(0 0 25px rgba(16, 185, 129, 0.6));
+  animation: homeFloat 1s infinite ease-in-out;
+}
+
+@keyframes homeFloat {
+  0%, 100% { transform: scale(1.2) translateY(-3px) rotateZ(0deg); }
+  50% { transform: scale(1.25) translateY(-8px) rotateZ(2deg); }
+}
+
+/* Leads Icon - Lightning Effect */
+.sidebar_nav svg[data-icon="user-plus"] {
+  filter: drop-shadow(0 0 5px rgba(147, 51, 234, 0.4));
+}
+
+.sidebar_nav:hover svg[data-icon="user-plus"] {
+  transform: scale(1.2) translateY(-3px);
+  filter: drop-shadow(0 0 15px rgba(147, 51, 234, 0.9))
+          drop-shadow(0 0 25px rgba(168, 85, 247, 0.6));
+  animation: homeFloat 1s infinite ease-in-out;
+}
+
+
+@keyframes lightningPulse {
+  0% { 
+    transform: scale(1.15) rotateY(15deg);
+    filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.9));
+  }
+  100% { 
+    transform: scale(1.25) rotateY(-10deg) rotateZ(5deg);
+    filter: drop-shadow(0 0 30px rgba(147, 51, 234, 1))
+            drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
+  }
+}
+
+/* Submenu Icons - Cascade Effect */
+.submenu_item svg {
+  filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.4));
+  transform: translateX(-10px) scale(0.9);
+  opacity: 0.8;
+}
+
+.submenu_item:hover svg {
+  transform: scale(1.1) rotateZ(10deg); /* ❌ Removed translateX */
+  filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.8))
+          drop-shadow(0 0 20px rgba(96, 165, 250, 0.5));
+  opacity: 1;
+  animation: cascadeGlow 1.2s infinite alternate;
+}
+
+
+@keyframes cascadeGlow {
+  0% { 
+    transform:scale(1.1) rotateZ(15deg);
+    filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.8));
+  }
+  100% { 
+    transform: scale(1.15) rotateZ(-15deg); /* ❌ No horizontal shift */
+    filter: drop-shadow(0 0 18px rgba(59, 130, 246, 1))
+            drop-shadow(0 0 25px rgba(255, 255, 255, 0.3));
+  }
+}
+
+/* Schedule Icon - Clock Rotation */
+.sidebar_nav svg[data-icon="file"] {
+  filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.4));
+}
+
+.sidebar_nav:hover svg[data-icon="file"] {
+  transform: scale(1.2) rotate(360deg);
+  filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.8))
+          drop-shadow(0 0 25px rgba(251, 191, 36, 0.6));
+  animation: clockSpin 2s linear infinite;
+}
+
+@keyframes clockSpin {
+  0% { transform: scale(1.2) rotate(0deg); }
+  100% { transform: scale(1.2) rotate(360deg); }
+}
+
+/* Invoice Icon - Money Shimmer */
+.sidebar_nav svg[data-icon="receipt"] {
+  filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.4));
+}
+
+.sidebar_nav:hover svg[data-icon="receipt"] {
+  transform: scale(1.2) translateY(-3px);
+  filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.8))
+          drop-shadow(0 0 25px rgba(74, 222, 128, 0.6));
+  animation: homeFloat 1s infinite ease-in-out;
+}
+
+@keyframes moneyShimmer {
+  0%, 100% { 
+    transform: scale(1.2) skewX(10deg);
+    filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.8));
+  }
+  50% { 
+    transform: scale(1.25) skewX(-5deg) rotateY(15deg);
+    filter: drop-shadow(0 0 20px rgba(34, 197, 94, 1))
+            drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+  }
+}
+
+/* Settings Icon - Gear Spin */
+.sidebar_nav svg[data-icon="gear"] {
+  filter: drop-shadow(0 0 5px rgba(156, 163, 175, 0.4));
+}
+
+.sidebar_nav:hover svg[data-icon="gear"] {
+  transform: scale(1.2) rotate(-180deg);
+  filter: drop-shadow(0 0 15px rgba(156, 163, 175, 0.8))
+          drop-shadow(0 0 25px rgba(209, 213, 219, 0.6));
+  animation: gearSpin 3s linear infinite;
+}
+
+@keyframes gearSpin {
+  0% { transform: scale(1.2) rotate(0deg); }
+  100% { transform: scale(1.2) rotate(-360deg); }
+}
+
+/* ===============================================
+   NAVBAR ICON EFFECTS - Futuristic & Sleek
+   =============================================== */
+
+/* Base navbar icon styling */
+.navbar_icon {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+  cursor: pointer;
+  position: relative;
+}
+
+/* Back Arrow - Swift Motion */
+.search_bar svg {
+  transition: all 0.3s ease-out;
+  filter: drop-shadow(0 0 3px rgba(99, 102, 241, 0.4));
+}
+
+.search_bar svg:hover {
+  transform: translateX(-8px) scale(1.3);
+  filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.8))
+          drop-shadow(0 0 20px rgba(129, 140, 248, 0.5));
+  animation: arrowGlide 0.8s infinite alternate;
+}
+
+@keyframes arrowGlide {
+  0% { transform: translateX(-8px) scale(1.3); }
+  100% { transform: translateX(-12px) scale(1.35) rotateY(10deg); }
+}
+
+/* Timer Icons - Pulsing Energy */
+.timer-btn-small svg {
+  transition: all 0.4s ease-out;
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.4));
+}
+
+.timer-btn-small:hover svg {
+  transform: scale(1.4) rotateZ(15deg);
+  filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.8))
+          drop-shadow(0 0 25px rgba(74, 222, 128, 0.6));
+  animation: energyPulse 1s infinite;
+}
+
+@keyframes energyPulse {
+  0%, 100% { 
+    transform: scale(1.4) rotateZ(15deg);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.5) rotateZ(-10deg);
+    opacity: 0.8;
+    filter: drop-shadow(0 0 20px rgba(34, 197, 94, 1));
+  }
+}
+
+/* Notification Bell - Ring Effect */
+.navbar_icon[data-icon="bell"] {
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.4));
+  transform-origin: top center;
+}
+
+.navbar_icon[data-icon="bell"]:hover {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.8))
+          drop-shadow(0 0 25px rgba(196, 181, 253, 0.6));
+  animation: digitalGlitch 1.5s infinite;
+}
+
+@keyframes bellRing {
+  0%, 100% { transform: scale(1.3) rotateZ(15deg); }
+  25% { transform: scale(1.35) rotateZ(-15deg); }
+  75% { transform: scale(1.3) rotateZ(10deg); }
+}
+
+/* Robot Icon - Digital Glitch */
+.bot_icon {
+  filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
+  transform-origin: top center;
+}
+
+.bot_icon:hover {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.8))
+          drop-shadow(0 0 25px rgba(196, 181, 253, 0.6));
+  animation: digitalGlitch 1.5s infinite;
+}
+
+@keyframes digitalGlitch {
+  0%, 90%, 100% {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.8));
+  }
+  10% {
+    transform: scale(1.25) translateX(2px);
+    filter: drop-shadow(2px 0 15px rgba(168, 85, 247, 1));
+  }
+  20% {
+    transform: scale(1.35) translateX(-2px);
+    filter: drop-shadow(-2px 0 15px rgba(168, 85, 247, 1));
+  }
+}
+
+/* Activity Clock - Hypnotic Spin */
+.navbar_icon[data-icon="clock"]:not(.timer-btn-small svg) {
+  filter: drop-shadow(0 0 5px rgba(14, 165, 233, 0.4));
+  transform-origin: top center;
+}
+
+.navbar_icon[data-icon="clock"]:hover {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.8))
+          drop-shadow(0 0 25px rgba(196, 181, 253, 0.6));
+  animation: digitalGlitch 1.5s infinite;
+}
+
+@keyframes hypnoticSpin {
+  0% { transform: scale(1.3) rotate(180deg); }
+  100% { transform: scale(1.3) rotate(540deg); }
+}
+
+/* User Icon - Avatar Glow */
+.navbar_icon[data-icon="circle-user"] {
+  filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.4));
+  transform-origin: top center;
+}
+
+.navbar_icon[data-icon="circle-user"]:hover {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.8))
+          drop-shadow(0 0 25px rgba(196, 181, 253, 0.6));
+  animation: digitalGlitch 1.5s infinite;
+}
+
+@keyframes avatarGlow {
+  0% {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.8));
+  }
+  100% {
+    transform: scale(1.4) rotateY(15deg);
+    filter: drop-shadow(0 0 25px rgba(251, 191, 36, 1))
+            drop-shadow(0 0 35px rgba(255, 255, 255, 0.4));
+  }
+}
+
+/* ===============================================
+   FLOATING BREAK ICONS - Ethereal Movement
+   =============================================== */
+
+.floating-icon {
+  animation: etherealFloat 4s infinite ease-in-out;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+  transform-origin: center;
+}
+
+.floating-icon:nth-child(odd) {
+  animation-delay: -1s;
+  animation-duration: 3.5s;
+}
+
+.floating-icon:nth-child(even) {
+  animation-delay: -2s;
+  animation-duration: 4.5s;
+}
+
+@keyframes etherealFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateZ(0deg) scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+  }
+  25% {
+    transform: translateY(-20px) rotateZ(90deg) scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+  }
+  50% {
+    transform: translateY(-10px) rotateZ(180deg) scale(0.9);
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1));
+  }
+  75% {
+    transform: translateY(-30px) rotateZ(270deg) scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+  }
+}
+
+/* ===============================================
+   SPECIAL EFFECTS & HOVER STATES
+   =============================================== */
+
+/* Logout Button Icon */
+.logout_btn svg {
+  transition: all 0.3s ease-out;
+  filter: drop-shadow(0 0 3px rgba(239, 68, 68, 0.4));
+}
+
+.logout_btn:hover svg {
+  transform: translateX(5px) scale(1.2);
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8))
+          drop-shadow(0 0 15px rgba(248, 113, 113, 0.5));
+  animation: exitGlow 1s infinite alternate;
+}
+
+@keyframes exitGlow {
+  0% { 
+    transform: translateX(5px) scale(1.2);
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(8px) scale(1.25);
+    opacity: 0.8;
+  }
+}
+
+/* Stop Break Button */
+.stop-break-btn svg {
+  transition: all 0.4s ease-out;
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+}
+
+.stop-break-btn:hover svg {
+  transform: scale(1.3) rotateZ(180deg);
+  filter: drop-shadow(0 0 20px rgba(239, 68, 68, 1))
+          drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+  animation: stopPulse 0.8s infinite;
+}
+
+@keyframes stopPulse {
+  0%, 100% { 
+    transform: scale(1.3) rotateZ(180deg);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.4) rotateZ(180deg);
+    opacity: 0.7;
+  }
+}
+
+/* ===============================================
+   RESPONSIVE ADJUSTMENTS
+   =============================================== */
+
+@media (max-width: 768px) {
+  .sidebar_nav svg, .submenu_item svg {
+    filter: drop-shadow(0 0 2px rgba(74, 144, 226, 0.3));
+  }
+  
+  .navbar_icon {
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+  }
+  
+  /* Reduce animation intensity on mobile */
+  .sidebar_nav:hover svg, .submenu_item:hover svg,
+  .navbar_icon:hover {
+    transform: scale(1.1);
+    animation: none;
+  }
+}
+
+/* ===============================================
+   NOTIFICATION BADGE ENHANCEMENT
+   =============================================== */
+
+.notification-badge {
+  animation: badgePulse 2s infinite;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 1),
+                0 0 25px rgba(168, 85, 247, 1);
+  }
+}
+.sidebar_nav svg,
+.sidebar_icon {
+  filter: drop-shadow(0 0 10px rgba(123, 77, 252, 0.5)) 
+          drop-shadow(0 0 20px rgba(123, 77, 252, 0.3));
+  transition: all 0.4s ease-in-out;
 }

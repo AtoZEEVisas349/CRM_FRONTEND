@@ -593,4 +593,13 @@ export const createAdminApi = async (adminData) => {
     throw error;
   }
 };
+export const createManagerApi = async (managerData) => {
+  try {
+    const response = await apiService.post("manager/signup",managerData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error ", error);
+    throw error;
+  }
+};
 export default apiService;

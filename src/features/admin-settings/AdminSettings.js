@@ -448,7 +448,6 @@ const AdminSettings = () => {
       case "password":
         return (
           <>
-           <div className="blur-overlay-wrapper">
 
             <h3>Change Password</h3>
             <form className="profile-form">
@@ -472,7 +471,6 @@ const AdminSettings = () => {
                 </button>
               </div>
             </form>
-            </div>
           </>
         );
       case "profile":

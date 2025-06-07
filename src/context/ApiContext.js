@@ -727,7 +727,19 @@ const createAdmin = async (adminData) => {
     setLoading(false);
   }
 };
+const createManager = async (managerData) => {
+  setLoading(true);
+  
+  try {
+    const result = await apiService.createManagerApi(managerData);
+    return result;
+  } catch (err) {
 
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -817,6 +829,7 @@ const createAdmin = async (adminData) => {
         adminMeeting,
         convertedCustomerCount, // ✅ add this
     setConvertedCustomerCount, // ✅ and this
+    createManager,
         // ✅ Follow-ups
         followUps,
         followUpLoading,

@@ -1,3 +1,4 @@
+
 /* General Wrapper (SettingRoutes) */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 .settings-page-wrapper {
@@ -21,7 +22,7 @@
 }
 
 .settings-sidebar {
-  width: 30%;
+  width: 25%;
   padding: 30px 0px;
   background: linear-gradient(135deg, #ebecec, #f4eeee);
   border-right: 1px solid #d0d7de;
@@ -633,7 +634,7 @@
 }
 @media (min-width: 1024px) and (max-width: 1220px) {
   .settings-sidebar {
-    width: 234px;
+    width: 100px !important;
   }
   .my-profile {
     width: fit-content !important;
@@ -668,7 +669,7 @@
 }
 @media (min-width: 1445px) {
   .settings-sidebar {
-    width: 205px;
+    width: 170px;
   }
   .my-profile {
     width: 69vw;
@@ -1458,7 +1459,7 @@
   display: flex;
   min-height: calc(100vw - var(--navbar-height));
   transition: var(--transition);
-  margin-left: 230px;
+  margin-left: 200px;
 }
 
 /* === Settings Layout (updating existing styles) === */
@@ -1475,7 +1476,7 @@
 
 /* === Enhanced Sidebar === */
 .settings-sidebar {
-  min-width: 340px;
+  min-width: fit-content;
   background: linear-gradient(135deg, #f8f9fa, #ffffff);
   border-right: 1px solid var(--border-color);
   padding: var(--content-padding);
@@ -1500,7 +1501,7 @@
 .settings-sidebar a {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
   text-decoration: none;
   color: var(--text-primary);
   font-weight: 500;
@@ -1552,7 +1553,7 @@
 /* Desktop (992px - 1199px) */
 @media (min-width: 992px) and (max-width: 1199px) {
   :root {
-    --sidebar-width: 260px;
+    --sidebar-width: 200px;
   }
 
   .settings-layout {

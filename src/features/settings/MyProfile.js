@@ -135,7 +135,7 @@ const MyProfile = () => {
   const profileStyles = `
     .my-profile {
       padding: 20px;
-      max-width: 1200px;
+      max-width: 1500px;
       margin: 0 auto;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       color: #2d3748;
@@ -148,7 +148,6 @@ const MyProfile = () => {
     .my-profile h2 {
       font-size: 2rem;
       font-weight: 700;
-      margin-bottom: 2rem;
       color: #1a202c;
       text-align: center;
     }
@@ -733,3 +732,4 @@ const MyProfile = () => {
 };
 
 export default MyProfile;
+

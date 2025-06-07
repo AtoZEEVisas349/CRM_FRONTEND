@@ -1,7 +1,10 @@
+
+/*executive.css*/
 /* executive */
-html, body {
+html,
+body {
   overflow-x: hidden;
-  overflow: hidden; 
+  overflow: hidden;
   width: 100%;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -65,23 +68,26 @@ html, body {
   color: var(--text-color);
   border-bottom: 1px solid var(--border-color);
 }
+
 @media (min-width: 481px) and (max-width: 991px) {
   .navbar {
     padding: 20px;
     height: 70px;
-    width:100%;
+    width: 100%;
     background: rgba(255, 255, 255, 0.75);
     position: fixed;
     top: 0;
     z-index: 1;
-    left:0px;
+    left: 0px;
     padding-left: 42px;
   }
-  .executive-main-content{
-    margin-left:10px !important;
-    width:100% !important;
+
+  .executive-main-content {
+    margin-left: 10px !important;
+    width: 100% !important;
   }
 }
+
 .search-container {
   background: var(--input-bg);
   border-radius: 8px;
@@ -136,8 +142,7 @@ html, body {
 }
 
 /* ===== Report Card ===== */
-[data-theme="light"]
-.report-card {
+[data-theme="light"] .report-card {
   flex: 1;
   background: var(--card-bg);
   color: var(--text-color);
@@ -150,43 +155,54 @@ html, body {
   box-shadow: 0 4px 12px var(--shadow-light);
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
-[data-theme="dark"]
-.report-card {
+
+[data-theme="dark"] .report-card {
   flex: 1;
-  background: linear-gradient(135deg, #1f1f2e, #2a2a3d); /* Dark gradient */
-  color: #f0f0f0; /* Light text for contrast */
+  background: linear-gradient(135deg, #1f1f2e, #2a2a3d);
+  /* Dark gradient */
+  color: #f0f0f0;
+  /* Light text for contrast */
   padding: 20px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   position: relative;
   transition: transform 0.3s ease-in-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  /* Darker shadow for depth */
 }
-[data-theme="dark"] .card-details h4{
+
+[data-theme="dark"] .card-details h4 {
   color: #fff;
 }
-[data-theme="dark"] .card-value1{
+
+[data-theme="dark"] .card-value1 {
   color: #fff;
 }
-[data-theme="red"] .card-value1{
+
+[data-theme="red"] .card-value1 {
   color: #fff;
 }
-[data-theme="blue"] .card-value1{
+
+[data-theme="blue"] .card-value1 {
   color: #fff;
 }
-[data-theme="dark"] .news h1{
+
+[data-theme="dark"] .news h1 {
   color: #fff;
 }
-[data-theme="brown"] .card-value1{
+
+[data-theme="brown"] .card-value1 {
   color: #fff;
 }
-[data-theme="dark"]
-.report-card:hover {
-  background: linear-gradient(135deg, #5f0a87, #a4508b); /* Purple gradient on hover */
+
+[data-theme="dark"] .report-card:hover {
+  background: linear-gradient(135deg, #5f0a87, #a4508b);
+  /* Purple gradient on hover */
   transform: translateY(-4px) scale(1.02);
   box-shadow: 0 6px 16px rgba(164, 80, 139, 0.4);
 }
+
 .report-cards-exec {
   display: flex;
   flex-direction: row;
@@ -199,10 +215,11 @@ html, body {
   .report-cards-exec {
     flex-direction: column;
   }
+
   .sidebar_container {
     height: 100vh;
     transition: transform 0.3s ease-in-out;
-    width:250px;
+    width: 250px;
   }
 
   .sidebar_container.active {
@@ -215,18 +232,22 @@ html, body {
   transform: scale(1.05);
   color: #fff;
 }
-[data-theme="light"]
-.report-card-0:hover {
-  background-color: #9fcefa; /* Blue */
+
+[data-theme="light"] .report-card-0:hover {
+  background-color: #9fcefa;
+  /* Blue */
 }
-[data-theme="light"]
-.report-card-1:hover {
-  background-color: #a9fcfc; /* Green */
+
+[data-theme="light"] .report-card-1:hover {
+  background-color: #a9fcfc;
+  /* Green */
 }
-[data-theme="light"]
-.report-card-2:hover {
-  background-color: #eda1fc; /* Orange */
+
+[data-theme="light"] .report-card-2:hover {
+  background-color: #eda1fc;
+  /* Orange */
 }
+
 .card-icon {
   position: absolute;
   top: 15px;
@@ -272,41 +293,44 @@ html, body {
 }
 
 
-  .positive {
-    color: #27ae60; /* Green */
-  }
-  
-  .negative {
-    color: #e74c3c; /* Red */
-  }
+.positive {
+  color: #27ae60;
+  /* Green */
+}
 
-  .news {
-    background: var(--card-bg);
-    color: var(--text-color);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 12px var(--shadow-light);
-    margin-top: 20px;
-    /* REMOVE fixed height */
-    /* height: 100vh; */
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .news h1 {
-    text-align: left !important;
-    margin-bottom: 10px;
-  }
-  
-  .news iframe {
-    width: 100%;
-    height: auto;
-    min-height: 100vh; /* fills entire view if needed */
-    border-radius: 10px;
-    border: none;
-  }
-  
-  
+.negative {
+  color: #e74c3c;
+  /* Red */
+}
+
+.news {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px var(--shadow-light);
+  margin-top: 20px;
+  /* REMOVE fixed height */
+  /* height: 100vh; */
+  display: flex;
+  flex-direction: column;
+}
+
+.news h1 {
+  text-align: left !important;
+  margin-bottom: 10px;
+}
+
+.news iframe {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  /* fills entire view if needed */
+  border-radius: 10px;
+  border: none;
+}
+
+
 /* ===== Table Styling ===== */
 .transaction-table {
   width: 100%;
@@ -370,12 +394,14 @@ html, body {
   transition: width 0.5s ease-in-out;
   min-width: 5%;
 }
+
 /* ===== User Popover (Light & Dark Mode) ===== */
 .user_popover {
   position: absolute;
   top: 60px;
   right: 30px;
-  background-color: var(--card-bg); /* Handles both modes */
+  background-color: var(--card-bg);
+  /* Handles both modes */
   color: var(--text-color);
   border-radius: 12px;
   padding: 16px;
@@ -392,6 +418,7 @@ html, body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -429,7 +456,8 @@ html, body {
 .user_email,
 .user_role {
   font-size: 13px;
-  color: var(--subtle-text-color, #6b7280); /* fallback gray */
+  color: var(--subtle-text-color, #6b7280);
+  /* fallback gray */
 }
 
 /* Logout Button */
@@ -457,82 +485,46 @@ html, body {
 .light-mode .report-card-0 {
   background: #d0e6ff;
 }
+
 .light-mode .report-card-1 {
   background: #d4f5dd;
 }
+
 .light-mode .report-card-2 {
   background: #fff4d6;
 }
+
 .light-mode .report-card h4,
 .light-mode .card-value1,
 .light-mode .card-change {
   color: #222;
 }
-.card-value1{
-  color:#222 ;
+
+.card-value1 {
+  color: #222;
 }
+
 /* Nuclear option to ensure visibility */
 .report-icon {
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,1));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 1));
 }
 
 .light-mode .report-icon {
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,1)) !important;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 1)) !important;
 }
+
 /*-------------------------------Pink----------------------------------*/
 
 [data-theme="red"] .executive-app-container {
   --bg-color: #dfdaf3;
- 
-}
-[data-theme="red"]
-.report-card {
- flex: 1;
- background: linear-gradient(135deg, #de9bc8,#ae6497, rgb(49, 60, 142));
- color: white; /* Light text for contrast */
- padding: 20px;
- border-radius: 12px;
- display: flex;
- flex-direction: column;
- position: relative;
- transition: transform 0.3s ease-in-out;
- box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
 }
-[data-theme="red"] .latest-news{
- color: white;
- margin-bottom: 10px;
-}
-[data-theme="red"] .card-details h4 {
- color:white;
-}
-[data-theme="red"] .card-value, .card-value1 {
- --text-color:white;
-}
-[data-theme="red"] 
-.news  {
- background:linear-gradient(135deg,#de9bc8,#ae6497,rgb(31, 31, 109));
-}
-[data-theme="red"] .navbar_icon{
- color:white;
-}
-[data-theme="red"] .logout_btn {
- background: linear-gradient(135deg, #a3446a, #7e387d);
-}
-[data-theme="red"] .user_avatar  {
- background:rgb(216, 137, 173);
-}
-/*-------------------------------Blue----------------------------------*/
 
-[data-theme="blue"] .executive-app-container {
-  --bg-color: rgb(202, 202, 247);
-}[data-theme="blue"] .navbar_icon{
-  color:white;
-}[data-theme="blue"]
-.report-card {
+[data-theme="red"] .report-card {
   flex: 1;
-  background:linear-gradient(135deg,rgb(31, 31, 109),rgb(87, 87, 164),rgb(141, 105, 80));
-  color: #f0f0f0; /* Light text for contrast */
+  background: linear-gradient(135deg, #de9bc8, #ae6497, rgb(49, 60, 142));
+  color: white;
+  /* Light text for contrast */
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -540,52 +532,122 @@ html, body {
   position: relative;
   transition: transform 0.3s ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
- 
-}[data-theme="blue"] 
-.card-icon  {
-  background:rgb(190, 156, 131) ;
-}[data-theme="blue"] .logout_btn {
-  background:linear-gradient(135deg,rgb(31, 31, 109),rgb(87, 87, 164),rgb(141, 105, 80));
+
 }
-[data-theme="blue"] .user_avatar  {
-  background:rgb(141, 105, 80);
+
+[data-theme="red"] .latest-news {
+  color: white;
+  margin-bottom: 10px;
 }
-[data-theme="blue"] 
-.news  {
-  background:linear-gradient(135deg,rgb(31, 31, 109),rgb(87, 87, 176),rgb(141, 105, 80));
-}
-[data-theme="blue"] .card-details h4 {
-  color:white;
-}
-[data-theme="blue"] .card-value, .card-value1 {
-  --text-color:white;
-}
-[data-theme="blue"] .latest-news{
+
+[data-theme="red"] .card-details h4 {
   color: white;
 }
+
+[data-theme="red"] .card-value,
+.card-value1 {
+  --text-color: white;
+}
+
+[data-theme="red"] .news {
+  background: linear-gradient(135deg, #de9bc8, #ae6497, rgb(31, 31, 109));
+}
+
+[data-theme="red"] .navbar_icon {
+  color: white;
+}
+
+[data-theme="red"] .logout_btn {
+  background: linear-gradient(135deg, #a3446a, #7e387d);
+}
+
+[data-theme="red"] .user_avatar {
+  background: rgb(216, 137, 173);
+}
+
+/*-------------------------------Blue----------------------------------*/
+
+[data-theme="blue"] .executive-app-container {
+  --bg-color: rgb(202, 202, 247);
+}
+
+[data-theme="blue"] .navbar_icon {
+  color: white;
+}
+
+[data-theme="blue"] .report-card {
+  flex: 1;
+  background: linear-gradient(135deg, rgb(31, 31, 109), rgb(87, 87, 164), rgb(141, 105, 80));
+  color: #f0f0f0;
+  /* Light text for contrast */
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+}
+
+[data-theme="blue"] .card-icon {
+  background: rgb(190, 156, 131);
+}
+
+[data-theme="blue"] .logout_btn {
+  background: linear-gradient(135deg, rgb(31, 31, 109), rgb(87, 87, 164), rgb(141, 105, 80));
+}
+
+[data-theme="blue"] .user_avatar {
+  background: rgb(141, 105, 80);
+}
+
+[data-theme="blue"] .news {
+  background: linear-gradient(135deg, rgb(31, 31, 109), rgb(87, 87, 176), rgb(141, 105, 80));
+}
+
+[data-theme="blue"] .card-details h4 {
+  color: white;
+}
+
+[data-theme="blue"] .card-value,
+.card-value1 {
+  --text-color: white;
+}
+
+[data-theme="blue"] .latest-news {
+  color: white;
+}
+
 /*-------------------------------Brown----------------------------------*/
 
 [data-theme="brown"] .executive-app-container {
   --bg-color: #d9cac4;
 }
+
 [data-theme="brown"] .card-details h4 {
-  color:white;
+  color: white;
 }
-[data-theme="brown"] .card-value, .card-value1 {
-  --text-color:white;
+
+[data-theme="brown"] .card-value,
+.card-value1 {
+  --text-color: white;
 }
-[data-theme="brown"] .latest-news{
+
+[data-theme="brown"] .latest-news {
   color: white;
   margin-bottom: 10px;
 }
-[data-theme="brown"] .navbar_icon{
-  color:white;
+
+[data-theme="brown"] .navbar_icon {
+  color: white;
 }
-[data-theme="brown"]
-.report-card {
+
+[data-theme="brown"] .report-card {
   flex: 1;
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
-  color: #f0f0f0; /* Light text for contrast */
+  color: #f0f0f0;
+  /* Light text for contrast */
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -593,25 +655,30 @@ html, body {
   position: relative;
   transition: transform 0.3s ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
- 
+
 }
-[data-theme="brown"] 
-.card-icon  {
-  background:rgb(102, 148, 138) ;
+
+[data-theme="brown"] .card-icon {
+  background: rgb(102, 148, 138);
 }
-[data-theme="brown"] 
-.news  {
-background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
-[data-theme="brown"] .logout_btn {
-   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
-}
-[data-theme="brown"] .user_avatar  {
+
+[data-theme="brown"] .news {
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
+
+[data-theme="brown"] .logout_btn {
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+
+[data-theme="brown"] .user_avatar {
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
+}
+
 /*-------------------------------Green----------------------------------*/
 [data-theme="green"] .executive-app-container,
 [data-theme="green"] .executive-main-content {
-  background-color: #c6e7c8; /* Light green background */
+  background-color: #c6e7c8;
+  /* Light green background */
 }
 
 [data-theme="green"] .report-card {
@@ -620,21 +687,26 @@ background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
   padding: 20px;
   transition: all 0.4s ease;
   box-shadow: 0 4px 16px rgba(0, 255, 128, 0.08);
-  color: #ffffff; /* Changed from var() for better contrast */
+  color: #ffffff;
+  /* Changed from var() for better contrast */
   display: flex;
   width: 100%;
   flex-direction: column;
   justify-content: space-between;
   min-height: 180px;
-  position: relative; /* Added for icon positioning */
-  overflow: hidden; /* Ensures rounded corners clip content */
+  position: relative;
+  /* Added for icon positioning */
+  overflow: hidden;
+  /* Ensures rounded corners clip content */
 }
 
 [data-theme="green"] .report-card .card-icon {
   background-color: #42047e;
 }
+
 [data-theme="green"] .card-details {
-  margin-top: 60px; /* Increased to prevent icon overlap */
+  margin-top: 60px;
+  /* Increased to prevent icon overlap */
   position: relative;
   z-index: 1;
 }
@@ -651,6 +723,7 @@ background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
   color: #337232;
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
+
 [data-theme="green"] .analytics-graph,
 [data-theme="green"] .executive-activity,
 [data-theme="green"] .lead-section-graph,
@@ -662,6 +735,7 @@ background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 255, 128, 0.1);
 }
+
 [data-theme="green"] .transaction-table th {
   background-color: rgba(77, 255, 136, 0.08);
 }
@@ -669,6 +743,7 @@ background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
 [data-theme="green"] .transaction-table tr:nth-child(even) {
   background-color: rgba(77, 255, 136, 0.03);
 }
+
 [data-theme="green"] .progress-fill {
   background-color: #4dff88;
 }
@@ -683,3 +758,220 @@ background: linear-gradient(135deg, #754632, rgb(125, 188, 187));}
 [data-theme="green"] .news-container {
   background: linear-gradient(160deg, #5fc85d, #2b4584);
 }
+
+/* 🎨 Enhanced Pastel Cards for Light Theme */
+[data-theme="light"] .report-card-0 {
+  background: #d3e9ff;
+  /* pastel blue */
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.15);
+}
+
+[data-theme="light"] .report-card-1 {
+  background: #d5fbe4;
+  /* pastel green */
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.15);
+}
+
+[data-theme="light"] .report-card-2 {
+  background: #fff8cc;
+  /* pastel yellow */
+  box-shadow: 0 4px 10px rgba(255, 193, 7, 0.15);
+}
+
+[data-theme="light"] .report-card-3 {
+  background: #ffe3d8;
+  /* pastel orange */
+  box-shadow: 0 4px 10px rgba(255, 87, 34, 0.15);
+}
+
+
+[data-theme="light"] .report-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* 📰 Latest News section */
+
+[data-theme="light"] .news {
+  background: #e8deff;
+  /* pastel violet */
+  box-shadow: 0 3px 12px rgba(156, 39, 176, 0.1);
+  color: #3a0066;
+  transition: background 0.3s ease;
+}
+
+[data-theme="light"] .news h1 {
+  color: #0d2f57;
+}
+
+/* 🔘 Light Mode Toggle Button */
+[data-theme="light"] .theme_toggle_btn {
+  background-color: #e0f0ff;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+[data-theme="light"] .theme_toggle_btn .toggle-slider {
+  background-color: #007bff;
+}
+
+/* Rainbow pulse animation for Fresh Leads icon with ultra glow */
+@keyframes rainbowPulse {
+  0% {
+    transform: scale(1);
+    color: #00ffcc;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 204, 1)) drop-shadow(0 0 30px rgba(0, 255, 204, 0.8)) drop-shadow(0 0 45px rgba(0, 255, 204, 0.6)) drop-shadow(0 0 60px rgba(0, 255, 204, 0.4));
+  }
+
+  25% {
+    transform: scale(1.25);
+    color: #ff00ff;
+    filter: drop-shadow(0 0 25px rgba(255, 0, 255, 1)) drop-shadow(0 0 40px rgba(255, 0, 255, 0.9)) drop-shadow(0 0 55px rgba(255, 0, 255, 0.7)) drop-shadow(0 0 70px rgba(255, 0, 255, 0.5));
+  }
+
+  50% {
+    transform: scale(1);
+    color: #00ff55;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 85, 1)) drop-shadow(0 0 30px rgba(0, 255, 85, 0.8)) drop-shadow(0 0 45px rgba(0, 255, 85, 0.6)) drop-shadow(0 0 60px rgba(0, 255, 85, 0.4));
+  }
+
+  75% {
+    transform: scale(1.25);
+    color: #ffaa00;
+    filter: drop-shadow(0 0 25px rgba(255, 170, 0, 1)) drop-shadow(0 0 40px rgba(255, 170, 0, 0.9)) drop-shadow(0 0 55px rgba(255, 170, 0, 0.7)) drop-shadow(0 0 70px rgba(255, 170, 0, 0.5));
+  }
+
+  100% {
+    transform: scale(1);
+    color: #00ffcc;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 204, 1)) drop-shadow(0 0 30px rgba(0, 255, 204, 0.8)) drop-shadow(0 0 45px rgba(0, 255, 204, 0.6)) drop-shadow(0 0 60px rgba(0, 255, 204, 0.4));
+  }
+}
+
+.icon-rainbow-pulse {
+  animation: rainbowPulse 3s infinite ease-in-out;
+}
+
+/* Neon spin animation for Follow-ups icon with ultra glow */
+@keyframes neonSpin {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 15px rgba(255, 0, 255, 1)) drop-shadow(0 0 30px rgba(255, 0, 255, 0.8)) drop-shadow(0 0 45px rgba(255, 0, 255, 0.6)) drop-shadow(0 0 60px rgba(255, 0, 255, 0.4));
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.15);
+    filter: drop-shadow(0 0 25px rgba(255, 0, 255, 1)) drop-shadow(0 0 40px rgba(255, 0, 255, 0.9)) drop-shadow(0 0 55px rgba(255, 0, 255, 0.7)) drop-shadow(0 0 70px rgba(255, 0, 255, 0.5));
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: drop-shadow(0 0 15px rgba(255, 0, 255, 1)) drop-shadow(0 0 30px rgba(255, 0, 255, 0.8)) drop-shadow(0 0 45px rgba(255, 0, 255, 0.6)) drop-shadow(0 0 60px rgba(255, 0, 255, 0.4));
+  }
+}
+
+.icon-neon-spin {
+  animation: neonSpin 2.5s infinite linear;
+}
+
+/* Bounce and glow animation for Converted Clients icon with ultra glow */
+@keyframes bounceGlow {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 15px rgba(0, 255, 85, 1)) drop-shadow(0 0 30px rgba(0, 255, 85, 0.8)) drop-shadow(0 0 45px rgba(0, 255, 85, 0.6)) drop-shadow(0 0 60px rgba(0, 255, 85, 0.4));
+  }
+
+  40% {
+    transform: translateY(-15px) scale(1.2);
+    filter: drop-shadow(0 0 25px rgba(0, 255, 85, 1)) drop-shadow(0 0 40px rgba(0, 255, 85, 0.9)) drop-shadow(0 0 55px rgba(0, 255, 85, 0.7)) drop-shadow(0 0 70px rgba(0, 255, 85, 0.5));
+  }
+
+  60% {
+    transform: translateY(-8px) scale(1.1);
+    filter: drop-shadow(0 0 20px rgba(0, 255, 85, 1)) drop-shadow(0 0 35px rgba(0, 255, 85, 0.8)) drop-shadow(0 0 50px rgba(0, 255, 85, 0.6)) drop-shadow(0 0 65px rgba(0, 255, 85, 0.4));
+  }
+}
+
+.icon-bounce-glow {
+  animation: bounceGlow 2s infinite;
+}
+
+/* Flip and shine animation for Scheduled Meetings icon with ultra glow */
+@keyframes flipShine {
+  0% {
+    transform: perspective(400px) rotateY(0deg) scale(1);
+
+  }
+
+  50% {
+    transform: perspective(400px) rotateY(180deg) scale(1.2);
+  }
+
+  100% {
+    transform: perspective(400px) rotateY(360deg) scale(1);
+  }
+}
+
+.icon-flip-shine {
+  animation: flipShine 2s infinite ease-in-out;
+}
+
+/* Hover effects for all icons with extreme glow */
+.report-card:hover .card-icon {
+  transform: scale(1.3) rotate(10deg);
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: brightness(1.5) drop-shadow(0 0 0 currentColor) drop-shadow(0 0 0 currentColor) drop-shadow(0 0 2px currentColor) drop-shadow(0 0 5px currentColor);
+}
+
+/* Container pulse and medium glow for Fresh Leads */
+@keyframes containerBounce2 {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-10px);
+  }
+
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.report-card-0 {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.report-card-1 {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.report-card-2 {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.report-card-3 {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effects for all containers with medium glow */
+.report-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px currentColor;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+
+
+
