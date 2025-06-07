@@ -99,10 +99,14 @@ const AllClient = () => {
               <FaUser className="client-icon" />
               <span className="client-text">{client.fullName}</span>
             </div>
-            {/* <div className="client-item">
+            <div className="client-item">
               <FaPhoneAlt className="client-icon" />
-              <span className="client-text">{client.phone}</span>
-            </div> */}
+              <span className="client-text">
+                {client.phone
+                  ? `+91 ${client.phone.replace(/^(\+?91)?/, "").slice(-10)}`
+                  : "No Phone"}
+              </span>
+            </div>
             <div className="client-item">
               <FaEnvelope className="client-icon" />
               <span className="client-text">{client.email || "No Email"}</span>
