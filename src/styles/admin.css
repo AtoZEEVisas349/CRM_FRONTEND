@@ -1706,9 +1706,9 @@ body.sidebar-collapsed .assign-task-container {
   font-size: 10px;
   font-weight: 600;
   line-height: 1;
-  padding: 2px 6px;
+  padding: 4px;
   border-radius: 50%;
-  min-width: 18px;
+  min-width: 10px;
   height: 18px;
   display: flex;
   align-items: center;
