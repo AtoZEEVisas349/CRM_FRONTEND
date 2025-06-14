@@ -2,9 +2,11 @@ import React, { useContext } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ThemeContext } from "../admin/ThemeContext";
 import RequirePermission from "../admin-settings/RequirePermission";
-
+import { useLoading } from "../../context/LoadingContext"; // ✅ Import spinner context
+import LoadingSpinner from "../../features/spinner/LoadingSpinner"; // ✅ Spinner component
 const SettingsLayout = () => {
   const { theme } = useContext(ThemeContext);
+  const { isLoading, loadingText } = useLoading(); // ✅ Use loading context
   const location = useLocation();
 
   const settingsMenuItems = [
@@ -12,6 +14,7 @@ const SettingsLayout = () => {
     { path: "theme", label: "Theme", icon: "🎨" },
     { path: "change-password", label: "Change Password", icon: "🔒" },
     { path: "change-beep", label: "Change in Beep", icon: "🔔" },
+    { path: "create-template", label: "Add Email Template", icon: "📩" },
   ];
 
   const styles = {
@@ -406,7 +409,7 @@ const SettingsLayout = () => {
           }
         `}
       </style>
-      <div className="settings-layout" data-theme={theme}>
+      <div className="settings-layout" data-theme={theme}> 
         <aside className="settings-sidebar">
           <h3 className="sidebar-title">Settings</h3>
           <ul className="menu-list">
@@ -423,7 +426,9 @@ const SettingsLayout = () => {
             ))}
           </ul>
         </aside>
+
         <main className="settings-content">
+        {isLoading && <LoadingSpinner text={loadingText || "Loading Settings..."} />}
           <Outlet />
         </main>
       </div>

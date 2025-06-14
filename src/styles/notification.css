@@ -31,7 +31,6 @@
   justify-content: center;
   align-items: flex-start;
   overflow-y: auto;
-  margin-left: 80px;
 }
 
 /* Actual card container inside the centered area */
@@ -42,8 +41,6 @@
   padding: 25px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow-y: auto;
-  margin-left: 170px;
-  margin-top: 60px;
   
   display: flex;
   flex-direction: column; /* Stack content vertically */

@@ -21,7 +21,7 @@ const FollowUpRoutes = () => {
 
   return (
     <div className="follow-app-container">
-      <SidebarandNavbar />
+      {/* <SidebarandNavbar /> */}
       <div className="follow-main-content">
         <h2>Client List</h2>
         <ClientDetails selectedClient={selectedClient} onClose={() => setSelectedClient(null)} />

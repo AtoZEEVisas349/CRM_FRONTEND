@@ -6,9 +6,9 @@ import "../styles/freshlead.css";
 const FreshLeadRoutes=()=> {
   return (
     <div className="lead-assign-container">
-      <div className='lead-sidebar'>
+      {/* <div className='lead-sidebar'>
         <SidebarandNavbar/>
-      </div>  
+      </div>   */}
       <div className='lead-content'>
        <FreshLeads/> 
       </div>

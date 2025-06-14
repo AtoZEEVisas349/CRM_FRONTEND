@@ -14,13 +14,13 @@ export const PermissionProvider = ({ children }) => {
       if (!user?.id || !user?.role) throw new Error("User info missing");
 
       const role = user.role.toLowerCase();
-      if (role === "admin" || role === "executive") { 
+      if (role === "admin") { 
         setPermissions("FULL_ACCESS");
         setLoading(false);
         return;
       }
 
-      const res = await permissionService.fetchPermissionsForUser(user.id, role);
+      const res = await permissionService.fetchPermissionsForUser(user.id, user.role);
       setPermissions(res);
     } catch (err) {
       setError(err.message || "Failed to fetch permissions");

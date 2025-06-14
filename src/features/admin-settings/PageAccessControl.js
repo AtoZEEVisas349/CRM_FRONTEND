@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { usePermissionContext } from "../../context/PermissionContext";
+import RequirePermission from "./RequirePermission";
 
 const PageAccessControl = () => {
   const {
@@ -11,7 +12,7 @@ const PageAccessControl = () => {
   } = usePermissionContext();
 
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUser, setSelectedUser] = useState(""); // Stores "id-role" (e.g., "4-Manager")
   const [selectedRole, setSelectedRole] = useState("");
   const [createStatus, setCreateStatus] = useState("");
   const [permissions, setPermissions] = useState([]);
@@ -46,26 +47,38 @@ const PageAccessControl = () => {
   }, []);
 
   // Create permission
-// Create permission
-const handleCreatePermission = async () => {
+  const handleCreatePermission = async () => {
     if (!selectedUser || !selectedRole) {
       setCreateStatus("Please select both user and role.");
       return;
     }
-  
-    const selectedUserObj = users.find((u) => String(u.id) === selectedUser);
-    const labelLower = selectedUserObj?.label?.toLowerCase() || "";
-  
-    const isManager = labelLower.includes("manager");
-    const isHR = labelLower.includes("hr");
-  
+
+    // Parse selectedUser (e.g., "4-Manager")
+    const [id, role] = selectedUser.split("-");
+    if (!id || !role) {
+      setCreateStatus("Invalid selection.");
+      return;
+    }
+
+    const selectedUserObj = users.find(
+      (u) => String(u.id) === String(id) && u.label.includes(role)
+    );
+    if (!selectedUserObj) {
+      setCreateStatus("Invalid user selected.");
+      return;
+    }
+
+    const roleLower = selectedRole.toLowerCase();
     const payload = {
-      manager_id: isManager ? Number(selectedUser) : null,
-      hr_id: isHR ? Number(selectedUser) : null,
-      user_id: !isManager && !isHR ? Number(selectedUser) : null,
+      manager_id: roleLower === "manager" ? Number(id) : null,
+      hr_id: roleLower === "hr" ? Number(id) : null,
+      user_id:
+        roleLower === "tl" || roleLower === "executive" ? Number(id) : null,
       role: selectedRole,
     };
-  
+
+    console.log("Permission payload:", payload); // Debug payload
+
     try {
       await createPermission(payload);
       setCreateStatus("Permission created successfully!");
@@ -76,7 +89,6 @@ const handleCreatePermission = async () => {
       setCreateStatus("Failed to create permission.");
     }
   };
-  
 
   // Fetch all permissions for dropdown
   useEffect(() => {
@@ -106,17 +118,35 @@ const handleCreatePermission = async () => {
         const newNotificationSettings = {};
 
         const pageKeys = [
-          "overview", "assign_task", "task_management", "monitoring",
-          "executive_details", "invoice", "dashboard", "user_management",
-          "reporting", "settings", "billing"
+          "overview",
+          "assign_task",
+          "task_management",
+          "monitoring",
+          "executive_details",
+          "invoice",
+          "dashboard",
+          "user_management",
+          "reporting",
+          "settings",
+          "billing",
+          "page_access",
         ];
-        const emailKeys = ["weekly_summary", "account_updates", "marketing_emails"];
-        const notificationKeys = ["push_notifications", "sms_notifications", "email_notifications"];
+        const emailKeys = [
+          "weekly_summary",
+          "account_updates",
+          "marketing_emails",
+        ];
+        const notificationKeys = [
+          "push_notifications",
+          "sms_notifications",
+          "email_notifications",
+        ];
 
         Object.entries(permission).forEach(([key, value]) => {
           if (pageKeys.includes(key)) newPageAccess[key] = value;
           else if (emailKeys.includes(key)) newEmailPreferences[key] = value;
-          else if (notificationKeys.includes(key)) newNotificationSettings[key] = value;
+          else if (notificationKeys.includes(key))
+            newNotificationSettings[key] = value;
         });
 
         setPageAccess(newPageAccess);
@@ -139,9 +169,25 @@ const handleCreatePermission = async () => {
 
     const permissionKey = funcKey.toLowerCase().replace(" ", "_");
     const allKeys = {
-      page: ["dashboard", "task_management", "user_management", "reporting", "settings", "billing"],
+      page: [
+        "dashboard",
+        "task_management",
+        "user_management",
+        "assign_task",
+        "monitoring",
+        "executive_details",
+        "reporting",
+        "settings",
+        "billing",
+        "invoice",
+        "page_access",
+      ],
       email: ["weekly_summary", "account_updates", "marketing_emails"],
-      notification: ["push_notifications", "sms_notifications", "email_notifications"]
+      notification: [
+        "push_notifications",
+        "sms_notifications",
+        "email_notifications",
+      ],
     };
 
     let setState, currentState;
@@ -170,6 +216,7 @@ const handleCreatePermission = async () => {
   const roleSuffix = selectedPermission?.role?.toLowerCase() || "";
 
   return (
+  <RequirePermission requiredKey="page_access">
     <div className="section-block">
       <div className="create-permission-section" style={{ marginTop: "20px" }}>
         <h3>Create New Permission</h3>
@@ -177,28 +224,47 @@ const handleCreatePermission = async () => {
           <select
             value={selectedUser}
             onChange={(e) => {
-              const selectedId = e.target.value;
-              const selectedUserObj = users.find((u) => String(u.id) === selectedId);
-
+              const selectedValue = e.target.value;
+              if (!selectedValue) {
+                setSelectedUser("");
+                setSelectedRole("");
+                return;
+              }
+              const [id, role] = selectedValue.split("-");
+              const selectedUserObj = users.find(
+                (u) => String(u.id) === String(id) && u.label.includes(role)
+              );
               if (selectedUserObj) {
-                const match = selectedUserObj.label.match(/^id\s*-\s*\d+\s*-\s*(.+)$/);
-                const roleFromLabel = match ? match[1].trim() : "";
-                setSelectedUser(selectedId);
-                setSelectedRole(roleFromLabel);
+                setSelectedUser(selectedValue);
+                setSelectedRole(role);
               }
             }}
           >
             <option value="">Select User</option>
-            {users.map((user, i) => (
-              <option key={i} value={user.id}>{user.label}</option>
-            ))}
+            {users.map((user) => {
+              const match = user.label.match(/id\s*-\s*(\d+)\s*-\s*(\w+)/i);
+              const role = match ? match[2].trim() : "";
+              const value = `${user.id}-${role}`;
+              return (
+                <option key={value} value={value}>
+                  {user.label}
+                </option>
+              );
+            })}
           </select>
 
-          <button className="primary-btn" onClick={handleCreatePermission}>Create Permission</button>
+          <button className="primary-btn" onClick={handleCreatePermission}>
+            Create Permission
+          </button>
         </div>
 
         {createStatus && (
-          <p style={{ marginTop: "10px", color: createStatus.includes("success") ? "green" : "red" }}>
+          <p
+            style={{
+              marginTop: "10px",
+              color: createStatus.includes("success") ? "green" : "red",
+            }}
+          >
             {createStatus}
           </p>
         )}
@@ -209,13 +275,15 @@ const handleCreatePermission = async () => {
         <select
           value={selectedPermission?.id || ""}
           onChange={(e) => {
-            const selected = permissions.find(p => p.id === e.target.value);
+            const selected = permissions.find((p) => p.id === e.target.value);
             setSelectedPermission(selected);
           }}
         >
           <option value="">Select Permissions for users</option>
           {permissions.map((perm) => (
-            <option key={perm.id} value={perm.id}>{perm.label}</option>
+            <option key={perm.id} value={perm.id}>
+              {perm.label}
+            </option>
           ))}
         </select>
       </div>
@@ -227,20 +295,49 @@ const handleCreatePermission = async () => {
             <div className="header-cell">{selectedPermission.role}</div>
           </div>
 
-          {/* Render page, email, and notification settings */}
           {[
-            { title: "Page Access", keys: ["Dashboard", "Task Management", "User Management", "Reporting", "Settings", "Billing"], state: pageAccess },
-            { title: "Email Preferences", keys: ["Weekly Summary", "Account Updates", "Marketing Emails"], state: emailPreferences },
-            { title: "Notification Settings", keys: ["Push Notifications", "SMS Notifications", "Email Notifications"], state: notificationSettings }
+            {
+              title: "Page Access",
+              keys: [
+                "Dashboard",
+                "Task Management",
+                "User Management",
+                "Assign Task",
+                "Monitoring",
+                "Executive Details",
+                "Reporting",
+                "Settings",
+                "Billing",
+                "Invoice",
+                "Page Access"
+              ],
+              state: pageAccess,
+            },
+            {
+              title: "Email Preferences",
+              keys: ["Weekly Summary", "Account Updates", "Marketing Emails"],
+              state: emailPreferences,
+            },
+            {
+              title: "Notification Settings",
+              keys: [
+                "Push Notifications",
+                "SMS Notifications",
+                "Email Notifications",
+              ],
+              state: notificationSettings,
+            },
           ].map(({ title, keys, state }) => (
             <div className="functionality-group" key={title}>
               <div className="group-title">{title}</div>
               {keys.map((func) => (
                 <div className="table-row" key={`${title}-${func}`}>
-                  <div className="row-cell functionality">{func}</div>
+                <div className="row-cell functionality">{func}</div>
                   <div className="row-cell">
                     <ToggleSwitch
-                      checked={state[func.toLowerCase().replace(" ", "_")] || false}
+                      checked={
+                        state[func.toLowerCase().replace(" ", "_")] || false
+                      }
                       onChange={() => handleToggle(func, roleSuffix)}
                     />
                   </div>
@@ -251,6 +348,7 @@ const handleCreatePermission = async () => {
         </div>
       )}
     </div>
+    </RequirePermission>
   );
 };
 

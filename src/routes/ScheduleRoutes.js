@@ -5,7 +5,7 @@ import schedule from '../styles/schedule.css'
 const ScheduleRoutes = () => {
   return (
     <div className="app-container">
-      <SidebarandNavbar />
+      {/* <SidebarandNavbar /> */}
       <div>
         <ScheduleMeeting/>
       </div>

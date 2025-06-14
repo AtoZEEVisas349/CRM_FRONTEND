@@ -10,7 +10,7 @@ const ClientRoutes = () => {
 
   return (
     <div className="client-app-container">
-      <SideandNavbar />
+      {/* <SideandNavbar /> */}
       <div className="client-main-content">
         {/* ✅ Only ONE Routes block, properly keyed to force remount */}
         <Routes location={location} key={location.pathname}>

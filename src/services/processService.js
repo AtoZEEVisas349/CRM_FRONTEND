@@ -182,3 +182,52 @@ export const getCustomerStagesById = async (customerId) => {
     throw error;
   }
 };
+export const  uploadCustomerDocuments= async (formData) => {
+  const token = localStorage.getItem('token');
+const res = await fetch(`${API_BASE_URL}/customer/document/upload`,{
+method: "POST",
+headers: {
+  // "Content-Type": "multipart/formData",
+     "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
+       Authorization: `Bearer ${token}`,
+},
+credentials: "include",
+body: formData,
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to create customer stages");
+return data;
+};
+
+export const getCustomerDocuments = async (userType,id) => {
+const res = await fetch(`${API_BASE_URL}/customer/document/${userType}/${id}`, {
+method: "GET",
+headers: getHeaders(),
+credentials: "include",
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+return data;
+};
+
+export const getProcessSettings = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/processperson/process/settings`, {
+      method: "GET",
+      headers: getHeaders(),
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (res.status === 400 && data.message === "Invalid role specified") {
+        throw new Error("Settings not available for this account type");
+      }
+      throw new Error(data.message || "Failed to fetch settings");
+    }
+    return data.settings;
+  } catch (error) {
+    throw error;
+  }
+};

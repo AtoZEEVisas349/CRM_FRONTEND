@@ -14,6 +14,7 @@ import { ProcessServiceProvider } from './context/ProcessServiceContext';
 import { BeepSettingsProvider } from './context/BeepSettingsContext';
 import { SearchProvider } from './context/SearchContext';
 import { PermissionProvider } from './context/PermissionContext';
+import { LoadingProvider } from './context/LoadingContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -31,7 +32,9 @@ root.render(
               <ProcessServiceProvider>
                 <SearchProvider>
                   <PermissionProvider>
+                  <LoadingProvider>
                 <App />
+                </LoadingProvider>
             </PermissionProvider>
             </SearchProvider>
             </ProcessServiceProvider>

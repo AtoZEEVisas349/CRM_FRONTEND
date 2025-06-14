@@ -5,8 +5,8 @@ import SidebarToggle from "./SidebarToggle";
 import StreamPlayer from "../../pages/StreamPlayer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDesktop, faVideo, faVolumeUp, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import AdminNavbar from "../../layouts/AdminNavbar";
-
+import { useLoading } from "../../context/LoadingContext";
+import AdminSpinner from "../spinner/AdminSpinner";
 function Monitoring() {
   const [executives, setExecutives] = useState([]);
   const [selectedExec, setSelectedExec] = useState(null);
@@ -15,9 +15,21 @@ function Monitoring() {
   const [showAudio, setShowAudio] = useState(false);
 
   const { fetchExecutivesAPI } = useApi();
-
+  const { showLoader, hideLoader,isLoading,variant } = useLoading();
   useEffect(() => {
-    fetchExecutivesAPI().then(setExecutives).catch(console.error);
+    const fetchExecs = async () => {
+      try {
+        showLoader("Loading executives...", "admin");
+        const data = await fetchExecutivesAPI();
+        setExecutives(data);
+      } catch (error) {
+        console.error("Failed to fetch executives", error);
+      } finally {
+        hideLoader();
+      }
+    };
+
+    fetchExecs();
   }, []);
 
   const selectedExecutive = executives.find(e => e.username === selectedExec);
@@ -52,10 +64,10 @@ function Monitoring() {
 
   return (
     <>
-    
-    <AdminNavbar className="mt-neg-20" />
-    <SidebarToggle />
-
+        <SidebarToggle />
+            {isLoading && variant === "admin" && (
+        <AdminSpinner text="Loading Executives..." />
+      )}
       <div>
         <h1 style={{ textAlign: "center", marginTop: "20px" }}>Choose Executives</h1>
 

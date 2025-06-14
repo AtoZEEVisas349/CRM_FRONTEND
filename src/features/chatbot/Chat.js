@@ -80,26 +80,35 @@ const Chat = ({ isCallActive }) => {
     setMessages((prev) => [...prev, { text: input, isUser: true }]);
     setUserInput("");
     setIsTyping(true);
-
+  
     try {
-      const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/chatbot", {
+      const token = localStorage.getItem("token");
+  
+      if (!token) {
+        throw new Error("No token found. Please log in again.");
+      }
+  
+      const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/crew/crew/executive", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",  // <-- Add this line
+          "Authorization": `Bearer ${token}`,       // ✅ Sent from localStorage
+          "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d", 
         },
-        body: JSON.stringify({ prompt: input }),
+        body: JSON.stringify({ question: input }),    // ✅ Use correct key
       });
+  
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to fetch response");
-      setMessages((prev) => [...prev, { text: data.message, isUser: false }]);
+      if (!response.ok) throw new Error(data.error || "Agent failed");
+      setMessages((prev) => [...prev, { text: data.answer || "No response", isUser: false }]);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Chatbot error:", error.message);
       setMessages((prev) => [...prev, { text: "Error: Unable to get response.", isUser: false }]);
     } finally {
       setIsTyping(false);
     }
   };
+  
 
   const toggleRecording = async () => {
     if (!isRecording) {

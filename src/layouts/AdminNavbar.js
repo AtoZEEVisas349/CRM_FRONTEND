@@ -7,12 +7,15 @@ import {
   FaSun,
   FaMoon,
   FaBell,
-  FaUser,
+  FaUser, 
   FaComment,
+  FaSpinner,
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 function AdminNavbar() {
   const [showPopover, setShowPopover] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // <-- NEW STATE
   const { logout } = useAuth();
   const { changeTheme, theme } = useContext(ThemeContext);
   const {
@@ -76,9 +79,12 @@ function AdminNavbar() {
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true);
       await logout();
     } catch (error) {
       console.error("Logout failed:", error);
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -90,7 +96,6 @@ function AdminNavbar() {
   return (
     <div className="admin-navbar">
       <div className="header-icons" style={{ position: "relative" }}>
-        {/* Theme Toggle */}
         <button
           onClick={handleToggle}
           aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
@@ -99,40 +104,35 @@ function AdminNavbar() {
           {isLight ? <FaMoon /> : <FaSun />}
         </button>
 
-        {/* Icon Group */}
         <div className="admin-icons-group">
-  {/* 💬 Message Icon */}
-  <div className="icon-wrapper icon-comment">
-    <FaComment size={20} />
-  </div>
+          <div className="icon-wrapper icon-comment">
+            <FaComment size={20} />
+          </div>
 
-  {/* 🔔 Bell Icon */}
-  <div
-    className="icon-wrapper icon-bell"
-    style={{ position: "relative" }}
-    onClick={() => navigate("/admin/notification")}
-  >
-    <FaBell size={20} />
-    {(unreadCount + unreadMeetingsCount) > 0 && (
-     <span
-     key={location.key} // 👈 Forces re-render
-     ref={badgeRef}
-     className="admin-notification_badge bounce"
-   >
-     {unreadCount + unreadMeetingsCount}
-   </span>
-    )}
-  </div>
+          <div
+            className="icon-wrapper icon-bell"
+            style={{ position: "relative" }}
+            onClick={() => navigate("/admin/notification")}
+          >
+            <FaBell size={20} />
+            {(unreadCount + unreadMeetingsCount) > 0 && (
+              <span
+                key={location.key}
+                ref={badgeRef}
+                className="admin-notification_badge bounce"
+              >
+                {unreadCount + unreadMeetingsCount}
+              </span>
+            )}
+          </div>
 
-  {/* 👤 User Icon */}
-  <div
-    className="icon-wrapper icon-user"
-    onMouseEnter={handleMouseEnter}
-    onMouseLeave={handleMouseLeave}
-  >
-    <FaUser size={20} />
-  </div>
-
+          <div
+            className="icon-wrapper icon-user"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <FaUser size={20} />
+          </div>
 
           {showPopover && (
             <div
@@ -157,8 +157,22 @@ function AdminNavbar() {
                   </div>
                 )
               )}
-              <button className="logout_btn" onClick={handleLogout}>
-                Logout
+              <button
+                className="logout_btn"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <>
+                    <FaSpinner className="logout-spinner" />
+                    <span className="logout-text">Logging out</span>
+                  </>
+                ) : (
+                  <>
+                    <FaSignOutAlt />
+                    <span className="logout-text">Logout</span>
+                  </>
+                )}
               </button>
             </div>
           )}

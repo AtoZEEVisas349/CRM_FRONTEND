@@ -30,7 +30,7 @@ const Login = ({ userType }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    login(email, password);
+    login(email, password, userType?.toLowerCase());
   };
 
   const isAdmin = userType === "admin";

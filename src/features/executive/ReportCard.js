@@ -96,27 +96,27 @@ useEffect(()=>{
     {
       title: "Fresh Leads",
       value: <div>{freshleadCounts}</div>,
-      route: "/freshlead",
+      route: "/executive/freshlead",
       change: "+3.85%",
       icon: <FaUserPlus />,
     },
     {
       title: "Follow-ups",
       value: <div>{followupCounts}</div>,
-      route: "/follow-up",
+      route: "/executive/follow-up",
       change: "+6.41%",
       icon: <FaClipboardCheck />,
     },
     {
       title: "Converted Clients",
       value: <div>{convertedCustomerCount}</div>, // ✅ use context count
-      route: "/customer",
+      route: "/executive/customer",
       icon: <FaUsers />,
     },
     {
       title: "Scheduled Meetings",
       value: <div>{meetingsCount}</div>,
-      route: "/schedule",
+      route: "/executive/schedule",
       change: "-5.38%",
       icon: <FaUsers />,
     },

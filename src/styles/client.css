@@ -28,22 +28,29 @@
 }
 .client-main-content {
   position: relative;
-  top: 60px;
-  left: 250px;
-  width: calc(100% - 250px);
-  min-height: calc(100vh - 60px);
+  width: 100%;
+  height: calc(100vh - 60px); /* Explicitly set height to fill viewport minus top offset */
   padding: 20px;
   background-color: var(--card-bg);
   color: var(--text-color);
-  overflow-y: scroll; /* allow vertical scrolling */
-  overflow-x: hidden; /* prevent horizontal scroll if not needed */
+  overflow: hidden; /* Prevent client-main-content from scrolling directly */
 
-  /* Hide scrollbar in all major browsers */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
+  /* Temporarily comment out scrollbar hiding for debugging */
+  /* scrollbar-width: none; */ /* Firefox */
+  /* -ms-overflow-style: none; */  /* IE 10+ */
 }
-.client-main-content::-webkit-scrollbar {
+/* .client-main-content::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+ /* 
+
+/* Make client-overview-wrapper scrollable */
+.client-overview-wrapper {
+  width: 100%;
+  max-height: 100%; /* Ensure it doesn't exceed client-main-content's height */
+  min-height: 100%; /* Ensure it takes up at least the full height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  padding-bottom: 20px; /* Ensure content doesn’t get cut off at the bottom */
 }
 
 /* === COMMON STYLES === */
@@ -616,8 +623,8 @@ background: #af8b7c;
 
 /* Text areas and inputs */
 [data-theme="green"] .interaction-textarea,
-[data-theme="green"] input[type="date"],
-[data-theme="green"] input[type="time"] {
+[data-theme="green"] .input[type="date"],
+[data-theme="green"] .input[type="time"] {
   background: white;
   border: 1px solid #c8e6c9;
   color: #000000;

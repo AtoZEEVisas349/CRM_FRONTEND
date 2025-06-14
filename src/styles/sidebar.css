@@ -29,6 +29,268 @@
   z-index: 1001;
 }
 
+.logout_btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff3838, #ff2f2f);
+  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+  transform: translateY(-2px);
+}
+
+.logout_btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+}
+
+/* Loading State Styles */
+.logout_btn:disabled {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  cursor: not-allowed;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
+  transform: none;
+}
+
+.logout_btn:disabled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+/* Enhanced Spinner Animation */
+.logout-spinner {
+  animation: spin 1s linear infinite, pulse 2s ease-in-out infinite alternate;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Loading Text Animation */
+.logout-text {
+  position: relative;
+  display: inline-block;
+}
+
+.logout_btn:disabled .logout-text {
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Ripple Effect for Click */
+.logout_btn:not(:disabled):active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
+}
+
+/* Progressive Loading Dots */
+.loading-dots {
+  display: inline-flex;
+  margin-left: 4px;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%, 100% {
+    content: '...';
+  }
+}
+
+/* Improved User Popover for Better Context */
+/* .user_popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--popover-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  min-width: 180px;
+  z-index: 1000;
+  animation: popoverSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+} */
+
+@keyframes popoverSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.user_details {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.user_avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  margin-right: 12px;
+  text-transform: uppercase;
+}
+
+.user_name {
+  font-weight: 600;
+  color: var(--text-primary, #1a202c);
+  margin: 0 0 4px 0;
+  font-size: 14px;
+}
+
+.user_role {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] .logout_btn {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="dark"] .logout_btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+[data-theme="dark"] .logout_btn:disabled {
+  background: linear-gradient(135deg, #374151, #1f2937);
+  box-shadow: 0 2px 8px rgba(55, 65, 81, 0.2);
+}
+
+[data-theme="dark"] .user_popover {
+  background: var(--popover-bg-dark, #1f2937);
+  border-color: var(--border-color-dark, #374151);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .user_name {
+  color: var(--text-primary-dark, #f9fafb);
+}
+
+[data-theme="dark"] .user_role {
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+/* Loading State Accessibility */
+.logout_btn:disabled {
+  position: relative;
+}
+
+.logout_btn:disabled:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Screen Reader Support */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .logout_btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-width: 100px;
+  }
+  
+  .user_popover {
+    min-width: 180px;
+    padding: 16px;
+  }
+}
 
 .sidebar_heading h1 {
   font-size: 28px;
@@ -135,7 +397,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* gap: 3px; */
   height: 70px;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(10px);
@@ -239,9 +500,9 @@
   max-width: 100%; /* ✅ allow it to grow */
 
 }
-.user_popover {
+/* .user_popover {
   position: absolute;
-  top: 50px; /* match or exceed navbar height */
+  top: 50px; 
   right: 0px;
   left:85%;
   width: 250px;
@@ -252,10 +513,10 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  z-index: 9999; /* Make sure it's higher than navbar's 10 */
+  z-index: 9999; 
   animation: fadeInSlideDown 0.4s ease-in-out;
   transition: all 0.3s ease;
-}
+} */
 
 @keyframes fadeInSlideDown {
   0% {

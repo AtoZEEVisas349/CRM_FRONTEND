@@ -8,12 +8,17 @@ import ContactUs from "../features/admin/ContactUs";
 import AdminNotification from "../features/admin/AdminNotification"
 import Eod from "../features/admin/Eod";
 import AttendanceTable from "../features/admin/AttendanceTable";
-
+import Monitoring from "../features/admin/Monitoring";
+import TaskManagement from "../features/LeadAssign/TaskManagement";
+import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";
 const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<AdminLayout />}>
         <Route path="assign-task" element={<AssignTask />} />
+        <Route path="monitoring" element={<Monitoring />} />
+        <Route path="leadassign" element={<TaskManagement />} />
+        <Route path="executiveform" element={<ExecutiveCredentialsForm />} />
         <Route path="executive-details" element={<ExecutiveDetails />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="notification" element={<AdminNotification />} />

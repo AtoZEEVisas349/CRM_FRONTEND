@@ -39,8 +39,11 @@ const ProcessNavbar = () => {
       >
         {user?.type === "customer" && (
           <li><Link to="/process/client/dashboard">Dashboard</Link></li>
+          
         )}
+{user?.type === "customer" && (
         <li><Link to="/process/client/upload">Upload</Link></li>
+        )}
          {/* ✅ Only show this link to processperson */}
           {user?.type === 'processperson' && (
             <li><Link to="/process/client/all-clients">Clients</Link></li>

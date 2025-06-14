@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   // -----------------------
   // LOGIN
   // -----------------------
-  const login = async (email, password) => {
+  const login = async (email, password,role) => {
     if (!email || !password) {
       toast.error(<div className="textToast">All fields are required</div>, {
         className: "custom-toast-error",
@@ -45,14 +45,14 @@ export const AuthProvider = ({ children }) => {
 
     try {
       setLoading(true);
-      const response = await authService.loginUser(email, password);
+      const response = await authService.loginUser(email, password,role);
       const user = response.user;
 
       // Save session data
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("executiveId", user.id);
-
+ 
       setUser(user);
 
       toast.success(
@@ -81,10 +81,12 @@ export const AuthProvider = ({ children }) => {
 
       // Navigate based on role
       setTimeout(() => {
-        const role = user.role;
-        if (role === "Admin") navigate("/admin");
-        else if (role === "Executive") navigate("/executive");
-        else if (role === "TL") navigate("/user");
+        const role = user.role.toLowerCase();
+        if (role === "admin") navigate("/admin");
+        else if (role === "executive") navigate("/executive");
+        else if (role === "Manager") navigate("/manager");
+        else if (role === "hr") navigate("/hr");
+        else if (role === "tl") navigate("/team-lead");
       }, 2000);
     } catch (err) {
       toast.error(
@@ -98,6 +100,164 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  const handleLoginManager = async (email, password,role) => {
+    if (!email || !password) {
+      toast.error(<div className="textToast">All fields are required</div>, {
+        className: "custom-toast-error",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+         const response = await authService.loginManager(email, password);
+      const manager = response.manager;
+        setUser(manager);
+
+      // Save session data
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(manager));
+     
+ 
+      setUser(manager);
+
+      toast.success(
+        <div className="toast-content">
+          <div className="textToast">Login Successful</div>
+        </div>,
+        {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+        }
+      );
+
+      // Start work time if not already started
+      const alreadyStarted = localStorage.getItem("workStartTime");
+      if (!alreadyStarted) {
+        recordStartWork()
+          .then((res) => {
+            if (res?.activity?.startWorkTime) {
+              localStorage.setItem("workStartTime", res.activity.startWorkTime);
+            }
+          })
+          .catch((err) =>
+            console.warn("Start work failed after navigation:", err.message)
+          );
+      }
+
+      // Navigate based on role
+    setTimeout(() => {
+  const role = manager.role?.toLowerCase();
+  if (role === "manager") navigate("/manager");
+}, 2000);
+    } catch (err) {
+      toast.error(
+        <div className="textToast">{err.message || "Login Failed"}</div>,
+        {
+          className: "custom-toast-error",
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Inside AuthProvider
+
+const handleLogoutManager = async () => {
+  try {
+    setLoading(true);
+
+    await authService.logoutManager(); // <-- call the logout API
+
+    // Clear local storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("workStartTime");
+
+    // Reset user state
+    setUser(null);
+    setClearTimer(true); // stop work timer
+    forceLightTheme(); // reset theme if needed
+    setTimeout(() => {
+      navigate("/manager/login");
+    }, 100);
+    } catch (err) {
+    console.error("Logout failed:", err.message);
+    toast.error(
+      <div className="textToast">{err.message || "Logout failed"}</div>,
+      {
+        className: "custom-toast-error",
+      }
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const handleLoginHr = async (email, password,role) => {
+  if (!email || !password) {
+    toast.error(<div className="textToast">All fields are required</div>, {
+      className: "custom-toast-error",
+    });
+    return;
+  }
+
+  try {
+    setLoading(true);
+       const response = await authService.loginHr(email, password);
+    const hr = response.hr;
+      setUser(hr);
+
+    // Save session data
+    localStorage.setItem("token", response.token);
+    localStorage.setItem("user", JSON.stringify(hr));
+   
+
+    setUser(hr);
+
+    toast.success(
+      <div className="toast-content">
+        <div className="textToast">Login Successful</div>
+      </div>,
+      {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+      }
+    );
+
+    // Start work time if not already started
+    const alreadyStarted = localStorage.getItem("workStartTime");
+    if (!alreadyStarted) {
+      recordStartWork()
+        .then((res) => {
+          if (res?.activity?.startWorkTime) {
+            localStorage.setItem("workStartTime", res.activity.startWorkTime);
+          }
+        })
+        .catch((err) =>
+          console.warn("Start work failed after navigation:", err.message)
+        );
+    }
+
+    // Navigate based on role
+  setTimeout(() => {
+const role = hr.role?.toLowerCase();
+if (role === "hr") navigate("/hr");
+}, 2000);
+  } catch (err) {
+    toast.error(
+      <div className="textToast">{err.message || "Login Failed"}</div>,
+      {
+        className: "custom-toast-error",
+      }
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   // -----------------------
   // SIGNUP
   // -----------------------
@@ -173,6 +333,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const handleLogoutHr = async () => {
+    try {
+      setLoading(true);
+  
+      await authService.logoutHr(); // <-- call the logout API
+  
+      // Clear local storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("workStartTime");
+  
+      // Reset user state
+      setUser(null);
+      setClearTimer(true); // stop work timer
+      forceLightTheme(); // reset theme if needed
+      setTimeout(() => {
+        navigate("/hr/login");
+      }, 100);   
+     } catch (err) {
+      console.error("Logout failed:", err.message);
+      toast.error(
+        <div className="textToast">{err.message || "Logout failed"}</div>,
+        {
+          className: "custom-toast-error",
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   // -----------------------
   // LOGOUT
   // -----------------------
@@ -253,6 +443,10 @@ export const AuthProvider = ({ children }) => {
         forgotPassword,
         resetPassword,
         signup,
+        handleLoginManager,
+        handleLogoutManager,
+        handleLoginHr,
+        handleLogoutHr,
         isAuthenticated: !!user,
       }}
     >

@@ -10,8 +10,24 @@ const BASE_HEADERS = {
 };
 
 /*------------------------------LOGIN (fetch)---------------------------*/
-export const loginUser = async (email, password) => {
+export const loginUser = async (email, password,role) => {
   const res = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: BASE_HEADERS,
+    body: JSON.stringify({ email, password ,role}),
+  });
+
+  if (!res.ok) {
+    
+
+    const err = await res.json();
+    throw new Error(err.message || "Login failed");
+  }
+
+  return await res.json();
+};
+export const loginManager = async (email, password) => {
+  const res = await fetch(`${API_BASE_URL}/manager/login`, {
     method: "POST",
     headers: BASE_HEADERS,
     body: JSON.stringify({ email, password }),
@@ -26,6 +42,55 @@ export const loginUser = async (email, password) => {
   return await res.json();
 };
 
+// ✅ Logout for manager
+export const logoutManager = async () => {
+  const token = localStorage.getItem("token"); // get token from storage
+
+  const res = await fetch(`${API_BASE_URL}/manager/logout`, {
+    method: "POST",
+    credentials: "include", // ensures cookie (like manager_token) is sent
+    headers: {
+      ...BASE_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "Logout failed");
+  }
+
+  return await res.json();
+};
+
+export const loginHr = async (email, password) => {
+  const res = await fetch(`${API_BASE_URL}/hr/login`, {
+    method: "POST",
+    headers: BASE_HEADERS,
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "Login failed");
+  }
+
+  return await res.json();
+};
+export const logoutHr = async () => {
+  const res = await fetch(`${API_BASE_URL}/hr/logout`, {
+    method: "POST",
+    credentials: "include", // ensures cookie (manager_token) is sent
+    headers: BASE_HEADERS,
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "Logout failed");
+  }
+
+  return await res.json();
+};
 /*------------------------------SIGNUP (fetch)---------------------------*/
 export const signupUser = async (username, email, password, role) => {
   const res = await fetch(`${API_BASE_URL}/signup`, {
@@ -115,8 +180,12 @@ export const PrivateRoute = ({ children, allowedRoles = [] }) => {
   const role = user.role.toLowerCase();
 
   // If route has allowedRoles and user is not in them, restrict access
-  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    const fallback = role === "admin" ? "/admin" : "/executive";
+  // if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+  //   const fallback = role === "admin" ? "/admin" : "/executive";
+  //   return <Navigate to={fallback} replace />;
+  // }
+  if (!allowedRoles.includes(role)) {
+    const fallback = `/${role}`; // e.g., /manager
     return <Navigate to={fallback} replace />;
   }
 
@@ -142,8 +211,6 @@ export const PublicRoute = ({ children }) => {
   if (role === "executive" && !currentPath.startsWith("/executive")) {
     return <Navigate to="/executive" replace />;
   }
-
-
 
   // If the current path already matches the role, block public route access
   return <Navigate to={currentPath} replace />;

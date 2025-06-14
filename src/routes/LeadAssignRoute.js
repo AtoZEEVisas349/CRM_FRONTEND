@@ -22,9 +22,9 @@ function LeadAssignRoutes() {
 
   return (
     <div className="lead-assign-cont">
-      <div className="lead-sidebar-admin">
+      {/* <div className="lead-sidebar-admin">
         <AdminSidebar />
-      </div>
+      </div> */}
       <div className="lead-content-wrapper">
         <TaskManagement />
       </div>

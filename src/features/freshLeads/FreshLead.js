@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
@@ -8,6 +8,8 @@ import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import { SearchContext } from "../../context/SearchContext";
+import LoadingSpinner from "../spinner/LoadingSpinner";
+
 function FreshLead() {
   const {
     fetchFreshLeadsAPI,
@@ -19,22 +21,23 @@ function FreshLead() {
     verificationResults,
     verificationLoading,
     fetchNotifications,
-    createCopyNotification
+    createCopyNotification,
   } = useApi();
 
-  useCopyNotification(createCopyNotification, fetchNotifications);
   const { leadtrack } = useExecutiveActivity();
-  const {searchQuery,setActivepage}=useContext(SearchContext);
+  const { searchQuery, setActivepage } = useContext(SearchContext);
+
+  const [isLoading, setIsLoading] = useState(false); // Local loading state
   const [leadsData, setLeadsData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [verifyingIndex, setVerifyingIndex] = useState(null);
-
   const itemsPerPage = 9;
   const navigate = useNavigate();
+
+  useCopyNotification(createCopyNotification, fetchNotifications);
 
   const handleVerify = async (index, number) => {
     setVerifyingIndex(index);
@@ -50,13 +53,12 @@ function FreshLead() {
     }
   }, []);
 
-  
   useEffect(() => {
     const loadLeads = async () => {
       if (hasLoaded) return;
-      try {
-        setLoading(true);
 
+      setIsLoading(true); // Show local spinner
+      try {
         if (!executiveInfo && !executiveLoading) {
           await fetchExecutiveData();
         }
@@ -101,12 +103,13 @@ function FreshLead() {
       } catch (err) {
         setError("Failed to load leads. Please try again.");
       } finally {
-        setLoading(false);
+        setIsLoading(false); // Hide local spinner
       }
     };
 
     loadLeads();
   }, [executiveInfo, executiveLoading, hasLoaded]);
+
   const filteredLeadsData = leadsData.filter((lead) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -145,7 +148,7 @@ function FreshLead() {
       freshLeadId: lead.id,
     };
 
-    navigate(`/clients/${encodeURIComponent(lead.name)}`, {
+    navigate(`/executive/clients/${encodeURIComponent(lead.name)}`, {
       state: {
         client: clientData,
         createFollowUp: true,
@@ -153,20 +156,19 @@ function FreshLead() {
       },
     });
   };
-
   if (executiveLoading) return <p>Loading executive data...</p>;
 
   return (
-    <div className="fresh-leads-main-content">
+    <div className="fresh-leads-main-content" style={{ position: "relative" }}>
+      {isLoading && <LoadingSpinner text="Loading Fresh Leads..." />}
       <div className="fresh-leads-header">
         <h2 className="fresh-leads-title">Fresh leads list</h2>
         <h4 className="fresh-leads-subtitle">Click on Add followup to view details</h4>
       </div>
 
-      {loading && <p className="loading-text">Loading leads...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {!loading && !error && (
+      {!error && (
         <>
           <div className="fresh-leads-table-container">
             <table className="fresh-leads-table">
@@ -188,9 +190,7 @@ function FreshLead() {
                         <div className="fresh-leads-name">
                           <div className="fresh-lead-detail">
                             <div>{lead.name}</div>
-                            <div className="fresh-leads-profession">
-                              {lead.profession}
-                            </div>
+                            <div className="fresh-leads-profession">{lead.profession}</div>
                           </div>
                         </div>
                       </td>
@@ -202,10 +202,7 @@ function FreshLead() {
                           onClick={() => handleAddFollowUp(lead)}
                         >
                           Add Follow Up
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className="icon"
-                          />
+                          <FontAwesomeIcon icon={faPenToSquare} className="icon" />
                         </button>
                       </td>
                       <td>
@@ -256,7 +253,7 @@ function FreshLead() {
                               className="popover-option"
                               onClick={() => {
                                 const cleaned = lead.phone.replace(/[^\d]/g, "");
-                                window.open(`https://wa.me/91${cleaned}`, "_blank");
+                                window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                 setActivePopoverIndex(null);
                               }}
                             >

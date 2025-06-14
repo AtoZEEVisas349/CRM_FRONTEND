@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone,faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { SearchContext } from "../../context/SearchContext";
-
+import { useLoading } from "../../context/LoadingContext";
+import LoadingSpinner from "../spinner/LoadingSpinner"; 
 const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   const { followUps, getAllFollowUps, followUpLoading } = useApi();
   const clients = Array.isArray(followUps?.data) ? followUps.data : [];
@@ -15,11 +16,21 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   const navigate = useNavigate();
   const { searchQuery, setActivePage } = useContext(SearchContext);
   const location = useLocation(); // ✅ Replace global reference
-
+  const { showLoader, hideLoader, isLoading, loadingText } = useLoading(); // ✅ destructure
+  
   useEffect(() => {
-    getAllFollowUps();
+    const loadFollowUps = async () => {
+      try {
+        showLoader("Loading Follow-Ups...");
+        await getAllFollowUps();
+      } finally {
+        hideLoader();
+      }
+    };
+  
+    loadFollowUps();
   }, []);
-
+  
   useEffect(() => {
     setActivePage("follow-up");
   }, [setActivePage]);
@@ -71,7 +82,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
       fresh_lead_id: freshLeadId,
       followUpId: client.id,
     };
-    navigate(`/clients/${encodeURIComponent(client.id)}/details`, {
+    navigate(`/executive/clients/${encodeURIComponent(client.id)}/details`, {
       state: { client: leadData, createFollowUp: false, from: "followup" },
     });
   };
@@ -102,7 +113,12 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   };
   
   return (
-    <div className="table-container responsive-table-wrapper" style={{ maxHeight: tableHeight }}>
+    <>
+      <div className="client-table-wrapper" style={{ position: "relative" }}>
+      {isLoading && <LoadingSpinner text={loadingText} />}
+
+<div className="table-container responsive-table-wrapper" style={{ maxHeight: tableHeight }}>
+
       <table className="client-table">
         <thead>
           <tr className="sticky-header">
@@ -178,7 +194,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                               className="popover-option"
                               onClick={() => {
                                 const cleaned = (client.freshLead?.phone || "").replace(/[^\d]/g, "");
-                                window.open(`https://wa.me/91${cleaned}`, "_blank");
+                                window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                 setActivePopoverIndex(null);
                               }}
                             >
@@ -219,6 +235,8 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
         </tbody>
       </table>
     </div>
+    </div>
+    </>
   );
 };
 

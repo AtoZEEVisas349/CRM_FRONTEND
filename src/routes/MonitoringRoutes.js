@@ -6,9 +6,9 @@ import AdminPanel from "../features/admin/Monitoring";
 function MonitoringRoutes() {
   return (
     <div className="admi-container">
-      <div className="admi-sidebar">
+      {/* <div className="admi-sidebar">
         <AdminSidebar />
-      </div>
+      </div> */}
       <div className="admi-content">
         <AdminPanel />
       </div>

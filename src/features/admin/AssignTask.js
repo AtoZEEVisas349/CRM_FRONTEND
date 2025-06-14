@@ -4,6 +4,8 @@ import { ThemeContext } from "../../features/admin/ThemeContext";
 import SidebarToggle from "./SidebarToggle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faSpinner, faUser, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { useLoading } from "../../context/LoadingContext";
+import AdminSpinner from "../spinner/AdminSpinner";
 
 const AssignTask = () => {
   const [file, setFile] = useState(null);
@@ -11,7 +13,7 @@ const AssignTask = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isFormMode, setIsFormMode] = useState(false); // Toggle between file and form
-  
+  const { isLoading, variant, showLoader, hideLoader } = useLoading();
   // Helper function to get current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const today = new Date();
@@ -128,7 +130,16 @@ const AssignTask = () => {
       setUploading(false);
     }
   };
-
+  useEffect(() => {
+    showLoader("Loading assign task...", "admin");
+  
+    const timeout = setTimeout(() => {
+      hideLoader();
+    }, 400);
+  
+    return () => clearTimeout(timeout);
+  }, []);
+  
   // Function to set date to today (for button functionality)
   const setToday = () => {
     setLeadData(prev => ({
@@ -236,8 +247,13 @@ const neutralTextStyle = {
           boxSizing: "border-box",
         }}
       >
+                {isLoading && variant === "admin" && (
+  <AdminSpinner text="Loading assign task..." />
+)}
         <SidebarToggle />
         <div className="assign-task-content" style={{ width: "100%", maxWidth: "900px" }}>
+
+
           <div
             className="background-text"
             style={{

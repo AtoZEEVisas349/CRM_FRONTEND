@@ -170,6 +170,19 @@ export const fetchAdminProfile = async () => {
   }
 };
 
+export const updateAdminProfile = async (profileData) => {
+  const response = await apiService.put("/admin/profile", profileData);
+  return response.data;
+};
+
+// Change Password
+export const changeAdminPassword = async (currentPassword, newPassword) => {
+  const response = await apiService.post("/admin/change_pass", {
+    currentPassword,
+    newPassword,
+  });
+  return response.data;
+};
 // ✅ Function to assign leads to an executive
 export const assignLeadAPI = async (leadId, executiveName) => {
   try {
@@ -538,15 +551,35 @@ export const updateMeeting = async (meetingId, updatedData) => {
   }
 };
 // New function to update ClientLead status
-export const updateClientLeadStatus = async (leadId, status) => {
+export const updateClientLead = async (clientLeadId, updateFields) => {
   try {
-    const response = await apiService.put("/freshleads/update-clientlead", {
-      leadId,
-      status,
-    });
+    const response = await apiService.patch(
+      `/client-leads/${clientLeadId}`,
+      updateFields
+    );
     return response.data;
   } catch (error) {
-    console.error("Error updating ClientLead status:", error);
+    console.error("Error updating client lead:", error);
+    throw error;
+  }
+};
+
+export const updateClientLeads = async (leadId, updatedData) => {
+  try {
+    const response = await apiService.patch(`/client-leads/${leadId}`, updatedData);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error updating lead ID ${leadId}:`, error);
+    throw error;
+  }
+};
+
+export const deleteClientLead = async (leadId) => {
+  try {
+    const response = await apiService.delete(`/client-leads/${leadId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error deleting lead ID ${leadId}:`, error);
     throw error;
   }
 };
@@ -602,4 +635,81 @@ export const createManagerApi = async (managerData) => {
     throw error;
   }
 };
+export const createHrApi = async (hrData) => {
+  try {
+    const response = await apiService.post("hr/signup",hrData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error ", error);
+    throw error;
+  }
+};
+export const getHr = async () => {
+  try {
+    const response = await apiService.get("/hr/profile");
+    return response.data; // Assuming you're using only the leads array
+  } catch (error) {
+    console.error("❌ Error fetching follow-up leads:", error);
+    throw error;
+  }
+};
+export const getManager = async () => {
+  try {
+    const response = await apiService.get("/manager/profile");
+    return response.data; // Assuming you're using only the leads array
+  } catch (error) {
+    console.error("❌ Error fetching follow-up leads:", error);
+    throw error;
+  }
+};
+export const fetchAllExecutiveActivitiesByDate = async () => {
+  try {
+    const response = await apiService.get("/executive-activities/daily-activity");
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching all executive activities by date:", error);
+    throw error;
+  }
+};
+export const getUserProfile = async () => {
+  try {
+    const response = await apiService.get("/profile");
+    return response.data; // Assuming you're using only the leads array
+  } catch (error) {
+    console.error("❌ Error fetching follow-up leads:", error);
+    throw error;
+  }
+};
+
+export const createEmailTemplate = async (templateData) => {
+  try {
+    const response = await apiService.post("/template", templateData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating email template:", error);
+    throw error;
+  }
+};
+// ✅ Fetch all email templates
+export const getAllEmailTemplates = async () => {
+  try {
+    const response = await apiService.get("/template/");
+    return response.data; // Expecting an array of templates
+  } catch (error) {
+    console.error("❌ Error fetching all email templates:", error);
+    throw error;
+  }
+};
+
+// ✅ Fetch a single template by ID
+export const getEmailTemplateById = async (templateId) => {
+  try {
+    const response = await apiService.get(`/template/${templateId}`);
+    return response.data; // Expecting a single template object
+  } catch (error) {
+    console.error(`❌ Error fetching email template ID ${templateId}:`, error);
+    throw error;
+  }
+};
+
 export default apiService;

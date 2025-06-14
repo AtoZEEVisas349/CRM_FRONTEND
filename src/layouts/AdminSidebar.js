@@ -104,23 +104,23 @@ const AdminSidebar = () => {
             <li>
               <Link to="/admin/assign-task" className="admin-aside-link">
                 <FolderOpen className="admin-aside-icon"/>
-                <span className="sidebar-label">Assign Task</span>
+                <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
-              <Link to="/leadassign" className="admin-aside-link">
+              <Link to="/admin/leadassign" className="admin-aside-link">
                 <ClipboardList className="admin-aside-icon"/>
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
-              <Link to="/executiveform" className="admin-aside-link">
+              <Link to="/admin/executiveform" className="admin-aside-link">
                 <UserPlus className="admin-aside-icon"/>
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
             <li>
-              <Link to="/monitoring" className="admin-aside-link">
+              <Link to="/admin/monitoring" className="admin-aside-link">
                 <UserCog className="admin-aside-icon"/>
                 <span className="sidebar-label">Monitoring</span>
               </Link>

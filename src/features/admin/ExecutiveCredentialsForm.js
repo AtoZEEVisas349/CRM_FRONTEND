@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SidebarToggle from "./SidebarToggle";
 import {
@@ -16,18 +16,18 @@ import {
   faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { useApi } from "../../context/ApiContext";
-import AdminNavbar from "../../layouts/AdminNavbar";
-
+import { useLoading } from "../../context/LoadingContext";
+import AdminSpinner from "../spinner/AdminSpinner";
 const ExecutiveCredentialsForm = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
-  const { createExecutive, createAdmin, createTeamLead, createManager } = useApi();
-  const [isLoading, setIsLoading] = useState(false);
+  const { createExecutive, createAdmin, createTeamLead, createManager,createHr } = useApi();
   const [showPassword, setShowPassword] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
+  const { isLoading, variant, showLoader, hideLoader } = useLoading();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -73,26 +73,42 @@ const ExecutiveCredentialsForm = () => {
     setShowPassword((prev) => !prev);
   };
 
+  
+ useEffect(() => {
+    showLoader("Loading Create user Page...", "admin");
+  
+    const timeout = setTimeout(() => {
+      hideLoader();
+    }, 400); // Show for at least 600ms
+  
+    return () => clearTimeout(timeout);
+  }, []); 
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    showLoader("Creating user account...", "admin");
 
     try {
       const formPayload = new FormData();
+ if (formData.role === "Manager") {
+      formPayload.append("name", formData.username);
+      formPayload.append("email", formData.email);
+      formPayload.append("password", formData.password);
+    } else if (formData.role === "Hr") {
+   
+      formPayload.append("name", formData.username);
+      formPayload.append("email", formData.email);
+      formPayload.append("password", formData.password);
+      
+    } else {
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== "") {
+          formPayload.append(key, value);
+        }
+      });
+    }
 
-      if (formData.role === "Manager") {
-        formPayload.append("name", formData.username);
-        formPayload.append("email", formData.email);
-        formPayload.append("password", formData.password);
-      } else {
-        Object.entries(formData).forEach(([key, value]) => {
-          if (value !== null && value !== "") {
-            formPayload.append(key, value);
-          }
-        });
-      }
-
-      // Debug form payload
       for (let pair of formPayload.entries()) {
         console.log(`${pair[0]}:`, pair[1]);
       }
@@ -112,6 +128,9 @@ const ExecutiveCredentialsForm = () => {
         case "Manager":
           await createManager(formPayload);
           break;
+          case "Hr":
+          await createHr(formPayload);
+          break;
         default:
           throw new Error("Invalid role selected.");
       }
@@ -122,17 +141,23 @@ const ExecutiveCredentialsForm = () => {
       console.error(`Failed to create ${formData.role}:`, err.message || err);
       alert(`Error creating ${formData.role}: ${err.message || "Unknown error"}`);
     } finally {
-      setIsLoading(false);
+      hideLoader();
     }
   };
 
   return (
     <div className={`create-executive-container ${sidebarCollapsed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
-      <AdminNavbar />
+      {/* <AdminNavbar /> */}
       <div className="create-executive-content-area">
         <SidebarToggle />
+
         <div className="executive-form-container">
+        {isLoading && variant === "admin" && (
+  <AdminSpinner text="Loading Create User Page..." />
+)} 
           <div className="form-card">
+
+
             <div className="form-header">
               <h1>Create User Credentials</h1>
               <p>Add a new user to your CRM with appropriate access permissions</p>
@@ -307,6 +332,7 @@ const ExecutiveCredentialsForm = () => {
                           <option value="TL">Team Lead</option>
                           <option value="Admin">Admin</option>
                           <option value="Manager">Manager</option>
+                          <option value="Hr">Hr</option>
                         </select>
                       </div>
                     </div>

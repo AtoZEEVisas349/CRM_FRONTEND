@@ -24,7 +24,7 @@ const Meetings = ({ selectedExecutiveId }) => {
     fetchExecutives();
   }, [fetchExecutivesAPI]);
 
-  // Fetch meetings when selectedExecutiveId changes
+  // Fetch and filter meetings (remove duplicates based on fresh_lead_id)
   useEffect(() => {
     const fetchMeetingsData = async () => {
       setMeetingsLoading(true);
@@ -32,16 +32,38 @@ const Meetings = ({ selectedExecutiveId }) => {
         const allMeetings = await adminMeeting();
         console.log("Fetched meetings:", allMeetings);
         console.log("Selected Executive ID:", selectedExecutiveId);
+
         if (Array.isArray(allMeetings)) {
+          let filtered = allMeetings;
+
+          // Apply executive filter
           if (selectedExecutiveId && selectedExecutiveId !== "all") {
-            const filteredMeetings = allMeetings.filter(
+            filtered = allMeetings.filter(
               (meeting) => String(meeting.executiveId) === selectedExecutiveId
             );
-            console.log("Filtered meetings:", filteredMeetings);
-            setMeetings(filteredMeetings);
-          } else {
-            setMeetings(allMeetings);
+            console.log("Filtered meetings:", filtered);
           }
+
+          // ✅ Deduplicate meetings based on fresh_lead_id and latest startTime
+          const deduplicatedMap = filtered.reduce((map, meeting) => {
+            const key = meeting.fresh_lead_id;
+            if (!key) return map;
+
+            if (!map.has(key)) {
+              map.set(key, meeting);
+            } else {
+              const existing = map.get(key);
+              const existingTime = new Date(existing.startTime);
+              const currentTime = new Date(meeting.startTime);
+              if (currentTime > existingTime) {
+                map.set(key, meeting);
+              }
+            }
+            return map;
+          }, new Map());
+
+          const uniqueMeetings = Array.from(deduplicatedMap.values());
+          setMeetings(uniqueMeetings);
         } else {
           console.error("Invalid data format from adminMeeting:", allMeetings);
           setMeetings([]);

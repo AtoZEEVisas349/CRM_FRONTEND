@@ -12,7 +12,7 @@ const CloseLeadRoutes = () => {
   }, []);
   return (
     <div className="close-leads-container">
-      <SideandNavbar/>
+      {/* <SideandNavbar/> */}
       <div className="close-leads-main">
       <Leads searchQuery={searchQuery}/>
       </div>

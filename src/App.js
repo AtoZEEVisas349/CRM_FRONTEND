@@ -9,34 +9,26 @@ import { PrivateMasterRoute } from './context/MasterContext';
 import ForgotPassword from "./features/authentication/ForgotPassword";
 import ResetPassword from "./features/authentication/ResetPassword";
 import AdminRoutes from "./routes/AdminRoutes";
-import FollowUpRoutes from "./routes/FollowUpRoutes";
 import ExecutiveRoutes from "./routes/ExecutiveRoutes";
-import CustomerRoutes from "./routes/CustomerRoutes";
-import CloseLeadRoutes from "./routes/CloseLeadRoutes";
-import ClientRoutes from "./routes/ClientRoutes";
 import ChatBotRoutes from "./routes/ChatBotRoutes";
-import FreshLeadRoutes from "./routes/FreshLeadRoutes";
 import LeadAssignRoutes from "./routes/LeadAssignRoute";
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "./features/admin/ThemeContext";
 import { useLocation } from "react-router-dom"; // ✅ at the top of App.js
-import NotificationRoutes from "./routes/NotificationRoutes";
-import InvoiceRoutes from "./routes/InvoiceRoutes";
-import SettingRoutes from "./routes/SettingRoutes";
-import MyProfile from "./features/settings/MyProfile";
-import Theme from "./features/settings/Theme";
-import ChangePassword from "./features/settings/ChangePassword";
-import ScheduleRoutes from "./routes/ScheduleRoutes";
 import AdminPanelRoutes from "./routes/MonitoringRoutes";
 import MasterRoutes from "./routes/MasterRoutes";
 import ProcessRoutes from "./routes/ProcessRoutes";
 import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
 import ExecutiveFormRoutes from "./routes/ExecutiveFormRoutes";
-import BeepSound from "./features/settings/BeepSound";
 import CustomerLogin from "./features/process-client/CustomerLogin";
 import { ProcessPrivateRoute } from "./services/processAuth";
-
+import ManagerRoutes from "./routes/ManagerRoutes";
+import LoginManager from "./features/authentication/LoginManager";
+import TLRoutes from "./routes/TLRoutes";
+import LoginHr from "./features/authentication/LoginHr";
+import HrRoutes from "./routes/HrRoutes";
+import SettingsRouteWrapper from "./routes/SettingsRouteWrapper";
 const App = () => {
   const [followUpText, setFollowUpText] = useState(() => {
     const saved = localStorage.getItem('followUpText');
@@ -67,12 +59,16 @@ useEffect(() => {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+
   return (
     <ThemeProvider>
       <Routes>
       <Route path="/admin/login" element={<Login userType="admin" />} />
       <Route path="/admin/signup" element={<Signup userType="admin" />} />
       <Route path="/login" element={<Login userType="executive" />} />
+      <Route path="/manager/login" element={<LoginManager userType="Manager" />} />
+      <Route path="/hr/login" element={<LoginHr userType="Hr" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         {/* Public master routes - login & signup */}
@@ -81,39 +77,26 @@ useEffect(() => {
         <Route path="/process/client/login" element={<ClientLogin />} />
         <Route path="/process/client/signup" element={<ClientSignup />} />
         <Route path="/customer/client/login" element={<CustomerLogin />} />
-        <Route 
-          path="/follow-up/*" 
-          element={
-            <PrivateRoute>
-              <FollowUpRoutes onTextUpdate={setFollowUpText} />
-            </PrivateRoute>
-          } 
-        />
-          <Route 
-          path="/clients/*" 
-          element={
-            <PrivateRoute key={location.pathname}>
-              <ClientRoutes/>
-            </PrivateRoute>
-          } 
-        />
-<Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} />        <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
-        <Route path="/settings" element={<PrivateRoute><SettingRoutes/></PrivateRoute>} >
-        <Route index element={<Navigate to="profile" replace />} />  {/* ✅ This does the redirect */}
-        <Route path="profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
-         <Route path="theme" element={<PrivateRoute><Theme /></PrivateRoute>} />
-          <Route path="change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
-          <Route path="change-Beep" element={<PrivateRoute><BeepSound /></PrivateRoute>} />
-        </Route>
+        
+        <Route
+  path="/executive/settings/*"
+  element={
+    <PrivateRoute allowedRoles={["executive"]}>
+      <SettingsRouteWrapper />
+    </PrivateRoute>
+  }
+/>
+<Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} />       
+ <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
+       
         <Route path="/master/*" element={
           <PrivateMasterRoute>
             <MasterRoutes />
           </PrivateMasterRoute>
         } />   
+         
         <Route path="/monitoring/*" element={<PrivateRoute><AdminPanelRoutes /></PrivateRoute>} />
-        <Route path="/schedule" element={<PrivateRoute><ScheduleRoutes/></PrivateRoute>} />
-        <Route path="/invoice" element={<PrivateRoute><InvoiceRoutes/></PrivateRoute>} />
-        <Route path="/notification" element={<PrivateRoute><NotificationRoutes/></PrivateRoute>} />
+
         <Route 
   path="/admin/*" 
   element={
@@ -126,14 +109,44 @@ useEffect(() => {
   path="/executive/*" 
   element={
     <PrivateRoute allowedRoles={["executive"]}>
-      <ExecutiveRoutes />
+      <ExecutiveRoutes onTextUpdate={setFollowUpText} />
+    </PrivateRoute>
+  }
+/>
+<Route 
+  path="/manager/*" 
+  element={
+    <PrivateRoute allowedRoles={["manager"]}>
+      <ManagerRoutes />
     </PrivateRoute>
   } 
-/>        <Route path="/customer/*" element={<PrivateRoute><CustomerRoutes /></PrivateRoute>} />
-        <Route path="/close-leads/*" element={<PrivateRoute><CloseLeadRoutes /></PrivateRoute>} />
-        <Route path="/chatBot/*" element={<PrivateRoute><ChatBotRoutes /></PrivateRoute>} />
+/>
+<Route 
+  path="/team-lead/*" 
+  element={
+    <PrivateRoute allowedRoles={["tl"]}>
+      <TLRoutes />
+    </PrivateRoute>
+  } 
+/>
+<Route 
+  path="/hr/*" 
+  element={
+    <PrivateRoute allowedRoles={["hr"]}>
+      <HrRoutes />
+    </PrivateRoute>
+  } 
+/>
+    
+        <Route
+  path="/executive/chatbot/*"
+  element={
+    <PrivateRoute allowedRoles={["executive"]}>
+      <ChatBotRoutes />
+    </PrivateRoute>
+  }
+/>
         <Route path="/leadassign/*" element={<PrivateRoute><LeadAssignRoutes /></PrivateRoute>} />
-        <Route path="/freshlead/*" element={<PrivateRoute><FreshLeadRoutes /></PrivateRoute>} />
 
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

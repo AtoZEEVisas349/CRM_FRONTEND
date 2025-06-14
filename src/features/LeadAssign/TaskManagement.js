@@ -1,11 +1,13 @@
+
+
+
 import React, { useEffect, useState, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
 import SidebarToggle from "../admin/SidebarToggle";
 import "../../styles/leadassign.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import AdminNavbar from "../../layouts/AdminNavbar";
+import { useLoading } from "../../context/LoadingContext";
+import AdminSpinner from "../spinner/AdminSpinner";
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
@@ -22,6 +24,7 @@ const TaskManagement = () => {
   const paginatedLeads = leads;
   const [showPagination, setShowPagination] = useState(false);
   const { theme } = useContext(ThemeContext);
+  const { isLoading, variant, showLoader, hideLoader } = useLoading();
   const {
     fetchAllClients,
     reassignLead,
@@ -29,12 +32,18 @@ const TaskManagement = () => {
     assignLeadAPI,
     createFreshLeadAPI,
     createLeadAPI,
-
+    updateClientLead,
+    deleteClientLead,
   } = useApi();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
+  const [allClients, setAllClients] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingLead, setEditingLead] = useState(null);
+
   useEffect(() => {
     const container = document.querySelector(".scrollable-container");
   
@@ -71,38 +80,28 @@ const TaskManagement = () => {
     fetchExecutives();
   }, []);
 
-  const[allClients,setAllClients]=useState([]);
-  const [loading, setLoading] = useState(false);
   useEffect(() => {
-  const getAllLeads = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
-
-     const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
-      setLeads(normalizedLeads);
-      setTotalLeads(data.pagination?.total || normalizedLeads.length);
-      if (Array.isArray(data?.leads)) {
-        setAllClients(data.leads);             
-        setLeads(allClients);     
-      } else {
-        setAllClients([]); // fallback to empty array
+    const getAllLeads = async () => {
+      setLoading(true);
+      try {
+        showLoader("Loading task management...", "admin");
+        const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
+        const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
+        setLeads(normalizedLeads);
+        setAllClients(normalizedLeads); 
+        setTotalLeads(data.pagination?.total || normalizedLeads.length);
+      } catch (error) {
+        console.error("Error fetching leads:", error);
         setLeads([]);
-      
+        setAllClients([]); 
+        setTotalLeads(0);
+      } finally {
+        hideLoader();
       }
-    } catch (error) {
-      console.error("Error fetching leads:", error);
-      setLeads([]);
-      setTotalLeads(0);
-    }
-    finally{
-      setLoading(false);
-    }
-  };
-
-  getAllLeads(); // Call the async function
-},  [filterType]); 
-
+    };
+  
+    getAllLeads(); // Call the async function
+  }, []); 
 
   const fetchExecutives = async () => {
     try {
@@ -168,70 +167,71 @@ const TaskManagement = () => {
 
     setSelectedLeads(selectedIds);
   }, [leads, selectedRange, currentPage]);
-const assignLeads = async () => {
-  if (!selectedExecutive) return alert("⚠️ Please select an executive.");
-  if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
 
-  const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-  if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
+  const assignLeads = async () => {
+    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
+    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
 
-  let successCount = 0;
-  let failCount = 0;
-  const updatedLeads = [...leads];
+    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
+    if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
 
-  for (const leadId of selectedLeads) {
-    const lead = leads.find((l) => String(l.id) === leadId);
-    if (!lead) {
-      failCount++;
-      continue;
-    }
+    let successCount = 0;
+    let failCount = 0;
+    const updatedLeads = [...leads];
 
-    const clientLeadId = lead.id; // since this is the actual ID from your API
-    if (!clientLeadId) {
-      console.warn("❌ Missing clientLeadId or lead.id:", lead);
-      failCount++;
-      continue;
-    }
+    for (const leadId of selectedLeads) {
+      const lead = leads.find((l) => String(l.id) === leadId);
+      if (!lead) {
+        failCount++;
+        continue;
+      }
 
-    const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
+      const clientLeadId = lead.id; // since this is the actual ID from your API
+      if (!clientLeadId) {
+        console.warn("❌ Missing clientLeadId or lead.id:", lead);
+        failCount++;
+        continue;
+      }
 
-    const leadPayload = {
-      name: lead.name,
-      email: lead.email || "default@example.com",
-      phone,
-      source: lead.source || "Unknown",
-      clientLeadId: Number(clientLeadId),
-      assignedToExecutive: executive.username,
-    };
+      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
+
+      const leadPayload = {
+        name: lead.name,
+        email: lead.email || "default@example.com",
+        phone,
+        source: lead.source || "Unknown",
+        clientLeadId: Number(clientLeadId),
+        assignedToExecutive: executive.username,
+      };
+        
+      try {
+     
+      let finalLeadId = leadId;
+
+      // Assign or Reassign based on whether lead was already assigned
+      if (!lead.assignedToExecutive) {
+        // Always create the lead first
+        const createdLead = await createLeadAPI(leadPayload);
+        if (!createdLead?.id) throw new Error("Lead creation failed");
+
+        finalLeadId = createdLead.clientLeadId;
+        await assignLeadAPI(Number(finalLeadId), executive.username);
+        const freshLeadPayload = {
+          leadId: createdLead.id,
+          name: createdLead.name,
+          email: createdLead.email,
+          phone: String(createdLead.phone),
+          assignedTo: executive.username,
+          assignedToId: executive.id,
+          assignDate: new Date().toISOString(),
+        };
       
-    try {
-   
-   let finalLeadId = leadId;
-
-  // Assign or Reassign based on whether lead was already assigned
-  if (!lead.assignedToExecutive) {
-      // Always create the lead first
-  const createdLead = await createLeadAPI(leadPayload);
-  if (!createdLead?.id) throw new Error("Lead creation failed");
-
-  finalLeadId = createdLead.clientLeadId;
-    await assignLeadAPI(Number(finalLeadId), executive.username);
-    const freshLeadPayload = {
-      leadId: createdLead.id,
-      name: createdLead.name,
-      email: createdLead.email,
-      phone: String(createdLead.phone),
-      assignedTo: executive.username,
-      assignedToId: executive.id,
-      assignDate: new Date().toISOString(),
-    };
-  
-    await createFreshLeadAPI(freshLeadPayload);
-  
-  } else {
-    await reassignLead(lead.id, executive.username);
-    alert("Lead resassigned successfully!!");
-  }
+        await createFreshLeadAPI(freshLeadPayload);
+      
+      } else {
+        await reassignLead(lead.id, executive.username);
+        alert("Lead resassigned successfully!!");
+      }
 
       const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
       if (index !== -1) {
@@ -301,12 +301,65 @@ useEffect(() => {
   setCurrentPage(newPage); // Ensures pagination is stable
 }, [filterType, allClients, currentPage, leadsPerPage]);
 
+  const handleEditClick = (lead) => {
+    setEditingLead({ ...lead });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setEditingLead(null);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditingLead((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingLead) return;
+    try {
+      await updateClientLead(editingLead.id, editingLead);
+      const updatedLeads = leads.map((lead) =>
+        lead.id === editingLead.id ? { ...lead, ...editingLead } : lead
+      );
+      setLeads(updatedLeads);
+      setAllClients(
+        allClients.map((lead) =>
+          lead.id === editingLead.id ? { ...lead, ...editingLead } : lead
+        )
+      );
+      alert("✅ Lead updated successfully.");
+      handleCloseModal();
+    } catch (error) {
+      console.error("❌ Error updating lead:", error);
+      alert("❌ Failed to update lead.");
+    }
+  };
+
+  const handleDeleteClick = async (leadId) => {
+    if (!window.confirm("Are you sure you want to delete this lead?")) return;
+    try {
+      await deleteClientLead(leadId);
+      const updatedLeads = leads.filter((lead) => lead.id !== leadId);
+      setLeads(updatedLeads);
+      setAllClients(allClients.filter((lead) => lead.id !== leadId));
+      setTotalLeads(totalLeads - 1);
+      alert("✅ Lead deleted successfully.");
+    } catch (error) {
+      console.error("❌ Error deleting lead:", error);
+      alert("❌ Failed to delete lead.");
+    }
+  };
+
   return (
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
-      <AdminNavbar />
-
+    
       <div className="leads-dashboard" data-theme={theme}>
+      {isLoading && variant === "admin" && (
+        <AdminSpinner text="Loading Lead Assign..." />
+      )}
         <div className="Logo">Lead Assign</div>
         <div className="taskmanage-header">
           <div className="header-actions">
@@ -351,11 +404,7 @@ useEffect(() => {
             </div>        
           </div>
         </div>
-        {loading ? (
-  <div style={{textAlign:"center",marginTop:"2rem"}}>
-    <FontAwesomeIcon icon={faSpinner} spin size="2x" style={{color:"blue"}} />
-  </div>
-) : (
+
         <div className="scrollable-container">
           <div className="leads-table">
             <div className="leads-header">
@@ -413,8 +462,15 @@ useEffect(() => {
                   <div className="lead-source">{lead.source || "Unknown"}</div>
                   <div className="lead-assign">{lead.assignedToExecutive || "Unassigned"}</div>
                   <div className="lead-actions">
-                    <button className="edit">Edit</button>
-                    <button className="delete">Delete</button>
+                    <button className="edit" onClick={() => handleEditClick(lead)}>
+                      Edit
+                    </button>
+                    <button
+                      className="delete"
+                      onClick={() => handleDeleteClick(lead.id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
@@ -439,8 +495,109 @@ useEffect(() => {
             </div>
           )}
         </div>
-)}
       </div>
+
+      {isEditModalOpen && editingLead && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Edit Lead</h2>
+            <div className="form-group">
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={editingLead.name}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={editingLead.email || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Phone:</label>
+              <input
+                type="text"
+                name="phone"
+                value={editingLead.phone}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Education:</label>
+              <input
+                type="text"
+                name="education"
+                value={editingLead.education || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Experience:</label>
+              <input
+                type="text"
+                name="experience"
+                value={editingLead.experience || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>State:</label>
+              <input
+                type="text"
+                name="state"
+                value={editingLead.state || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Country:</label>
+              <input
+                type="text"
+                name="country"
+                value={editingLead.country || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date of Birth (DOB):</label>
+              <input
+                type="date"
+                name="dob"
+                value={editingLead.dob || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Lead Assign Date:</label>
+              <input
+                type="date"
+                name="leadAssignDate"
+                value={editingLead.leadAssignDate || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Country Preference:</label>
+              <input
+                type="text"
+                name="countryPreference"
+                value={editingLead.countryPreference || ""}
+                onChange={handleEditChange}
+              />
+            </div>
+            <div className="modal-actions">
+              <button onClick={handleSaveEdit}>Save</button>
+              <button onClick={handleCloseModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

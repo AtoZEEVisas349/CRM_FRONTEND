@@ -5,10 +5,11 @@ import { useApi } from "../../context/ApiContext";
 import { toast } from "react-toastify";
 import { isAuthenticated } from "../../services/auth";
 import "../../styles/adminexedetails.css";
-
+import { useLoading } from "../../context/LoadingContext";
+import AdminSpinner from "../spinner/AdminSpinner";
 const ExecutiveDetails = () => {
   const { fetchExecutivesAPI, updateUserLoginStatus } = useApi();
-
+  const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const [people, setPeople] = useState([]);
   const [filter, setFilter] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -100,8 +101,8 @@ const ExecutiveDetails = () => {
   // Fetch executive data
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
+        showLoader("Loading executives...", "admin");
         const executives = await fetchExecutivesAPI();
         const mapped = executives.map((executive) => ({
           id: executive.id,
@@ -115,25 +116,20 @@ const ExecutiveDetails = () => {
           canLogin: executive.can_login,
         }));
         setPeople(mapped);
-        
-        // Initialize toggle states from actual API data
         const toggles = {};
         mapped.forEach((p) => {
           toggles[p.id] = p.canLogin;
         });
         setToggleStates(toggles);
-        
-      } catch (error) {
-        console.error("❌ Error fetching executives:", error);
+      } catch (err) {
+        console.error("❌ Error fetching executives:", err);
         setPeople([]);
-        setToggleStates({});
       } finally {
-        setLoading(false);
+        hideLoader();
       }
     };
-
     fetchData();
-  }, [fetchExecutivesAPI]);
+  }, []);
 
   // Check if user is in cooldown and get remaining time
   const getCooldownInfo = (id) => {
@@ -270,6 +266,9 @@ const ExecutiveDetails = () => {
   return (
     <div style={{ display: "flex" }}>
       <SidebarToggle />
+                  {isLoading && variant === "admin" && (
+              <AdminSpinner text="Loading Executives..." />
+            )}
       <div>
         <h1 style={{ textAlign: "center", padding: "20px" }}>
           Executive Details

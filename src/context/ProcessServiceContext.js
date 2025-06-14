@@ -8,7 +8,10 @@ import {
   updateProfileSettings,
   importConvertedClients,
   getAllCustomers,
-  getCustomerStagesById
+  getCustomerStagesById,
+  uploadCustomerDocuments,
+  getCustomerDocuments,
+  getProcessSettings
 } from "../services/processService";
 
 // 1. Create Context
@@ -115,6 +118,22 @@ const [convertedError, setConvertedError] = useState(null);
     }
   };
 
+
+
+  const [processProfile, setProcessProfile] = useState(null);
+  // New handlers for process persons
+  const getProcessProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getProcessSettings();
+      setProcessProfile(data);
+    } catch (err) {
+      setError(err.message || "Failed to fetch process settings");
+    } finally {
+      setLoading(false);
+    }
+  };
   // -----------------------
   // Profile Settings Handlers
   // -----------------------
@@ -205,6 +224,30 @@ const [convertedError, setConvertedError] = useState(null);
     
 
   };
+  const uploadDocs = async (formData) => {
+    try {
+      const response= await uploadCustomerDocuments(formData);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+
+  const getDocumentsApi = async (userType,id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getCustomerDocuments(userType,id);
+       console.log(res.documents)
+   return res.documents;
+
+    } catch (err) {
+      setError(err?.error || "Failed to fetch customer documents");
+    } finally {
+      setLoading(false);
+    }
+  };
   // -----------------------
   // Provider Return
   // -----------------------
@@ -226,7 +269,7 @@ const [convertedError, setConvertedError] = useState(null);
         handleProfileSettings,
         profiles,
         setProfile,
-
+processProfile,
         convertedClients,
     convertedLoading,
     convertedError,
@@ -234,7 +277,10 @@ const [convertedError, setConvertedError] = useState(null);
     customers,
     setCustomers,
     handleImportConvertedClients,
-    handleGetCustomerStagesById
+    handleGetCustomerStagesById,
+    uploadDocs,
+    getDocumentsApi,
+    getProcessProfile
       }}
     >
       {children}

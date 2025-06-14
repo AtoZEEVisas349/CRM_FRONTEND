@@ -314,12 +314,17 @@ body.sidebar-collapsed .admin-settings {
   gap: 0.5rem;
 }
 
+.team-list li span {
+  min-width: 150px; /* or use flex: 1 for equal spacing */
+  white-space: nowrap;
+}
 .team-list li,
 .integration-list li {
   padding: 0.8rem 0;
   font-size: 1rem;
   border-bottom: 1px solid var(--border-color);
   display: flex;
+  gap: 2rem;
   justify-content: space-between;
   align-items: center;
 }

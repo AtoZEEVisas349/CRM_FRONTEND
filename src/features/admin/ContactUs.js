@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import '../../styles/contactUs.css';
 import SidebarToggle from "./SidebarToggle";
-
+import { useLoading } from "../../context/LoadingContext";
+import { useEffect } from "react";
+import AdminSpinner from "../spinner/AdminSpinner";
 const ContactUs = () => {
+  const { isLoading, variant, showLoader, hideLoader } = useLoading();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,13 +23,25 @@ const ContactUs = () => {
     e.preventDefault();
     alert("Message Submitted!");
   };
-
+  useEffect(() => {
+    showLoader("Loading ContactUs...", "admin");
+  
+    const timeout = setTimeout(() => {
+      hideLoader();
+    }, 400); // Show for at least 600ms
+  
+    return () => clearTimeout(timeout);
+  }, []);  
+  
+  
   return (
     <>
     <SidebarToggle />
-
     <div className="page-wrapper">
       <div className="contact-container">
+              {isLoading && variant === "admin" && (
+          <AdminSpinner text="Loading ContactUs..." />
+        )}
         <div className="contact-left">
           <h2>Contact Us</h2>
           <p>Feel like contacting us? Submit your queries here and we will get back to you as soon as possible.</p>

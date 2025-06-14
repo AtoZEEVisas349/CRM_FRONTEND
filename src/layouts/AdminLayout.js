@@ -17,8 +17,8 @@ import AdminNavbar from "./AdminNavbar";
 
 const AdminLayout = () => {
   const { topExecutive, fetchExecutives, fetchExecutivesAPI } = useApi();
-
   const location = useLocation();
+
   const [selectedExecutive, setSelectedExecutive] = useState(null);
   const [timeRange, setTimeRange] = useState("last30days");
   const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
@@ -39,24 +39,17 @@ const AdminLayout = () => {
   };
 
   const currentExecutive = selectedExecutive || topExecutive;
-
-  // Check if route is dashboard or sub-page
   const isDashboard = location.pathname === "/admin";
-
-  const handleTimeRangeChange = (e) => {
-    setTimeRange(e.target.value);
-  };
 
   const handleExecutiveChange = (e) => {
     const selectedId = e.target.value;
     setSelectedExecutiveId(selectedId);
 
-    // Find the selected executive from the executives list
     if (selectedId === "all") {
-      setSelectedExecutive(null); // Reset to show data for all executives
+      setSelectedExecutive(null);
     } else {
       const exec = executives.find((exec) => exec.id === parseInt(selectedId));
-      setSelectedExecutive(exec || null); // Update selectedExecutive state
+      setSelectedExecutive(exec || null);
     }
   };
 

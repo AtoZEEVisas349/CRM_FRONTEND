@@ -49,13 +49,15 @@ const AllClient = () => {
     try {
       const result = await handleImportConvertedClients();
      
-      console.log("Errors:", result.errors);
     } catch (error) {
       alert("Failed to import: " + error.message);
     }
   };
   const handleCardClick = (client) => {
     navigate(`/process/client/dashboard/${client.id}`, { state: { client } });
+  };
+   const handleCardUpload = (client) => {
+    navigate(`/process/client/upload/${client.id}`, { state: { client } });
   };
 
   return (
@@ -93,7 +95,7 @@ const AllClient = () => {
             className="client-card"
             key={client.id}
             onClick={() => handleCardClick(client)}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", position: "relative" }}
           >
             <div className="client-item">
               <FaUser className="client-icon" />
@@ -111,19 +113,43 @@ const AllClient = () => {
               <FaEnvelope className="client-icon" />
               <span className="client-text">{client.email || "No Email"}</span>
             </div>
-            <div className="client-item">
+            <div className="client-itemDate">
               <FaCalendarAlt className="client-icon" />
               <span className="client-text">
                 {new Date(client.last_contacted || client.createdAt).toLocaleDateString("en-GB")}
               </span>
             </div>
-            <div className="client-item">
+            <div className="client-itemCountry ">
               <FaGlobeAsia className="client-icon" />
               <span className="client-text">{client.country || "No Country"}</span>
+               
             </div>
+          <button
+  className="upload-btn"
+  onClick={(e) => {
+    e.stopPropagation(); // prevent triggering card click
+    handleCardUpload(client);
+  }}
+  style={{
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    backgroundColor: "#597bc5",
+    color: "#fff",
+    border: "none",
+    padding: "6px 10px",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "14px",
+  }}
+>
+  Upload
+</button>
+
           </div>
         ))}
       </div>
+      
     </div>
   );
 };

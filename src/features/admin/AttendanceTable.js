@@ -3,11 +3,14 @@ import dayjs from "dayjs";
 import "../../styles/attendancetable.css";
 import SidebarToggle from "./SidebarToggle";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-
+import { useLoading } from "../../context/LoadingContext";
+import AdminSpinner from "../spinner/AdminSpinner";
 const AttendanceTable = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [dates, setDates] = useState([]);
   const [startDate, setStartDate] = useState(dayjs().startOf("month"));
+  const { showLoader, hideLoader, isLoading, variant } = useLoading();
+
   const [endDate, setEndDate] = useState(dayjs().endOf("month"));
   const isSidebarExpanded =
   localStorage.getItem("adminSidebarExpanded") === "true";
@@ -18,19 +21,27 @@ const [weekStart, setWeekStart] = useState(
   const { handleGetAttendance } = useExecutiveActivity();
 
   const fetchFromContext = async () => {
-    const data = await handleGetAttendance(
-      startDate.format("YYYY-MM-DD"),
-      endDate.format("YYYY-MM-DD")
-    );
-    setAttendanceData(data);
-    if (data.length > 0) {
-      const start = dayjs(startDate);
-      const newDates = Array.from({ length: 7 }, (_, i) =>
-        start.add(i, "day").format("YYYY-MM-DD")
+    try {
+      showLoader("Fetching attendance report...", "admin"); // 👈 Set admin variant
+      const data = await handleGetAttendance(
+        startDate.format("YYYY-MM-DD"),
+        endDate.format("YYYY-MM-DD")
       );
-      setDates(newDates);
-          }
+      setAttendanceData(data);
+      if (data.length > 0) {
+        const start = dayjs(startDate);
+        const newDates = Array.from({ length: 7 }, (_, i) =>
+          start.add(i, "day").format("YYYY-MM-DD")
+        );
+        setDates(newDates);
+      }
+    } catch (error) {
+      console.error("Failed to fetch attendance data", error);
+    } finally {
+      hideLoader(); // 👈 Hide loader after data fetch
+    }
   };
+  
 
   useEffect(() => {
     fetchFromContext();
@@ -52,7 +63,11 @@ const [weekStart, setWeekStart] = useState(
     }`}    
   >
     <SidebarToggle />
-    <div className="attendance-container">
+    <div className="attendance-container" style={{ position: "relative" }}>
+    {isLoading && variant === "admin" && (
+  <AdminSpinner text="Fetching attendance report..." />
+)}
+
       <h2 className="attendance-title">Attendance Report</h2>
 
       <div className="select-wrapper">

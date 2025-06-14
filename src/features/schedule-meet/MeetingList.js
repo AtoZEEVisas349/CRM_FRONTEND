@@ -15,7 +15,7 @@ const MeetingList = ({ meetings, onAddFollowUp, onShowHistory }) => {
           />
         ))
       ) : (
-        <li className="no-meetings">Meetings Loading...</li>
+        <li className="no-meetings">No Meetings...</li>
       )}
     </ul>
   );

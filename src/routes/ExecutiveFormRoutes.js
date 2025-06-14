@@ -5,9 +5,9 @@ import "../styles/createexecutive.css";
 const ExecutiveFormRoutes=()=> {
   return (
     <div className="create-executive-container">
-      <div className='create-executive-sidebar'>
+      {/* <div className='create-executive-sidebar'>
         <AdminSidebar/>
-      </div>  
+      </div>   */}
       <div className='create-executive-content'>
        <ExecutiveCredentialsForm/> 
       </div>

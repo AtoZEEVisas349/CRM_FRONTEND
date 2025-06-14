@@ -28,7 +28,7 @@ const Summary = () => {
       default:
         status = "";
     }
-  navigate("/leadassign/task-management", { 
+  navigate("/admin/leadassign", { 
     state: { filterStatus: status } 
   });
 };

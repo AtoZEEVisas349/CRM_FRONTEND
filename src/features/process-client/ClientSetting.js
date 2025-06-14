@@ -20,7 +20,11 @@ const ClientSetting = () => {
   updatedAt: '',
   createdAt: '',
 });
+const user = JSON.parse(localStorage.getItem("user"));
 
+const fullName = user?.fullName || " ";
+const role=user?.type || "";
+const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
 useEffect(() => {
   const fetchProfile = async () => {
     setLoading(true);
@@ -186,11 +190,11 @@ useEffect(() => {
                 style={{ display: 'none' }}
               />
             </div>
-            <h3 className="process-profile-name">Jay Rutherford</h3>
-            <p className="process-profile-title">Professional title</p>
-            <p className="process-profile-desc">
+            <h3 className="process-profile-name">{fullName}</h3>
+            <p className="process-profile-title">{capitalizedRole}</p>
+            {/* <p className="process-profile-desc">
               Creative designer passionate about clean UI and user experience.
-            </p>
+            </p> */}
 
             <div className="process-link-section">
               <hr className="process-divider" />
@@ -347,28 +351,58 @@ useEffect(() => {
           </form>
         </div>
       </div>
-       {loading && (
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(255,255,255,0.7)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          fontSize: "24px",
-          fontWeight: "bold",
-          zIndex: 1000,
-          backdropFilter: "blur(5px)",
-          WebkitBackdropFilter: "blur(5px)",
-        }}
-      >
-        Loading...
-      </div>
-    )}
+     {loading && (
+  <div className="loader-container">
+    <svg className="pl" width="240" height="240" viewBox="0 0 240 240">
+      <circle
+        className="pl__ring pl__ring--a"
+        cx="120"
+        cy="120"
+        r="105"
+        fill="none"
+        stroke="#000"
+        strokeWidth="20"
+        strokeDasharray="0 660"
+        strokeDashoffset="-330"
+        strokeLinecap="round"
+      ></circle>
+      <circle
+        className="pl__ring pl__ring--b"
+        cx="120"
+        cy="120"
+        r="35"
+        fill="none"
+        stroke="#000"
+        strokeWidth="20"
+        strokeDasharray="0 220"
+        strokeDashoffset="-110"
+        strokeLinecap="round"
+      ></circle>
+      <circle
+        className="pl__ring pl__ring--c"
+        cx="85"
+        cy="120"
+        r="70"
+        fill="none"
+        stroke="#000"
+        strokeWidth="20"
+        strokeDasharray="0 440"
+        strokeLinecap="round"
+      ></circle>
+      <circle
+        className="pl__ring pl__ring--d"
+        cx="155"
+        cy="120"
+        r="70"
+        fill="none"
+        stroke="#000"
+        strokeWidth="20"
+        strokeDasharray="0 440"
+        strokeLinecap="round"
+      ></circle>
+    </svg>
+  </div>
+)}
     </div>
   );
 };

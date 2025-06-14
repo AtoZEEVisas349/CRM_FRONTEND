@@ -1,11 +1,13 @@
+// LeadGraph.js
 import React, { useEffect, useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useApi } from "../../context/ApiContext";
+import { startOfWeek, endOfWeek, eachDayOfInterval, format } from "date-fns";
 
 const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
-  const { fetchExecutiveDashboardData } = useApi();
+  const { fetchExecutiveActivity, fetchAllExecutiveActivitiesByDateAPI, executiveDashboardData } = useApi();
   const [chartData, setChartData] = useState({
     weeklyData: [0, 0, 0, 0, 0, 0, 0],
     totalVisits: 0,
@@ -15,44 +17,68 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
 
   const isDarkMode = document.documentElement.getAttribute("data-theme") === "dark";
 
-  const getTodayIndex = () => {
-    const jsDay = new Date().getDay();
-    return jsDay === 0 ? 6 : jsDay - 1;
+  // Compute Sunday–Monday range for current week
+  const getWeekRange = () => {
+    const today = new Date();
+    const start = startOfWeek(today, { weekStartsOn: 0 }); // Changed from 1 to 0 (Sunday = 0)
+    const end = endOfWeek(today, { weekStartsOn: 0 }); // Changed from 1 to 0
+    return { start, end };
   };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const allActivities = await fetchExecutiveDashboardData();
-        const todayIndex = getTodayIndex();
+        const { start, end } = getWeekRange();
+        const weekDays = eachDayOfInterval({ start, end }).map(day =>
+          format(day, "yyyy-MM-dd")
+        );
         const updatedWeeklyData = [0, 0, 0, 0, 0, 0, 0];
-        let totalVisits = 0;
-
+  
         if (selectedExecutiveId) {
-          const executiveActivity = allActivities.find(
-            (activity) => activity.ExecutiveId === selectedExecutiveId
-          );
-
-          if (executiveActivity?.leadSectionVisits > 0) {
-            updatedWeeklyData[todayIndex] = executiveActivity.leadSectionVisits;
-          }
-          totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
-        } else {
-          allActivities.forEach((activity) => {
-            if (activity?.leadSectionVisits > 0) {
-              updatedWeeklyData[todayIndex] += activity.leadSectionVisits;
+          const activities = await fetchExecutiveActivity(selectedExecutiveId);
+          const dailySums = {};
+  
+          activities.forEach(({ activityDate, leadSectionVisits }) => {
+            if (weekDays.includes(activityDate) && leadSectionVisits > 0) {
+              const idx = weekDays.indexOf(activityDate);
+              dailySums[idx] = (dailySums[idx] || 0) + leadSectionVisits;
             }
           });
-          totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
+  
+          weekDays.forEach((_, idx) => {
+            updatedWeeklyData[idx] = dailySums[idx] || 0;
+          });
+        } else {
+          // ✅ Use returned data directly
+          const data = await fetchAllExecutiveActivitiesByDateAPI(); // <-- Return value
+          const allActivities = data?.dailyActivities || {};
+          const dailySums = {};
+  
+          Object.keys(allActivities).forEach(date => {
+            if (weekDays.includes(date)) {
+              const idx = weekDays.indexOf(date);
+              const activities = allActivities[date];
+              const totalVisits = activities.reduce(
+                (sum, act) => sum + (act.leadSectionVisits || 0),
+                0
+              );
+              dailySums[idx] = totalVisits;
+            }
+          });
+  
+          weekDays.forEach((_, idx) => {
+            updatedWeeklyData[idx] = dailySums[idx] || 0;
+          });
         }
-
+  
+        const totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
         setChartData({
-          weeklyData: updatedWeeklyData.map((v) => Math.max(0, v)),
+          weeklyData: updatedWeeklyData.map(v => Math.max(0, v)),
           totalVisits,
         });
       } catch (err) {
-        console.error("Error loading lead visits:", err);
+        console.error("Error fetching activities:", err);
         setChartData({
           weeklyData: [0, 0, 0, 0, 0, 0, 0],
           totalVisits: 0,
@@ -61,15 +87,17 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [selectedExecutiveId]);
+  
 
-  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  // Changed labels order to start with Sunday
+  const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const maxLead = Math.max(...chartData.weeklyData);
   const dynamicMax = Math.max(70, Math.ceil((maxLead + 10) / 10) * 10);
 
-  const baseDataset = {
+  const baseDataset = ({
     label: "Lead Visits",
     data: chartData.weeklyData,
     borderColor: "#8b5cf6",
@@ -78,7 +106,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
     pointRadius: 3,
     pointHoverRadius: 5,
     borderWidth: 2,
-  };
+  });
 
   const commonOptions = {
     responsive: true,
@@ -149,8 +177,8 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       </div>
 
       <div className="lead-graph-summary">
-        Total Visits This Week (from dashboard):{" "}
-        <span>{loading ? "Loading..." : chartData.totalVisits}</span>
+        Total Visits This Week: {chartData.totalVisits}
+        {loading && <span style={{ marginLeft: '10px', color: '#8b5cf6' }}>Loading...</span>}
       </div>
 
       <div style={{ height: "77%" }}>

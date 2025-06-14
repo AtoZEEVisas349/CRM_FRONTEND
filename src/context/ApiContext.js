@@ -2,8 +2,9 @@ import React, { createContext, useContext, useState, useEffect ,useMemo} from "r
 import * as apiService from "../services/apiService";
 import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
-import * as executiveService from "../services/executiveService";
-
+import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
+  getEmailTemplateById
+} from "../services/apiService"
 const ApiContext = createContext();
 
 export const ApiProvider = ({ children }) => {
@@ -54,6 +55,7 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
+
   // ✅ Fetch user data
   const fetchUserData = async () => {
     setUserLoading(true);
@@ -68,6 +70,36 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
+    const [isProfileUpdating, setProfileUpdating] = useState(false);
+    const [isPasswordUpdating, setPasswordUpdating] = useState(false);
+  
+    // Update profile
+    const handleUpdateProfile = async (profileData) => {
+      setProfileUpdating(true);
+      try {
+        const updatedData = await updateAdminProfile(profileData);
+        return updatedData;
+      } catch (error) {
+        console.error("❌ Error updating admin profile:", error);
+        throw error;
+      } finally {
+        setProfileUpdating(false);
+      }
+    };
+  
+    // Change password
+    const handleChangePassword = async (currentPassword, newPassword) => {
+      setPasswordUpdating(true);
+      try {
+        const result = await changeAdminPassword(currentPassword, newPassword);
+        return result;
+      } catch (error) {
+        console.error("❌ Error changing admin password:", error);
+        throw error;
+      } finally {
+        setPasswordUpdating(false);
+      }
+    };
   // ✅ Fetch online executives
   const fetchOnlineExecutivesData = async () => {
     setOnlineLoading(true);
@@ -626,15 +658,7 @@ const updateMeetingAPI = async (meetingId, updatedData) => {
     throw error;
   }
 };
-const updateClientLeadStatus = async (leadId, status) => {
-  try {
-    const response = await apiService.updateClientLeadStatus(leadId, status);
-    return response;
-  } catch (error) {
-    console.error("❌ Error updating client lead status:", error);
-    throw error;
-  }
-};
+
 const createExecutive = async (executiveData) => {
   setLoading(true);
   
@@ -700,7 +724,15 @@ const createSingleLeadAPI = async (leadData) => {
     setUploading(false);
   }
 };
-
+const updateClientLead = async (clientLeadId, updateFields) => {
+  try {
+    const response = await apiService.updateClientLead(clientLeadId, updateFields);
+    return response;
+  } catch (error) {
+    console.error("Error updating client lead in context:", error);
+    throw error;
+  }
+};
 const createTeamLead = async (teamData) => {
   setLoading(true);
   
@@ -740,6 +772,145 @@ const createManager = async (managerData) => {
     setLoading(false);
   }
 };
+const updateClientLeadsadmin = async (leadId, updatedData) => {
+  try {
+    const response = await apiService.updateClientLeads(leadId, updatedData);
+    return response;
+  } catch (error) {
+    console.error("❌ Error updating client lead in context:", error);
+    throw error;
+  }
+};
+
+const deleteClientLead = async (leadId) => {
+  try {
+    const response = await apiService.deleteClientLead(leadId);
+    return response;
+  } catch (error) {
+    console.error("❌ Error deleting client lead in context:", error);
+    throw error;
+  }
+};
+const createHr = async (hrData) => {
+  setLoading(true);
+  
+  try {
+    const result = await apiService.createHrApi(hrData);
+    return result;
+  } catch (err) {
+
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+const getHrProfile = async () => {
+  try {
+    const response = await apiService.getHr(); 
+    return response.hr;
+  } catch (error) {
+    console.error("❌ Error creating close lead:", error);
+    throw error;
+  }
+};
+ const getManagerProfile = async () => {
+  try {
+    const response = await apiService.getManager(); 
+    return response.manager;
+  } catch (error) {
+    console.error("❌ Error creating close lead:", error);
+    throw error;
+  }
+};
+const fetchAllExecutiveActivitiesByDateAPI = async () => {
+  setExecutiveDashboardLoading(true);
+  try {
+    const data = await apiService.fetchAllExecutiveActivitiesByDate();
+
+    const wrapped = { dailyActivities: data || {} }; // ✅ wrap in expected format
+
+    setExecutiveDashboardData((prev) => ({
+      ...prev,
+      ...wrapped,
+    }));
+
+    return wrapped; // ✅ return in correct structure
+  } catch (error) {
+    console.error("❌ Error fetching all executive activities by date:", error);
+    const empty = { dailyActivities: {} };
+
+    setExecutiveDashboardData((prev) => ({
+      ...prev,
+      ...empty,
+    }));
+
+    return empty;
+  } finally {
+    setExecutiveDashboardLoading(false);
+  }
+};
+
+const getAllProfile = async () => {
+  try {
+    const response = await apiService.getUserProfile(); 
+    return response;
+  } catch (error) {
+    console.error("❌ Error creating close lead:", error);
+    throw error;
+  }
+};
+const [templateLoading, setTemplateLoading] = useState(false);
+const [templateSuccess, setTemplateSuccess] = useState(false);
+const [templateError, setTemplateError] = useState(null);
+const handleCreateTemplate = useCallback(async (templateData) => {
+  setTemplateLoading(true);
+  setTemplateSuccess(false);
+  setTemplateError(null);
+  try {
+    await createEmailTemplate(templateData);
+    setTemplateSuccess(true);
+  } catch (error) {
+    setTemplateError(error);
+  } finally {
+    setTemplateLoading(false);
+  }
+}, []);
+
+
+const [emailTemplates, setEmailTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
+
+  // ✅ Fetch all templates
+  const fetchAllTemplates = useCallback(async () => {
+    setTemplateLoading(true);
+    setTemplateError(null);
+    try {
+      const templates = await getAllEmailTemplates();
+      setEmailTemplates(templates);
+    } catch (error) {
+      setTemplateError(error);
+    } finally {
+      setTemplateLoading(false);
+    }
+  }, []);
+
+  // ✅ Fetch a single template by ID
+  const fetchTemplateById = useCallback(async (templateId) => {
+    setTemplateLoading(true);
+    setTemplateError(null);
+    try {
+      const template = await getEmailTemplateById(templateId);
+      setSelectedTemplate(template);
+      return template;
+    } catch (error) {
+      setTemplateError(error);
+      throw error;
+    } finally {
+      setTemplateLoading(false);
+    }
+  }, []);
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -776,17 +947,20 @@ const createManager = async (managerData) => {
     assignLeadAPI: apiService.assignLeadAPI,
     reassignLead:apiService.reassignLead,
     // Executives
+    fetchExecutiveActivity: apiService.fetchExecutiveActivity, // Added
+    fetchAllExecutivesActivities: apiService.fetchAllExecutivesActivities, // Added
+    fetchAllExecutiveActivitiesByDateAPI,
     fetchExecutivesAPI: apiService.fetchExecutivesAPI,
     fetchExecutiveInfo: apiService.fetchExecutiveInfo,
     sendEodReport: apiService.sendEodReport,
     createSingleLeadAPI,
     updateUserLoginStatus,
     // Follow-ups
-    updateClientLeadStatus,
     createFollowUp,
     fetchFreshLeadsAPI,
     updateMeetingAPI,
-    
+    updateClientLead,
+  
     createCloseLeadAPI,
     fetchAllCloseLeadsAPI,
  
@@ -830,6 +1004,9 @@ const createManager = async (managerData) => {
         convertedCustomerCount, // ✅ add this
     setConvertedCustomerCount, // ✅ and this
     createManager,
+    updateClientLeadsadmin,
+    deleteClientLead,
+    getAllProfile,
         // ✅ Follow-ups
         followUps,
         followUpLoading,
@@ -864,7 +1041,7 @@ const createManager = async (managerData) => {
         createCopyNotification,
       markNotificationReadAPI,
         deleteNotificationAPI,
-
+        getManagerProfile,
         revenueChartData,
         revenueChartLoading,
         fetchRevenueChartDataAPI,
@@ -873,7 +1050,7 @@ const createManager = async (managerData) => {
         setUser,
         userLoading,
         fetchUserData,
-
+        getHrProfile,
         // ✅ Online Executives
         onlineExecutives,
         onlineLoading,
@@ -883,12 +1060,15 @@ const createManager = async (managerData) => {
         adminProfile,
         loading,
         fetchAdmin,
-
+        emailTemplates,
+        selectedTemplate,
+        fetchAllTemplates,
+        fetchTemplateById,
         // ✅ Lead Section Visits
         visitData,
         fetchLeadSectionVisitsAPI,
         visitLoading,
-
+        createHr,
         // ✅ File Upload
         uploadFileAPI,
         uploading,
@@ -898,7 +1078,10 @@ const createManager = async (managerData) => {
         // ✅ Top Executive
         topExecutive,
         fetchExecutives,
-
+        handleCreateTemplate,
+        templateLoading,
+        templateSuccess,
+        templateError,
         // ✅ Executive Activity
         activityData,
         getExecutiveActivity,

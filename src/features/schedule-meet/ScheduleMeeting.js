@@ -1,15 +1,18 @@
 
+
 import React, { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useApi } from "../../context/ApiContext";
 import { isSameDay } from "../../utils/helpers";
 import FollowUpForm from "./FollowUpForm";
 import FollowUpHistory from "./FollowUpHistory";
 import MeetingList from "./MeetingList";
-import { SearchContext } from "../../context/SearchContext"; // ✅ added
+import { SearchContext } from "../../context/SearchContext";
+import { useLoading } from "../../context/LoadingContext";
+import LoadingSpinner from "../spinner/LoadingSpinner";
 
 const ScheduleMeeting = () => {
   const {
@@ -18,34 +21,38 @@ const ScheduleMeeting = () => {
     updateFollowUp,
     createFollowUp,
     createFollowUpHistoryAPI,
-    updateMeetingAPI,
     fetchFreshLeadsAPI,
     refreshMeetings,
     createConvertedClientAPI,
     createCloseLeadAPI,
     getAllFollowUps,
-    updateClientLeadStatus, 
+    updateClientLead,
   } = useApi();
 
-  const { searchQuery } = useContext(SearchContext); // ✅ get query
+  const { searchQuery } = useContext(SearchContext);
+  const [localLoading, setLocalLoading] = useState(false);
+  
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [meetings, setMeetings] = useState([]);
-  const [loading, setLoading] = useState(true); // ✅ Add loading state
   const [activeFilter, setActiveFilter] = useState("today");
   const [selectedMeetingForHistory, setSelectedMeetingForHistory] = useState(null);
   const [selectedMeetingForFollowUp, setSelectedMeetingForFollowUp] = useState(null);
-  const [recentlyUpdatedMeetingId, setRecentlyUpdatedMeetingId] = useState(null);
 
   const loadMeetings = async () => {
     try {
-      setLoading(true); // ✅ Set loading to true at start
+      setLocalLoading(true);
       const allMeetings = await fetchMeetings();
+
       if (!Array.isArray(allMeetings)) {
         setMeetings([]);
         return;
       }
 
-      const filteredByStatus = allMeetings.filter((m) => m?.clientLead?.status === "Meeting");
+      const filteredByStatus = allMeetings.filter(
+        (m) => m?.clientLead?.status === "Meeting"
+      );
 
       const enriched = await Promise.all(
         filteredByStatus.map(async (meeting) => {
@@ -76,26 +83,22 @@ const ScheduleMeeting = () => {
               followUpDetails: recent,
             };
           } catch {
-            return {
-              ...meeting,
-              leadId,
-            };
+            return { ...meeting, leadId };
           }
         })
       );
 
       const uniqueMeetings = enriched.reduce((unique, meeting) => {
-        const existingMeeting = unique.find(
-          (m) => String(m.leadId) === String(meeting.leadId) && m.leadId && meeting.leadId
+        const exists = unique.find(
+          (m) => String(m.leadId) === String(meeting.leadId)
         );
-
-        if (!existingMeeting) {
+        if (!exists) {
           unique.push(meeting);
         } else {
-          const existingStartTime = new Date(existingMeeting.startTime);
-          const currentStartTime = new Date(meeting.startTime);
-          if (currentStartTime > existingStartTime) {
-            const index = unique.indexOf(existingMeeting);
+          const oldDate = new Date(exists.startTime);
+          const newDate = new Date(meeting.startTime);
+          if (newDate > oldDate) {
+            const index = unique.indexOf(exists);
             unique[index] = meeting;
           }
         }
@@ -107,10 +110,7 @@ const ScheduleMeeting = () => {
 
       const filtered = uniqueMeetings.filter((m) => {
         const start = new Date(m.startTime);
-        if (recentlyUpdatedMeetingId && m.id === recentlyUpdatedMeetingId) return true;
-        if (activeFilter === "today") {
-          return isSameDay(start, now);
-        }
+        if (activeFilter === "today") return isSameDay(start, now);
         if (activeFilter === "week") {
           const weekFromNow = new Date(today);
           weekFromNow.setDate(today.getDate() + 7);
@@ -124,22 +124,19 @@ const ScheduleMeeting = () => {
         return true;
       });
 
-      // ✅ Filter meetings using searchQuery
       const query = searchQuery.toLowerCase();
-      const searchFiltered = filtered.filter((m) => {
-        return (
-          m.clientName?.toLowerCase().includes(query) ||
-          m.clientEmail?.toLowerCase().includes(query) ||
-          m.clientPhone?.toString().includes(query)
-        );
-      });
+      const searchFiltered = filtered.filter((m) =>
+        [m.clientName, m.clientEmail, m.clientPhone?.toString()]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(query))
+      );
 
       setMeetings(searchFiltered);
     } catch (error) {
       console.error("Failed to load meetings:", error);
       setMeetings([]);
     } finally {
-      setLoading(false); // ✅ Set loading to false when done
+      setLocalLoading(false);
     }
   };
 
@@ -154,9 +151,9 @@ const ScheduleMeeting = () => {
       follow_up_date,
       follow_up_time,
     } = formData;
-
+  
     const meeting = selectedMeetingForFollowUp;
-
+  
     const freshLeadId =
       meeting.fresh_lead_id ||
       meeting.freshLead?.id ||
@@ -165,18 +162,19 @@ const ScheduleMeeting = () => {
       meeting.freshLead?.lead?.id ||
       meeting.id ||
       meeting.clientLead?.id;
-
-    if (!freshLeadId) {
+  
+    const clientLeadId = meeting.clientLead?.id;
+  
+    if (!freshLeadId || !clientLeadId) {
       Swal.fire({
         icon: "error",
-        title: "Missing Lead ID",
-        text: "Unable to find the lead ID. Please ensure the meeting data is correct and try again.",
+        title: "Missing Lead Info",
+        text: "Unable to find the lead ID or client lead ID.",
       });
       return;
     }
-
+  
     try {
-
       let followUpId;
       const histories = await fetchFollowUpHistoriesAPI();
       if (Array.isArray(histories)) {
@@ -189,7 +187,7 @@ const ScheduleMeeting = () => {
           )[0];
         followUpId = recent?.follow_up_id;
       }
-
+  
       const payload = {
         connect_via,
         follow_up_type,
@@ -199,36 +197,26 @@ const ScheduleMeeting = () => {
         follow_up_time,
         fresh_lead_id: freshLeadId,
       };
-
+  
+      // Create or update follow-up
       if (followUpId) {
         await updateFollowUp(followUpId, payload);
       } else {
         const res = await createFollowUp(payload);
         followUpId = res.data.id;
       }
-      console.log("Updating client lead status to Follow-Up for lead ID:", freshLeadId);
-
+  
+      // Update client lead status for specific follow-up types
       if (["interested", "not interested", "no response"].includes(follow_up_type)) {
-        const clientLeadId = meeting?.clientLead?.id;
-        if (clientLeadId) {
-          await updateClientLeadStatus(clientLeadId, "Follow-Up");
-        } else {
-          console.warn("Missing clientLeadId: status not updated");
-        }
-                if (meeting.clientLead) {
-          meeting.clientLead.status = "Follow-Up"; // Update local reference
-        }
+        await updateClientLead(clientLeadId, {
+          status: "Follow-Up",
+          companyId: meeting.clientLead?.companyId,
+        });
       }
-      else if (follow_up_type === "appointment") {
-        await updateClientLeadStatus(freshLeadId, "Meeting");
-        if (meeting.clientLead) {
-          meeting.clientLead.status = "Meeting";
-        }
-      }
-      
-
+  
+      // Always create follow-up history before any navigation
       await createFollowUpHistoryAPI({ ...payload, follow_up_id: followUpId });
-
+  
       const leadDetails = {
         fresh_lead_id: freshLeadId,
         clientName,
@@ -241,83 +229,39 @@ const ScheduleMeeting = () => {
         follow_up_date,
         follow_up_time,
       };
-
-      let targetTab = "All Follow Ups";
+  
+      // Handle specific follow-up types that require special API calls
       if (follow_up_type === "converted") {
         await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
-        Swal.fire({ icon: "success", title: "Client Converted Successfully!" });
-        navigate("/customer", { state: { lead: leadDetails } });
-        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
       } else if (follow_up_type === "close") {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
-        Swal.fire({ icon: "success", title: "Lead Closed Successfully!" });
-        navigate("/close-leads", { state: { lead: leadDetails } });
-        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
-      } else if (follow_up_type === "appointment") {
-        const newStartTime = new Date(`${follow_up_date}T${follow_up_time}`).toISOString();
-        const updated = await updateMeetingAPI(meeting.id, {
-          clientName,
-          clientEmail: email,
-          clientPhone: meeting.clientPhone,
-          reasonForFollowup: reason_for_follow_up,
-          startTime: newStartTime,
-          endTime: meeting.endTime || null,
-          fresh_lead_id: freshLeadId,
-        });
-        setRecentlyUpdatedMeetingId(meeting.id);
-        setMeetings((prev) =>
-          prev.map((m) =>
-            m.id === meeting.id
-              ? {
-                  ...m,
-                  ...updated,
-                  startTime: newStartTime,
-                  interactionScheduleDate: follow_up_date,
-                  interactionScheduleTime: follow_up_time,
-                }
-              : m
-          )
-        );
-        Swal.fire({ icon: "success", title: "Meeting Updated Successfully!" });
-        targetTab = "All Follow Ups";
-      } else if (follow_up_type === "interested") {
-        Swal.fire({
-          icon: "success",
-          title: "Lead Marked as Interested",
-          text: "Lead has been moved to interested follow-ups and will appear in your follow-up list.",
-        });
-        targetTab = "Interested";
-        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
-      } else if (follow_up_type === "not interested") {
-        Swal.fire({
-          icon: "success",
-          title: "Lead Marked as Not Interested",
-          text: "Lead has been moved to not interested follow-ups.",
-        });
-        targetTab = "Not Interested";
-        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
-      } else if (follow_up_type === "no response") {
-        Swal.fire({
-          icon: "success",
-          title: "Follow-Up Updated",
-          text: "Lead marked as no response and moved to follow-ups.",
-        });
-        targetTab = "All Follow Ups";
-        setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
-      } else {
-        Swal.fire({ icon: "success", title: "Follow-Up Updated Successfully!" });
-        targetTab = "All Follow Ups";
       }
-
+  
+      // Remove meeting from the list
+      setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
+  
+      // Refresh data
       await Promise.all([
         fetchFreshLeadsAPI(),
         refreshMeetings(),
         getAllFollowUps(),
       ]);
-
-      navigate("/follow-up", {
-        state: { lead: leadDetails, activeTab: targetTab },
-      });
+  
+      // Handle navigation and success messages based on follow-up type
+      if (follow_up_type === "converted") {
+        Swal.fire({ icon: "success", title: "Client Converted Successfully!" });
+        navigate("/customer", { state: { lead: leadDetails } });
+      } else if (follow_up_type === "close") {
+        Swal.fire({ icon: "success", title: "Lead Closed Successfully!" });
+        navigate("/close-leads", { state: { lead: leadDetails } });
+      } else {
+        // For all other follow-up types (interested, not interested, no response, appointment, etc.)
+        const targetTab = "All Follow Ups";
+        navigate("/follow-up", {
+          state: { lead: leadDetails, activeTab: targetTab },
+        });
+      }
+  
       handleCloseFollowUpForm();
     } catch (error) {
       console.error("Follow-up submission error:", error);
@@ -328,41 +272,35 @@ const ScheduleMeeting = () => {
       });
     }
   };
-
+  
   const handleAddFollowUp = (meeting) => setSelectedMeetingForFollowUp(meeting);
   const handleCloseFollowUpForm = () => setSelectedMeetingForFollowUp(null);
-
   const handleShowHistory = (meeting) => setSelectedMeetingForHistory(meeting);
   const handleCloseHistory = () => setSelectedMeetingForHistory(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadMeetings();
-  }, [activeFilter, searchQuery]); // ✅ reload if search changes
-
-  // ✅ Loading Component
-  const LoadingSpinner = () => (
-    <div className="loading-overlay">
-      <div className="loading-container">
-        <div className="loading-spinner">
-          <div className="spinner-ring"></div>
-          <div className="spinner-ring"></div>
-          <div className="spinner-ring"></div>
-        </div>
-        <p className="loading-text">Loading meetings...</p>
-      </div>
-    </div>
-  );
+  }, [activeFilter, searchQuery]);
 
   return (
     <div className="task-management-container">
+      {localLoading && <LoadingSpinner text="Loading Meetings..." />}
       <div className="task-management-wrapper">
         <div className="content-header">
           <div className="header-top">
             <div className="header-left">
               <h2 className="meetings-title">Your Meetings</h2>
               <div className="date-section">
-                <p className="day-name">{new Date().toLocaleDateString(undefined, { weekday: "long" })}</p>
-                <p className="current-date">{new Date().toLocaleDateString(undefined, { day: "numeric", month: "long" })}</p>
+                <p className="day-name">
+                  {new Date().toLocaleDateString(undefined, { weekday: "long" })}
+                </p>
+                <p className="current-date">
+                  {new Date().toLocaleDateString(undefined, {
+                    day: "numeric",
+                    month: "long",
+                  })}
+                </p>
                 <FontAwesomeIcon icon={faChevronDown} className="date-dropdown" />
               </div>
             </div>
@@ -372,8 +310,8 @@ const ScheduleMeeting = () => {
                   key={key}
                   className={activeFilter === key ? "active-filter" : ""}
                   onClick={() => setActiveFilter(key)}
-                  disabled={loading} // ✅ Disable filters while loading
-                >
+                  disabled={localLoading}
+                                  >
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </button>
               ))}
@@ -382,11 +320,11 @@ const ScheduleMeeting = () => {
         </div>
 
         <div className="meetings-content">
-          {loading ? (
-            <LoadingSpinner />
-          ) : (
-            <MeetingList meetings={meetings} onAddFollowUp={handleAddFollowUp} onShowHistory={handleShowHistory} />
-          )}
+          <MeetingList
+            meetings={meetings}
+            onAddFollowUp={handleAddFollowUp}
+            onShowHistory={handleShowHistory}
+          />
         </div>
       </div>
 
@@ -409,3 +347,7 @@ const ScheduleMeeting = () => {
 };
 
 export default ScheduleMeeting;
+
+
+
+

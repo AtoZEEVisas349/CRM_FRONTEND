@@ -5,6 +5,9 @@ import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { getEmailTemplates } from "../../static/emailTemplates"; 
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
+import "react-time-picker/dist/TimePicker.css";
+import "react-clock/dist/Clock.css";
+import SendEmailToClients from "../client-details/SendEmailToClients";
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -345,9 +348,29 @@ const ClientDetailsOverview = () => {
     try {
       if (followUpType === "converted") {
         await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
+        await createFollowUpHistoryAPI({ 
+        follow_up_id: clientInfo.followUpId || clientInfo.id, 
+        connect_via: capitalize(contactMethod), 
+        follow_up_type: followUpType, 
+        interaction_rating: capitalize(interactionRating), 
+        reason_for_follow_up: reasonDesc, 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
+        fresh_lead_id: freshLeadId, 
+      });
         Swal.fire({ icon: "success", title: "Client Converted" });
       } else if (followUpType === "close") {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
+        await createFollowUpHistoryAPI({
+       follow_up_id: clientInfo.followUpId || clientInfo.id, 
+        connect_via: capitalize(contactMethod), 
+        follow_up_type: followUpType, 
+        interaction_rating: capitalize(interactionRating), 
+        reason_for_follow_up: reasonDesc, 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
+        fresh_lead_id: freshLeadId, 
+      });
         Swal.fire({ icon: "success", title: "Lead Closed" });
       } else {
         return; // Do nothing for other types; handled by specific buttons
@@ -403,37 +426,6 @@ const ClientDetailsOverview = () => {
     setSelectedTemplateId(e.target.value);
   };
 
-  const handleEmailSubmit = async (e) => {
-    e.preventDefault();
-    setSendingEmail(true);
-
-    const selectedTemplate = emailTemplates.find(
-      (template) => template.id === selectedTemplateId
-    );
-
-    if (!selectedTemplate) {
-      alert("Please select a template.");
-      return;
-    }
-
-    const emailPayload = {
-      templateId: selectedTemplate.id,
-      executiveName: executiveInfo.username,
-      executiveEmail: executiveInfo.email,
-      clientEmail: clientInfo.email,
-      emailBody: selectedTemplate.body,
-      emailSubject: selectedTemplate.subject,
-    };
-
-    try {
-      await handleSendEmail(emailPayload);
-      alert("Email sent successfully!");
-      setSendingEmail(false);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send email.");
-    }
-  }; 
   
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
@@ -444,6 +436,7 @@ const ClientDetailsOverview = () => {
   
 
   return (
+    <>
     <div className="client-overview-wrapper">
       {/* Client Details */}
       <div className="c-container">
@@ -518,78 +511,8 @@ const ClientDetailsOverview = () => {
       {/* Client Interaction */}
       <div className="client-interaction-container">
         <div className="interaction-form">
-        <div>
-            <h4 style={{ marginBottom: "0.5rem" }}>Send Email to Client</h4>
+          <SendEmailToClients clientInfo={clientInfo} />
 
-            <form
-              onSubmit={handleEmailSubmit}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                flexWrap: "wrap", // for responsiveness
-              }}
-            >
-              <div>
-                <label>
-                  From:
-                  <input
-                    type="email"
-                    value={executiveInfo.email}
-                    readOnly
-                    style={{
-                      marginLeft: "0.5rem",
-                      padding: "8px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label>
-                  To:
-                  <input
-                    type="email"
-                    value={clientInfo.email}
-                    // readOnly
-                    style={{
-                      marginLeft: "0.5rem",
-                      padding: "8px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div>
-                <label>
-                  Template:
-                  <select
-                    value={selectedTemplateId}
-                    onChange={handleTemplateChange}
-                    required
-                    style={{ marginLeft: "0.5rem" }}
-                  >
-                    <option value="">Select</option>
-                    {emailTemplates.map((template) => (
-                      <option key={template.id} value={template.id}>
-                        {template.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                className="sendEmail-btn"
-                disabled={sendingEmail}
-              >
-                {sendingEmail ? "Sending..." : "Send Email"}
-              </button>
-            </form>
-          </div>
           <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">
@@ -691,106 +614,65 @@ const ClientDetailsOverview = () => {
                       style={{ padding: "8px", borderRadius: "4px" }}
                     />
                   </div>
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+  <label>Time:</label>
+  <div
+    style={{
+      display: "flex",
+      border: "1px solid #ccc",
+      borderRadius: "6px",
+      overflow: "hidden",
+      backgroundColor: "white",
+      height: "38px"
+    }}
+  >
+    <div style={{ position: "relative", flex: 1 }}>
+      <input
+        type="time"
+        value={convertTo24Hour(timeOnly, ampm)}
+        onChange={(e) => {
+          const time24 = e.target.value;
+          if (time24) {
+            const converted = convertTo12Hour(time24);
+            setTimeOnly(converted.time);
+            setAmPm(converted.amPm);
+          }
+        }}
+        style={{
+          border: "none",
+          padding: "8px 4px",
+          width: "100%",
+          backgroundColor: "transparent",
+          cursor: "text",
+        }}
+      />
+    </div>
+  </div>
+  <button
+    type="button"
+    onClick={() => {
+      const now = new Date();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const ampmValue = hour >= 12 ? "PM" : "AM";
+      const hour12 = hour % 12 || 12;
+      const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+      setTimeOnly(currentTime12Hour);
+      setAmPm(ampmValue);
+    }}
+    style={{
+      fontSize: "11px",
+      color: "#007bff",
+      background: "none",
+      border: "none",
+      cursor: "pointer",
+      textDecoration: "underline",
+    }}
+  >
+    Use Current Time
+  </button>
+</div>
 
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label style={{ marginBottom: "4px" }}>Time:</label>
-                    <div
-                      style={{
-                        display: "flex",
-                        border: "1px solid #ccc",
-                        borderRadius: "6px",
-                        overflow: "hidden",
-                        width: "150px",
-                        backgroundColor: "white"
-                      }}
-                    >
-                      <div style={{ position: "relative", flex: 1 }}>
-                        {!isTimeEditable ? (
-                          <>
-                            <select
-                              ref={timeSelectRef}
-                              value={timeOnly}
-                              onChange={(e) => {
-                                setTimeOnly(e.target.value);
-                                setIsTimeEditable(true);
-                              }}
-                              style={{
-                                border: "none",
-                                padding: "8px 4px",
-                                width: "100%",
-                                appearance: "none",
-                                backgroundColor: "transparent",
-                                cursor: "pointer",
-                              }}
-                            >
-                              <option value={timeOnly}>{timeOnly}</option>
-                              {[
-                                "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
-                                "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
-                                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
-                              ].filter(opt => opt !== timeOnly).map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                            <span
-                              onClick={() => timeSelectRef.current?.focus()}
-                              style={{
-                                position: "absolute",
-                                right: "9px",
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                pointerEvents: "none",
-                                fontSize: "12px",
-                                color: "#888"
-                              }}
-                            >
-                              ▼
-                            </span>
-                          </>
-                        ) : (
-                          <input
-                            type="time"
-                            value={convertTo24Hour(timeOnly, ampm)}
-                            onChange={(e) => {
-                              const time24 = e.target.value;
-                              if (time24) {
-                                const converted = convertTo12Hour(time24);
-                                setTimeOnly(converted.time);
-                                setAmPm(converted.amPm);
-                              }
-                            }}
-                            onBlur={() => {
-                              // setIsTimeEditable(false);
-                            }}
-                            style={{
-                              border: "none",
-                              padding: "8px 4px",
-                              width: "100%",
-                              backgroundColor: "transparent",
-                              cursor: "text",
-                            }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                    {isTimeEditable && (
-                      <button
-                        type="button"
-                        onClick={() => setIsTimeEditable(false)}
-                        style={{
-                          fontSize: "11px",
-                          color: "#666",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                          marginTop: "4px",
-                          alignSelf: "flex-start"
-                        }}
-                      >
-                        Use preset times
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>
@@ -887,7 +769,8 @@ const ClientDetailsOverview = () => {
           </div>
         </div>
       </div>
-    </div>
+    {/* </div> */}
+    </>
   );
 };
 

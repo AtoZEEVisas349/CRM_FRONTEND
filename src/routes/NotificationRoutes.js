@@ -6,7 +6,7 @@ import "../styles/notification.css";
 const NotificationRoutes = () => {
   return (
     <div className="notification-page-wrapper">
-      <SidebarandNavbar />
+      {/* <SidebarandNavbar /> */}
       <div className="notification-content-area">
         <Notification />
       </div>

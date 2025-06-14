@@ -13,10 +13,10 @@ import { SearchContext } from "../context/SearchContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars, faHouse, faUserPlus, faUsers, faList, faClock, faCircleXmark,
-  faFile, faReceipt, faGear, faArrowLeft, faCircleQuestion, faBell,
+  faFile, faReceipt, faGear, faArrowLeft, faBell,
   faRobot, faCircleUser, faRightFromBracket, faMugHot, faPersonWalking,
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
-  faHeadphones, faYinYang, faStopCircle
+  faHeadphones, faYinYang, faStopCircle,faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 import { FaPlay,FaPause ,BeepNo} from "react-icons/fa";
 // Break timer icons
@@ -35,6 +35,7 @@ const SidebarandNavbar = () => {
   } = useApi();
   const { handleStopWork } = useExecutiveActivity();
   const { theme } = useContext(ThemeContext);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { setSearchQuery } = useContext(SearchContext);
@@ -69,6 +70,7 @@ const SidebarandNavbar = () => {
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true); // Start spinner
       await stopBreak();
       await logout();
       resetBreakTimer();
@@ -158,7 +160,7 @@ const handleDismissBeepNotification = () => {
           <ul className="submenu_nav">
             <li>
               <Link
-                to="/freshlead"
+                to="/executive/freshlead"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
@@ -167,7 +169,7 @@ const handleDismissBeepNotification = () => {
             </li>
             <li>
               <Link
-                to="/follow-up"
+                to="/executive/follow-up"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
@@ -176,7 +178,7 @@ const handleDismissBeepNotification = () => {
             </li>
             <li>
               <Link
-                to="/customer"
+                to="/executive/customer"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
@@ -185,7 +187,7 @@ const handleDismissBeepNotification = () => {
             </li>
             <li>
               <Link
-                to="/close-leads"
+                to="/executive/close-leads"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
@@ -195,9 +197,9 @@ const handleDismissBeepNotification = () => {
           </ul>
         )}
         </li>
-        <li><Link to="/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
-        <li><Link to="/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
-        <li><Link to="/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
+        <li><Link to="/executive/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
+        <li><Link to="/executive/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
+        <li><Link to="/executive/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
       </ul>
     </nav>
   </section>
@@ -248,14 +250,19 @@ const handleDismissBeepNotification = () => {
     style={{ cursor: "pointer" }}
     title="Notifications"
     tabIndex="0"
-    onClick={() => navigate("/notification")}
+    onClick={() => navigate("/executive/notification")}
   />
   {unreadCount > 0 && (
     <span className="notification-badge">{unreadCount}</span>
   )}
 </div>
+<FontAwesomeIcon
+  className="navbar_icon bot_icon"
+  icon={faRobot}
+  onClick={() => window.open(`${window.location.origin}/executive/chatbot`, "_blank")}
+  title="Open ChatBot"
+/>
 
-      <FontAwesomeIcon className="navbar_icon bot_icon" icon={faRobot} onClick={() => window.open("/chatbot", "_blank")} />
       <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
       <FontAwesomeIcon 
         className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
@@ -274,7 +281,7 @@ const handleDismissBeepNotification = () => {
   />
 
 
-  {showUserPopover && (
+{showUserPopover && (
     <div className="user_popover">
       {executiveLoading ? (
         <p>Loading user details...</p>
@@ -289,8 +296,21 @@ const handleDismissBeepNotification = () => {
               <p className="user_role">{executiveInfo.role}</p>
             </div>
           </div>
-          <button className="logout_btn" onClick={handleLogout}>
-            <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: "8px" }} /> Logout
+          <button 
+            className="logout_btn" 
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            aria-label={isLoggingOut ? 'Logging out, please wait' : 'Logout'}
+          >
+            <FontAwesomeIcon 
+              icon={isLoggingOut ? faSpinner : faRightFromBracket} 
+              className={isLoggingOut ? 'logout-spinner' : ''}
+            /> 
+            <span className="logout-text">
+              {isLoggingOut ? 'Logging out' : 'Logout'}
+            </span>
+            {isLoggingOut && <span className="loading-dots"></span>}
+            {isLoggingOut && <span className="sr-only">Please wait while we log you out</span>}
           </button>
         </>
       )}

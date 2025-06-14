@@ -1,15 +1,4 @@
-.fresh-leads-main-content {
-  width: calc(100vw - 200px);
-  height:100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 20px;
-  margin-top: 50px;
-  overflow: auto;
-  margin-left: -20px;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
+
 .fresh-leads-table thead {
   background-color: #e5e7eb;
   text-transform: uppercase;
@@ -29,9 +18,9 @@
   overflow: hidden;
   background-color: var(--bg-color);
 }
-.lead-sidebar {
+/* .lead-sidebar {
   width: 250px;
-}
+} */
 .lead-content {
   flex-grow: 1;
   width: calc(100% - 250px);
@@ -512,3 +501,20 @@ gap: 10px;
     margin-top: 30px;
   }
 }
+
+
+/*--------------------------Loading---------------------------*/
+.fresh-leads-main-content {
+  position: relative; /* This ensures the loading overlay positions correctly */
+  width: calc(100vw - 200px);
+  height:100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  /* margin-top: 50px; */
+  overflow: auto;
+  margin-left: -20px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+

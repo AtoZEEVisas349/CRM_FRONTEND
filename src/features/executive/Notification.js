@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useApi } from "../../context/ApiContext";
 import "../../styles/notification.css";
+import { useLoading } from "../../context/LoadingContext";
+import LoadingSpinner from "../spinner/LoadingSpinner";
 
 function Notification() {
   const {
@@ -9,16 +11,20 @@ function Notification() {
     fetchNotifications,
     markNotificationReadAPI,
   } = useApi();
-
+  const { isLoading, loadingText, showLoader, hideLoader } = useLoading();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [readIds, setReadIds] = useState(new Set());
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      fetchNotifications({ userId: user.id, userRole: user.role });
+      showLoader("Loading Notifications...");
+      fetchNotifications({ userId: user.id, userRole: user.role }).finally(() => {
+        hideLoader();
+      });
     }
   }, [fetchNotifications]);
+  
 
   // Group lead assignment notifications
   const groupedLeadAssignments = [];
@@ -104,7 +110,10 @@ function Notification() {
   };
 
   return (
-    <div className="notification-container">
+    <>
+<div className="notification-container" style={{ position: "relative" }}>
+     {isLoading && <LoadingSpinner text={loadingText || "Loading Notifications..."} />}
+
       <h2>Notifications</h2>
 
       {notificationsLoading ? (
@@ -177,6 +186,7 @@ function Notification() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

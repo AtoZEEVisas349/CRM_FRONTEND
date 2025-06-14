@@ -1699,17 +1699,16 @@ body.sidebar-collapsed .assign-task-container {
 
 .admin-notification_badge {
   position: absolute;
-  top: -12px;
   right: -6px;
   background-color: var(--danger-color, #ef4444);
   color: white;
   font-size: 10px;
   font-weight: 600;
   line-height: 1;
-  padding: 4px;
+  padding: 3px;
   border-radius: 50%;
-  min-width: 10px;
-  height: 18px;
+  min-width: 7px;
+  height: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1739,6 +1738,16 @@ body.sidebar-collapsed .assign-task-container {
   animation: bounce 0.9s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
 }
 
+.logout-spinner {
+  animation: spin 1s linear infinite;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 .admin-logo_name {
   display: flex;
@@ -2899,5 +2908,107 @@ body.sidebar-collapsed .admin-main-content {
 .lead-graph-summary span {
   color: #000;
   font-weight: 500;
+}
+
+
+
+@keyframes containerScale0 {
+  0% { box-shadow: 0 0 10px rgba(13, 255, 0, 0.7), 0 0 20px rgba(2, 69, 22, 0.5); }
+  50% { box-shadow: 0 0 10px rgba(13, 255, 0, 0.7), 0 0 20px rgba(2, 69, 22, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(13, 255, 0, 0.7), 0 0 20px rgba(2, 69, 22, 0.5); }
+}
+
+@keyframes containerScale1 {
+  0% { box-shadow: 0 0 10px rgba(76, 85, 192, 0.7), 0 0 20px rgba(6, 31, 253, 0.5); }
+  50% { box-shadow: 0 0 10px rgba(76, 85, 192, 0.7), 0 0 20px rgba(6, 31, 253, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(76, 85, 192, 0.7), 0 0 20px rgba(6, 31, 253, 0.5); }
+}
+
+@keyframes containerScale2 {
+  0% { box-shadow: 0 0 10px rgba(247, 93, 224, 0.7), 0 0 20px rgba(146, 1, 141, 0.5); }
+  50% { box-shadow: 0 0 10px rgba(247, 93, 224, 0.7), 0 0 20px rgba(146, 1, 141, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(247, 93, 224, 0.7), 0 0 20px rgba(146, 1, 141, 0.5); }
+}
+
+@keyframes containerScale3 {
+  0% { box-shadow: 0 0 10px rgba(255, 170, 0, 0.7), 0 0 20px rgba(255, 170, 0, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(255, 170, 0, 0.7), 0 0 25px rgba(255, 170, 0, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(255, 170, 0, 0.7), 0 0 20px rgba(255, 170, 0, 0.5); }
+}
+
+
+/* Summary Box Hover Enhancements */
+.box:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px currentColor;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box:hover .box-icon {
+  transform: scale(1.3) rotate(10deg);
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: brightness(1.0) drop-shadow(0 0 25px currentColor) drop-shadow(0 0 40px currentColor) drop-shadow(0 0 55px currentColor) drop-shadow(0 0 70px currentColor);
+}
+
+.box-hover-0 {
+  animation: containerScale0 2.5s infinite ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box-hover-1 {
+  animation: containerScale1 2.5s infinite ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box-hover-2 {
+  animation: containerScale2 2.5s infinite ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box-hover-3 {
+  animation: containerScale3 2.5s infinite ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Logout Button */
+.logout-btn-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.logout_btn {
+  background: linear-gradient(135deg, #6a11cb, #2575fc) !important;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logout_btn:hover {
+  transform: translateY(-2px) !important;
+  background: linear-gradient(135deg, #7b1fa2, #1976d2) !important;
+  box-shadow: 0 6px 14px rgba(106, 17, 203, 0.5) !important;
+}
+
+.logout-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.6s linear infinite;
+  margin-left: 8px;
+}
+
+/* Executive Container Hover */
+.executive-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 

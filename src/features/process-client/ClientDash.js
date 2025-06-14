@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useProcess } from "../../context/ProcessAuthContext";
@@ -23,6 +22,46 @@ const ClientDash = ({ initialStages = 6 }) => {
   const [stageCount, setStageCount] = useState(initialStages);
   const [hexagons, setHexagons] = useState([]);
 
+  const generateZebraCrossings = () => {
+    const stripes = [];
+    const stripeWidth = 15;
+    const stripeHeight = 5;
+    const stripeGap = 5;
+
+    // Combine top and bottom rows of hexagons (circles)
+    const allHexagons = [...hexagons];
+
+    allHexagons.forEach(({ left, top, row }) => {
+      // Determine center Y for the zebra crossing, near the circle
+      const centerY = row === "top" ? 180 : 330;
+
+      // Number of stripes vertically in the crossing
+      const stripesCount = 6;
+
+      for (let i = 0; i < stripesCount; i++) {
+        // Calculate vertical position for each stripe, centered at centerY
+        const y = centerY - ((stripesCount / 2) * (stripeHeight + stripeGap)) + i * (stripeHeight + stripeGap);
+
+        stripes.push(
+          <rect
+            key={`zebra-${left}-${i}`}
+            x={left - stripeWidth / 2}
+            y={y}
+            width={stripeWidth}
+            height={stripeHeight}
+            fill="white"
+            opacity="0.85"
+            rx={1}
+            ry={1}
+          />
+        );
+      }
+    });
+
+    return stripes;
+  };
+
+
   const fetchStages = async () => {
     try {
       const latestStages = await handleGetCustomerStagesById(id);
@@ -32,15 +71,16 @@ const ClientDash = ({ initialStages = 6 }) => {
         const text = latestStages[`stage${i + 1}_data`] || "";
         const date = latestStages[`stage${i + 1}_timestamp`]
           ? new Date(latestStages[`stage${i + 1}_timestamp`]).toLocaleString("default", {
-              month: "long",
-              year: "numeric",
-            })
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
           : "";
+
         newComments.push({ text, date });
       }
 
       setComments(newComments);
-      console.log(newComments);
       setExpanded(Array(stageCount).fill(false));
       setStageData(latestStages);
     } catch (err) {
@@ -63,9 +103,10 @@ const ClientDash = ({ initialStages = 6 }) => {
         const text = latestStages[`stage${i + 1}_data`] || "";
         const date = latestStages[`stage${i + 1}_timestamp`]
           ? new Date(latestStages[`stage${i + 1}_timestamp`]).toLocaleString("default", {
-              month: "long",
-              year: "numeric",
-            })
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
           : "";
         newComments.push({ text, date });
       }
@@ -183,11 +224,11 @@ const ClientDash = ({ initialStages = 6 }) => {
     const segments = Math.ceil(stageCount / 2);
     let mainPath = "M0 330 ";
     let shadowPath = "M0 335 ";
-    
+
     for (let i = 0; i < segments; i++) {
       const x1 = 60 + i * 260;
       const x2 = 140 + i * 260;
-      
+
       // Main road curve
       mainPath += `C${x1} 330, ${x1} 180, ${x2} 180 `;
       // Shadow path (slightly offset)
@@ -199,7 +240,7 @@ const ClientDash = ({ initialStages = 6 }) => {
         shadowPath += `S${x3} 335, ${x3 + 60} 335 `;
       }
     }
-    
+
 
     return { mainPath, shadowPath };
   };
@@ -207,16 +248,16 @@ const ClientDash = ({ initialStages = 6 }) => {
   const generateRoadMarkings = () => {
     const segments = Math.ceil(stageCount / 2);
     const markings = [];
-    
+
     for (let i = 0; i < segments; i++) {
       const baseX = 60 + i * 260;
-      
+
       // Create dashed line markings along the curve
       for (let j = 0; j < 10; j++) {
         const progress = j / 9;
         const x = baseX + (80 * progress);
         const y = 330 - (150 * Math.sin(progress * Math.PI));
-        
+
         markings.push(
           <rect
             key={`marking-${i}-${j}`}
@@ -231,22 +272,33 @@ const ClientDash = ({ initialStages = 6 }) => {
         );
       }
     }
-    
+
     return markings;
   };
 
   const handleIconClick = (index) => {
     if (index < stageCount) {
-      setActiveIcon(index);
+      setActiveIcon(prev => (prev === index ? null : index));
       const stageKey = `stage${index + 1}_data`;
       setInputValue(stageData[stageKey] || "");
     }
   };
 
+
   const handleSubmit = async () => {
+    if (activeIcon === null) {
+      alert("Please select a stage to add comment.");
+      return;
+    }
+
+    if (!inputValue.trim()) {
+      alert("Comment cannot be empty.");
+      return;
+    }
+
     const currentDate = new Date().toISOString();
     const updatedStage = {
-      [`stage${activeIcon + 1}_data`]: inputValue,
+      [`stage${activeIcon + 1}_data`]: inputValue.trim(),
       [`stage${activeIcon + 1}_completed`]: true,
       [`stage${activeIcon + 1}_timestamp`]: currentDate,
     };
@@ -258,10 +310,13 @@ const ClientDash = ({ initialStages = 6 }) => {
       await handleUpsertStages({ ...newStageData, customerId: id });
       await fetchStages();
       setActiveIcon(null);
+      setInputValue(""); // clear input after submit
     } catch (error) {
       console.error("API error:", error.message);
+      alert("Failed to save comment. Please try again.");
     }
   };
+
 
   const toggleExpand = (index) => {
     const updated = [...expanded];
@@ -299,7 +354,7 @@ const ClientDash = ({ initialStages = 6 }) => {
               <stop offset="100%" stopColor="rgba(0,0,0,0.1)" />
             </linearGradient>
             <filter id="roadBlur">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="1"/>
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
             </filter>
           </defs>
 
@@ -328,6 +383,10 @@ const ClientDash = ({ initialStages = 6 }) => {
             className="road-centerline"
           />
 
+          {/* Zebra crossings over circles */}
+          {generateZebraCrossings()}
+
+
           {/* Road Markings */}
           {generateRoadMarkings()}
 
@@ -339,8 +398,7 @@ const ClientDash = ({ initialStages = 6 }) => {
             width={150}
             height={200}
             style={{
-              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-              animation: 'float 3s ease-in-out infinite'
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
             }}
           />
 
@@ -353,56 +411,45 @@ const ClientDash = ({ initialStages = 6 }) => {
             height={200}
             style={{
               filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-              animation: 'float 3s ease-in-out infinite 1.5s'
             }}
           />
 
           {/* Connection lines for hexagons */}
+          {/* Top connectors */}
           {hexagons.filter(h => h.row === 'top').map((hex) => (
             <React.Fragment key={`top-connector-${hex.num}`}>
               <line
                 x1={hex.left}
-                y1="180"
+                y1={153}       // road border edge top row
                 x2={hex.left}
-                y2={hex.top - 130}
-                stroke="rgba(255,255,255,0.8)"
-                strokeWidth="4"
+                y2={hex.top - 100}
+                stroke="#808080"   // grey color
+                strokeWidth="2"    // thinner line for subtle look
                 className="connector-line"
-                strokeDasharray="5,5"
+                strokeDasharray="" // no dash for solid line
               />
-              <circle
-                cx={hex.left}
-                cy="180"
-                r="8"
-                fill="white"
-                stroke="#3b82f6"
-                strokeWidth="3"
-              />
+
             </React.Fragment>
           ))}
 
+          {/* Bottom connectors */}
           {hexagons.filter(h => h.row === 'bottom').map((hex) => (
             <React.Fragment key={`bottom-connector-${hex.num}`}>
               <line
                 x1={hex.left}
-                y1="330"
+                y1={358}       // road border edge bottom row
                 x2={hex.left}
                 y2={hex.top - 100}
-                stroke="rgba(255,255,255,0.8)"
-                strokeWidth="4"
+                stroke="#808080"   // grey color
+                strokeWidth="2"
                 className="connector-line"
-                strokeDasharray="5,5"
+                strokeDasharray=""
               />
-              <circle
-                cx={hex.left}
-                cy="330"
-                r="8"
-                fill="white"
-                stroke="#3b82f6"
-                strokeWidth="3"
-              />
+
             </React.Fragment>
           ))}
+
+
         </svg>
 
         {hexagons.map((hex, index) => (
@@ -435,11 +482,26 @@ const ClientDash = ({ initialStages = 6 }) => {
 
             {comments[hex.num - 1]?.text && (
               <div className="stage-description-card">
+                <div className="card-c-header">
+                  <span className="stage-title">Stage {hex.num}</span>
+                  {user?.type === "processperson" && (
+                    <button
+                      className="edit-btn-fixed"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleIconClick(hex.num - 1);
+                      }}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+
                 <div className="card-content">
                   <p
                     className="card-text"
                     style={{
-                      maxHeight: expandedCards[hex.num - 1] ? 'none' : '60px',
+                      maxHeight: expandedCards[hex.num - 1] ? 'none' : '20px',
                       overflow: 'hidden',
                     }}
                   >
@@ -460,19 +522,204 @@ const ClientDash = ({ initialStages = 6 }) => {
                 <h3>{comments[hex.num - 1].date}</h3>
               </div>
             )}
+
           </div>
         ))}
 
         {user?.type === "processperson" && activeIcon !== null && (
-          <div className="input-popup">
+          <div
+            className="input-popup"
+            style={{
+              position: 'fixed',
+              top: '30%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#fff',
+              padding: '1rem',
+              borderRadius: '10px',
+              zIndex: 999,
+              width: '320px',
+              boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+            }}
+          >
+            {/* Cross (Close) Button */}
+            <button
+              onClick={() => setActiveIcon(null)}
+              style={{
+                width: '30px',
+                height: '30px',
+                position: 'absolute',
+                top: '18px',
+                right: '18px', // better than using left for alignment
+                background: 'none',
+                border: 'none',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                color: '#999',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              ×
+            </button>
+
+
             <textarea
               placeholder="Enter your comment"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              style={{
+                width: '100%',
+                height: '100px',
+                resize: 'vertical',
+                padding: '10px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                marginBottom: '10px',
+              }}
             />
-            <button onClick={handleSubmit}>Submit</button>
+            <button
+              onClick={handleSubmit}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              Submit
+            </button>
           </div>
         )}
+
+      </div>
+      {/* Responsive Full-Width Stages Table in One Row */}
+      <div
+        className="stages-table-container"
+        style={{
+          marginTop: '40px',
+          width: '100%',
+          overflowX: 'auto',
+          padding: '0 20px',
+        }}
+      ><h3> Stage Summary</h3>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            gap: '30px',
+            minWidth: '1000px', // ensures wide layout
+          }}
+        >
+
+          {[0, 5, 10].map((startIdx) => (
+            <div
+              key={startIdx}
+              style={{
+                flex: '0 0 33%',
+                minWidth: '320px',
+                maxWidth: '460px',
+              }}
+            >
+              <table
+                style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  fontFamily: 'Segoe UI, sans-serif',
+                  tableLayout: 'fixed'
+                }}
+              >
+                <thead>
+                  <tr style={{ backgroundColor: '#3b82f6', color: 'white' }}>
+                    <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Stage</th>
+                    <th
+                      style={{
+                        width: '360px',
+                        padding: '12px',
+                        border: '1px solid #ddd',
+                        textAlign: 'center'
+                      }}
+                    >
+                      Comments
+                    </th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 5 }).map((_, i) => {
+                    const index = startIdx + i;
+                    const comment = comments[index] || {};
+                    return (
+                      <tr key={index}>
+                        <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
+                          <div>Stage {index + 1}</div>
+                          {comment.date && (
+                            <div style={{ fontSize: '11px', color: 'red', marginTop: '4px' }}>
+                              {comment.date}
+                            </div>
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            padding: '10px',
+                            border: '1px solid #ddd',
+                            position: 'relative',
+                            maxWidth: '360px',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-word',
+                            whiteSpace: 'normal',
+                          }}
+                        >
+                          <div
+                            style={{
+                              maxHeight: expandedCards[index] ? 'none' : '40px',
+                              overflow: 'hidden',
+                              paddingRight: '60px',
+                            }}
+                          >
+                            {comment.text?.trim() || " - "}
+                          </div>
+
+                          {comment.text?.length > 20 && (
+                            <button
+                              style={{
+                                position: 'absolute',
+                                bottom: '8px',
+                                right: '10px',
+                                background: 'none',
+                                border: 'none',
+                                color: '#3b82f6',
+                                fontSize: '11px',
+                                cursor: 'pointer',
+                                padding: 0,
+                                fontWeight: '500',
+                                textDecoration: 'underline'
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCardExpand(index);
+                              }}
+                            >
+                              {expandedCards[index] ? 'See Less' : 'See More'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+
+
+              </table>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

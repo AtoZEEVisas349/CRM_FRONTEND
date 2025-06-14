@@ -9,7 +9,7 @@ const RequirePermission = ({ requiredKey, children }) => {
   const role = userData?.role?.toLowerCase();
 
   // Skip permission check for Admin or Executive
-  if (role === "admin" || role === "executive") {
+  if (role === "admin") {
     return <>{children}</>;
   }
 
