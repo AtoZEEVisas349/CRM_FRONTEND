@@ -586,8 +586,16 @@ export const deleteClientLead = async (leadId) => {
 //EOD Report
 export const sendEodReport = async ({ email, content }) => {
   try {
-    const response = await apiService.post("/report", { email, content });
-    return response.data;
+    const response = await apiService.post(
+      "/report",
+      JSON.stringify({ email, content }),
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+        return response.data;
   } catch (error) {
     console.error("❌ Error sending EOD report:", error);
     throw error;

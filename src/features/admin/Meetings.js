@@ -24,7 +24,7 @@ const Meetings = ({ selectedExecutiveId }) => {
     fetchExecutives();
   }, [fetchExecutivesAPI]);
 
-  // Fetch and filter meetings (remove duplicates based on fresh_lead_id)
+  // Fetch and filter meetings
   useEffect(() => {
     const fetchMeetingsData = async () => {
       setMeetingsLoading(true);
@@ -41,12 +41,19 @@ const Meetings = ({ selectedExecutiveId }) => {
             filtered = allMeetings.filter(
               (meeting) => String(meeting.executiveId) === selectedExecutiveId
             );
-            console.log("Filtered meetings:", filtered);
+            console.log("Filtered meetings by executive:", filtered);
           }
 
-          // ✅ Deduplicate meetings based on fresh_lead_id and latest startTime
+          // Filter meetings where clientLead.status is "Meeting"
+          filtered = filtered.filter(
+            (meeting) =>
+              meeting.freshLead?.lead?.clientLead?.status === "Meeting"
+          );
+          console.log("Filtered meetings by status 'Meeting':", filtered);
+
+          // Deduplicate meetings based on clientPhone and latest startTime
           const deduplicatedMap = filtered.reduce((map, meeting) => {
-            const key = meeting.fresh_lead_id;
+            const key = meeting.clientPhone;
             if (!key) return map;
 
             if (!map.has(key)) {
@@ -77,7 +84,7 @@ const Meetings = ({ selectedExecutiveId }) => {
     };
 
     fetchMeetingsData();
-  }, [selectedExecutiveId]);
+  }, [selectedExecutiveId, adminMeeting]);
 
   if (meetingsLoading) {
     return <div className="meetings-container">Loading meetings...</div>;

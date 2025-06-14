@@ -22,7 +22,7 @@ const ExecutiveDetails = () => {
   const [cooldownAlert, setCooldownAlert] = useState({ visible: false, message: "", userId: null });
 
   // 15 minutes in milliseconds
-  const COOLDOWN_DURATION = 15 * 60 * 1000;
+  const COOLDOWN_DURATION = 30 * 1000; // 30 seconds
   const COOLDOWN_STORAGE_KEY = 'executive_toggle_cooldowns';
 
   // Load cooldowns from localStorage on component mount
