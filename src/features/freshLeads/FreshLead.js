@@ -247,11 +247,16 @@ function FreshLead() {
                         >
                           📞
                         </button>
+
                         {activePopoverIndex === index && (
                           <div className="popover">
                             <button
                               className="popover-option"
                               onClick={() => {
+                                localStorage.setItem("activeClient", JSON.stringify({
+                                 name: lead.name,
+                                 phone: lead.phone
+                                }));
                                 const cleaned = lead.phone.replace(/[^\d]/g, "");
                                 window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                 setActivePopoverIndex(null);
