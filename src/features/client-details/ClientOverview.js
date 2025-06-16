@@ -260,7 +260,7 @@ const ClientOverview = () => {
         setTimeOnly("12:00");
         setAmPm("AM");
         setIsTimeEditable(false);
-        setTimeout(() => navigate("/freshlead"), 2000);
+        setTimeout(() => navigate("/executive/freshlead"), 2000);
       })
       .catch((error) => {
         console.error("Error creating Follow-up or history:", error);

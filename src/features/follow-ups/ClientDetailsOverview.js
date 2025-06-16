@@ -380,7 +380,7 @@ const ClientDetailsOverview = () => {
       await fetchMeetings();
       await refreshMeetings();
       loadFollowUpHistories(freshLeadId);
-      setTimeout(() => navigate("/follow-up"), 1000);
+      setTimeout(() => navigate("/executive/follow-up"), 1000);
     } catch (err) {
       console.error("Follow-up Action Error:", err);
       Swal.fire({
