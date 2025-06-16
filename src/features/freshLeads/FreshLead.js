@@ -134,17 +134,18 @@ function FreshLead() {
   };
 
   const handleAddFollowUp = (lead) => {
+    const clientLead = lead.clientLead || {};
     const clientData = {
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      altPhone: lead.altPhone,
-      education: lead.education,
-      experience: lead.experience,
-      state: lead.state,
-      dob: lead.dob,
-      country: lead.country,
-      assignDate: lead.assignDate,
+      name: lead.name || clientLead.name || "",
+      email: lead.email || clientLead.email || "",
+      phone: lead.phone || clientLead.phone || "",
+      altPhone: lead.altPhone || clientLead.altPhone || "",
+      education: lead.education || clientLead.education || "",
+      experience: lead.experience || clientLead.experience || "",
+      state: lead.state || clientLead.state || "",
+      dob: lead.dob || clientLead.dob || "",
+      country: lead.country || clientLead.country || "",
+      assignDate: lead.assignDate || lead.assignmentDate || "",
       freshLeadId: lead.id,
     };
 
