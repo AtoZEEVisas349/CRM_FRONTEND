@@ -8,7 +8,8 @@ const ReportCard = () => {
     fetchMeetings,
     fetchConvertedClientsAPI,
     getAllFollowUps,
-    fetchFreshLeadsAPI,convertedCustomerCount
+    fetchFreshLeadsAPI,
+    convertedCustomerCount
   } = useApi();
 
   const navigate = useNavigate();
@@ -35,7 +36,6 @@ const ReportCard = () => {
     }
   };
 
-
   const fetchFollowup = async () => {
     try {
       const followup = await getAllFollowUps();
@@ -43,54 +43,86 @@ const ReportCard = () => {
       const assignedFollowup = followup.data.filter(
         (lead) =>
           lead.clientLeadStatus === "Follow-Up" 
-        
       );
 
       setFollowupCounts(assignedFollowup.length);
       console.log(assignedFollowup)
     } catch (error) {
-      console.error("Failed to fetch fresh leads:", error);
+      console.error("Failed to fetch followups:", error);
     }
   };
-    const fetchConverted = async () => {
+
+  const fetchConverted = async () => {
     try {
       const converted = await fetchConvertedClientsAPI();
 
       const assignedConverted = converted.filter(
         (lead) =>
           lead.status === "Converted" 
-        
       );
 
       setConvertedCounts(assignedConverted.length);
       console.log(assignedConverted)
     } catch (error) {
-      console.error("Failed to fetch fresh leads:", error);
+      console.error("Failed to fetch converted clients:", error);
     }
   };
 
-    const getMeetings = async () => {
+  const getMeetings = async () => {
     try {
       const meeting = await fetchMeetings();
+      const currentDateTime = new Date();
 
-      const assignedMeetings = meeting.filter(
-        (lead) =>
-         lead.clientLead.status === "Meeting" 
-        
+      // Filter meetings with "Meeting" status and future dates only
+      const meetingsWithStatus = meeting.filter(
+        (lead) => lead.clientLead?.status === "Meeting"
       );
 
-      setMeetings(assignedMeetings.length);
-      console.log(assignedMeetings)
+      // Filter out past meetings
+      const futureMeetings = meetingsWithStatus.filter((lead) => {
+        if (!lead.startTime) return false;
+        const meetingDate = new Date(lead.startTime);
+        return meetingDate > currentDateTime;
+      });
+
+      // Group by fresh_lead_id and keep only the latest meeting for each fresh_lead_id
+      const meetingsByFreshLeadId = {};
+      
+      futureMeetings.forEach((meeting) => {
+        const freshLeadId = meeting.freshLead?.id;
+        
+        if (!freshLeadId) return; // Skip if no fresh_lead_id
+        
+        if (!meetingsByFreshLeadId[freshLeadId]) {
+          meetingsByFreshLeadId[freshLeadId] = meeting;
+        } else {
+          // Compare dates and keep the latest one
+          const existingMeetingDate = new Date(meetingsByFreshLeadId[freshLeadId].startTime);
+          const currentMeetingDate = new Date(meeting.startTime);
+          
+          if (currentMeetingDate > existingMeetingDate) {
+            meetingsByFreshLeadId[freshLeadId] = meeting;
+          }
+        }
+      });
+
+      // Count unique meetings
+      const uniqueMeetingsCount = Object.keys(meetingsByFreshLeadId).length;
+      
+      setMeetings(uniqueMeetingsCount);
+      console.log("Filtered meetings:", Object.values(meetingsByFreshLeadId));
+      console.log("Total unique future meetings:", uniqueMeetingsCount);
     } catch (error) {
-      console.error("Failed to fetch fresh leads:", error);
+      console.error("Failed to fetch meetings:", error);
     }
   };
-useEffect(()=>{
-  getMeetings();
-  fetchConverted();
-  fetchFollowup();
-  fetchFreshLeads();
-},[])
+
+  useEffect(() => {
+    getMeetings();
+    fetchConverted();
+    fetchFollowup();
+    fetchFreshLeads();
+  }, [])
 
   const cards = [
     {
