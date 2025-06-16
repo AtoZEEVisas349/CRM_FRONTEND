@@ -720,4 +720,14 @@ export const getEmailTemplateById = async (templateId) => {
   }
 };
 
+// ✅ Fetch weekly call durations for a given executive
+export const fetchExecutiveCallDurations = async (executiveId) => {
+  try {
+    const response = await apiService.get(`/calldetails/call-duration-weekly/${executiveId}`);
+    return response.data; // { weeklyData: [...] }
+  } catch (error) {
+    console.error(`❌ Error fetching call durations for executive ${executiveId}:`, error);
+    throw error;
+  }
+};
 export default apiService;

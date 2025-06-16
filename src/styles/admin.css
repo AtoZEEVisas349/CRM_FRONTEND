@@ -772,7 +772,9 @@ h1 {
 [data-theme="dark"] .executive-title {
   color: #fff;
 }
-
+.lead-graph-container{
+   width: 650px;
+}
 .activity-name,
 .activity-percentage {
   color: #131212;

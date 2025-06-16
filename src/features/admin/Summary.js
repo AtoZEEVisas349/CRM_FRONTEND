@@ -10,9 +10,10 @@ const Summary = () => {
 
   const handleBoxClick = (index) => {
     setActiveBox(activeBox === index ? null : index);
-    // Redirect to TaskManagement page with status filter
+  
+    // Determine status
     let status = "";
-    switch(index) {
+    switch (index) {
       case 0:
         status = "New";
         break;
@@ -28,10 +29,42 @@ const Summary = () => {
       default:
         status = "";
     }
-  navigate("/admin/leadassign", { 
-    state: { filterStatus: status } 
-  });
-};
+  
+    // Get user role from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    if (!user || !user.role) {
+      console.error("User role not found in localStorage");
+      return;
+    }
+  
+    // Build path based on role
+    let basePath = "";
+    switch (user.role.toLowerCase()) {
+  
+       case "hr":
+        basePath = "/hr/leadassign";
+        break;
+         case "admin":
+        basePath = "/admin/leadassign";
+        break;
+      case "manager":
+        basePath = "/manager/leadassign";
+        break;
+     
+      case "tl":
+        basePath = "/team-lead/leadassign";
+        break;
+      default:
+        console.error("Unknown role:", user.role);
+        return;
+    }
+  
+    // Navigate with status filter
+    navigate(basePath, {
+      state: { filterStatus: status }
+    });
+  };
 
   const { dealFunnel, getDealFunnel } = useApi();
 

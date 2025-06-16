@@ -909,7 +909,15 @@ const [emailTemplates, setEmailTemplates] = useState([]);
       setTemplateLoading(false);
     }
   }, []);
-
+  const fetchExecutiveCallDurations = async (executiveId) => {
+    try {
+      const response = await apiService.fetchExecutiveCallDurations(executiveId);
+      return response;
+    } catch (error) {
+      console.error("❌ Error fetching executive call durations:", error);
+      return { weeklyData: [0, 0, 0, 0, 0, 0, 0] }; // fallback
+    }
+  };
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -1090,7 +1098,7 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         activityData,
         getExecutiveActivity,
         fetchConvertedClientsAPI,
-        
+        fetchExecutiveCallDurations,
         opportunities,
         opportunitiesLoading,
         fetchOpportunitiesData,

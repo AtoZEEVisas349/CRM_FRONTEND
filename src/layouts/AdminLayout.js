@@ -14,6 +14,7 @@ import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
 import AdminNavbar from "./AdminNavbar";
+import CallData from "../features/admin/CallData";
 
 const AdminLayout = () => {
   const { topExecutive, fetchExecutives, fetchExecutivesAPI } = useApi();
@@ -105,7 +106,7 @@ const AdminLayout = () => {
               <RevenueChart />
             </div>
             <div className="additional-section">
-              <ProfitChart />
+              <CallData />
               <Meetings selectedExecutiveId={selectedExecutiveId} />
             </div>
           </div>
