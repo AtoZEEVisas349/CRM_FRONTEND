@@ -724,7 +724,7 @@ export const getEmailTemplateById = async (templateId) => {
 export const fetchExecutiveCallDurations = async (executiveId) => {
   try {
     const response = await apiService.get(`/calldetails/call-duration-weekly/${executiveId}`);
-    return response.data; // { weeklyData: [...] }
+    return response.data; 
   } catch (error) {
     console.error(`❌ Error fetching call durations for executive ${executiveId}:`, error);
     throw error;
