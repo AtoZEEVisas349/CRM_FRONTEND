@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaCoffee, FaBriefcase, FaPhone } from "react-icons/fa";
+import { FaCoffee, FaBriefcase, FaPhone ,FaUser} from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
 
 const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
@@ -66,7 +66,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
   const activitiesRaw = [
     { name: "Break Time", value: activityData.breakTime, icon: <FaCoffee />, color: "#8b5cf6" },
     { name: "Work Time", value: activityData.workTime, icon: <FaBriefcase />, color: "#6d28d9" },
-    { name: "Daily Call Time", value: activityData.callTime, icon: <FaPhone />, color: "#a78bfa" },
+    { name: "Daily Call Time", value: activityData.callTime, icon: <FaUser />, color: "#a78bfa" },
   ];
 
   const activities = activitiesRaw.map((activity) => ({
