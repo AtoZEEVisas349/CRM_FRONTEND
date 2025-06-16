@@ -80,7 +80,28 @@ const AdminSettings = () => {
     { key: "billing", label: "Billing" },
     { key: "integrations", label: "Integrations" },
   ];
-
+  const [profile, setProfile] = useState({
+    fullName: "",
+    email: "",
+    username: "",
+    role: "",
+    website: "",
+    jobTitle: "",
+    alternateEmail: ""
+  });
+  
+  useEffect(() => {
+    if (user) {
+      setProfile((prev) => ({
+        ...prev,
+        email: user.email || "",
+        username: user.username || "",
+        role: user.role || ""
+      }));
+    }
+  }, [user]);
+  
+    
   const renderTabContent = () => {
     switch (activeTab) {
       case "pageAccess":
@@ -231,67 +252,94 @@ const AdminSettings = () => {
           </>
         );
 
-      case "profile":
-      default:
-        return (
-          <>
-            <h3>Profile</h3>
-            <form className="profile-form" onSubmit={handleProfileSubmit}>
-              <div className="form-group full profile-pic">
-                <label>Your Photo</label>
-                <div className="pic-wrapper">
-                  <img src="https://via.placeholder.com/80" alt="Profile" />
-                  {/* <div className="pic-actions">
-                    <button type="button">Delete</button>
-                    <button type="button">Update</button>
-                  </div> */}
-                </div>
-              </div>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input type="text" value={user.name || ""} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Email Address</label>
-                  <input type="email" value={user.email || ""} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Role</label>
-                  <input type="text" value={user.role || ""} readOnly />
-                </div>
-              </div>
-              <div className="form-group full">
-                <label>Your Bio</label>
-                <textarea
-                  rows="4"
-                  maxLength={275}
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Write a short bio..."
-                />
-                <small>{275 - bio.length} characters left</small>
-              </div>
-              <div className="form-group full">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={showJobTitle}
-                    onChange={(e) => setShowJobTitle(e.target.checked)}
-                  />
-                  Show my job title in my profile
-                </label>
-              </div>
-              <div className="form-group full save-btn-wrapper">
-                <button className="save-btn" type="submit" disabled={isProfileUpdating}>
-                  {isProfileUpdating ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
-          </>
-        );
-    }
-  };
+        case "profile":
+          default:
+            return (
+              <>
+                <h3>Profile</h3>
+                <form className="profile-form" onSubmit={handleProfileSubmit}>
+                  <div className="form-group full profile-pic">
+                    <label>Your Photo</label>
+                    <div className="pic-wrapper">
+                      <img src="https://via.placeholder.com/80" alt="Profile" />
+                      <div className="pic-actions">
+                        <button type="button">Delete</button>
+                        <button type="button">Update</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label>Full Name</label>
+                      <input
+                        type="text"
+                        value={profile.fullName}
+                        onChange={(e) =>
+                          setProfile({ ...profile, fullName: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="form-group">
+                          <label>Email Address</label>
+                          <input
+                            type="email"
+                            value={profile.email}
+                            onChange={(e) =>
+                              setProfile({ ...profile, email: e.target.value })
+                            }
+                          />
+                        </div>
+                        <div className="form-group">
+  <label>Username</label>
+  <input type="text" value={profile.username} readOnly />
+</div>
+<div className="form-group">
+  <label>Role</label>
+  <input type="text" value={profile.role} readOnly />
+</div>
+
+                    <div className="form-group">
+                      <label>Website</label>
+                      <input type="url" value={profile.website} readOnly />
+                    </div>
+                    <div className="form-group">
+                      <label>Job Title</label>
+                      <input type="text" value={profile.jobTitle} readOnly />
+                    </div>
+                    <div className="form-group">
+                      <label>Alternate Email</label>
+                      <input type="email" value={profile.alternateEmail} readOnly />
+                    </div>
+                  </div>
+                  <div className="form-group full">
+                    <label>Your Bio</label>
+                    <textarea
+                      rows="4"
+                      maxLength={275}
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Write a short bio..."
+                    />
+                    <small>{275 - bio.length} characters left</small>
+                  </div>
+                  <div className="form-group full">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={showJobTitle}
+                        onChange={(e) => setShowJobTitle(e.target.checked)}
+                      />
+                      Show my job title in my profile
+                    </label>
+                  </div>
+                  <div className="form-group full save-btn-wrapper">
+                    <button className="save-btn" type="submit">Save Changes</button>
+                  </div>
+                </form>
+              </>
+            );
+        }
+      };
 
   return (
     <div className="admin-settings">

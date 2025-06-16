@@ -55,21 +55,20 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
-
-  // ✅ Fetch user data
   const fetchUserData = async () => {
     setUserLoading(true);
     try {
       const response = await apiService.fetchAdminProfile();
-      const { name, email, role } = response.data;
-      setUser({ name, email, role });
+      const { username, email, role } = response; // ✅ NOT `response.data` because `fetchAdminProfile` already returns `response.data`
+      setUser({ username, email, role });
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
       setUserLoading(false);
     }
   };
-
+  
+  
     const [isProfileUpdating, setProfileUpdating] = useState(false);
     const [isPasswordUpdating, setPasswordUpdating] = useState(false);
   
@@ -1074,7 +1073,12 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         uploading,
         uploadError,
         uploadSuccess,
-
+        handleChangePassword,
+        handleUpdateProfile,
+        isProfileUpdating,
+        setProfileUpdating,
+        isPasswordUpdating,
+        setPasswordUpdating,
         // ✅ Top Executive
         topExecutive,
         fetchExecutives,

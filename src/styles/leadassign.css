@@ -255,7 +255,8 @@ body, html {
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-right: 15px;
+  margin-top: -9px;
+  margin-bottom: -10px;
 }
 
 .lead-info span {

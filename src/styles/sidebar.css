@@ -2167,3 +2167,65 @@ margin-top:0px;
           drop-shadow(0 0 20px rgba(123, 77, 252, 0.3));
   transition: all 0.4s ease-in-out;
 }
+@media (max-width: 1300px) {
+  .navbar {
+    padding: 10px 16px;
+    height: auto;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .menu_search {
+    flex: 1;
+    max-width: 25%;
+  }
+
+  .search_bar {
+    margin-left: 0;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .search-input-exec {
+    font-size: 12px;
+    max-width: 100%;
+    padding: 4px 8px;
+  }
+
+  .compact-timer {
+    gap: 6px;
+    font-size: 12px;
+    margin-left: 0;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .timer-box-small,
+  .timer-label-small {
+    font-size: 12px !important;
+    padding: 2px 4px;
+  }
+
+  .navbar_icons {
+    font-size: 16px;
+    gap: 8px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .navbar_icon {
+    padding: 4px;
+    font-size: 16px;
+  }
+
+  .analog-clock {
+    width: 30px;
+    height: 30px;
+  }
+
+  .analog-clock .hour,
+  .analog-clock .minute,
+  .analog-clock .second {
+    height: 10px;
+  }
+}
