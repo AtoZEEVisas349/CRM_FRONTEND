@@ -200,7 +200,7 @@ useEffect(() => {
               <hr className="process-divider" />
               <label>Profile Link</label>
               <div className="process-link-box">
-                <input type="text" value="https://www.portfoliolink.com" readOnly />
+                <input type="text" value="https://www.example.com" readOnly />
                 <FaRegCopy className="process-copy-icon" onClick={handleCopyLink} />
               </div>
             </div>
@@ -212,12 +212,13 @@ useEffect(() => {
           <div className="process-tab-bar">
             <span className="active">General</span>
             <span>Notifications</span>
-            <span>Members</span>
+            {/* <span>Members</span> */}
             <span>Billings</span>
             {localStorage.getItem("userType") === "processperson" ? (
               <span onClick={() => navigate("/process/client/create-client")}>Create Client</span>
             ) : (
-              <span>Language & Region</span>
+              <span>Billings</span>
+
             )}
             <span>Security</span>
           </div>

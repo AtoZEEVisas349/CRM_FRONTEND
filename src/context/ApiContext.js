@@ -970,7 +970,7 @@ const [emailTemplates, setEmailTemplates] = useState([]);
   
     createCloseLeadAPI,
     fetchAllCloseLeadsAPI,
- 
+    fetchExecutiveCallDurations,
     createConvertedClientAPI,
     fetchConvertedClientsAPI,
     // Follow-up Histories
@@ -1098,7 +1098,7 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         activityData,
         getExecutiveActivity,
         fetchConvertedClientsAPI,
-        fetchExecutiveCallDurations,
+        
         opportunities,
         opportunitiesLoading,
         fetchOpportunitiesData,
