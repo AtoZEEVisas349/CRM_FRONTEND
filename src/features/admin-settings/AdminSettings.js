@@ -322,16 +322,7 @@ const AdminSettings = () => {
                     />
                     <small>{275 - bio.length} characters left</small>
                   </div>
-                  <div className="form-group full">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={showJobTitle}
-                        onChange={(e) => setShowJobTitle(e.target.checked)}
-                      />
-                      Show my job title in my profile
-                    </label>
-                  </div>
+                  
                   <div className="form-group full save-btn-wrapper">
                     <button className="save-btn" type="submit">Save Changes</button>
                   </div>

@@ -491,15 +491,19 @@ export const fetchRevenueChartData = async () => {
     throw error;
   }
 };
-export const fetchDealFunnelData = async () => {
+export const fetchDealFunnelData = async (executiveId = null) => {
   try {
-    const response = await apiService.get("/client-leads/dealfunnel");
+    const url = executiveId
+      ? `/client-leads/dealfunnel?executiveId=${executiveId}`
+      : "/client-leads/dealfunnel";
+    const response = await apiService.get(url);
     return response.data.data; // Returns { statusCounts, totalLeads }
   } catch (error) {
     console.error("❌ Error fetching deal funnel data:", error);
     throw error;
   }
 };
+
 //Reassigned Leads 
 export const reassignLead = async (clientLeadId, newExecutive) => {
   try {

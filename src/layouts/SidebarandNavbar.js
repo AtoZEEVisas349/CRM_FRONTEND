@@ -259,7 +259,11 @@ const handleDismissBeepNotification = () => {
 <FontAwesomeIcon
   className="navbar_icon bot_icon"
   icon={faRobot}
-  onClick={() => window.open(`${window.location.origin}/executive/chatbot`, "_blank")}
+  onClick={() => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Please login again");
+    window.open(`${window.location.origin}/executive/chatbot?token=${token}`, "_blank");
+  }}
   title="Open ChatBot"
 />
 

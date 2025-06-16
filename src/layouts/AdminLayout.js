@@ -88,8 +88,8 @@ const AdminLayout = () => {
 
             <div className="charts">
               <div className="chart-row">
-                <DealFunnel />
-                <ExecutiveActi
+              <DealFunnel executiveName={selectedExecutiveId === "all" ? null : currentExecutive?.username} />
+              <ExecutiveActi
                   selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
                   executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />
