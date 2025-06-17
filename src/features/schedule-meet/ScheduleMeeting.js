@@ -250,14 +250,14 @@ const ScheduleMeeting = () => {
       // Handle navigation and success messages based on follow-up type
       if (follow_up_type === "converted") {
         Swal.fire({ icon: "success", title: "Client Converted Successfully!" });
-        navigate("/customer", { state: { lead: leadDetails } });
+        navigate("/executive/customer", { state: { lead: leadDetails } });
       } else if (follow_up_type === "close") {
         Swal.fire({ icon: "success", title: "Lead Closed Successfully!" });
-        navigate("/close-leads", { state: { lead: leadDetails } });
+        navigate("/executive/close-leads", { state: { lead: leadDetails } });
       } else {
         // For all other follow-up types (interested, not interested, no response, appointment, etc.)
         const targetTab = "All Follow Ups";
-        navigate("/follow-up", {
+        navigate("/executive/follow-up", {
           state: { lead: leadDetails, activeTab: targetTab },
         });
       }
