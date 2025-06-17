@@ -7,14 +7,18 @@ import LoadingSpinner from "../spinner/LoadingSpinner";
 function Notification() {
   const {
     notifications = [],
+    setNotifications, // ✅ Added
     notificationsLoading,
     fetchNotifications,
     markNotificationReadAPI,
+    markMultipleAsRead
   } = useApi();
+
   const { isLoading, loadingText, showLoader, hideLoader } = useLoading();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [readIds, setReadIds] = useState(new Set());
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -24,7 +28,6 @@ function Notification() {
       });
     }
   }, [fetchNotifications]);
-  
 
   // Group lead assignment notifications
   const groupedLeadAssignments = [];
@@ -81,24 +84,54 @@ function Notification() {
     currentPage * itemsPerPage
   );
 
-  const handleMarkAsRead = (notification) => {
+  const handleMarkAsRead = async (notification) => {
     const newReadIds = new Set(readIds);
-  
+
     if (notification.type === "grouped-leads") {
-      notification.originalIds.forEach((id) => {
-        if (!newReadIds.has(id)) {
-          markNotificationReadAPI(id);
-          newReadIds.add(id);
+      const unreadIds = notification.originalIds.filter((id) => !newReadIds.has(id));
+
+      if (unreadIds.length > 1) {
+        try {
+          await markMultipleAsRead(unreadIds);
+          unreadIds.forEach((id) => newReadIds.add(id));
+        } catch (error) {
+          console.error("Failed to mark multiple notifications as read:", error);
         }
-      });
+      } else {
+        for (const id of unreadIds) {
+          try {
+            await markNotificationReadAPI(id);
+            newReadIds.add(id);
+          } catch (error) {
+            console.error(`Failed to mark notification ${id} as read:`, error);
+          }
+        }
+      }
     } else {
       if (!newReadIds.has(notification.id)) {
-        markNotificationReadAPI(notification.id);
-        newReadIds.add(notification.id);
+        try {
+          await markNotificationReadAPI(notification.id);
+          newReadIds.add(notification.id);
+        } catch (error) {
+          console.error("Error marking notification as read:", error);
+        }
       }
     }
-  
+
     setReadIds(newReadIds);
+
+    // ✅ Update notification list locally (optimistic update)
+    const updatedNotifications = notifications.map((n) => {
+      if (
+        (notification.type === "grouped-leads" && notification.originalIds.includes(n.id)) ||
+        (!notification.type && n.id === notification.id)
+      ) {
+        return { ...n, is_read: true };
+      }
+      return n;
+    });
+
+    setNotifications(updatedNotifications); // ✅ This must be called AFTER updatedNotifications is defined
   };
 
   const handlePrevPage = () => {
@@ -110,10 +143,8 @@ function Notification() {
   };
 
   return (
-    <>
-<div className="notification-container" style={{ position: "relative" }}>
-     {isLoading && <LoadingSpinner text={loadingText || "Loading Notifications..."} />}
-
+    <div className="notification-container" style={{ position: "relative" }}>
+      {isLoading && <LoadingSpinner text={loadingText || "Loading Notifications..."} />}
       <h2>Notifications</h2>
 
       {notificationsLoading ? (
@@ -154,7 +185,7 @@ function Notification() {
 
                   {isGrouped ? (
                     <p style={{ fontWeight: "bold", color: "#6b7280" }}>
-                      Count:{n.count}
+                      Count: {n.count}
                     </p>
                   ) : (
                     <p className="notification-message">{messageBody?.trim()}</p>
@@ -186,7 +217,6 @@ function Notification() {
         </div>
       )}
     </div>
-    </>
   );
 }
 

@@ -28,6 +28,28 @@ body {
   position: absolute;
   z-index: 10;
 }
+.old-followup-row {
+  background-color: #ffebee !important;
+  border-left: 4px solid #f44336 !important;
+}
+
+.old-followup-button {
+  background-color: #f44336 !important;
+  border-color: #d32f2f !important;
+  color: white !important;
+}
+
+.old-followup-badge {
+  background-color: #f44336 !important;
+  color: white !important;
+  border: 1px solid #d32f2f !important;
+}
+
+.old-followup-call {
+  background-color: #f44336 !important;
+  color: white !important;
+  border: 1px solid #d32f2f !important;
+}
 /* Main Content */
 .follow-main-content {
   width: calc(100% - 20px);

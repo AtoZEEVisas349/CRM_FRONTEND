@@ -734,4 +734,15 @@ export const fetchExecutiveCallDurations = async (executiveId) => {
     throw error;
   }
 };
+export const markMultipleNotificationsAsRead = async (notificationIds) => {
+  try {
+    const response = await apiService.post("/notification/mark-multiple-read", {
+      notificationIds,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error marking multiple notifications as read:", error);
+    throw error;
+  }
+};
 export default apiService;

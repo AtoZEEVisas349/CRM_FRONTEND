@@ -27,7 +27,7 @@ function FreshLead() {
   const { leadtrack } = useExecutiveActivity();
   const { searchQuery, setActivepage } = useContext(SearchContext);
 
-  const [isLoading, setIsLoading] = useState(false); // Local loading state
+  const [isLoading, setIsLoading] = useState(false);
   const [leadsData, setLeadsData] = useState([]);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,7 +37,17 @@ function FreshLead() {
   const itemsPerPage = 9;
   const navigate = useNavigate();
 
+  // ✅ Ensure this line ends with a semicolon
   useCopyNotification(createCopyNotification, fetchNotifications);
+
+  const isLeadOld = (assignmentDate) => {
+    if (!assignmentDate) return false;
+    const today = new Date();
+    const assignDate = new Date(assignmentDate);
+    const diffTime = Math.abs(today - assignDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 3;
+  };
 
   const handleVerify = async (index, number) => {
     setVerifyingIndex(index);
@@ -56,8 +66,7 @@ function FreshLead() {
   useEffect(() => {
     const loadLeads = async () => {
       if (hasLoaded) return;
-
-      setIsLoading(true); // Show local spinner
+      setIsLoading(true);
       try {
         if (!executiveInfo && !executiveLoading) {
           await fetchExecutiveData();
@@ -103,7 +112,7 @@ function FreshLead() {
       } catch (err) {
         setError("Failed to load leads. Please try again.");
       } finally {
-        setIsLoading(false); // Hide local spinner
+        setIsLoading(false);
       }
     };
 
@@ -157,6 +166,7 @@ function FreshLead() {
       },
     });
   };
+
   if (executiveLoading) return <p>Loading executive data...</p>;
 
   return (
@@ -185,117 +195,170 @@ function FreshLead() {
               </thead>
               <tbody>
                 {currentLeads.length > 0 ? (
-                  currentLeads.map((lead, index) => (
-                    <tr key={index}>
-                      <td>
-                        <div className="fresh-leads-name">
-                          <div className="fresh-lead-detail">
-                            <div>{lead.name}</div>
-                            <div className="fresh-leads-profession">{lead.profession}</div>
+                  currentLeads.map((lead, index) => {
+                    const assignmentDate =
+                      lead.assignDate ||
+                      lead.lead?.assignmentDate ||
+                      lead.clientLead?.assignDate;
+                    const isOld = isLeadOld(assignmentDate);
+
+                    return (
+                      <tr
+                        key={index}
+                        className={isOld ? "old-lead-row" : ""}
+                        style={
+                          isOld
+                            ? {
+                                backgroundColor: "#ffebee",
+                                borderLeft: "4px solid #f44336",
+                              }
+                            : {}
+                        }
+                      >
+                        <td>
+                          <div className="fresh-leads-name">
+                            <div className="fresh-lead-detail">
+                              <div
+                                style={
+                                  isOld
+                                    ? { color: "#c62828", fontWeight: "bold" }
+                                    : {}
+                                }
+                              >
+                                {lead.name}
+                              </div>
+                              <div className="fresh-leads-profession">{lead.profession}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>{lead.phone}</td>
-                      <td>{lead.email}</td>
-                      <td>
-                        <button
-                          className="followup-badge"
-                          onClick={() => handleAddFollowUp(lead)}
-                        >
-                          Add Follow Up
-                          <FontAwesomeIcon icon={faPenToSquare} className="icon" />
-                        </button>
-                      </td>
-                      <td>
-                        <div className="status-cell">
+                        </td>
+                        <td style={isOld ? { color: "#c62828" } : {}}>{lead.phone}</td>
+                        <td style={isOld ? { color: "#c62828" } : {}}>{lead.email}</td>
+                        <td>
                           <button
-                            onClick={() => handleVerify(index, lead.phone)}
-                            className="verify-btn"
-                            disabled={
-                              verifyingIndex === index || verificationLoading
+                            className={`followup-badge ${isOld ? "old-lead-button" : ""}`}
+                            onClick={() => handleAddFollowUp(lead)}
+                            style={
+                              isOld
+                                ? {
+                                    backgroundColor: "#f44336",
+                                    borderColor: "#d32f2f",
+                                    color: "white",
+                                  }
+                                : {}
                             }
                           >
-                            {verifyingIndex === index
-                              ? "Verifying..."
-                              : "Get Verified"}
+                            Add Follow Up
+                            <FontAwesomeIcon icon={faPenToSquare} className="icon" />
                           </button>
-                          {verificationResults[index] && (
-                            <div className="verify-result">
-                              {verificationResults[index].error ? (
-                                <span className="text-red-600">
-                                  ❌ {verificationResults[index].error}
-                                </span>
-                              ) : (
-                                <span className="text-green-600">
-                                  ✅{" "}
-                                  {verificationResults[index].name ||
-                                    verificationResults[index].location}
-                                </span>
-                              )}
+                        </td>
+                        <td>
+                          <div className="status-cell">
+                            <button
+                              onClick={() => handleVerify(index, lead.phone)}
+                              className={`verify-btn ${isOld ? "old-lead-verify" : ""}`}
+                              disabled={verifyingIndex === index || verificationLoading}
+                              style={
+                                isOld
+                                  ? {
+                                      backgroundColor: "#f44336",
+                                      borderColor: "#d32f2f",
+                                      color: "white",
+                                    }
+                                  : {}
+                              }
+                            >
+                              {verifyingIndex === index ? "Verifying..." : "Get Verified"}
+                            </button>
+                            {verificationResults[index] && (
+                              <div className="verify-result">
+                                {verificationResults[index].error ? (
+                                  <span className="text-red-600">
+                                    ❌ {verificationResults[index].error}
+                                  </span>
+                                ) : (
+                                  <span className="text-green-600">
+                                    ✅{" "}
+                                    {verificationResults[index].name ||
+                                      verificationResults[index].location}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="call-cell">
+                          <button
+                            className={`call-button ${isOld ? "old-lead-call" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActivePopoverIndex(
+                                activePopoverIndex === index ? null : index
+                              );
+                            }}
+                            style={
+                              isOld
+                                ? {
+                                    backgroundColor: "#f44336",
+                                    color: "white",
+                                    border: "1px solid #d32f2f",
+                                  }
+                                : {}
+                            }
+                          >
+                            📞
+                          </button>
+
+                          {activePopoverIndex === index && (
+                            <div className="popover">
+                              <button
+                                className="popover-option"
+                                onClick={() => {
+                                  localStorage.setItem(
+                                    "activeClient",
+                                    JSON.stringify({
+                                      name: lead.name,
+                                      phone: lead.phone,
+                                    })
+                                  );
+                                  const cleaned = lead.phone.replace(/[^\d]/g, "");
+                                  window.location.href = `whatsapp://send?phone=91${cleaned}`;
+                                  setActivePopoverIndex(null);
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faWhatsapp}
+                                  style={{
+                                    color: "#25D366",
+                                    marginRight: "6px",
+                                    fontSize: "18px",
+                                  }}
+                                />
+                                WhatsApp
+                              </button>
+                              <button
+                                className="popover-option"
+                                onClick={() => {
+                                  const cleaned = lead.phone.replace(/[^\d]/g, "");
+                                  window.open(`tel:${cleaned}`);
+                                  setActivePopoverIndex(null);
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faPhone}
+                                  style={{
+                                    color: "#4285F4",
+                                    marginRight: "6px",
+                                    fontSize: "16px",
+                                  }}
+                                />
+                                Normal Call
+                              </button>
                             </div>
                           )}
-                        </div>
-                      </td>
-                      <td className="call-cell">
-                        <button
-                          className="call-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActivePopoverIndex(
-                              activePopoverIndex === index ? null : index
-                            );
-                          }}
-                        >
-                          📞
-                        </button>
-
-                        {activePopoverIndex === index && (
-                          <div className="popover">
-                            <button
-                              className="popover-option"
-                              onClick={() => {
-                                localStorage.setItem("activeClient", JSON.stringify({
-                                 name: lead.name,
-                                 phone: lead.phone
-                                }));
-                                const cleaned = lead.phone.replace(/[^\d]/g, "");
-                                window.location.href = `whatsapp://send?phone=91${cleaned}`;
-                                setActivePopoverIndex(null);
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faWhatsapp}
-                                style={{
-                                  color: "#25D366",
-                                  marginRight: "6px",
-                                  fontSize: "18px",
-                                }}
-                              />
-                              WhatsApp
-                            </button>
-                            <button
-                              className="popover-option"
-                              onClick={() => {
-                                const cleaned = lead.phone.replace(/[^\d]/g, "");
-                                window.open(`tel:${cleaned}`);
-                                setActivePopoverIndex(null);
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faPhone}
-                                style={{
-                                  color: "#4285F4",
-                                  marginRight: "6px",
-                                  fontSize: "16px",
-                                }}
-                              />
-                              Normal Call
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan="6" className="no-leads-text">

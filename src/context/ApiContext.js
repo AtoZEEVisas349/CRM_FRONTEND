@@ -3,7 +3,7 @@ import * as apiService from "../services/apiService";
 import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
 import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
-  getEmailTemplateById
+  getEmailTemplateById,markMultipleNotificationsAsRead
 } from "../services/apiService"
 const ApiContext = createContext();
 
@@ -909,13 +909,30 @@ const [emailTemplates, setEmailTemplates] = useState([]);
       setTemplateLoading(false);
     }
   }, []);
+  const [markLoading, setMarkLoading] = useState(false);
+  const [markError, setMarkError] = useState(null);
+
+  const markMultipleAsRead = useCallback(async (notificationIds) => {
+    setMarkLoading(true);
+    setMarkError(null);
+    try {
+      const result = await markMultipleNotificationsAsRead(notificationIds);
+      return result;
+    } catch (error) {
+      setMarkError(error);
+      throw error;
+    } finally {
+      setMarkLoading(false);
+    }
+  }, []);
+
   const fetchExecutiveCallDurations = async (executiveId) => {
     try {
-      const response = await apiService.fetchExecutiveCallDurations(executiveId);
-      return response;
+      const { weeklyData } = await apiService.fetchExecutiveCallDurations(executiveId);
+      return { weeklyData }; // ✅ clean return
     } catch (error) {
       console.error("❌ Error fetching executive call durations:", error);
-      return { weeklyData: [0, 0, 0, 0, 0, 0, 0] }; // fallback
+      return { weeklyData: [0, 0, 0, 0, 0, 0, 0] };
     }
   };
   // ✅ Effect to fetch initial data
@@ -1045,6 +1062,7 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         notificationsLoading,
         unreadCount,
         fetchNotifications,
+        setNotifications,
         createCopyNotification,
       markNotificationReadAPI,
         deleteNotificationAPI,
@@ -1098,7 +1116,9 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         activityData,
         getExecutiveActivity,
         fetchConvertedClientsAPI,
-        
+        markMultipleAsRead,
+        markLoading,
+        markError,
         opportunities,
         opportunitiesLoading,
         fetchOpportunitiesData,
