@@ -8,6 +8,7 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailToClients from "./SendEmailToClients";
+
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
@@ -35,6 +36,8 @@ const ClientOverview = () => {
     fetchNotifications,
     createCopyNotification,
     createFollowUpHistoryAPI,
+    createConvertedClientAPI,
+    createCloseLeadAPI,
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
@@ -115,6 +118,11 @@ const ClientOverview = () => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
 
+  const capitalize = (text) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
   const handleTextUpdate = async () => {
     if (!followUpType || !interactionDate || !interactionTime) {
       return Swal.fire({
@@ -124,9 +132,9 @@ const ClientOverview = () => {
       });
     }
 
-    const followUpId = clientInfo.followUpId || clientInfo.freshLeadId || clientInfo.id;
-    if (!followUpId) {
-      console.error("Missing follow-up ID on clientInfo:", clientInfo);
+    const freshLeadId = clientInfo.freshLeadId || clientInfo.id;
+    if (!freshLeadId) {
+      console.error("Missing fresh lead ID on clientInfo:", clientInfo);
       return Swal.fire({
         icon: "error",
         title: "Missing Record ID",
@@ -135,6 +143,40 @@ const ClientOverview = () => {
     }
 
     try {
+      let followUpId = clientInfo.followUpId;
+
+      // If no followUpId exists, create a new follow-up first
+      if (!followUpId) {
+        const newFollowUpData = {
+          connect_via: capitalize(contactMethod),
+          follow_up_type: followUpType,
+          interaction_rating: capitalize(interactionRating),
+          reason_for_follow_up: reasonDesc,
+          follow_up_date: interactionDate,
+          follow_up_time: convertTo24HrFormat(interactionTime),
+          fresh_lead_id: freshLeadId,
+        };
+
+        const followUpResponse = await createFollowUp(newFollowUpData);
+        followUpId = followUpResponse?.id || followUpResponse?.data?.id || followUpResponse?.followUp?.id || followUpResponse?.data?.followUp?.id;
+
+        if (!followUpId) {
+          console.error("Failed to get follow-up ID from response:", followUpResponse);
+          throw new Error("Missing follow-up ID in response");
+        }
+      }
+
+      const followUpHistoryPayload = {
+        follow_up_id: followUpId,
+        connect_via: capitalize(contactMethod),
+        follow_up_type: followUpType,
+        interaction_rating: capitalize(interactionRating),
+        reason_for_follow_up: reasonDesc,
+        follow_up_date: interactionDate,
+        follow_up_time: convertTo24HrFormat(interactionTime),
+        fresh_lead_id: freshLeadId,
+      };
+
       if (followUpType === "appointment") {
         const meetingPayload = {
           clientName: clientInfo.name,
@@ -143,16 +185,47 @@ const ClientOverview = () => {
           reasonForFollowup: reasonDesc,
           startTime: new Date(`${interactionDate}T${interactionTime}`).toISOString(),
           endTime: null,
-          fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
+          fresh_lead_id: freshLeadId,
         };
         await createMeetingAPI(meetingPayload);
+        await createFollowUpHistoryAPI(followUpHistoryPayload);
         
-        Swal.fire({ 
+        await Swal.fire({ 
           icon: "success", 
           title: "Appointment Created",
           text: "Appointment created and lead moved to Meeting"
         });
         
+        setTimeout(() => navigate("/executive/freshlead"), 1000);
+        return;
+      } else if (followUpType === "converted") {
+        await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
+        await createFollowUpHistoryAPI(followUpHistoryPayload);
+        await Swal.fire({
+          icon: "success",
+          title: "Client Converted",
+          text: "Lead has been converted successfully!"
+        });
+        try {
+          await fetchFreshLeads();
+        } catch (fetchError) {
+          console.warn("Warning: Failed to fetch fresh leads after conversion:", fetchError);
+        }
+        setTimeout(() => navigate("/executive/freshlead"), 1000);
+        return;
+      } else if (followUpType === "close") {
+        await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
+        await createFollowUpHistoryAPI(followUpHistoryPayload);
+        await Swal.fire({
+          icon: "success",
+          title: "Lead Closed",
+          text: "Lead has been closed successfully!"
+        });
+        try {
+          await fetchFreshLeads();
+        } catch (fetchError) {
+          console.warn("Warning: Failed to fetch fresh leads after closing:", fetchError);
+        }
         setTimeout(() => navigate("/executive/freshlead"), 1000);
         return;
       } else {
@@ -161,16 +234,21 @@ const ClientOverview = () => {
           followUpDate: interactionDate,
         };
 
-        await updateFreshLeadFollowUp(followUpId, updatedData);
+        await updateFreshLeadFollowUp(freshLeadId, updatedData);
+        await createFollowUpHistoryAPI(followUpHistoryPayload);
         
-        Swal.fire({ 
+        await Swal.fire({ 
           icon: "success", 
           title: "Follow-up Updated",
           text: "Follow-up status updated successfully"
         });
 
-        await fetchFreshLeads();
-        setTimeout(() => navigate("/freshlead"), 2000);
+        try {
+          await fetchFreshLeads();
+        } catch (fetchError) {
+          console.warn("Warning: Failed to fetch fresh leads after update:", fetchError);
+        }
+        setTimeout(() => navigate("/executive/freshlead"), 2000);
       }
 
       setFollowUpType("");
@@ -179,17 +257,19 @@ const ClientOverview = () => {
       setAmPm("AM");
       setIsTimeEditable(false);
       setReasonDesc("");
+      setContactMethod("");
+      setInteractionRating("");
     } catch (error) {
       console.error("Error in handleTextUpdate:", error);
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
-        title: "Update Failed",
+        title: "Operation Failed",
         text: "Something went wrong. Please try again.",
       });
     }
   };
 
-  const handleCreateFollowUp = () => {
+  const handleCreateFollowUp = async () => {
     if (
       !contactMethod ||
       !followUpType ||
@@ -205,71 +285,75 @@ const ClientOverview = () => {
       });
     }
 
+    const freshLeadId = clientInfo.freshLeadId || clientInfo.id;
+    if (!freshLeadId) {
+      console.error("Missing fresh lead ID on clientInfo:", clientInfo);
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Record ID",
+        text: "Unable to find the record to create follow-up. Please reload and try again.",
+      });
+    }
+
     const newFollowUpData = {
-      connect_via: contactMethod,
+      connect_via: capitalize(contactMethod),
       follow_up_type: followUpType,
-      interaction_rating: interactionRating,
+      interaction_rating: capitalize(interactionRating),
       reason_for_follow_up: reasonDesc,
       follow_up_date: interactionDate,
       follow_up_time: convertTo24HrFormat(interactionTime),
-      fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
+      fresh_lead_id: freshLeadId,
     };
 
-    createFollowUp(newFollowUpData)
-      .then((response) => {
-        let followUpId = null;
+    try {
+      const response = await createFollowUp(newFollowUpData);
+      let followUpId = response?.id || response?.data?.id || response?.followUp?.id || response?.data?.followUp?.id;
 
-        if (response && response.id) {
-          followUpId = response.id;
-        } else if (response && response.followUp && response.followUp.id) {
-          followUpId = response.followUp.id;
-        } else if (response && response.data && response.data.id) {
-          followUpId = response.data.id;
-        } else if (response && response.data && response.data.followUp && response.data.followUp.id) {
-          followUpId = response.data.followUp.id;
-        }
-        if (!followUpId) {
-          console.error("Failed to get follow-up ID from response:", response);
-          throw new Error("Missing follow-up ID in response");
-        }
+      if (!followUpId) {
+        console.error("Failed to get follow-up ID from response:", response);
+        throw new Error("Missing follow-up ID in response");
+      }
 
-        const followUpHistoryData = {
-          follow_up_id: followUpId,
-          connect_via: contactMethod,
-          follow_up_type: followUpType,
-          interaction_rating: interactionRating,
-          reason_for_follow_up: reasonDesc,
-          follow_up_date: interactionDate,
-          follow_up_time: convertTo24HrFormat(interactionTime),
-          fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
-        };
-        return createFollowUpHistoryAPI(followUpHistoryData);
-      })
-      .then((historyResponse) => {
-        Swal.fire({ 
-          icon: "success", 
-          title: "Follow-up Created",
-          text: "Follow-up and history created successfully!"
-        });
+      const followUpHistoryData = {
+        follow_up_id: followUpId,
+        connect_via: capitalize(contactMethod),
+        follow_up_type: followUpType,
+        interaction_rating: capitalize(interactionRating),
+        reason_for_follow_up: reasonDesc,
+        follow_up_date: interactionDate,
+        follow_up_time: convertTo24HrFormat(interactionTime),
+        fresh_lead_id: freshLeadId,
+      };
 
-        setReasonDesc("");
-        setContactMethod("");
-        setFollowUpType("");
-        setInteractionRating("");
-        setInteractionDate(todayStr);
-        setTimeOnly("12:00");
-        setAmPm("AM");
-        setIsTimeEditable(false);
-        setTimeout(() => navigate("/executive/freshlead"), 2000);
-      })
-      .catch((error) => {
-        console.error("Error creating Follow-up or history:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Creation Failed",
-          text: "Failed to create follow-up or history. Please try again.",
-        });
+      await createFollowUpHistoryAPI(followUpHistoryData);
+
+      Swal.fire({ 
+        icon: "success", 
+        title: "Follow-up Created",
+        text: "Follow-up and history created successfully!"
       });
+
+      setReasonDesc("");
+      setContactMethod("");
+      setFollowUpType("");
+      setInteractionRating("");
+      setInteractionDate(todayStr);
+      setTimeOnly("12:00");
+      setAmPm("AM");
+      setIsTimeEditable(false);
+      setTimeout(() => navigate("/executive/freshlead"), 2000);
+    } catch (error) {
+      console.error("Error creating Follow-up or history:", error.message, {
+        status: error.response?.status,
+        url: error.config?.url,
+        payload: newFollowUpData,
+      });
+      Swal.fire({
+        icon: "error",
+        title: "Creation Failed",
+        text: "Failed to create follow-up or history. Please try again.",
+      });
+    }
   };
 
   const toggleListening = () => {
@@ -295,9 +379,6 @@ const ClientOverview = () => {
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
 
-
-
-
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
@@ -321,7 +402,7 @@ const ClientOverview = () => {
                       <label className="label">{label}:</label>
                       <input
                         type="text"
-                        value={clientInfo[key] || ""}
+                        value={clientInfo[key] || ""} 
                         onChange={(e) => handleChange(key, e.target.value)}
                         className="client-input"
                       />
@@ -559,8 +640,17 @@ const ClientOverview = () => {
                   className="update-btn"
                   onClick={handleTextUpdate}
                   disabled={followUpLoading}
+                  style={{
+                    backgroundColor: followUpType === "converted" ? "#28a745" : followUpType === "close" ? "#dc3545" : followUpType === "appointment" ? "#17a2b8" : "#007bff",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "5px",
+                    border: "none",
+                    cursor: followUpLoading ? "not-allowed" : "pointer",
+                    opacity: followUpLoading ? 0.6 : 1,
+                  }}
                 >
-                  {followUpType === "appointment" ? "Create Meeting" : "Update FreshLead"}
+                  {followUpType === "appointment" ? "Create Meeting" : followUpType === "converted" ? "Convert" : followUpType === "close" ? "Close" : "Update Followup"}
                 </button>
                 {createFollowUpFlag && (
                   <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
