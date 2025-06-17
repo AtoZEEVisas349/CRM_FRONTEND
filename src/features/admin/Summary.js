@@ -38,33 +38,33 @@ const Summary = () => {
       return;
     }
   
-    // Build path based on role
-    let basePath = "";
-    switch (user.role.toLowerCase()) {
-  
-       case "hr":
-        basePath = "/hr/leadassign";
-        break;
-         case "admin":
-        basePath = "/admin/leadassign";
-        break;
-      case "manager":
-        basePath = "/manager/leadassign";
-        break;
-     
-      case "tl":
-        basePath = "/team-lead/leadassign";
-        break;
-      default:
-        console.error("Unknown role:", user.role);
-        return;
-    }
-  
-    // Navigate with status filter
-    navigate(basePath, {
-      state: { filterStatus: status }
-    });
-  };
+// Build path based on role
+let basePath = "";
+switch (user.role.toLowerCase()) {
+
+   case "hr":
+    basePath = "/hr/executive-assignments";
+    break;
+     case "admin":
+    basePath = "/admin/executive-assignments";
+    break;
+  case "manager":
+    basePath = "/manager/executive-assignments";
+    break;
+ 
+  case "tl":
+    basePath = "/team-lead/executive-assignments";
+    break;
+  default:
+    console.error("Unknown role:", user.role);
+    return;
+}
+
+// Navigate with status filter
+navigate(basePath, {
+  state: { filterStatus: status }
+});
+};
 
   const { dealFunnel, getDealFunnel } = useApi();
 

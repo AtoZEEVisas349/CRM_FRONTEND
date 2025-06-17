@@ -11,6 +11,7 @@ import AttendanceTable from "../features/admin/AttendanceTable";
 import Monitoring from "../features/admin/Monitoring";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";
+import ExecutiveAssignments from "../features/admin/ExecutiveAssignments";
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
         <Route path="leadassign" element={<TaskManagement />} />
         <Route path="executiveform" element={<ExecutiveCredentialsForm />} />
         <Route path="executive-details" element={<ExecutiveDetails />} />
+        <Route path="executive-assignments" element={<ExecutiveAssignments/>} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="notification" element={<AdminNotification />} />
         <Route path="help-support" element ={<ContactUs/>}/>
