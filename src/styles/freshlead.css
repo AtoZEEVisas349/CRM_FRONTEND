@@ -518,3 +518,25 @@ gap: 10px;
   color: var(--text-color);
 }
 
+.old-lead-row {
+  background-color: #ffebee !important;
+  border-left: 4px solid #f44336 !important;
+}
+
+.old-lead-button {
+  background-color: #f44336 !important;
+  border-color: #d32f2f !important;
+  color: white !important;
+}
+
+.old-lead-verify {
+  background-color: #f44336 !important;
+  border-color: #d32f2f !important;
+  color: white !important;
+}
+
+.old-lead-call {
+  background-color: #f44336 !important;
+  color: white !important;
+  border: 1px solid #d32f2f !important;
+}
