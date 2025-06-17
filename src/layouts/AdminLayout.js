@@ -106,7 +106,10 @@ const AdminLayout = () => {
               <RevenueChart />
             </div>
             <div className="additional-section">
-              <CallData />
+               <CallData
+                selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
+                executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
+              />
               <Meetings selectedExecutiveId={selectedExecutiveId} />
             </div>
           </div>
