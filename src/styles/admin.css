@@ -1702,6 +1702,7 @@ body.sidebar-collapsed .assign-task-container {
 .admin-notification_badge {
   position: absolute;
   right: -6px;
+  top: 2px;
   background-color: var(--danger-color, #ef4444);
   color: white;
   font-size: 10px;
