@@ -356,7 +356,7 @@ const ExecutiveAssignments = () => {
         <div className="taskmanage-header">
           <div className="header-actions">
             <select value={selectedExecutive} onChange={handleExecutiveChange}>
-              <option value="">-- Select Executive --</option>
+              <option value="">-- Choose Executive --</option>
               {executives.map((exec) => (
                 <option key={exec.id} value={String(exec.id)}>
                   {exec.username}
