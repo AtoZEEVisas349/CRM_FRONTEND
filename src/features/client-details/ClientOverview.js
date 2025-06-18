@@ -59,6 +59,12 @@ const ClientOverview = () => {
   const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
   const [ampm, setAmPm] = useState(ampmValue);
   const [isTimeEditable, setIsTimeEditable] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [emailBody, setEmailBody] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const convertTo24Hour = (time12h, amPm) => {
     let [hours, minutes] = time12h.split(':').map(Number);
@@ -145,7 +151,6 @@ const ClientOverview = () => {
     try {
       let followUpId = clientInfo.followUpId;
 
-      // If no followUpId exists, create a new follow-up first
       if (!followUpId) {
         const newFollowUpData = {
           connect_via: capitalize(contactMethod),
@@ -374,10 +379,50 @@ const ClientOverview = () => {
   };
 
   const { handleSendEmail } = useExecutiveActivity();
-  const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
 
-  const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [sendingEmail, setSendingEmail] = useState(false);
+  const handleTemplateSelect = (template, clientEmail) => {
+    if (template) {
+      setSelectedTemplate(template);
+      setEmailBody(template.body);
+      setEmailSubject(template.subject);
+      setClientEmail(clientEmail);
+      setShowEmailModal(true);
+    } else {
+      setShowEmailModal(false);
+      setSelectedTemplate(null);
+      setEmailBody("");
+      setEmailSubject("");
+      setClientEmail("");
+    }
+  };
+
+  const handleEmailSubmit = async () => {
+    setSendingEmail(true);
+
+    try {
+      const emailPayload = {
+        templateId: selectedTemplate.id,
+        executiveName: executiveInfo.username,
+        executiveEmail: executiveInfo.email,
+        clientEmail: clientInfo.email,
+        emailBody: emailBody,
+        emailSubject: emailSubject,
+      };
+
+      await handleSendEmail(emailPayload);
+      alert("Email sent successfully!");
+      setShowEmailModal(false);
+      setSelectedTemplate(null);
+      setEmailBody("");
+      setEmailSubject("");
+      setClientEmail("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send email.");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
@@ -391,6 +436,7 @@ const ClientOverview = () => {
       <div className="c-container">
         <div className="c-header">
           <h2>Client Details</h2>
+          <button className="c-button">×</button>
         </div>
         <div className="c-content">
           <div className="c-layout">
@@ -424,10 +470,123 @@ const ClientOverview = () => {
 
       <div className="client-interaction-container">
         <div className="interaction-form">
-        
-          <SendEmailToClients clientInfo={clientInfo} />
+          <div style={{ position: "relative" }}>
+            <SendEmailToClients clientInfo={clientInfo} onTemplateSelect={handleTemplateSelect} />
+            {showEmailModal && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: 800,
+                  width: "400px",
+                  backgroundColor: "#f5f7fa",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                  zIndex: 6,
+                  padding: "15px",
+                  height: "auto",
+                  marginTop: "-60px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #e0e0e0",
+                    paddingBottom: "5px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <h4 style={{ margin: 0, fontSize: "16px" }}>New Message</h4>
+                  <div>
+                    <button
+                      onClick={() => setShowEmailModal(false)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "16px",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div style={{ marginBottom: "10px" }}>
+                  <label style={{ display: "block", fontSize: "14px", marginBottom: "5px" }}>
+                    To
+                  </label>
+                  <input
+                    type="email"
+                    value={clientEmail}
+                    readOnly
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      borderRadius: "4px",
+                      border: "1px solid #e0e0e0",
+                      fontSize: "14px",
+                    }}
+                  />
+                </div>
+                <div style={{ marginBottom: "10px" }}>
+                  <label style={{ display: "block", fontSize: "14px", marginBottom: "5px" }}>
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      borderRadius: "4px",
+                      border: "1px solid #e0e0e0",
+                      fontSize: "14px",
+                    }}
+                  />
+                </div>
+                <div style={{ marginBottom: "10px" }}>
+                  <textarea
+                    value={emailBody}
+                    onChange={(e) => setEmailBody(e.target.value)}
+                    style={{
+                      width: "100%",
+                      height: "150px",
+                      padding: "8px",
+                      borderRadius: "4px",
+                      border: "1px solid #e0e0e0",
+                      fontSize: "14px",
+                      resize: "vertical",
+                    }}
+                    placeholder="Email body"
+                  />
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button
+                    onClick={handleEmailSubmit}
+                    disabled={sendingEmail}
+                    style={{
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      padding: "8px 16px",
+                      borderRadius: "5px",
+                      border: "none",
+                      cursor: sendingEmail ? "not-allowed" : "pointer",
+                      opacity: sendingEmail ? 0.6 : 1,
+                    }}
+                  >
+                    {sendingEmail ? "Sending..." : "Send"}
+                  </button>
+                </div>
+              </div>
+            )}
+          
+          </div>
 
-          <div className="connected-via">
+          <div className="connected-via" style={{ marginBottom: "20px" }}>
             <h4>Connected Via</h4>
             <div className="radio-group">
               {["Call", "Email", "Call/Email"].map((method) => (
@@ -443,7 +602,7 @@ const ClientOverview = () => {
               ))}
             </div>
           </div>
-          <div className="follow-up-type">
+          <div className="follow-up-type"  style={{ marginBottom: "20px" }}>
             <h4>Follow-Up Type</h4>
             <div className="radio-group">
               {["interested", "appointment", "no response", "converted", "not interested", "close"].map((type) => (
@@ -460,7 +619,7 @@ const ClientOverview = () => {
             </div>
           </div>
 
-          <div className="interaction-rating">
+          <div className="interaction-rating" >
             <h4>Interaction Rating</h4>
             <div className="radio-group">
               {["hot", "warm", "cold"].map((rating) => (

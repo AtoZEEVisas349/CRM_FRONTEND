@@ -1,58 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { useApi } from "../../context/ApiContext";
+import { getEmailTemplates } from "../../static/emailTemplates";
 
-export const SendEmailToClients = ({ clientInfo }) => {
+export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
   const { executiveInfo } = useApi();
   const { handleSendEmail } = useExecutiveActivity();
-  const {
-    emailTemplates,
-    fetchAllTemplates,
-    fetchTemplateById,
-    templateLoading,
-  } = useApi(); // ✅ Destructure values from context
+  const { fetchAllTemplates, fetchTemplateById, templateLoading } = useApi();
 
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailTemplates, setEmailTemplates] = useState([]);
 
-  // ✅ Fetch templates on mount
   useEffect(() => {
-    fetchAllTemplates();
-  }, [fetchAllTemplates]);
+    // Fetch templates from the static file since fetchAllTemplates might be an API call
+    const templates = getEmailTemplates(clientInfo, executiveInfo);
+    setEmailTemplates(templates);
+  }, [clientInfo, executiveInfo]);
 
   const handleTemplateChange = (e) => {
-    setSelectedTemplateId(e.target.value);
-  };
-
-  const handleEmailSubmit = async (e) => {
-    e.preventDefault();
-    setSendingEmail(true);
-
-    if (!selectedTemplateId) {
-      alert("Please select a template.");
-      setSendingEmail(false);
-      return;
-    }
-
-    try {
-      const selectedTemplate = await fetchTemplateById(selectedTemplateId);
-
-      const emailPayload = {
-        templateId: selectedTemplate.id,
-        executiveName: executiveInfo.username,
-        executiveEmail: executiveInfo.email,
-        clientEmail: clientInfo.email,
-        emailBody: selectedTemplate.body,
-        emailSubject: selectedTemplate.subject,
-      };
-
-      await handleSendEmail(emailPayload);
-      alert("Email sent successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send email.");
-    } finally {
-      setSendingEmail(false);
+    const templateId = e.target.value;
+    setSelectedTemplateId(templateId);
+    if (templateId) {
+      const selectedTemplate = emailTemplates.find((t) => t.id === templateId);
+      if (selectedTemplate) {
+        onTemplateSelect(selectedTemplate, clientInfo.email);
+      }
+    } else {
+      onTemplateSelect(null, clientInfo.email);
     }
   };
 
@@ -64,8 +38,7 @@ export const SendEmailToClients = ({ clientInfo }) => {
     <div>
       <h4 style={{ marginBottom: "0.5rem" }}>Send Email to Client</h4>
 
-      <form
-        onSubmit={handleEmailSubmit}
+      <div
         style={{
           display: "flex",
           alignItems: "center",
@@ -95,6 +68,7 @@ export const SendEmailToClients = ({ clientInfo }) => {
             <input
               type="email"
               value={clientInfo.email}
+              readOnly
               style={{
                 marginLeft: "0.5rem",
                 padding: "8px",
@@ -123,11 +97,7 @@ export const SendEmailToClients = ({ clientInfo }) => {
             </select>
           </label>
         </div>
-
-        <button type="submit" className="sendEmail-btn" disabled={sendingEmail}>
-          {sendingEmail ? "Sending..." : "Send Email"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
