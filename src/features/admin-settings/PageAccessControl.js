@@ -254,7 +254,7 @@ const PageAccessControl = () => {
           </select>
 
           <button className="primary-btn" onClick={handleCreatePermission}>
-            Create Permission
+            Grant Access
           </button>
         </div>
 

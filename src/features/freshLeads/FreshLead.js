@@ -26,6 +26,7 @@ function FreshLead() {
 
   const { leadtrack } = useExecutiveActivity();
   const { searchQuery, setActivepage } = useContext(SearchContext);
+  const [chatbotPopoverIndex, setChatbotPopoverIndex] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [leadsData, setLeadsData] = useState([]);
@@ -291,9 +292,8 @@ function FreshLead() {
                             className={`call-button ${isOld ? "old-lead-call" : ""}`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setActivePopoverIndex(
-                                activePopoverIndex === index ? null : index
-                              );
+                              setActivePopoverIndex(activePopoverIndex === index ? null : index);
+                              setChatbotPopoverIndex(null); // Close chatbot if already open
                             }}
                             style={
                               isOld
@@ -308,6 +308,7 @@ function FreshLead() {
                             📞
                           </button>
 
+                          {/* Primary Call Popover */}
                           {activePopoverIndex === index && (
                             <div className="popover">
                               <button
@@ -352,6 +353,14 @@ function FreshLead() {
                                   }}
                                 />
                                 Normal Call
+                              </button>
+                              <button
+                                className="popover-option"
+                                onClick={() => {
+                                  setChatbotPopoverIndex(chatbotPopoverIndex === index ? null : index);
+                                }}
+                              >
+                                🤖 Chatbot
                               </button>
                             </div>
                           )}
