@@ -29,6 +29,8 @@ import TLRoutes from "./routes/TLRoutes";
 import LoginHr from "./features/authentication/LoginHr";
 import HrRoutes from "./routes/HrRoutes";
 import SettingsRouteWrapper from "./routes/SettingsRouteWrapper";
+import ProcessDashboardRoutes from "./routes/ProcessDashboardRoutes";
+import ClientCustomerRoutes from "./routes/ClientCustomer";
 const App = () => {
   const [followUpText, setFollowUpText] = useState(() => {
     const saved = localStorage.getItem('followUpText');
@@ -86,7 +88,6 @@ useEffect(() => {
     </PrivateRoute>
   }
 />
-<Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} />       
  <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
        
         <Route path="/master/*" element={
@@ -113,6 +114,9 @@ useEffect(() => {
     </PrivateRoute>
   }
 />
+<Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} /> 
+<Route path="/processperson/*" element={<ProcessDashboardRoutes />} />      
+<Route path="/customer/*" element={<ClientCustomerRoutes />} />  
 <Route 
   path="/manager/*" 
   element={

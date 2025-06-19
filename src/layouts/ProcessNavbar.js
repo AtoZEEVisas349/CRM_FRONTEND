@@ -28,7 +28,22 @@ const ProcessNavbar = () => {
     }
   };
   const dashboardTitle = user?.type === 'processperson' ? 'Process Dashboard' : 'Client Dashboard';
-
+    const [selectedRole, setSelectedRole] = useState("processperson"); 
+ const handleToggle = (role) => {
+    setSelectedRole(role);
+    if (role === "processperson") {
+      navigate("/processperson/client/all-clients");
+    } else if (role === "process") {
+      navigate("/process");
+    }
+  };
+   const onToggleClick = () => {
+    if (selectedRole === "process") {
+      handleToggle("processperson");
+    } else {
+      handleToggle("process");
+    }
+  };
   return (
     <nav className="process-navbar">
       <h2 className="process-navbar-logo">{dashboardTitle}</h2>
@@ -38,17 +53,35 @@ const ProcessNavbar = () => {
         onClick={() => setIsMobile(false)}
       >
         {user?.type === "customer" && (
-          <li><Link to="/process/client/dashboard">Dashboard</Link></li>
+          <li><Link to="/customer/client/dashboard">Dashboard</Link></li>
           
         )}
 {user?.type === "customer" && (
-        <li><Link to="/process/client/upload">Upload</Link></li>
+        <li><Link to="/customer/client/upload">Upload</Link></li>
         )}
          {/* ✅ Only show this link to processperson */}
           {user?.type === 'processperson' && (
-            <li><Link to="/process/client/all-clients">Clients</Link></li>
+            <li><Link to="/processperson/client/all-clients">Clients</Link></li>
           )}
-          <li><Link to="/process/client/settings">Settings</Link></li>
+          {user?.type === 'customer' && (
+            <li><Link to="/customer/client/settings">Settings</Link></li>
+          )}
+         {user?.type === 'processperson' && (
+            <li><Link to="/processperson/client/settings">Settings</Link></li>
+          )}
+          {/* <li><Link to="/process/client/settings">Settings</Link></li> */}
+           {user?.type === 'processperson' && (
+            <div className="role-switch-wrapper1">
+  <div className="switch-label1">Process pages</div>
+  <div className="role-switch-container" onClick={onToggleClick}>
+    <div
+      className={`switch-slider ${
+        selectedRole === "process" ? "left" : "right"
+      }`}
+    ></div>
+  </div>
+</div>
+    )}
         <li><button className="process-logout-btn" onClick={handleLogout}>Logout</button></li>
       </ul>
 

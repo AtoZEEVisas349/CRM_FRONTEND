@@ -22,6 +22,7 @@ function FreshLead() {
     verificationLoading,
     fetchNotifications,
     createCopyNotification,
+    getFollowUpHistory
   } = useApi();
 
   const { leadtrack } = useExecutiveActivity();
@@ -143,30 +144,41 @@ function FreshLead() {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  const handleAddFollowUp = (lead) => {
-    const clientLead = lead.clientLead || {};
-    const clientData = {
-      name: lead.name || clientLead.name || "",
-      email: lead.email || clientLead.email || "",
-      phone: lead.phone || clientLead.phone || "",
-      altPhone: lead.altPhone || clientLead.altPhone || "",
-      education: lead.education || clientLead.education || "",
-      experience: lead.experience || clientLead.experience || "",
-      state: lead.state || clientLead.state || "",
-      dob: lead.dob || clientLead.dob || "",
-      country: lead.country || clientLead.country || "",
-      assignDate: lead.assignDate || lead.assignmentDate || "",
-      freshLeadId: lead.id,
-    };
-
-    navigate(`/executive/clients/${encodeURIComponent(lead.name)}`, {
-      state: {
-        client: clientData,
-        createFollowUp: true,
-        clientId: clientData.id,
-      },
-    });
+ const handleAddFollowUp = async (lead) => {
+  const clientLead = lead.clientLead || {};
+  const clientData = {
+    name: lead.name || clientLead.name || "",
+    email: lead.email || clientLead.email || "",
+    phone: lead.phone || clientLead.phone || "",
+    altPhone: lead.altPhone || clientLead.altPhone || "",
+    education: lead.education || clientLead.education || "",
+    experience: lead.experience || clientLead.experience || "",
+    state: lead.state || clientLead.state || "",
+    dob: lead.dob || clientLead.dob || "",
+    country: lead.country || clientLead.country || "",
+    assignDate: lead.assignDate || lead.assignmentDate || "",
+    freshLeadId: lead.id,
   };
+
+  let followUpHistory = [];
+
+  try {
+    followUpHistory = await getFollowUpHistory(lead.id);
+  } catch (error) {
+    console.error("Failed to fetch follow-up history:", error);
+    // fallback to empty array
+  }
+
+  navigate(`/executive/clients/${encodeURIComponent(lead.name)}`, {
+    state: {
+      client: clientData,
+      createFollowUp: true,
+      followUpHistory: followUpHistory,
+      clientId: clientData.id,
+    },
+  });
+};
+
 
   if (executiveLoading) return <p>Loading executive data...</p>;
 

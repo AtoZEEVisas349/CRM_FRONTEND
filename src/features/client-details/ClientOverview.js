@@ -128,7 +128,14 @@ const ClientOverview = () => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
+  const [followUpHistory, setFollowUpHistory] = useState([]);
 
+  useEffect(() => {
+    if (location.state?.followUpHistory?.length) {
+      setFollowUpHistory(location.state.followUpHistory);
+    }
+  }, [location.state]);
+  
   const handleTextUpdate = async () => {
     if (!followUpType || !interactionDate || !interactionTime) {
       return Swal.fire({
@@ -459,15 +466,45 @@ const ClientOverview = () => {
             </div>
 
             <div className="follow-up-column">
-              <div className="last-follow-up">
-                <h3>Last Follow-up</h3>
-                <p>{reasonDesc || "No follow-up text yet."}</p>
-              </div>
+  <div className="follow-up-box">
+    <div className="last-follow-up">
+      <h3>Last Follow-up</h3>
+      {followUpHistory.length > 0 ? (
+        <div className="followup-entry-horizontal">
+          <p className="followup-reason">
+            {followUpHistory[0].reason_for_follow_up || "No description available."}
+          </p>
+          <strong>
+            <p className="followup-time">
+              {new Date(followUpHistory[0].follow_up_date).toLocaleDateString()} - {followUpHistory[0].follow_up_time}
+            </p>
+          </strong>
+        </div>
+      ) : (
+        <p>No follow-up history available.</p>
+      )}
+    </div>
+
+    {followUpHistory.length > 1 && (
+      <div className="follow-up-history-summary">
+        <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+          {followUpHistory.slice(1).map((history, index) => (
+            <div key={index} className="followup-entry-plain">
+              <p className="followup-reason">{history.reason_for_follow_up || "—"}</p>
+              <p className="followup-time">
+                {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
+    )}
+  </div>
+</div>
 
+</div>
+</div>
+</div>
       <div className="client-interaction-container">
         <div className="interaction-form">
           <div style={{ position: "relative" }}>

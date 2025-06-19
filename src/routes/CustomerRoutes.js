@@ -43,7 +43,7 @@ const CustomerRoutes = () => {
 
   return (
     <div className="customer-container">
-      <SidebarandNavbar />
+      {/* <SidebarandNavbar /> */}
       <div className="customer-main-content">
         <div className="convert-heading">
           <h2>Convert Customers</h2>

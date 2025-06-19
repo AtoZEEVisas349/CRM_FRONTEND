@@ -3,7 +3,7 @@ import * as apiService from "../services/apiService";
 import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
 import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
-  getEmailTemplateById,markMultipleNotificationsAsRead
+  getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId
 } from "../services/apiService"
 const ApiContext = createContext();
 
@@ -443,7 +443,19 @@ const adminMeeting = useCallback(async () => {
     return [];
   }
 }, []);
+const useFollowUpHistory = () => {
+  const getFollowUpHistory = useCallback(async (freshLeadId) => {
+    try {
+      const history = await fetchFollowUpHistoryByLeadId(freshLeadId);
+      return history;
+    } catch (error) {
+      console.error("❌ Error fetching follow-up history:", error);
+      return [];
+    }
+  }, []);
 
+  return { getFollowUpHistory };
+};
 const [readMeetings, setReadMeetings] = useState(() => {
   const stored = localStorage.getItem("readMeetings");
   return stored ? JSON.parse(stored) : {};
@@ -1094,6 +1106,7 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         fetchLeadSectionVisitsAPI,
         visitLoading,
         createHr,
+        ...useFollowUpHistory(),
         // ✅ File Upload
         uploadFileAPI,
         uploading,

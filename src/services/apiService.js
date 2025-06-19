@@ -372,6 +372,15 @@ export const fetchFollowUpHistories = async () => {
   }
 };
 
+export const fetchFollowUpHistoryByLeadId = async (freshLeadId) => {
+  try {
+    const response = await apiService.get(`/followuphistory/${freshLeadId}`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching follow-up history:", error);
+    throw error;
+  }
+};
 // ✅ Fetch user settings (GET)
 export const fetchUserSettings = async () => {
   try {
@@ -416,13 +425,12 @@ export const createConvertedClient = async (convertedData) => {
     throw error;
   }
 };
-//fetch Converted clients
 
 // Fetch converted clients dynamically based on executiveId or username
 export const fetchConvertedClients = async (executiveId = null) => {
   try {
-    const endpoint = executiveId ? '/converted/exec' : '/converted';
-    const response = await apiService.get(endpoint, {
+    // const endpoint = executiveId ? '/converted/exec' : '/converted';
+    const response = await apiService.get("/converted/exec", {
       headers: executiveId ? { 'x-executive-id': executiveId } : {},
     });
     return response.data;
@@ -431,6 +439,7 @@ export const fetchConvertedClients = async (executiveId = null) => {
     throw error;
   }
 };
+
 // ✅ Function to create a Close Lead (POST)
 export const createCloseLead = async (closeLeadData) => {
   try {
@@ -481,6 +490,7 @@ export const fetchAdminExecutiveDashboard = async () => {
     throw error;
   }
 };
+
 // ✅ Fetch revenue chart data
 export const fetchRevenueChartData = async () => {
   try {

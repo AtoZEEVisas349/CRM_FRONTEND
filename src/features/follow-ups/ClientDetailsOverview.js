@@ -264,7 +264,7 @@ const ClientDetailsOverview = () => {
       await fetchMeetings();
       await refreshMeetings();
       loadFollowUpHistories(freshLeadId);
-      setTimeout(() => navigate("/follow-up"), 1000);
+      setTimeout(() => navigate("/executive/follow-up"), 1000);
     } catch (err) {
       console.error("Follow-Up Update Error:", err);
       Swal.fire({
@@ -322,7 +322,7 @@ const ClientDetailsOverview = () => {
       await fetchMeetings();
       await refreshMeetings();
       loadFollowUpHistories(freshLeadId);
-      setTimeout(() => navigate("/follow-up"), 1000);
+      setTimeout(() => navigate("/executive/follow-up"), 1000);
     } catch (err) {
       console.error("Meeting Creation Error:", err);
       Swal.fire({

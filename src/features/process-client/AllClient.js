@@ -54,10 +54,10 @@ const AllClient = () => {
     }
   };
   const handleCardClick = (client) => {
-    navigate(`/process/client/dashboard/${client.id}`, { state: { client } });
+    navigate(`/processperson/client/dashboard/${client.id}`, { state: { client } });
   };
    const handleCardUpload = (client) => {
-    navigate(`/process/client/upload/${client.id}`, { state: { client } });
+    navigate(`/processperson/client/upload/${client.id}`, { state: { client } });
   };
 
   return (

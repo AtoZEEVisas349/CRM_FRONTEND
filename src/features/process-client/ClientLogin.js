@@ -16,7 +16,7 @@ const ClientLogin = () => {
   
       localStorage.setItem("userType", "processperson");
   
-        navigate("/process/client/all-clients");
+        navigate("/process");
   
     } catch (error) {
       alert(error.message);

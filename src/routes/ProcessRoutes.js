@@ -1,6 +1,19 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ProcessNavbar from "../layouts/ProcessNavbar";
+import ReportCard from "../features/executive/ReportCard";
+import ProcessReportCard from "../features/process-client/ProcessReportCard";
+import NewsComponent from "../features/executive/NewsComponent";
+import FreshLeadRoutes from "./FreshLeadRoutes";
+import FollowUpRoutes from "./FollowUpRoutes";
+import ClientRoutes from "./ClientRoutes";
+import CustomerRoutes from "./CustomerRoutes";
+import CloseLeadRoutes from "./CloseLeadRoutes";
+import InvoicePage from "../features/Invoice/InvoicePage";
+import SettingRoutes from "./SettingRoutes";
+import NotificationRoutes from "./NotificationRoutes";
+import ChatBotRoutes from "./ChatBotRoutes";
+import ScheduleRoutes from "./ScheduleRoutes";
 import ClientDash from "../features/process-client/ClientDash";
 import ClientSetting from "../features/process-client/ClientSetting";
 import ClientUpload from "../features/process-client/ClientUpload";
@@ -8,14 +21,32 @@ import CreateClient from "../features/process-client/CreateClient";
 import AllClient from "../features/process-client/AllClient";
 import { useProcess } from "../context/ProcessAuthContext"; // ✅ Make sure to import it
 import "../styles/process.css";
+import ProcessLayout from "../layouts/ProcessLayout";
+import SidebarandNavbar from "../layouts/SidebarandNavbar";
+import ProcessFreshlead from "../features/freshLeads/ProcessFreshlead";
 
 const ProcessRoutes = () => {
   const { user } = useProcess(); // ✅ Now it's correctly used inside the component
 
   return (
+    
     <>
-      <ProcessNavbar />
+   {/* <SidebarandNavbar/> */}
       <Routes>
+         <Route path="/" element={<ProcessLayout />}>
+
+           <Route index element={<><ProcessReportCard /><NewsComponent /></>} />
+           <Route path="freshlead" element={<ProcessFreshlead />} />
+                     <Route path="follow-up/*" element={<FollowUpRoutes  />} />  
+                     <Route path="clients/*" element={<ClientRoutes />} />
+                     <Route path="customer/*" element={<CustomerRoutes />} />
+                     <Route path="close-leads/*" element={<CloseLeadRoutes />} />
+                     <Route path="schedule/*" element={<ScheduleRoutes />} />
+                      <Route path="invoice" element={<InvoicePage />}/>
+                               <Route path="settings/*" element={<SettingRoutes />} />
+                               <Route path="notification/*" element={  <NotificationRoutes />
+                               }/>
+                               <Route path="chat/*" element={<ChatBotRoutes />} />
         <Route path="client/dashboard" element={<ClientDash />} />
         <Route path="client/settings" element={<ClientSetting />} />
         <Route path="client/upload" element={<ClientUpload />} />
@@ -27,6 +58,7 @@ const ProcessRoutes = () => {
             <Route path="client/all-clients" element={<AllClient />} />
           </>
         )}
+         </Route>
       </Routes>
     </>
   );

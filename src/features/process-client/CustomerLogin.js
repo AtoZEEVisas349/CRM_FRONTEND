@@ -18,7 +18,7 @@ const handleLogin = async () => {
 
     // ✅ Conditional navigation
  
-      navigate("/process/client/dashboard");
+      navigate("/customer/client/dashboard");
     
   } catch (error) {
     alert(error.message);
