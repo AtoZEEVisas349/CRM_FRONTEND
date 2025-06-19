@@ -10,7 +10,7 @@ export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
 
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [emailTemplates, setEmailTemplates] = useState([]);
-
+  const user=localStorage.getItem("user")
   useEffect(() => {
     // Fetch templates from the static file since fetchAllTemplates might be an API call
     const templates = getEmailTemplates(clientInfo, executiveInfo);
