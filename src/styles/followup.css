@@ -1,3 +1,5 @@
+
+
 body {
   overflow-y: auto;
   font-family: 'Poppins', sans-serif;
@@ -24,32 +26,12 @@ body {
   top: 0;
   z-index: 1;
 }
-.menu_toggle{
+
+.menu_toggle {
   position: absolute;
   z-index: 10;
 }
-.old-followup-row {
-  background-color: #ffebee !important;
-  border-left: 4px solid #f44336 !important;
-}
 
-.old-followup-button {
-  background-color: #f44336 !important;
-  border-color: #d32f2f !important;
-  color: white !important;
-}
-
-.old-followup-badge {
-  background-color: #f44336 !important;
-  color: white !important;
-  border: 1px solid #d32f2f !important;
-}
-
-.old-followup-call {
-  background-color: #f44336 !important;
-  color: white !important;
-  border: 1px solid #d32f2f !important;
-}
 /* Main Content */
 .follow-main-content {
   width: calc(100% - 20px);
@@ -62,7 +44,7 @@ body {
   overflow-y: auto;
   position: relative;
   z-index: 0;
-  
+
 }
 
 /* Client Details */
@@ -70,11 +52,16 @@ body {
   margin-top: 30px;
   position: relative;
 }
+.client-details-title{
+  margin-bottom: 10px;
+}
 
 .client-details {
   display: flex;
-  position: relative; /* Required for absolute positioning inside */
-  gap: 10%; /* or even 12px */
+  position: relative;
+  /* Required for absolute positioning inside */
+  gap: 10%;
+  /* or even 12px */
   background-color: var(--card-bg);
   color: var(--text-color);
   padding: 20px;
@@ -83,13 +70,15 @@ body {
   box-shadow: 0 2px 10px var(--shadow-light);
   border: 1px solid var(--border-color);
   height: fit-content;
-  width:100% !important;
+  width: 100% !important;
 }
+
 .client-info {
   display: flex;
   align-items: center;
   gap: 15px;
 }
+
 .info-item {
   display: flex;
   align-items: center;
@@ -102,43 +91,60 @@ body {
 .info-item .label {
   width: 70px;
   font-weight: 600;
-  color: #456dc9; /* Match the heading tone */
+  color: #456dc9;
+  /* Match the heading tone */
 }
-[data-theme="light"] .last-followup p{
+
+[data-theme="light"] .last-followup p {
   color: #000000;
 }
-[data-theme="light"] .followup-tabs button{
+
+[data-theme="light"] .followup-tabs button {
   color: #000000;
-} 
-[data-theme="dark"] .client-details-title{
-  color: #fff;
 }
-[data-theme="dark"] .follow-main-content h2{
-  color: #fff;
-}
-[data-theme="dark"] .client-info{
-  color: #fff;
-}
-[data-theme="dark"] .client-table td{
+
+[data-theme="dark"] .client-details-title {
   color: #fff;
 }
 
-[data-theme="dark"] .client-text h4{
+[data-theme="dark"] .follow-main-content h2 {
   color: #fff;
 }
-[data-theme="dark"] .lead-info span{
+
+[data-theme="dark"] .client-info {
+  color: #fff;
+}
+
+[data-theme="dark"] .client-table td {
+  color: #fff;
+}
+
+[data-theme="dark"] .client-table thead {
+  background-color: #2b394b !important;
+  color: #fff;
+}
+
+[data-theme="dark"] .client-text h4 {
+  color: #fff;
+}
+
+[data-theme="dark"] .lead-info span {
   color: #fff !important;
 }
-[data-theme="dark"] .last-followup h4{
+
+[data-theme="dark"] .last-followup h4 {
   color: #fff;
 }
-[data-theme="dark"] .flw-close-btn{
+
+[data-theme="dark"] .flw-close-btn {
   color: #fff;
 }
-[data-theme="dark"] .client-text p{
-color: #fff;
+
+[data-theme="dark"] .client-text p {
+  color: #fff;
 }
-.close-btn{
+
+.close-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -147,12 +153,16 @@ color: #fff;
   color: var(--text-color);
   z-index: 10;
 }
+
 .client-input {
-  width: 150px;              /* Fixed width for consistency */
-  height: 24px;              /* Matches design */
+  width: 150px;
+  /* Fixed width for consistency */
+  height: 24px;
+  /* Matches design */
   padding: 6px 10px;
   font-size: 14px;
-  border: 1px solid #d0d7de; /* Subtle border tone */
+  border: 1px solid #d0d7de;
+  /* Subtle border tone */
   border-radius: 6px;
   background-color: #ffffff;
   color: #333;
@@ -216,6 +226,7 @@ select {
   border: 1px solid #ccc;
   font-size: 14px;
 }
+
 label {
   font-weight: 600;
   display: block;
@@ -224,7 +235,8 @@ label {
 
 .c-layout {
   display: flex;
-  align-items: stretch; /* Align both left and right sections at the top */
+  align-items: stretch;
+  /* Align both left and right sections at the top */
   gap: 20px;
 }
 
@@ -250,9 +262,11 @@ label {
 .last-follow-up {
   margin-bottom: 12px;
 }
-.follow-up-reason{
+
+.follow-up-reason {
   margin-top: 0px !important;
 }
+
 .last-follow-up h3 {
   margin-bottom: 10px;
   font-size: 18px;
@@ -281,10 +295,12 @@ label {
   font-weight: 500;
   color: #222;
 }
+
 .history-item p:last-child {
   text-align: right;
   color: #666;
 }
+
 .flw-close-btn {
   position: relative;
   right: 12px;
@@ -292,12 +308,14 @@ label {
   cursor: pointer;
   color: var(--text-color);
 }
+
 /* New layout for cleaner follow-up display */
 .followup-entry.new-layout {
   display: flex;
   flex-direction: column;
   padding: 6px 0;
 }
+
 /* FIRST follow-up styled as a box */
 .followup-entry-horizontal {
   display: flex;
@@ -308,9 +326,11 @@ label {
   padding: 12px 14px;
   margin-bottom: 16px;
 }
-.follow-up-reason h3{
+
+.follow-up-reason h3 {
   margin-bottom: 10px !important;
 }
+
 .followup-entry-plain {
   display: flex;
   flex-direction: column;
@@ -377,7 +397,8 @@ label {
 .client-table th {
   font-size: 14px;
   font-weight: bold;
-  color: #000000; /* Fixed black color for column headers */
+  color: #000000;
+  /* Fixed black color for column headers */
 }
 
 .client-table th,
@@ -399,7 +420,8 @@ label {
 
 .client-table td {
   font-size: 14px;
-  color: var(--text-color); /* Ensure content color adapts to light/dark mode */
+  color: var(--text-color);
+  /* Ensure content color adapts to light/dark mode */
 }
 
 .followup-badge {
@@ -418,7 +440,7 @@ label {
 .followup-tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 
 .followup-tabs button {
@@ -459,9 +481,11 @@ label {
   box-shadow: 0 2px 4px var(--shadow-light);
   z-index: 10;
 }
-.client-table tbody{
+
+.client-table tbody {
   padding-bottom: 5px;
 }
+
 .client-table tbody {
   background-color: var(--card-bg);
 }
@@ -469,7 +493,8 @@ label {
 /* Ensure visibility of table headers and rows in dark mode */
 .dark .client-table th,
 .dark .client-table td {
-  color: var(--text-color); /* Ensure text color for dark mode */
+  color: var(--text-color);
+  /* Ensure text color for dark mode */
 }
 
 /* Responsive */
@@ -477,7 +502,7 @@ label {
   .sidebar_container {
     height: 100vh;
     transition: transform 0.3s ease-in-out;
-    width:250px;
+    width: 250px;
   }
 
   .sidebar_container.active {
@@ -487,26 +512,33 @@ label {
   .navbar {
     margin-left: 0;
     width: calc(100% - 20px);
-    left:0;
+    left: 0;
     position: sticky;
   }
 
   .follow-main-content {
-   
-    width:100%;
+
+    width: 100%;
     margin-left: 11px;
     margin-top: 5px;
     z-index: 0;
   }
-  .client-details{
-    width:99%;
+
+  .client-details {
+    width: 99%;
   }
-  .ptext{
-    font-size:12px;
+
+  .ptext {
+    font-size: 12px;
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-color);
 }
 
@@ -519,16 +551,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .client-table {
-  min-width: 700px; /* forces horizontal scroll if screen is smaller */
+  min-width: 700px;
+  /* forces horizontal scroll if screen is smaller */
 }
 
 /* Optional: fix sticky headers */
 .client-table thead th {
   position: sticky;
   top: 0;
-  background-color: #2c2c2c; /* match your new header background */
-  z-index: 10;
+  background-color: #2c2c2c;
+  /* match your new header background */
+  z-index: 10;
 }
+
 /* Base button styles */
 .crm-button {
   font-size: 15px;
@@ -580,13 +615,16 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(1px);
   box-shadow: 0 3px 8px rgba(76, 175, 80, 0.2);
 }
+
 /* Container to align buttons to the right */
 .button-group {
   display: flex;
   justify-content: flex-end;
-  gap: 10px; /* spacing between buttons */
+  gap: 10px;
+  /* spacing between buttons */
   margin-top: 20px;
 }
+
 .table-container {
   max-height: 500px;
   overflow-x: auto;
@@ -645,6 +683,7 @@ h1, h2, h3, h4, h5, h6 {
 .user-icon {
   font-size: 14px;
 }
+
 .followup-badge.full-click {
   display: inline-flex;
   align-items: center;
@@ -668,15 +707,18 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 14px;
   line-height: 1;
 }
+
 .followup-badge .icon {
   margin-left: 6px;
   font-size: 14px;
   color: #444;
 }
+
 .edit-icon {
   margin-left: 10px;
   cursor: pointer;
 }
+
 .rating-badge {
   display: inline-flex;
   padding: 4px 12px;
@@ -716,6 +758,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #424242;
   border-color: #d6d6d6;
 }
+
 .call-cell {
   position: relative;
 }
@@ -772,88 +815,119 @@ h1, h2, h3, h4, h5, h6 {
 
 
 /*----------------------------------Pink--------------------------*/
-[data-theme="red"] .follow-app-container{
+[data-theme="red"] .follow-app-container {
   --bg-color: #f3daf3;
- --text-color: #3c6ba9;
-}[data-theme="red"] .client-table thead th {
-  background:#c8c8f4;
+  --text-color: #3c6ba9;
+}
+
+[data-theme="red"] .client-table thead th {
+  background: #c8c8f4;
   color: #0d2f57;
-}[data-theme="red"] .followup-tabs .active {
-  background:#c8c8f4;
 }
-[data-theme="red"].last-followup h5{
-  color: #0d2f57; 
+
+[data-theme="red"] .followup-tabs .active {
+  background: #c8c8f4;
 }
-[data-theme="red"] .followup-tabs button{
+
+[data-theme="red"].last-followup h5 {
+  color: #0d2f57;
+}
+
+[data-theme="red"] .followup-tabs button {
   color: #000000;
-} 
-[data-theme="red"] .last-followup p{
+}
+
+[data-theme="red"] .last-followup p {
   color: #0d2f57;
 }
+
 /*----------------------------------Blue--------------------------*/
 
-[data-theme="blue"] .follow-app-container{
-  --bg-color: rgb(186, 186, 232); 
-}[data-theme="blue"] .client-table thead th {
-  background:rgb(114, 114, 214);
+[data-theme="blue"] .follow-app-container {
+  --bg-color: rgb(186, 186, 232);
 }
-[data-theme="blue"] .followup-tabs button{
-  color: #000000;
-} 
-[data-theme="blue"] .last-followup p{
+
+[data-theme="blue"] .client-table thead th {
+  background: rgb(114, 114, 214);
+}
+
+[data-theme="blue"] .followup-tabs button {
   color: #000000;
 }
+
+[data-theme="blue"] .last-followup p {
+  color: #000000;
+}
+
 /*----------------------------------Brown--------------------------*/
-[data-theme="brown"] .followup-tabs button{
-  color: #000000;
-} 
-[data-theme="brown"] .last-followup p{
+[data-theme="brown"] .followup-tabs button {
   color: #000000;
 }
+
+[data-theme="brown"] .last-followup p {
+  color: #000000;
+}
+
 [data-theme="brown"] .follow-app-container {
   --bg-color: #d9cac4;
 }
+
 [data-theme="brown"] .client-table thead th {
   background-color: rgb(151, 103, 74);
-  color :white;
+  color: white;
 }
+
 [data-theme="brown"] .followup-tabs .active {
-background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
+  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
 
 /*----------------------------------Green--------------------------*/
 [data-theme="green"] .follow-app-container {
-  background: #c6e7c8; /* Light green background */
+  background: #c6e7c8;
+  /* Light green background */
   color: #333;
 }
-[data-theme="green"] .last-followup p{
+[data-theme="green"] .followup-badge {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  /* Light green background */
+  color: #ffffff;
+}
+[data-theme="green"] .followup-badge .icon {
+  /* Light green background */
+  color: #ffffff;
+}
+[data-theme="green"] .last-followup p {
   color: #000000;
 }
-[data-theme="green"] .followup-tabs button{
+
+[data-theme="green"] .followup-tabs button {
   color: #000000;
-} 
+}
+
 /* Sidebar */
-[data-theme="green"] .sidebar_container { /* Light green background */
+[data-theme="green"] .sidebar_container {
+  /* Light green background */
   color: white;
 }
 
 /* Main content */
 [data-theme="green"] .follow-main-content {
-  background-color: #c6e7c8; /* Light green background */
+  background-color: #c6e7c8;
+  /* Light green background */
   color: #333;
 }
 
 [data-theme="green"] p {
- color: #000000;
+  color: #000000;
 }
 
 [data-theme="green"] h3 {
   color: #000000;
- }
+}
 
- [data-theme="green"] .lead-badge {
+[data-theme="green"] .lead-badge {
   color: #000000;
- }
+}
 
 /* Cards and containers */
 [data-theme="green"] .client-details,
@@ -865,7 +939,8 @@ background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
 
 /* Table styles */
 [data-theme="green"] .client-table th {
-  background-color: #2e7d32; /* Dark green for headers */
+  background-color: #2e7d32;
+  /* Dark green for headers */
   color: white;
 }
 
@@ -878,6 +953,7 @@ background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
 [data-theme="green"] .client-table tr:hover {
   background-color: #e8f5e9 !important;
 }
+
 /* Tabs */
 [data-theme="green"] .followup-tabs button {
   background-color: white;
@@ -909,3 +985,9 @@ background:linear-gradient(135deg, #754632, rgb(125, 188, 187));
     background: #e8f5e9;
   }
 }
+[data-theme="dark"] .client-table thead th {
+  background-color: #2b394b !important;
+  color: #ffffff !important;
+}
+
+

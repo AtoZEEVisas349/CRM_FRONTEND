@@ -1,3 +1,5 @@
+
+
 /* closeLeads */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 .close-leads-page {
@@ -50,7 +52,7 @@ html, body, #root {
   color: #fff;
 }
 .country_cards {
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
 
 /* Unique hover colors for each country */
@@ -198,7 +200,10 @@ select:hover {
   color: #fff;
 }
 [data-theme="dark"] .country_name p{
-  color: #151515;
+  color: #cecece;
+}
+[data-theme="dark"] .country_name h3{
+  color: #cecece;
 }
 .name{
   font-size: 20px;
@@ -317,3 +322,12 @@ select:hover {
 [data-theme="green"] .Total_leads {
   color: black !important; /* Dark green for total count */
 }
+[data-theme="dark"] .leads_page_wrapper p{
+  color: #a4a9eb !important; /* Dark green for total count */
+}
+[data-theme="dark"] .country_name {
+  background: black;
+}
+
+
+

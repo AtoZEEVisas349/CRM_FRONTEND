@@ -1,4 +1,7 @@
 
+
+/* customer.css */
+
 /* Reset and Base Styles */
 * {
   box-sizing: border-box;
@@ -89,10 +92,10 @@
   margin: 0;
   justify-content: center; /* Align to the left without margin */
   display: flex;
-  max-width: 20px;
+  max-width: 30px;
 }
 .checkbox {
-  transform: scale(1.2);
+  transform: scale(1.6);
   cursor: pointer;
   margin: 0; /* remove any default margin */
   padding: 0; /* remove padding */
@@ -495,7 +498,7 @@
 }
 
 [data-theme="dark"] .customer-main-content {
-  --bg-color: #1a1a1a;
+  --bg-color: #1a202c;
   --text-color: #ffffff;
 }
 
@@ -509,12 +512,12 @@
 }
 
 [data-theme="dark"] .follow-history-btn {
-  background: linear-gradient(135deg, #444, #666);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ffffff;
 }
 
 [data-theme="dark"] .button {
-  background: linear-gradient(135deg, #444, #666);
+  background: linear-gradient(to right, #43cea2, #185a9d);
 }
 
 [data-theme="dark"] .button:hover {
@@ -691,5 +694,4 @@
     padding: 10px;
   }
 }
-
 

@@ -516,7 +516,7 @@ const ClientDetailsOverview = () => {
           <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">
-              {["call", "email", "whatsapp"].map((method) => (
+              {["Call", "Email", "Call/Email"].map((method) => (
                 <label key={method} className="radio-container">
                   <input
                     type="radio"

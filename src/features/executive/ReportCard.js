@@ -160,8 +160,13 @@ const ReportCard = () => {
         <div
           key={index}
           className={`report-card report-card-${index}`}
+
           onClick={() => navigate(card.route)}
         >
+          <div class="bubble-small bubble-1"></div>
+        <div class="bubble-small bubble-2"></div>
+        <div class="bubble-small bubble-3"></div>
+        <div class="bubble-small bubble-4"></div>
           <div className="card-icon">{card.icon}</div>
           <div className="card-details">
             <h4>{card.title}</h4>

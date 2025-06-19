@@ -1,4 +1,5 @@
 
+
 .fresh-leads-table thead {
   background-color: #e5e7eb;
   text-transform: uppercase;
@@ -329,6 +330,10 @@ gap: 10px;
   margin-left: 10px;
   margin-bottom: 20px;
 }
+[data-theme="dark"] .fresh-leads-header h2,
+[data-theme="dark"] .fresh-leads-header h4{
+  color: #D6E6F2;
+}
 
 @media (min-width: 481px) and (max-width: 991px)  {
 .fresh-leads-main-content {
@@ -517,50 +522,9 @@ gap: 10px;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
-
-.old-lead-row {
-  background-color: #ffebee !important;
-  border-left: 4px solid #f44336 !important;
+[data-theme="dark"] .followup-badge{
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.old-lead-button {
-  background-color: #f44336 !important;
-  border-color: #d32f2f !important;
-  color: white !important;
-}
 
-.old-lead-verify {
-  background-color: #f44336 !important;
-  border-color: #d32f2f !important;
-  color: white !important;
-}
 
-.old-lead-call {
-  background-color: #f44336 !important;
-  color: white !important;
-  border: 1px solid #d32f2f !important;
-}
-.call-popover {
-  position: absolute;
-  top: 38px;
-  left: 0;
-  z-index: 10;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 8px;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.chatbot-popover {
-  position: absolute;
-  top: 38px;
-  left: 160px; /* Shift right to not overlap call popover */
-  z-index: 20;
-  background-color: #f8fcff;
-  border: 1px solid #007bff;
-  padding: 10px;
-  border-radius: 8px;
-  width: 320px;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-}

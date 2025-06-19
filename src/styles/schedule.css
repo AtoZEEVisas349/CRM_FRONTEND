@@ -58,8 +58,8 @@
   /* color: #1a2e35; */
   margin: 0;
 }
-[data-theme="dark"] .meetings-title{
-  color:"#fff" !important;
+[data-theme="dark"] .meetings-title {
+  color: white !important; /* ✅ Correct */
 }
 /* Date Section */
 .date-section {

@@ -1,7 +1,7 @@
 // src/services/permissionService.js
 import axios from "axios";
 
-const BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
+const BASE_URL = "https://crm-backend-production-c208.up.railway.app/api/role-permissions";
 const getToken = () => localStorage.getItem("token");
 const getHeaders = () => ({
   "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
@@ -21,7 +21,7 @@ export const permissionService = {
   },
 
   async fetchAllRolePermissions() {
-    const res = await axios.get(`${BASE_URL}/role-permissions`, { headers: getHeaders() });
+    const res = await axios.get(`${BASE_URL}/get-permissions`, { headers: getHeaders() });
     return res.data;
   },
 

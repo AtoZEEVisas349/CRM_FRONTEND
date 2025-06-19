@@ -21,6 +21,13 @@ const ClientDash = ({ initialStages = 6 }) => {
   const [expandedCards, setExpandedCards] = useState({});
   const [stageCount, setStageCount] = useState(initialStages);
   const [hexagons, setHexagons] = useState([]);
+  const [roadPaths, setRoadPaths] = useState({ mainPath: "M0 330 ", shadowPath: "M0 335 " });
+
+  const colors = [
+    '#264653', '#e76f51', '#2a9d8f', '#a8dadc',
+    '#e9c46a', '#457b9d', '#f4a261', '#ff6b6b',
+    '#3a86ff', '#8338ec', '#ff006e', '#fb5607'
+  ];
 
   const generateZebraCrossings = () => {
     const stripes = [];
@@ -28,20 +35,13 @@ const ClientDash = ({ initialStages = 6 }) => {
     const stripeHeight = 5;
     const stripeGap = 5;
 
-    // Combine top and bottom rows of hexagons (circles)
     const allHexagons = [...hexagons];
-
     allHexagons.forEach(({ left, top, row }) => {
-      // Determine center Y for the zebra crossing, near the circle
       const centerY = row === "top" ? 180 : 330;
-
-      // Number of stripes vertically in the crossing
       const stripesCount = 6;
 
       for (let i = 0; i < stripesCount; i++) {
-        // Calculate vertical position for each stripe, centered at centerY
         const y = centerY - ((stripesCount / 2) * (stripeHeight + stripeGap)) + i * (stripeHeight + stripeGap);
-
         stripes.push(
           <rect
             key={`zebra-${left}-${i}`}
@@ -61,6 +61,106 @@ const ClientDash = ({ initialStages = 6 }) => {
     return stripes;
   };
 
+  const calculateRealisticRoadPath = () => {
+  const segments = Math.ceil(stageCount / 2);
+  let mainPath = "M0 330 ";
+  let shadowPath = "M0 335 ";
+
+  for (let i = 0; i < segments; i++) {
+    const x1 = 60 + i * 260;
+    const x2 = 140 + i * 260;
+
+    // Main curve up
+    mainPath += `C${x1} 330, ${x1} 180, ${x2} 180 `;
+    shadowPath += `C${x1} 335, ${x1} 185, ${x2} 185 `;
+
+    // Don't draw unnecessary extra segment at the end
+    if (i < segments - 1 || stageCount % 2 === 0) {
+      const x3 = 220 + i * 260;
+      mainPath += `S${x3} 330, ${x3 + 60} 330 `;
+      shadowPath += `S${x3} 335, ${x3 + 60} 335 `;
+    }
+  }
+
+  return { mainPath, shadowPath };
+};
+
+  const generateRoadMarkings = () => {
+    // Use minimum segments to ensure proper road markings
+    const minSegments = Math.max(3, Math.ceil(stageCount / 2));
+    const segments = minSegments;
+    const markings = [];
+
+    for (let i = 0; i < segments; i++) {
+      const baseX = 60 + i * 260;
+      for (let j = 0; j < 10; j++) {
+        const progress = j / 9;
+        const x = baseX + (80 * progress);
+        const y = 330 - (150 * Math.sin(progress * Math.PI));
+
+        markings.push(
+          <rect
+            key={`marking-${i}-${j}`}
+            x={x - 8}
+            y={y - 2}
+            width="16"
+            height="4"
+            fill="transparent"
+            opacity="0.9"
+            rx="2"
+          />
+        );
+      }
+    }
+
+    return markings;
+  };
+
+  useEffect(() => {
+    const newHexagons = [];
+    const topRowCount = Math.ceil(stageCount / 2);
+    const bottomRowCount = Math.floor(stageCount / 2);
+
+    // Generate top row hexagons (odd stages: 1, 3, 5, 7...)
+    for (let i = 0; i < topRowCount; i++) {
+      const stageNum = i * 2 + 1;
+      const left = 140 + i * 260;
+      newHexagons.push({
+        num: stageNum,
+        left,
+        top: 160,
+        bg: colors[i % colors.length],
+        border: "#9c2f6f",
+        row: 'top'
+      });
+    }
+
+    // Generate bottom row hexagons (even stages: 2, 4, 6, 8...)
+    for (let i = 0; i < bottomRowCount; i++) {
+      const stageNum = (i + 1) * 2;
+      const left = 280 + i * 260;
+      newHexagons.push({
+        num: stageNum,
+        left,
+        top: 500,
+        bg: colors[(i + topRowCount) % colors.length],
+        border: "transparent",
+        row: 'bottom'
+      });
+    }
+
+    const newRoadPaths = calculateRealisticRoadPath(stageCount);
+
+    setHexagons(newHexagons);
+    setRoadPaths(newRoadPaths);
+  }, [stageCount]);
+
+  // Calculate SVG viewBox width based on stage count with minimum width
+  const getSVGWidth = () => {
+    const minWidth = 1000; // Minimum width for proper appearance
+    const calculatedWidth = 280 + Math.max(3, Math.ceil(stageCount / 2)) * 260;
+    return Math.max(minWidth, calculatedWidth);
+  };
 
   const fetchStages = async () => {
     try {
@@ -71,12 +171,11 @@ const ClientDash = ({ initialStages = 6 }) => {
         const text = latestStages[`stage${i + 1}_data`] || "";
         const date = latestStages[`stage${i + 1}_timestamp`]
           ? new Date(latestStages[`stage${i + 1}_timestamp`]).toLocaleString("default", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
           : "";
-
         newComments.push({ text, date });
       }
 
@@ -103,10 +202,10 @@ const ClientDash = ({ initialStages = 6 }) => {
         const text = latestStages[`stage${i + 1}_data`] || "";
         const date = latestStages[`stage${i + 1}_timestamp`]
           ? new Date(latestStages[`stage${i + 1}_timestamp`]).toLocaleString("default", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
           : "";
         newComments.push({ text, date });
       }
@@ -126,46 +225,6 @@ const ClientDash = ({ initialStages = 6 }) => {
       fetchAndSetStages();
     }
   }, [stageCount, user]);
-
-  const colors = [
-    '#264653', '#e76f51', '#2a9d8f', '#a8dadc',
-    '#e9c46a', '#457b9d', '#f4a261', '#ff6b6b',
-    '#3a86ff', '#8338ec', '#ff006e', '#fb5607'
-  ];
-
-  useEffect(() => {
-    const newHexagons = [];
-    const topRowCount = Math.ceil(stageCount / 2);
-    const bottomRowCount = Math.floor(stageCount / 2);
-
-    for (let i = 0; i < topRowCount; i++) {
-      const stageNum = i * 2 + 1;
-      const left = 140 + i * 260;
-      newHexagons.push({
-        num: stageNum,
-        left,
-        top: 160,
-        bg: colors[i % colors.length],
-        border: "#9c2f6f",
-        row: 'top'
-      });
-    }
-
-    for (let i = 0; i < bottomRowCount; i++) {
-      const stageNum = (i + 1) * 2;
-      const left = 280 + i * 260;
-      newHexagons.push({
-        num: stageNum,
-        left,
-        top: 500,
-        bg: colors[(i + topRowCount) % colors.length],
-        border: "transparent",
-        row: 'bottom'
-      });
-    }
-
-    setHexagons(newHexagons);
-  }, [stageCount]);
 
   const toggleCardExpand = (stageNum) => {
     setExpandedCards(prev => ({
@@ -220,62 +279,6 @@ const ClientDash = ({ initialStages = 6 }) => {
     }
   };
 
-  const calculateRealisticRoadPath = () => {
-    const segments = Math.ceil(stageCount / 2);
-    let mainPath = "M0 330 ";
-    let shadowPath = "M0 335 ";
-
-    for (let i = 0; i < segments; i++) {
-      const x1 = 60 + i * 260;
-      const x2 = 140 + i * 260;
-
-      // Main road curve
-      mainPath += `C${x1} 330, ${x1} 180, ${x2} 180 `;
-      // Shadow path (slightly offset)
-      shadowPath += `C${x1} 335, ${x1} 185, ${x2} 185 `;
-
-      if (i < segments - 1) {
-        const x3 = 220 + i * 260;
-        mainPath += `S${x3} 330, ${x3 + 60} 330 `;
-        shadowPath += `S${x3} 335, ${x3 + 60} 335 `;
-      }
-    }
-
-
-    return { mainPath, shadowPath };
-  };
-
-  const generateRoadMarkings = () => {
-    const segments = Math.ceil(stageCount / 2);
-    const markings = [];
-
-    for (let i = 0; i < segments; i++) {
-      const baseX = 60 + i * 260;
-
-      // Create dashed line markings along the curve
-      for (let j = 0; j < 10; j++) {
-        const progress = j / 9;
-        const x = baseX + (80 * progress);
-        const y = 330 - (150 * Math.sin(progress * Math.PI));
-
-        markings.push(
-          <rect
-            key={`marking-${i}-${j}`}
-            x={x - 8}
-            y={y - 2}
-            width="16"
-            height="4"
-            fill="transparent"
-            opacity="0.9"
-            rx="2"
-          />
-        );
-      }
-    }
-
-    return markings;
-  };
-
   const handleIconClick = (index) => {
     if (index < stageCount) {
       setActiveIcon(prev => (prev === index ? null : index));
@@ -283,7 +286,6 @@ const ClientDash = ({ initialStages = 6 }) => {
       setInputValue(stageData[stageKey] || "");
     }
   };
-
 
   const handleSubmit = async () => {
     if (activeIcon === null) {
@@ -310,13 +312,12 @@ const ClientDash = ({ initialStages = 6 }) => {
       await handleUpsertStages({ ...newStageData, customerId: id });
       await fetchStages();
       setActiveIcon(null);
-      setInputValue(""); // clear input after submit
+      setInputValue("");
     } catch (error) {
       console.error("API error:", error.message);
       alert("Failed to save comment. Please try again.");
     }
   };
-
 
   const toggleExpand = (index) => {
     const updated = [...expanded];
@@ -324,11 +325,8 @@ const ClientDash = ({ initialStages = 6 }) => {
     setExpanded(updated);
   };
 
-  const { mainPath, shadowPath } = calculateRealisticRoadPath();
-
   return (
     <div className="road-timeline-container">
-
       <h2 className="descriptions-title">Activity Roadmap</h2>
       <div className="stage-controls">
         <button onClick={addStage} className="control-btn">Add Stage</button>
@@ -340,7 +338,7 @@ const ClientDash = ({ initialStages = 6 }) => {
         <svg
           className="road-svg"
           fill="none"
-          viewBox={`0 0 ${280 + Math.ceil(stageCount / 2) * 260} 600`}
+          viewBox={`0 0 ${getSVGWidth()} 600`}
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
@@ -358,98 +356,69 @@ const ClientDash = ({ initialStages = 6 }) => {
             </filter>
           </defs>
 
-          {/* Road Shadow */}
           <path
-            d={shadowPath}
+            d={roadPaths.shadowPath}
             className="road-shadow"
             filter="url(#roadBlur)"
           />
-
-          {/* Road Border */}
           <path
-            d={mainPath}
+            d={roadPaths.mainPath}
             className="road-border"
           />
-
-          {/* Main Road Surface */}
           <path
-            d={mainPath}
+            d={roadPaths.mainPath}
             className="road-surface"
           />
-
-          {/* Road Center Line */}
           <path
-            d={mainPath}
+            d={roadPaths.mainPath}
             className="road-centerline"
           />
-
-          {/* Zebra crossings over circles */}
           {generateZebraCrossings()}
-
-
-          {/* Road Markings */}
           {generateRoadMarkings()}
-
-          {/* Start user image */}
           <image
             href={img2}
             x={-160}
             y={280}
             width={150}
             height={200}
-            style={{
-              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
-            }}
+            style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}
           />
-
-          {/* End user1 image */}
           <image
             href={img1}
-            x={280 + Math.ceil(stageCount / 2) * 260 - 230}
+            x={getSVGWidth() - 230}
             y={290}
             width={140}
             height={200}
-            style={{
-              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-            }}
+            style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}
           />
-
-          {/* Connection lines for hexagons */}
-          {/* Top connectors */}
           {hexagons.filter(h => h.row === 'top').map((hex) => (
             <React.Fragment key={`top-connector-${hex.num}`}>
               <line
                 x1={hex.left}
-                y1={153}       // road border edge top row
+                y1={153}
                 x2={hex.left}
                 y2={hex.top - 100}
-                stroke="#808080"   // grey color
-                strokeWidth="2"    // thinner line for subtle look
-                className="connector-line"
-                strokeDasharray="" // no dash for solid line
-              />
-
-            </React.Fragment>
-          ))}
-
-          {/* Bottom connectors */}
-          {hexagons.filter(h => h.row === 'bottom').map((hex) => (
-            <React.Fragment key={`bottom-connector-${hex.num}`}>
-              <line
-                x1={hex.left}
-                y1={358}       // road border edge bottom row
-                x2={hex.left}
-                y2={hex.top - 100}
-                stroke="#808080"   // grey color
+                stroke="#808080"
                 strokeWidth="2"
                 className="connector-line"
                 strokeDasharray=""
               />
-
             </React.Fragment>
           ))}
-
-
+          {hexagons.filter(h => h.row === 'bottom').map((hex) => (
+            <React.Fragment key={`bottom-connector-${hex.num}`}>
+              <line
+                x1={hex.left}
+                y1={358}
+                x2={hex.left}
+                y2={hex.top - 100}
+                stroke="#808080"
+                strokeWidth="2"
+                className="connector-line"
+                strokeDasharray=""
+              />
+            </React.Fragment>
+          ))}
         </svg>
 
         {hexagons.map((hex, index) => (
@@ -522,7 +491,6 @@ const ClientDash = ({ initialStages = 6 }) => {
                 <h3>{comments[hex.num - 1].date}</h3>
               </div>
             )}
-
           </div>
         ))}
 
@@ -542,7 +510,6 @@ const ClientDash = ({ initialStages = 6 }) => {
               boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
             }}
           >
-            {/* Cross (Close) Button */}
             <button
               onClick={() => setActiveIcon(null)}
               style={{
@@ -550,7 +517,7 @@ const ClientDash = ({ initialStages = 6 }) => {
                 height: '30px',
                 position: 'absolute',
                 top: '18px',
-                right: '18px', // better than using left for alignment
+                right: '18px',
                 background: 'none',
                 border: 'none',
                 fontSize: '20px',
@@ -564,8 +531,6 @@ const ClientDash = ({ initialStages = 6 }) => {
             >
               ×
             </button>
-
-
             <textarea
               placeholder="Enter your comment"
               value={inputValue}
@@ -597,9 +562,8 @@ const ClientDash = ({ initialStages = 6 }) => {
             </button>
           </div>
         )}
-
       </div>
-      {/* Responsive Full-Width Stages Table in One Row */}
+
       <div
         className="stages-table-container"
         style={{
@@ -608,16 +572,16 @@ const ClientDash = ({ initialStages = 6 }) => {
           overflowX: 'auto',
           padding: '0 20px',
         }}
-      ><h3> Stage Summary</h3>
+      >
+        <h3> Stage Summary</h3>
         <div
           style={{
             display: 'flex',
             flexWrap: 'nowrap',
             gap: '30px',
-            minWidth: '1000px', // ensures wide layout
+            minWidth: '1000px',
           }}
         >
-
           {[0, 5, 10].map((startIdx) => (
             <div
               key={startIdx}
@@ -648,7 +612,6 @@ const ClientDash = ({ initialStages = 6 }) => {
                     >
                       Comments
                     </th>
-
                   </tr>
                 </thead>
                 <tbody>
@@ -685,7 +648,6 @@ const ClientDash = ({ initialStages = 6 }) => {
                           >
                             {comment.text?.trim() || " - "}
                           </div>
-
                           {comment.text?.length > 20 && (
                             <button
                               style={{
@@ -714,8 +676,6 @@ const ClientDash = ({ initialStages = 6 }) => {
                     );
                   })}
                 </tbody>
-
-
               </table>
             </div>
           ))}
@@ -726,3 +686,4 @@ const ClientDash = ({ initialStages = 6 }) => {
 };
 
 export default ClientDash;
+
