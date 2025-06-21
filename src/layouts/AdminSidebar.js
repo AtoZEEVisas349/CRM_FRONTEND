@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
@@ -16,22 +17,23 @@ import {
   Gauge,
 } from "lucide-react";
 
-
 const AdminSidebar = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const stored = localStorage.getItem("adminSidebarExpanded");
+    return stored === "true";
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Initialize sidebar state from localStorage
-    const stored = localStorage.getItem("adminSidebarExpanded");
-    const initialExpanded = stored === "false" ? false : true;
-    setIsExpanded(initialExpanded);
-    document.body.classList.toggle("sidebar-mobile-active", !initialExpanded);
+    // Update body classes whenever isExpanded changes
+    document.body.classList.toggle("sidebar-expanded", isExpanded);
+    document.body.classList.toggle("sidebar-collapsed", !isExpanded);
+    document.body.classList.toggle("sidebar-mobile-active", !isExpanded);
 
     const handleSidebarToggle = () => {
       const updated = localStorage.getItem("adminSidebarExpanded") === "true";
       setIsExpanded(updated);
-      document.body.classList.toggle("sidebar-mobile-active", !updated);
     };
 
     window.addEventListener("sidebarToggle", handleSidebarToggle);
@@ -73,7 +75,6 @@ const AdminSidebar = () => {
     setIsExpanded(newState);
     localStorage.setItem("adminSidebarExpanded", newState.toString());
     window.dispatchEvent(new Event("sidebarToggle"));
-    document.body.classList.toggle("sidebar-mobile-active", !newState);
   };
 
   return (
@@ -83,7 +84,7 @@ const AdminSidebar = () => {
         onClick={toggleSidebar}
         aria-label={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
       >
-        <Gauge className="admin-aside-icon"/>
+        <Gauge className="admin-aside-icon" />
       </button>
       <aside className={`admin-sidebar ${isExpanded ? "expanded active" : "collapsed"}`}>
         <div className="admin-header-wrapper">
@@ -97,31 +98,31 @@ const AdminSidebar = () => {
           <ul>
             <li className="active">
               <Link to="/admin" className="admin-aside-link">
-                <PieChart className="admin-aside-icon"/>
+                <PieChart className="admin-aside-icon" />
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/assign-task" className="admin-aside-link">
-                <FolderOpen className="admin-aside-icon"/>
+                <FolderOpen className="admin-aside-icon" />
                 <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/leadassign" className="admin-aside-link">
-                <ClipboardList className="admin-aside-icon"/>
+                <ClipboardList className="admin-aside-icon" />
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/executiveform" className="admin-aside-link">
-                <UserPlus className="admin-aside-icon"/>
+                <UserPlus className="admin-aside-icon" />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/monitoring" className="admin-aside-link">
-                <UserCog className="admin-aside-icon"/>
+                <UserCog className="admin-aside-icon" />
                 <span className="sidebar-label">Monitoring</span>
               </Link>
             </li>
@@ -129,17 +130,17 @@ const AdminSidebar = () => {
 
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
-          <li>
-          <Link to="/admin/eod-report" className="admin-aside-link">
-            <FileText className="admin-aside-icon"/>
-            <span className="sidebar-label">EOD Report</span>
-          </Link>
-        </li>
+            <li>
+              <Link to="/admin/eod-report" className="admin-aside-link">
+                <FileText className="admin-aside-icon" />
+                <span className="sidebar-label">EOD Report</span>
+              </Link>
+            </li>
           </ul>
           <ul>
             <li>
               <Link to="/admin/executive-details" className="admin-aside-link">
-                <Users className="admin-aside-icon"/>
+                <Users className="admin-aside-icon" />
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
@@ -147,21 +148,21 @@ const AdminSidebar = () => {
           <ul>
             <li>
               <Link to="/admin/executive-attendance" className="admin-aside-link">
-                <CalendarCheck className="admin-aside-icon"/>
+                <CalendarCheck className="admin-aside-icon" />
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
           </ul>
           <ul>
             <li>
-            <Link to="/admin/help-support" className="admin-aside-link">
-            <HelpCircle className="admin-aside-icon"/>
+              <Link to="/admin/help-support" className="admin-aside-link">
+                <HelpCircle className="admin-aside-icon" />
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/settings" className="admin-aside-link">
-                <Settings className="admin-aside-icon"/>
+                <Settings className="admin-aside-icon" />
                 <span className="sidebar-label">Settings</span>
               </Link>
             </li>

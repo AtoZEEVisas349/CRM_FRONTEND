@@ -26,6 +26,10 @@ const AdminLayout = () => {
   const [executives, setExecutives] = useState([]);
 
   useEffect(() => {
+    // Force sidebar collapsed on every page load
+    localStorage.setItem("adminSidebarExpanded", "false");
+    window.dispatchEvent(new Event("sidebarToggle"));
+
     fetchExecutives();
     fetchExecutivesList();
   }, []);
@@ -68,7 +72,7 @@ const AdminLayout = () => {
             <div className="dashboard-selectors">
               <div className="selector-group">
                 <label htmlFor="executive-select" className="selector-label">
-                  Executive
+                  Choose Executive
                 </label>
                 <select
                   id="executive-select"
@@ -88,8 +92,8 @@ const AdminLayout = () => {
 
             <div className="charts">
               <div className="chart-row">
-              <DealFunnel executiveName={selectedExecutiveId === "all" ? null : currentExecutive?.username} />
-              <ExecutiveActi
+                <DealFunnel executiveName={selectedExecutiveId === "all" ? null : currentExecutive?.username} />
+                <ExecutiveActi
                   selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
                   executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />
@@ -106,7 +110,7 @@ const AdminLayout = () => {
               <RevenueChart />
             </div>
             <div className="additional-section">
-               <CallData
+              <CallData
                 selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
                 executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
               />

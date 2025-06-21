@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
 // import "../../styles/SidebarToggle.css";
@@ -5,7 +6,8 @@ import { FaBars } from "react-icons/fa";
 
 const SidebarToggle = () => {
   const [isExpanded, setIsExpanded] = useState(
-    localStorage.getItem("adminSidebarExpanded") !== "false"
+    localStorage.getItem("adminSidebarExpanded") === "true"
+
   );
 
   useEffect(() => {
@@ -45,3 +47,4 @@ const SidebarToggle = () => {
 };
 
 export default SidebarToggle;
+

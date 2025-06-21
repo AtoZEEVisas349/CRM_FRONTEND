@@ -1,14 +1,16 @@
+
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPhone, faPenToSquare, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import { SearchContext } from "../../context/SearchContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
+import Chat from "../chatbot/Chat"; // Import the Chat component
 
 function FreshLead() {
   const {
@@ -36,6 +38,8 @@ function FreshLead() {
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [verifyingIndex, setVerifyingIndex] = useState(null);
+  const [showChatbotPopup, setShowChatbotPopup] = useState(false); // New state for chatbot popup
+  const [selectedLead, setSelectedLead] = useState(null); // Store selected lead for chatbot
   const itemsPerPage = 9;
   const navigate = useNavigate();
 
@@ -55,6 +59,28 @@ function FreshLead() {
     setVerifyingIndex(index);
     await verifyNumberAPI(index, number);
     setVerifyingIndex(null);
+  };
+
+  // Function to open chatbot popup
+  const openChatbotPopup = (lead) => {
+    console.log("Opening chatbot popup for:", lead.name); // Debug log
+    setSelectedLead(lead);
+    localStorage.setItem(
+      "activeClient",
+      JSON.stringify({
+        name: lead.name,
+        phone: lead.phone,
+      })
+    );
+    setShowChatbotPopup(true);
+    setActivePopoverIndex(null); // Close the call options popover
+    console.log("Chatbot popup state set to true"); // Debug log
+  };
+
+  // Function to close chatbot popup
+  const closeChatbotPopup = () => {
+    setShowChatbotPopup(false);
+    setSelectedLead(null);
   };
 
   useEffect(() => {
@@ -178,7 +204,6 @@ function FreshLead() {
     },
   });
 };
-
 
   if (executiveLoading) return <p>Loading executive data...</p>;
 
@@ -336,6 +361,8 @@ function FreshLead() {
                                   const cleaned = lead.phone.replace(/[^\d]/g, "");
                                   window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                   setActivePopoverIndex(null);
+                                  // Open chatbot popup immediately
+                                  openChatbotPopup(lead);
                                 }}
                               >
                                 <FontAwesomeIcon
@@ -354,6 +381,8 @@ function FreshLead() {
                                   const cleaned = lead.phone.replace(/[^\d]/g, "");
                                   window.open(`tel:${cleaned}`);
                                   setActivePopoverIndex(null);
+                                  // Open chatbot popup immediately
+                                  openChatbotPopup(lead);
                                 }}
                               >
                                 <FontAwesomeIcon
@@ -365,14 +394,6 @@ function FreshLead() {
                                   }}
                                 />
                                 Normal Call
-                              </button>
-                              <button
-                                className="popover-option"
-                                onClick={() => {
-                                  setChatbotPopoverIndex(chatbotPopoverIndex === index ? null : index);
-                                }}
-                              >
-                                🤖 Chatbot
                               </button>
                             </div>
                           )}
@@ -414,6 +435,45 @@ function FreshLead() {
           )}
         </>
       )}
+
+      {/* Chatbot Popup Modal */}
+      {/* Enhanced Responsive Chatbot Popup Modal */}
+{showChatbotPopup && (
+  <div 
+    className="chatbot-popup-overlay"
+    onClick={closeChatbotPopup}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="chatbot-title"
+    aria-describedby="chatbot-description"
+  >
+    <div 
+      className="chatbot-popup-container"
+      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+    >
+      <div className="chatbot-popup-header">
+        <h3 id="chatbot-title">
+          Chat with {selectedLead?.name || 'AI Assistant'}
+        </h3>
+        <button 
+          className="chatbot-close-btn"
+          onClick={closeChatbotPopup}
+          aria-label="Close chat"
+          title="Close chat"
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      </div>
+      
+      <div 
+        className="chatbot-popup-content"
+        id="chatbot-description"
+      >
+        <Chat isCallActive={false} />
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

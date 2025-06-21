@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/sidebar.css";
 import BeepNotification from "../BeepNotification";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
+import Chat from "../features/chatbot/Chat"; // Import the Chat component
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
@@ -16,9 +17,10 @@ import {
   faFile, faReceipt, faGear, faArrowLeft, faBell,
   faRobot, faCircleUser, faRightFromBracket, faMugHot, faPersonWalking,
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
-  faHeadphones, faYinYang, faStopCircle,faSpinner
+  faHeadphones, faYinYang, faStopCircle, faSpinner, faTimes
 } from "@fortawesome/free-solid-svg-icons";
-import { FaPlay,FaPause ,BeepNo} from "react-icons/fa";
+import { FaPlay, FaPause, BeepNo } from "react-icons/fa";
+
 // Break timer icons
 const breakIcons = [
   faMugHot, faPersonWalking, faBed, faCouch,
@@ -31,7 +33,7 @@ const SidebarandNavbar = () => {
   const { user, logout } = useAuth();
   const {
     executiveInfo, executiveLoading, fetchExecutiveData,
-    fetchNotifications, unreadCount, notifications,markNotificationReadAPI
+    fetchNotifications, unreadCount, notifications, markNotificationReadAPI
   } = useApi();
   const { handleStopWork } = useExecutiveActivity();
   const { theme } = useContext(ThemeContext);
@@ -43,6 +45,7 @@ const SidebarandNavbar = () => {
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false); // New state for chatbot popup
 
   const [workTime, setWorkTime] = useState("00:00");
   const [isWorkRunning, setIsWorkRunning] = useState(false);
@@ -65,12 +68,22 @@ const SidebarandNavbar = () => {
       await startBreak();
     } else {
       await stopBreak();
-      }
-    };
+    }
+  };
+
+  // New function to handle chatbot toggle
+  const handleChatbotToggle = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login again");
+    return;
+  }
+  setShowChatbot(prev => !prev);
+};
 
   const handleLogout = async () => {
     try {
-      setIsLoggingOut(true); // Start spinner
+      setIsLoggingOut(true);
       await stopBreak();
       await logout();
       resetBreakTimer();
@@ -99,7 +112,7 @@ const SidebarandNavbar = () => {
       fetchNotifications({ userId: user.id, userRole: user.role });
     }
   }, [fetchNotifications]);
-  
+
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
@@ -112,12 +125,11 @@ const SidebarandNavbar = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // BeepNotification handlers
+  const handleDismissBeepNotification = () => {
+    console.log('BeepNotification dismissed');
+  };
 
-// BeepNotification handlers
-const handleDismissBeepNotification = () => {
-  // This function can be used to handle any additional logic when dismissing
-  console.log('BeepNotification dismissed');
-};
   useEffect(() => {
     const currentPath = location.pathname;
     if (!["/login", "/signup"].includes(currentPath)) {
@@ -133,224 +145,230 @@ const handleDismissBeepNotification = () => {
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+
   const handleMarkAllAsRead = () => {
-    // Mark all notifications as read
     const unreadNotifications = notifications.filter(n => !n.is_read);
     unreadNotifications.forEach(notification => {
       markNotificationReadAPI(notification.id);
     });
   };
+
   return (
     <>
-    <section className="sidebar_navbar" data-theme={theme}>
-<section className={`sidebar_container ${isActive ? "active" : ""}`}>
-<button className="menuToggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
-    <div className="sidebar_heading"><h1>AtoZeeVisas</h1></div>
-    <div><h3 className="sidebar_crm">CRM</h3></div>
-    <nav className="navbar_container">
-    <ul>
-        <li><Link to="/executive" className="sidebar_nav"><FontAwesomeIcon icon={faHouse} /> Dashboard</Link></li>
-        <li  style={{ position: "relative" }}>
-          <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
-            <FontAwesomeIcon icon={faUserPlus} /> Leads
-            <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼
-            </span>
-          </Link>
-          {isOpen && (
-          <ul className="submenu_nav">
-            <li>
-              <Link
-                to="/executive/freshlead"
-                className="submenu_item"
-                onClick={() => setIsOpen(false)}
-              >
-                <FontAwesomeIcon icon={faUsers} /> Fresh Leads
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/executive/follow-up"
-                className="submenu_item"
-                onClick={() => setIsOpen(false)}
-              >
-                <FontAwesomeIcon icon={faList} /> Follow ups
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/executive/customer"
-                className="submenu_item"
-                onClick={() => setIsOpen(false)}
-              >
-                <FontAwesomeIcon icon={faClock} /> Convert
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/executive/close-leads"
-                className="submenu_item"
-                onClick={() => setIsOpen(false)}
-              >
-                <FontAwesomeIcon icon={faCircleXmark} /> Close
-              </Link>
-            </li>
-          </ul>
-        )}
-        </li>
-        <li><Link to="/executive/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
-        <li><Link to="/executive/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
-        <li><Link to="/executive/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
-      </ul>
-    </nav>
-  </section>
+      <section className="sidebar_navbar" data-theme={theme}>
+        <section className={`sidebar_container ${isActive ? "active" : ""}`}>
+          <button className="menuToggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
+          <div className="sidebar_heading"><h1>AtoZeeVisas</h1></div>
+          <div><h3 className="sidebar_crm">CRM</h3></div>
+          <nav className="navbar_container">
+            <ul>
+              <li><Link to="/executive" className="sidebar_nav"><FontAwesomeIcon icon={faHouse} /> Dashboard</Link></li>
+              <li style={{ position: "relative" }}>
+                <Link to="#" className="sidebar_nav" onClick={() => setIsOpen(!isOpen)}>
+                  <FontAwesomeIcon icon={faUserPlus} /> Leads
+                  <span style={{ marginLeft: "auto", fontSize: "12px" }}>▼</span>
+                </Link>
+                {isOpen && (
+                  <ul className="submenu_nav">
+                    <li>
+                      <Link to="/executive/freshlead" className="submenu_item" onClick={() => setIsOpen(false)}>
+                        <FontAwesomeIcon icon={faUsers} /> Fresh Leads
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/executive/follow-up" className="submenu_item" onClick={() => setIsOpen(false)}>
+                        <FontAwesomeIcon icon={faList} /> Follow ups
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/executive/customer" className="submenu_item" onClick={() => setIsOpen(false)}>
+                        <FontAwesomeIcon icon={faClock} /> Convert
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/executive/close-leads" className="submenu_item" onClick={() => setIsOpen(false)}>
+                        <FontAwesomeIcon icon={faCircleXmark} /> Close
+                      </Link>
+                    </li>
+                  </ul>
+                )}
+              </li>
+              <li><Link to="/executive/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
+              <li><Link to="/executive/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
+              <li><Link to="/executive/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
+            </ul>
+          </nav>
+        </section>
 
-  <section className="navbar">
-    <div className="menu_search">
-      <button className="menu_toggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
-      <div className="search_bar">
-      <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{fontSize:"20px",cursor:"pointer",
-      }} />
-            <input
+        <section className="navbar">
+          <div className="menu_search">
+            <button className="menu_toggle" onClick={toggleSidebar}><FontAwesomeIcon icon={faBars} /></button>
+            <div className="search_bar">
+              <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} style={{ fontSize: "20px", cursor: "pointer" }} />
+              <input
                 className="search-input-exec"
                 placeholder="Search"
-                onChange={(e) => setSearchQuery(e.target.value)} // ✅ Search handler
-              />    </div>
-    </div>
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
 
-    <div className="compact-timer">
-      <div className="timer-item">
-        <button className="timer-btn-small"><FaPause /></button>
-        <span className="timer-label-small">Work:</span>
-        <span className="timer-box-small">{timer}</span>
-      </div>
+          <div className="compact-timer">
+            <div className="timer-item">
+              <button className="timer-btn-small"><FaPause /></button>
+              <span className="timer-label-small">Work:</span>
+              <span className="timer-box-small">{timer}</span>
+            </div>
 
-      <div className="analog-clock">
-      <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
-      <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
-<div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+            <div className="analog-clock">
+              <div className="hand hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
+              <div className="hand minute" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
+              <div className="hand second" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+              <div className="center-dot"></div>
+            </div>
 
-      <div className="center-dot"></div>
-      </div>
+            <div className="timer-item">
+              <button className="timer-btn-small" onClick={toggle}>
+                {isBreakActive ? <FaPause /> : <FaPlay />}
+              </button>
+              <span className="timer-label-small">Break:</span>
+              <span className="timer-box-small">{breakTimer}</span>
+            </div>
+          </div>
 
-      <div className="timer-item">
-        <button className="timer-btn-small" onClick={toggle}>
-        {isBreakActive ? <FaPause />: <FaPlay />}
-        </button>
-        <span className="timer-label-small">Break:</span>
-        <span className="timer-box-small">{breakTimer}</span>
-      </div>
-        </div>
+          <div className="navbar_icons">
+            <div className="navbar_divider"></div>
+            <div className="notification-wrapper">
+              <FontAwesomeIcon
+                className="navbar_icon"
+                icon={faBell}
+                style={{ cursor: "pointer" }}
+                title="Notifications"
+                tabIndex="0"
+                onClick={() => navigate("/executive/notification")}
+              />
+              {unreadCount > 0 && (
+                <span className="notification-badge">{unreadCount}</span>
+              )}
+            </div>
 
-    <div className="navbar_icons">
-      <div className="navbar_divider"></div>
-      <div className="notification-wrapper">
-  <FontAwesomeIcon
-    className="navbar_icon"
-    icon={faBell}
-    style={{ cursor: "pointer" }}
-    title="Notifications"
-    tabIndex="0"
-    onClick={() => navigate("/executive/notification")}
-  />
-  {unreadCount > 0 && (
-    <span className="notification-badge">{unreadCount}</span>
-  )}
-</div>
-<FontAwesomeIcon
+            {/* Updated chatbot icon to use popup instead of new window */}
+            <FontAwesomeIcon
   className="navbar_icon bot_icon"
   icon={faRobot}
-  onClick={() => {
-    const token = localStorage.getItem("token");
-    if (!token) return alert("Please login again");
-    window.open(`${window.location.origin}/executive/chatbot?token=${token}`, "_blank");
-  }}
+  onClick={handleChatbotToggle}
   title="Open ChatBot"
+  style={{ cursor: "pointer" }}
 />
 
-      <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
-      <FontAwesomeIcon 
-        className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
+            <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
+              <FontAwesomeIcon
+                className="navbar_icon"
+                icon={faClock}
+                title="Toggle Activity Tracker"
+                onClick={() => setShowTracker(prev => !prev)}
+              />
+              {showTracker && <ExecutiveActivity />}
+            </div>
+
+            <div className="user-icon-wrapper" ref={popoverRef}>
+              <FontAwesomeIcon
+                ref={userIconRef}
+                className="navbar_icon"
+                icon={faCircleUser}
+                onClick={() => setShowUserPopover((prev) => !prev)}
+              />
+
+              {showUserPopover && (
+                <div className="user_popover">
+                  {executiveLoading ? (
+                    <p>Loading user details...</p>
+                  ) : (
+                    <>
+                      <div className="user_details">
+                        <div className="user_avatar">
+                          {executiveInfo.username?.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="user_name">{executiveInfo.username}</p>
+                          <p className="user_role">{executiveInfo.role}</p>
+                        </div>
+                      </div>
+                      <button
+                        className="logout_btn"
+                        onClick={handleLogout}
+                        disabled={isLoggingOut}
+                        aria-label={isLoggingOut ? 'Logging out, please wait' : 'Logout'}
+                      >
+                        <FontAwesomeIcon
+                          icon={isLoggingOut ? faSpinner : faRightFromBracket}
+                          className={isLoggingOut ? 'logout-spinner' : ''}
+                        />
+                        <span className="logout-text">
+                          {isLoggingOut ? 'Logging out' : 'Logout'}
+                        </span>
+                        {isLoggingOut && <span className="loading-dots"></span>}
+                        {isLoggingOut && <span className="sr-only">Please wait while we log you out</span>}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Break timer overlay */}
+        {isBreakActive && (
+          <div className="blur-screen">
+            <div className="floating-icons">
+              {breakIcons.map((icon, index) => (
+                <FontAwesomeIcon key={index} icon={icon} className="floating-icon" />
+              ))}
+            </div>
+            <div className="break-message">
+              <FontAwesomeIcon icon={faMugHot} /> You are on a break
+            </div>
+            <div className="timer-display">{breakTimer}</div>
+            <button className="stop-break-btn" onClick={stopBreak}>
+              <FontAwesomeIcon icon={faStopCircle} /> Stop break
+            </button>
+          </div>
+        )}
+
+        {/* Chatbot Popup Overlay */}
+        {showChatbot && (
+  <div className="chatbot-overlay" onClick={(e) => {
+    if (e.target === e.currentTarget) {
+      setShowChatbot(false);
+    }
+  }}>
+    <div className="chatbot-popup">
+      <div className="chatbot-header">
+        <h3>ChatBot Assistant</h3>
+        <button 
+          className="chatbot-close-btn" 
+          onClick={() => setShowChatbot(false)}
+          aria-label="Close chatbot"
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
       </div>
-        
-      <div
-  className="user-icon-wrapper"
-  ref={popoverRef}
-  // onMouseLeave={() => setShowUserPopover(false)}
->
-  <FontAwesomeIcon
-    ref={userIconRef}
-    className="navbar_icon"
-    icon={faCircleUser}
-    onClick={() => setShowUserPopover((prev) => !prev)}
-  />
-
-
-{showUserPopover && (
-    <div className="user_popover">
-      {executiveLoading ? (
-        <p>Loading user details...</p>
-      ) : (
-        <>
-          <div className="user_details">
-            <div className="user_avatar">
-              {executiveInfo.username?.charAt(0)}
-            </div>
-            <div>
-              <p className="user_name">{executiveInfo.username}</p>
-              <p className="user_role">{executiveInfo.role}</p>
-            </div>
-          </div>
-          <button 
-            className="logout_btn" 
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            aria-label={isLoggingOut ? 'Logging out, please wait' : 'Logout'}
-          >
-            <FontAwesomeIcon 
-              icon={isLoggingOut ? faSpinner : faRightFromBracket} 
-              className={isLoggingOut ? 'logout-spinner' : ''}
-            /> 
-            <span className="logout-text">
-              {isLoggingOut ? 'Logging out' : 'Logout'}
-            </span>
-            {isLoggingOut && <span className="loading-dots"></span>}
-            {isLoggingOut && <span className="sr-only">Please wait while we log you out</span>}
-          </button>
-        </>
-      )}
+      <div className="chatbot-content">
+        <Chat token={localStorage.getItem("token")} />
+      </div>
     </div>
-  )}
-</div>
+  </div>
+)}
+      </section>
 
-
-    </div>
-
-  </section>
-
-      {isBreakActive && (
-        <div className="blur-screen">
-          <div className="floating-icons">
-            {breakIcons.map((icon, index) => (
-              <FontAwesomeIcon key={index} icon={icon} className="floating-icon" />
-            ))}
-          </div>
-          <div className="break-message">
-            <FontAwesomeIcon icon={faMugHot} /> You are on a break
-          </div>
-          <div className="timer-display">{breakTimer}</div>
-          <button className="stop-break-btn" onClick={stopBreak}>
-            <FontAwesomeIcon icon={faStopCircle} /> Stop break
-          </button>
-        </div>
-      )}
-    </section>
-    <BeepNotification
-    notifications={notifications}
-    unreadCount={unreadCount}
-    onDismissPopup={handleDismissBeepNotification}
-    onMarkAllRead={handleMarkAllAsRead}
-  />
-  </>
+      <BeepNotification
+        notifications={notifications}
+        unreadCount={unreadCount}
+        onDismissPopup={handleDismissBeepNotification}
+        onMarkAllRead={handleMarkAllAsRead}
+      />
+    </>
   );
 };
 

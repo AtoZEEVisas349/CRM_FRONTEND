@@ -9,11 +9,11 @@
   transition: all 0.5s ease;
   overflow: hidden;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  border-radius: 0 40px 10px 0;
+  border-radius: 0 20px 10px 0;
 }
 
 .admin-sidebar.collapsed {
-  width: 68px;
+  width: 76px;
   overflow: hidden !important;
 }
 
@@ -30,6 +30,7 @@
   font-weight: 700;
   color: #f7f3fb;
   white-space: nowrap;
+  margin-left: 45px;
 }
 
 .admin-sidebar.collapsed .admin-header-wrapper .highlight {
@@ -55,13 +56,10 @@
 .admin-sidebar ul li {
   display: flex;
   align-items: center;
-  height: 50px;
+  height: 40px;
   transition: all 0.3s ease;
 }
 
-.admin-sidebar ul li+li {
-  margin-top: 8px;
-}
 
 .admin-aside-link {
   display: flex;
@@ -75,7 +73,7 @@
 }
 
 .sidebar-label {
-  font-size: 14px;
+  font-size: 13px;
   white-space: nowrap;
   transition: all 0.3s ease;
 }
@@ -89,8 +87,6 @@
 
 .admin-aside-icon {
   font-size: 20px;
-  width: 28px;
-  height: 28px;
   min-width: 48px;
   display: flex;
   align-items: center;
