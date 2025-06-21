@@ -381,7 +381,7 @@ body {
   transform: scale(1.2);
 }
 
-/* /---------------------------------------Road----------------------/ */
+/*---------------------------------------Road----------------------*/
 .roadmap-container {
   background-color: #e9f5ff;
   padding: 2rem;
@@ -510,7 +510,7 @@ body {
 
 
 
-/* /------------------------Login-Signup--------------------/ */
+/*------------------------Login-Signup--------------------*/
 .process-auth-wrapper {
   display: flex;
   justify-content: center;
@@ -684,7 +684,7 @@ body {
   }
 }
 
-/* --------------------------------Create Client----------------------/ */
+/* --------------------------------Create Client----------------------*/
 .process-settings-container {
   padding: 2rem;
   background-color: #f8fafc;
@@ -923,30 +923,6 @@ body {
   }
 }
 
-/* .road-timeline-container {
- background-image: url('../assets/1.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  position: relative;
-  width: 100%;
-  overflow-x: hidden; 
-} */
-
-/* roadtimeline */
-/* roadtimeline */
-
-
-
-
-
-
 
 
 .hexagon::before {
@@ -1129,7 +1105,7 @@ body {
 
 
 .road-timeline-container {
-  background-image: url('../assets/1.png');
+  background-image: url("../assets/1.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
