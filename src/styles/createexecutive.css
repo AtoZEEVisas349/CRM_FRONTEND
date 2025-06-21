@@ -630,7 +630,7 @@ body {
 
 /* Full width password field */
 .form-group[style*="grid-column: span 2"] {
-  grid-column: calc(1 / -1);
+  grid-column: 1 / -1;
   width: 100%;
 }
 
