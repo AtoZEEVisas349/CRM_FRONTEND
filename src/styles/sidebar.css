@@ -2546,7 +2546,6 @@
   color: #3e2723;
 }
 
-/*-------------------------------Ocean Blue Mist----------------------------------*/
 /*-------------------------------Ocean Blue Mist with Unique Contrast----------------------------------*/
 [data-theme="ocean"] .sidebar_container {
   background: linear-gradient(180deg, #0a1929 0%, #1e3a8a 50%, #0f172a 100%);

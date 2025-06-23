@@ -426,8 +426,7 @@ useEffect(() => {
                     <span className="container-icon">👤</span>
                     <div className="lead-info">
                       <span>Name: {lead.name}</span>
-                      <span>Email: {lead.email}</span>
-                      <span>Phone No: {lead.phone}
+                      <span>Email: {lead.email}
                         {!expandedLeads[lead.id] && (
                           <button
                             className="see-more-btn-inline"
@@ -439,6 +438,7 @@ useEffect(() => {
                       </span>
                       {expandedLeads[lead.id] && (
                         <div>
+                           <span>Phone No: {lead.phone}</span>
                           <span>Education: {lead.education || "N/A"}</span>
                           <span>Experience: {lead.experience || "N/A"}</span>
                           <span>State: {lead.state || "N/A"}</span>
