@@ -7,6 +7,7 @@ import Theme from "../features/settings/Theme";
 import ChangePassword from "../features/settings/ChangePassword";
 import BeepSound from "../features/settings/BeepSound";
 import CreateTemplate from "../features/settings/CreateTemplate";
+import EmployeeLeave from "../features/settings/EmployeeLeave";
 
 const SettingsRouteWrapper = () => {
   return (
@@ -18,6 +19,8 @@ const SettingsRouteWrapper = () => {
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="change-beep" element={<BeepSound />} />
         <Route path="create-template" element={<CreateTemplate />} />
+        <Route path="leave" element={<EmployeeLeave />} />
+
       </Route>
     </Routes>
   );

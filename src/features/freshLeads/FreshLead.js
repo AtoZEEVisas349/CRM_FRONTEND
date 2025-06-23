@@ -1,16 +1,20 @@
-
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone, faPenToSquare, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPhone,
+  faPenToSquare,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import { SearchContext } from "../../context/SearchContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 import Chat from "../chatbot/Chat"; // Import the Chat component
+import { useRef } from "react";
 
 function FreshLead() {
   const {
@@ -24,7 +28,7 @@ function FreshLead() {
     verificationLoading,
     fetchNotifications,
     createCopyNotification,
-    getFollowUpHistory
+    getFollowUpHistory,
   } = useApi();
 
   const { leadtrack } = useExecutiveActivity();
@@ -60,6 +64,50 @@ function FreshLead() {
     await verifyNumberAPI(index, number);
     setVerifyingIndex(null);
   };
+  const popupRef = useRef(null);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    if (!showChatbotPopup || !popupRef.current || !headerRef.current) return;
+
+    const popup = popupRef.current;
+    const header = headerRef.current;
+
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    const onMouseDown = (e) => {
+      isDragging = true;
+      const rect = popup.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      popup.style.position = "absolute";
+      popup.style.zIndex = 99999;
+    };
+
+    const onMouseMove = (e) => {
+      if (isDragging) {
+        popup.style.left = `${e.clientX - offsetX}px`;
+        popup.style.top = `${e.clientY - offsetY}px`;
+      }
+    };
+
+    const onMouseUp = () => {
+      isDragging = false;
+    };
+
+    header.style.cursor = "move";
+    header.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      header.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [showChatbotPopup]);
 
   // Function to open chatbot popup
   const openChatbotPopup = (lead) => {
@@ -170,40 +218,40 @@ function FreshLead() {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
- const handleAddFollowUp = async (lead) => {
-  const clientLead = lead.clientLead || {};
-  const clientData = {
-    name: lead.name || clientLead.name || "",
-    email: lead.email || clientLead.email || "",
-    phone: lead.phone || clientLead.phone || "",
-    altPhone: lead.altPhone || clientLead.altPhone || "",
-    education: lead.education || clientLead.education || "",
-    experience: lead.experience || clientLead.experience || "",
-    state: lead.state || clientLead.state || "",
-    dob: lead.dob || clientLead.dob || "",
-    country: lead.country || clientLead.country || "",
-    assignDate: lead.assignDate || lead.assignmentDate || "",
-    freshLeadId: lead.id,
+  const handleAddFollowUp = async (lead) => {
+    const clientLead = lead.clientLead || {};
+    const clientData = {
+      name: lead.name || clientLead.name || "",
+      email: lead.email || clientLead.email || "",
+      phone: lead.phone || clientLead.phone || "",
+      altPhone: lead.altPhone || clientLead.altPhone || "",
+      education: lead.education || clientLead.education || "",
+      experience: lead.experience || clientLead.experience || "",
+      state: lead.state || clientLead.state || "",
+      dob: lead.dob || clientLead.dob || "",
+      country: lead.country || clientLead.country || "",
+      assignDate: lead.assignDate || lead.assignmentDate || "",
+      freshLeadId: lead.id,
+    };
+
+    let followUpHistory = [];
+
+    try {
+      followUpHistory = await getFollowUpHistory(lead.id);
+    } catch (error) {
+      console.error("Failed to fetch follow-up history:", error);
+      // fallback to empty array
+    }
+
+    navigate(`/executive/clients/${encodeURIComponent(lead.name)}`, {
+      state: {
+        client: clientData,
+        createFollowUp: true,
+        followUpHistory: followUpHistory,
+        clientId: clientData.id,
+      },
+    });
   };
-
-  let followUpHistory = [];
-
-  try {
-    followUpHistory = await getFollowUpHistory(lead.id);
-  } catch (error) {
-    console.error("Failed to fetch follow-up history:", error);
-    // fallback to empty array
-  }
-
-  navigate(`/executive/clients/${encodeURIComponent(lead.name)}`, {
-    state: {
-      client: clientData,
-      createFollowUp: true,
-      followUpHistory: followUpHistory,
-      clientId: clientData.id,
-    },
-  });
-};
 
   if (executiveLoading) return <p>Loading executive data...</p>;
 
@@ -212,7 +260,9 @@ function FreshLead() {
       {isLoading && <LoadingSpinner text="Loading Fresh Leads..." />}
       <div className="fresh-leads-header">
         <h2 className="fresh-leads-title">Fresh leads list</h2>
-        <h4 className="fresh-leads-subtitle">Click on Add followup to view details</h4>
+        <h4 className="fresh-leads-subtitle">
+          Click on Add followup to view details
+        </h4>
       </div>
 
       {error && <p className="error-text">{error}</p>}
@@ -265,15 +315,23 @@ function FreshLead() {
                               >
                                 {lead.name}
                               </div>
-                              <div className="fresh-leads-profession">{lead.profession}</div>
+                              <div className="fresh-leads-profession">
+                                {lead.profession}
+                              </div>
                             </div>
                           </div>
                         </td>
-                        <td style={isOld ? { color: "#c62828" } : {}}>{lead.phone}</td>
-                        <td style={isOld ? { color: "#c62828" } : {}}>{lead.email}</td>
+                        <td style={isOld ? { color: "#c62828" } : {}}>
+                          {lead.phone}
+                        </td>
+                        <td style={isOld ? { color: "#c62828" } : {}}>
+                          {lead.email}
+                        </td>
                         <td>
                           <button
-                            className={`followup-badge ${isOld ? "old-lead-button" : ""}`}
+                            className={`followup-badge ${
+                              isOld ? "old-lead-button" : ""
+                            }`}
                             onClick={() => handleAddFollowUp(lead)}
                             style={
                               isOld
@@ -286,15 +344,22 @@ function FreshLead() {
                             }
                           >
                             Add Follow Up
-                            <FontAwesomeIcon icon={faPenToSquare} className="icon" />
+                            <FontAwesomeIcon
+                              icon={faPenToSquare}
+                              className="icon"
+                            />
                           </button>
                         </td>
                         <td>
                           <div className="status-cell">
                             <button
                               onClick={() => handleVerify(index, lead.phone)}
-                              className={`verify-btn ${isOld ? "old-lead-verify" : ""}`}
-                              disabled={verifyingIndex === index || verificationLoading}
+                              className={`verify-btn ${
+                                isOld ? "old-lead-verify" : ""
+                              }`}
+                              disabled={
+                                verifyingIndex === index || verificationLoading
+                              }
                               style={
                                 isOld
                                   ? {
@@ -305,7 +370,9 @@ function FreshLead() {
                                   : {}
                               }
                             >
-                              {verifyingIndex === index ? "Verifying..." : "Get Verified"}
+                              {verifyingIndex === index
+                                ? "Verifying..."
+                                : "Get Verified"}
                             </button>
                             {verificationResults[index] && (
                               <div className="verify-result">
@@ -326,10 +393,14 @@ function FreshLead() {
                         </td>
                         <td className="call-cell">
                           <button
-                            className={`call-button ${isOld ? "old-lead-call" : ""}`}
+                            className={`call-button ${
+                              isOld ? "old-lead-call" : ""
+                            }`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setActivePopoverIndex(activePopoverIndex === index ? null : index);
+                              setActivePopoverIndex(
+                                activePopoverIndex === index ? null : index
+                              );
                               setChatbotPopoverIndex(null); // Close chatbot if already open
                             }}
                             style={
@@ -358,7 +429,10 @@ function FreshLead() {
                                       phone: lead.phone,
                                     })
                                   );
-                                  const cleaned = lead.phone.replace(/[^\d]/g, "");
+                                  const cleaned = lead.phone.replace(
+                                    /[^\d]/g,
+                                    ""
+                                  );
                                   window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                   setActivePopoverIndex(null);
                                   // Open chatbot popup immediately
@@ -378,7 +452,10 @@ function FreshLead() {
                               <button
                                 className="popover-option"
                                 onClick={() => {
-                                  const cleaned = lead.phone.replace(/[^\d]/g, "");
+                                  const cleaned = lead.phone.replace(
+                                    /[^\d]/g,
+                                    ""
+                                  );
                                   window.open(`tel:${cleaned}`);
                                   setActivePopoverIndex(null);
                                   // Open chatbot popup immediately
@@ -438,42 +515,43 @@ function FreshLead() {
 
       {/* Chatbot Popup Modal */}
       {/* Enhanced Responsive Chatbot Popup Modal */}
-{showChatbotPopup && (
-  <div 
-    className="chatbot-popup-overlay"
-    onClick={closeChatbotPopup}
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="chatbot-title"
-    aria-describedby="chatbot-description"
-  >
-    <div 
-      className="chatbot-popup-container"
-      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-    >
-      <div className="chatbot-popup-header">
-        <h3 id="chatbot-title">
-          Chat with {selectedLead?.name || 'AI Assistant'}
-        </h3>
-        <button 
-          className="chatbot-close-btn"
+      {showChatbotPopup && (
+        <div
+          className="chatbot-popup-overlay"
           onClick={closeChatbotPopup}
-          aria-label="Close chat"
-          title="Close chat"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="chatbot-title"
+          aria-describedby="chatbot-description"
         >
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
-      </div>
-      
-      <div 
-        className="chatbot-popup-content"
-        id="chatbot-description"
-      >
-        <Chat isCallActive={false} />
-      </div>
-    </div>
-  </div>
-)}
+          <div
+            className="chatbot-popup-container"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            ref={popupRef}
+          >
+            <div className="chatbot-popup-header" ref={headerRef}>
+              <h3 id="chatbot-title">
+                Chat with {selectedLead?.name || "AI Assistant"}
+              </h3>
+              <button
+                className="chatbot-close-btn"
+                onClick={closeChatbotPopup}
+                aria-label="Close chat"
+                title="Close chat"
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+
+            <div className="chatbot-popup-content" id="chatbot-description">
+              <Chat
+                isCallActive={false}
+                token={localStorage.getItem("token")}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

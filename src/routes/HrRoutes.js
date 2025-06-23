@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AssignTask from "../features/admin/AssignTask";
@@ -13,6 +15,7 @@ import Monitoring from "../features/admin/Monitoring";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";
 import HrLayout from "../layouts/HrLayout";
+import LeaveManagement from "../features/admin/LeaveManagement";
 const HrRoutes = () => {
   return (
     <Routes>
@@ -46,6 +49,7 @@ const HrRoutes = () => {
           <ExecutiveCredentialsForm />
           </RequirePermission>} />
         <Route path="help-support" element ={<ContactUs/>}/>
+        <Route path="leave-management" element ={<LeaveManagement/>}/>
         <Route path="eod-report" element={
             <RequirePermission requiredKey="reporting">
             <Eod />
@@ -58,3 +62,4 @@ const HrRoutes = () => {
 };
 
 export default HrRoutes;
+

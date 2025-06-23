@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
@@ -141,6 +142,14 @@ const HrSidebar = () => {
               <Link to="/hr/executive-details" className="admin-aside-link">
                 <Users className="admin-aside-icon"/>
                 <span className="sidebar-label">Executive Details</span>
+              </Link>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <Link to="/hr/leave-management" className="admin-aside-link">
+                <Users className="admin-aside-icon"/>
+                <span className="sidebar-label">Leave Management</span>
               </Link>
             </li>
           </ul>

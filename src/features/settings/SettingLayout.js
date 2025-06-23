@@ -15,6 +15,8 @@ const SettingsLayout = () => {
     { path: "change-password", label: "Change Password", icon: "🔒" },
     { path: "change-beep", label: "Change in Beep", icon: "🔔" },
     { path: "create-template", label: "Add Email Template", icon: "📩" },
+    { path: "leave", label: "Ask for Leave", icon: "📝" },
+
   ];
 
   const styles = {

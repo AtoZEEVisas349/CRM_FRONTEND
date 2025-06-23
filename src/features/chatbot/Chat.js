@@ -1,4 +1,3 @@
-// --- NO CHANGE REQUIRED IN IMPORTS ---
 import React, { useState, useEffect, useRef } from "react";
 import { FaMicrophone, FaPaperPlane, FaUser, FaStopCircle } from "react-icons/fa";
 import { MdSmartToy } from "react-icons/md";
@@ -7,7 +6,7 @@ import { jwtDecode } from "jwt-decode";
 
 const token = new URLSearchParams(window.location.search).get("token");
 
-const Chat = ({ isCallActive }) => {
+const Chat = ({ isCallActive , token}) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -24,6 +23,59 @@ const Chat = ({ isCallActive }) => {
   const recordChunksRef = useRef([]);
   const timerRef = useRef(null);
   
+  
+  const [authToken, setAuthToken] = useState(token);
+
+  useEffect(() => {
+    // If token is passed as prop, use it
+    if (token) {
+      setAuthToken(token);
+    } else {
+      // Fallback: try to get from localStorage
+      const localToken = localStorage.getItem("token");
+      if (localToken) {
+        setAuthToken(localToken);
+      } else {
+        // Fallback: try to get from URL params (for backward compatibility)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        if (urlToken) {
+          setAuthToken(urlToken);
+        }
+      }
+    }
+  }, [token]); 
+
+  const handleRecording = async (audioBlob) => {
+    if (!authToken) {
+      alert("Authentication token missing. Please login again.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    
+    try {
+      const response = await fetch('/api/save-recording', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          // Don't set Content-Type when using FormData
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save recording');
+      }
+
+      console.log('Recording saved successfully');
+    } catch (error) {
+      console.error('Error saving recording:', error);
+      alert('Failed to save recording. Please try again.');
+    }
+  };
+
 
   useEffect(() => {
     chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
@@ -214,7 +266,7 @@ const Chat = ({ isCallActive }) => {
       <div className="chat-container">
         <div className="chat-header">
           <MdSmartToy size={30} className="chat-icon" />
-          <h2>AI ChatBot</h2>
+          <h2 style={{color: "white"}}>AI ChatBot</h2>
         </div>
 
         <div className="chat-messages" ref={chatContainerRef}>
@@ -268,6 +320,12 @@ const Chat = ({ isCallActive }) => {
             {isRecording ? <FaStopCircle /> : <BsRecordCircle />}
           </button>
         </div>
+ {/* Your existing chat UI */}
+      {!authToken && (
+        <div className="auth-warning">
+          <p>⚠️ Authentication required. Please login to use all features.</p>
+        </div>
+      )}
 
         {isRecording && (
           <div style={{ textAlign: "center", color: "red", marginTop: "5px" }}>

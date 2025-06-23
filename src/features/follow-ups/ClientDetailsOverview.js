@@ -627,37 +627,70 @@ useEffect(() => {
                     />
                   </div>
                   <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
-  <label>Time:</label>
+{/* TIME FIELD */}
+<div>
+  <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
   <div
     style={{
       display: "flex",
+      alignItems: "center",
+      gap: "8px",
       border: "1px solid #ccc",
       borderRadius: "6px",
-      overflow: "hidden",
-      backgroundColor: "white",
+      padding: "0 10px",
+      backgroundColor: "#fff",
       height: "38px"
     }}
   >
-    <div style={{ position: "relative", flex: 1 }}>
-      <input
-        type="time"
-        value={convertTo24Hour(timeOnly, ampm)}
-        onChange={(e) => {
-          const time24 = e.target.value;
-          if (time24) {
-            const converted = convertTo12Hour(time24);
-            setTimeOnly(converted.time);
-            setAmPm(converted.amPm);
-          }
-        }}
-        style={{
-          border: "none",
-          padding: "8px 4px",
-          width: "100%",
-          backgroundColor: "transparent",
-          cursor: "text",
-        }}
-      />
+    {/* HH:MM SELECT */}
+    <select
+      value={timeOnly}
+      onChange={(e) => setTimeOnly(e.target.value)}
+      style={{
+        border: "none",
+        padding: "8px 6px",
+        fontSize: "14px",
+        height: "100%",
+        outline: "none",
+        backgroundColor: "transparent",
+        appearance: "none"
+      }}
+    >
+      {Array.from({ length: 12 }, (_, i) =>
+        [0, 15, 30, 45].map((min) => {
+          const hour = i + 1;
+          const hStr = hour.toString().padStart(2, "0");
+          const mStr = min.toString().padStart(2, "0");
+          return (
+            <option key={`${hStr}:${mStr}`} value={`${hStr}:${mStr}`}>
+              {`${hStr}:${mStr}`}
+            </option>
+          );
+        })
+      ).flat()}
+    </select>
+
+    {/* AM/PM SELECT */}
+    <select
+      value={ampm}
+      onChange={(e) => setAmPm(e.target.value)}
+      style={{
+        border: "none",
+        padding: "8px 6px",
+        fontSize: "14px",
+        height: "100%",
+        outline: "none",
+        backgroundColor: "transparent",
+        appearance: "none"
+      }}
+    >
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
+  </div>
+</div>
+
+
     </div>
   </div>
   <button
@@ -679,6 +712,8 @@ useEffect(() => {
       border: "none",
       cursor: "pointer",
       textDecoration: "underline",
+      paddingLeft: "15%"
+
     }}
   >
     Use Current Time
@@ -779,9 +814,7 @@ useEffect(() => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    {/* </div> */}
+          
     </>
   );
 };
