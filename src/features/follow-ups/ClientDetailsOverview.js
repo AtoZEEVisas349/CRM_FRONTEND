@@ -154,11 +154,13 @@ const ClientDetailsOverview = () => {
     if (client) {
       const freshLeadId =
         client.freshLead?.id || client.fresh_lead_id || client.id;
-      const normalizedClient = {
-        ...client,
-        fresh_lead_id: freshLeadId,
-        followUpId: client.followUpId || client.id,
-      };
+        const normalizedClient = {
+          ...client,
+          ...(client.freshLead || {}), // ✅ inject education, experience, dob, state, etc.
+          fresh_lead_id: freshLeadId,
+          followUpId: client.followUpId || client.id,
+        };
+        
       setClientInfo(normalizedClient);
       loadFollowUpHistories(freshLeadId);
     }

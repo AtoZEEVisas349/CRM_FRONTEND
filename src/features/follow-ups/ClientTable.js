@@ -83,15 +83,19 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
       console.error("Fresh Lead ID is missing or incorrect");
       return;
     }
+  
     const leadData = {
-      ...client.freshLead,
+      ...client,
+      ...(client.freshLead || {}),
       fresh_lead_id: freshLeadId,
       followUpId: client.id,
     };
+  
     navigate(`/executive/clients/${encodeURIComponent(client.id)}/details`, {
       state: { client: leadData, createFollowUp: false, from: "followup" },
     });
   };
+  
 
   const getStatusColorClass = (status) => {
     switch ((status || "").toLowerCase()) {
