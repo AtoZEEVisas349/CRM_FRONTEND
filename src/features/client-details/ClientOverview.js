@@ -120,6 +120,44 @@ const ClientOverview = () => {
     isListeningRef.current = isListening;
   }, [isListening]);
 
+useEffect(() => {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true; // ENABLE continuous listening
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript;
+      setReasonDesc((prev) => `${prev} ${transcript}`);
+    };
+
+    recognition.onerror = (event) => {
+      Swal.fire({
+        icon: "error",
+        title: "Speech Error",
+        text: `Speech recognition error: ${event.error}`,
+      });
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      // Don’t reset isListening here if we're actively listening
+      if (isListeningRef.current) {
+        recognition.start(); // restart automatically
+      } else {
+        setIsListening(false); // only stop if we actually intended to
+      }
+    };
+
+    recognitionRef.current = recognition;
+  } else {
+    recognitionRef.current = null;
+  }
+}, []);
+
+  
   const handleChange = (field, value) => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
@@ -376,14 +414,19 @@ const ClientOverview = () => {
         text: "Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome.",
       });
     }
-    isListening ? stopListening() : recognitionRef.current.start();
-    setIsListening(!isListening);
+  
+    if (isListening) {
+      stopListening(); // Ensure this executes fully before setting state
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
   };
-
   const stopListening = () => {
-    setIsListening(false);
     recognitionRef.current?.stop();
+    setIsListening(false);
   };
+  
 
   const { handleSendEmail } = useExecutiveActivity();
 

@@ -101,32 +101,42 @@ const ClientDetailsOverview = () => {
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
 
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = "en-US";
+useEffect(() => {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true; // ENABLE continuous listening
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
 
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setReasonDesc((prev) => `${prev} ${transcript}`);
-      };
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript;
+      setReasonDesc((prev) => `${prev} ${transcript}`);
+    };
 
-      recognition.onerror = (event) => {
-        setSpeechError(`Speech error: ${event.error}`);
-      };
+    recognition.onerror = (event) => {
+      Swal.fire({
+        icon: "error",
+        title: "Speech Error",
+        text: `Speech recognition error: ${event.error}`,
+      });
+      setIsListening(false);
+    };
 
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+    recognition.onend = () => {
+      // Don’t reset isListening here if we're actively listening
+      if (isListeningRef.current) {
+        recognition.start(); // restart automatically
+      } else {
+        setIsListening(false); // only stop if we actually intended to
+      }
+    };
 
-      recognitionRef.current = recognition;
-    } else {
-      recognitionRef.current = null;
-    }
-  }, []);
+    recognitionRef.current = recognition;
+  } else {
+    recognitionRef.current = null;
+  }
+}, []);
   
   const capitalize = (text) => {
     if (!text) return "";
