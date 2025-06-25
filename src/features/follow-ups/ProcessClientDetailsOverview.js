@@ -88,7 +88,10 @@ const ProcessClientDetailsOverview = () => {
 
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const ampmSelectRef = useRef(null);  
+  const [speechError, setSpeechError] = useState(null);
   const recognitionRef = useRef(null);
+  const isListeningRef = useRef(isListening);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -331,6 +334,9 @@ useEffect(() => {
     try {
       const followUpId = clientInfo.followUpId || clientInfo.id;
 
+      // Update follow-up details and create history entry
+      // await updateFollowUpDetails(freshLeadId, followUpId);
+
       Swal.fire({ icon: "success", title: "Follow-Up Updated" });
 
       // Refresh data and navigate
@@ -369,6 +375,9 @@ useEffect(() => {
 
     try {
       const followUpId = clientInfo.followUpId || clientInfo.id;
+
+      // First, update follow-up details and create history entry
+      // await updateFollowUpDetails(freshLeadId, followUpId);
 
       // Then, schedule the meeting
      const meetingPayload = {
@@ -477,8 +486,14 @@ useEffect(() => {
        Swal.fire({ icon: "success", title: "Lead Closed" });
     }
       else {
-        return; 
+        return; // Do nothing for other types; handled by specific buttons
       }
+
+      // await fetchFreshLeadsAPI();
+      // await fetchMeetings();
+      // await refreshMeetings();
+      // loadFollowUpHistories(freshLeadId);
+      // setTimeout(() => navigate("/executive/follow-up"), 1000);
     } catch (err) {
       console.error("Follow-up Action Error:", err);
       Swal.fire({
@@ -514,7 +529,9 @@ useEffect(() => {
   };
 
   const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
+//   const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
 
+  //State for selecting email template
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
 
@@ -880,6 +897,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
+    {/* </div> */}
     </>
   );
 };
