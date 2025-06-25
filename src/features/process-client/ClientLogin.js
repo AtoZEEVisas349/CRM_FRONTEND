@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // ✅ import useNavigate
 import { useProcess } from "../../context/ProcessAuthContext";
+import { useProcessService } from "../../context/ProcessServiceContext";
 
 const ClientLogin = () => {
   const { login } = useProcess();
+  const {startWork}=useProcessService();
   const navigate = useNavigate(); // ✅ initialize navigate hook
 
   const [email, setEmail] = useState("");
@@ -15,7 +17,20 @@ const ClientLogin = () => {
       alert("Login successful!");
   
       localStorage.setItem("userType", "processperson");
-  
+   const storedUser = localStorage.getItem("user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+
+    if (parsedUser?.id) {
+      try {
+        await startWork(parsedUser.id);
+        console.log("✅ Work session started");
+      } catch (err) {
+        console.error("❌ Failed to start work session:", err.message);
+      }
+    } else {
+      console.warn("⚠ No user ID found to start work");
+    }
+
         navigate("/process");
   
     } catch (error) {

@@ -101,7 +101,7 @@ const Chat = ({ isCallActive , token}) => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/chatbot", {
+      const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/crew/crew/executive", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

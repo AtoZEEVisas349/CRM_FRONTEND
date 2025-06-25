@@ -6,14 +6,15 @@ import React, {
   useRef,
 } from "react";
 import { useExecutiveActivity } from "./ExecutiveActivityContext";
-
+import { useProcessService } from "./ProcessServiceContext";
 // Create Break Timer Context
 const BreakTimerContext = createContext();
+
 
 // Provider Component
 export const BreakTimerProvider = ({ children }) => {
   const { handleStartBreak, handleStopBreak } = useExecutiveActivity();
-
+  const {createStartBreak,createStopBreak}=useProcessService();
   const [breakTimer, setBreakTimer] = useState("00:00:00");
   const [isBreakActive, setIsBreakActive] = useState(false);
   const [timerLoading, setTimerLoading] = useState(false);
@@ -85,11 +86,46 @@ export const BreakTimerProvider = ({ children }) => {
       setTimerLoading(false);
     }
   };
+   const processstartBreak = async (id) => {
+    try {
+      setTimerLoading(true);
+      await createStartBreak(id);
+
+      const start = new Date();
+      localStorage.setItem("breakStartTime", start);
+
+      setIsBreakActive(true);
+      startTimer(start, totalPausedSeconds);
+    } catch (error) {
+      console.error("❌ Error starting break:", error.message);
+    } finally {
+      setTimerLoading(false);
+    }
+  };
 
   const stopBreak = async () => {
     try {
       setTimerLoading(true);
       await handleStopBreak();
+
+      clearInterval(intervalRef.current);
+
+      const currentTimer = breakTimerToSeconds(breakTimer);
+      setTotalPausedSeconds(currentTimer);
+      localStorage.setItem("pausedBreakSeconds", currentTimer);
+
+      localStorage.removeItem("breakStartTime");
+      setIsBreakActive(false);
+    } catch (error) {
+      console.error("❌ Error stopping break:", error.message);
+    } finally {
+      setTimerLoading(false);
+    }
+  };
+  const processstopBreak = async (id) => {
+    try {
+      setTimerLoading(true);
+      await createStopBreak(id);
 
       clearInterval(intervalRef.current);
 
@@ -128,6 +164,8 @@ export const BreakTimerProvider = ({ children }) => {
         startBreak,
         stopBreak,
         resetBreakTimer,
+        processstartBreak,
+        processstopBreak
       }}
     >
       {children}

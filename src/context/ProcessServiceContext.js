@@ -11,7 +11,23 @@ import {
   getCustomerStagesById,
   uploadCustomerDocuments,
   getCustomerDocuments,
-  getProcessSettings
+  getProcessSettings,
+  createProcessFollowUpApi,
+  getProcessFollowupApi,
+  createFinalStageApi,
+  createCloseLeadApi,
+  getAllProcessFollowupsApi,
+  getProcessFollowupHistoryApi,
+  createMeetings,
+  startWorkApi,
+  startBreakApi,
+  stopBreakApi,
+  stopWorkApi,
+  getFinalStage,
+  createCustomerStagesApi,
+  getStageComments,
+  moveToRejectedApi,
+  getProcessHistoryApi
 } from "../services/processService";
 
 // 1. Create Context
@@ -137,6 +153,21 @@ const [convertedError, setConvertedError] = useState(null);
   // -----------------------
   // Profile Settings Handlers
   // -----------------------
+   const processCreateFollowUp = async (payload) => {
+    console.log(payload,"m")
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await createProcessFollowUpApi(payload);
+      
+      return data;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   const profile = async (data) => {
     setLoading(true);
     setError(null);
@@ -248,6 +279,157 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
+    const getProcessFollowup = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getProcessFollowupApi(id);
+   return data;
+    } catch (err) {
+      setError(err.message || "Failed to fetch process settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+   
+ const createFinalStage = async (freshLeadId) => {
+    try {
+      const response= await createFinalStageApi(freshLeadId);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const createRejected = async (payload) => {
+    try {
+      const response= await moveToRejectedApi(payload);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const createMeetingApi = async (managerData) => {
+    try {
+      const response= await createMeetings(managerData);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const createCloseLead = async (freshLeadId) => {
+    try {
+      const response= await createCloseLeadApi(freshLeadId);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const createStages = async (customerId, stageNumber, newComment) => {
+    try {
+      const response= await createCustomerStagesApi(customerId, stageNumber, newComment);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const getProcessAllFollowup = async () => {
+  
+    try {
+      const data = await getAllProcessFollowupsApi();
+   return data;
+    } catch (err) {
+      setError(err.message || "Failed to fetch process settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+    const getProcessFollowupHistory = async (id) => {
+    try {
+      const data = await getProcessFollowupHistoryApi(id);
+   return data;
+    } catch (err) {
+      setError(err.message || "Failed to fetch process settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+    const getProcessHistory = async (id) => {
+    try {
+      const data = await getProcessHistoryApi(id);
+   return data;
+    } catch (err) {
+      setError(err.message || "Failed to fetch process settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+    const getAllFinalStages = async () => {
+    try {
+      const data = await getFinalStage();
+   return data;
+    } catch (err) {
+      setError(err.message || "Failed to fetch process settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+   const startWork = async (process_person_id) => {
+    try {
+      const response= await startWorkApi(process_person_id);
+       if (response?.activity?.workStartTime) {
+        localStorage.setItem(
+          'workStartTime',
+          new Date(response.activity.workStartTime).toISOString()
+        );
+      }
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const createStartBreak = async (id) => {
+    try {
+      const response= await startBreakApi(id);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const createStopBreak = async (id) => {
+    try {
+      const response= await stopBreakApi(id);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const stopWork = async (id) => {
+    try {
+      const response= await stopWorkApi(id);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+   const getComments = async (customerId, stageNumber) => {
+    try {
+      const response= await getStageComments(customerId, stageNumber);
+      return response;
+    } catch (error) {
+      console.error(" error in context:", error);
+      throw error;
+    }
+  };
+  
   // -----------------------
   // Provider Return
   // -----------------------
@@ -280,7 +462,23 @@ processProfile,
     handleGetCustomerStagesById,
     uploadDocs,
     getDocumentsApi,
-    getProcessProfile
+    getProcessProfile,
+    processCreateFollowUp,
+    getProcessFollowup,
+    createFinalStage,
+    createCloseLead,
+    getProcessAllFollowup,
+    getProcessFollowupHistory,
+    createMeetingApi,
+    startWork,
+    createStartBreak,
+    createStopBreak,
+    stopWork,
+    getAllFinalStages,
+    createStages,
+    getComments,
+    createRejected,
+    getProcessHistory
       }}
     >
       {children}

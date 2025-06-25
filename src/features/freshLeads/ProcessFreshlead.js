@@ -12,17 +12,12 @@ import { SearchContext } from "../../context/SearchContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 
 function ProcessFreshlead() {
-    const{  
-    fetchCustomers,
-    customers,
-    setCustomers}=useProcessService()
+  const { fetchCustomers, customers, setCustomers } = useProcessService();
   const {
-    
     fetchFreshLeadsAPI,
     executiveInfo,
     fetchExecutiveData,
     executiveLoading,
-    createFollowUp,
     verifyNumberAPI,
     verificationResults,
     verificationLoading,
@@ -31,15 +26,17 @@ function ProcessFreshlead() {
   } = useApi();
 
   const { leadtrack } = useExecutiveActivity();
-  const { searchQuery, setActivepage } = useContext(SearchContext);
+  const { searchQuery } = useContext(SearchContext);
 
-  const [isLoading, setIsLoading] = useState(false); // Local loading state
+  const [isLoading, setIsLoading] = useState(false);
   const [leadsData, setLeadsData] = useState([]);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [verifyingIndex, setVerifyingIndex] = useState(null);
+  const [selectedLead, setSelectedLead] = useState(null);
+
   const itemsPerPage = 9;
   const navigate = useNavigate();
 
@@ -50,40 +47,40 @@ function ProcessFreshlead() {
     await verifyNumberAPI(index, number);
     setVerifyingIndex(null);
   };
- useEffect(() => {
+
+ 
+
+  useEffect(() => {
     fetchCustomers()
       .then((data) => {
-        // If data returned from fetchConvertedClients is the raw clients array
         if (data && Array.isArray(data)) {
-          const mappedClients = data.map((client) => ({
-            ...client,
-            id: client.id || client._id, // prefer id, fallback to _id
-          }));
+         const mappedClients = data
+  .filter((client) => client.status === "pending")
+  // .map((client) => ({
+  //   ...client,
+  //   id: client.id || client._id,
+  // }));
+
           setCustomers(mappedClients);
         }
       })
-      .catch((err) => {
-        console.error("❌ Error fetching clients:", err);
-      });
+      .catch((err) => console.error("❌ Error fetching clients:", err));
+      console.log(customers)
   }, []);
+  const leadData=customers.filter((client) => client.status === "pending")
+console.log(leadData);
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     const executiveId = userData?.id;
-    if (executiveId) {
-      leadtrack(executiveId);
-    }
+    if (executiveId) leadtrack(executiveId);
   }, []);
 
   useEffect(() => {
     const loadLeads = async () => {
       if (hasLoaded) return;
-
-      setIsLoading(true); // Show local spinner
+      setIsLoading(true);
       try {
-        if (!executiveInfo && !executiveLoading) {
-          await fetchExecutiveData();
-        }
-
+        if (!executiveInfo && !executiveLoading) await fetchExecutiveData();
         const data = await fetchFreshLeadsAPI();
 
         let leads = [];
@@ -124,7 +121,7 @@ function ProcessFreshlead() {
       } catch (err) {
         setError("Failed to load leads. Please try again.");
       } finally {
-        setIsLoading(false); // Hide local spinner
+        setIsLoading(false);
       }
     };
 
@@ -170,7 +167,7 @@ function ProcessFreshlead() {
       freshLeadId: lead.id,
     };
 
-    navigate(`/process/clients/${encodeURIComponent(lead.fullName)}`, {
+    navigate(`/process/clients/processperson/${encodeURIComponent(lead.fullName)}/${lead.id}`, {
       state: {
         client: clientData,
         createFollowUp: true,
@@ -178,14 +175,89 @@ function ProcessFreshlead() {
       },
     });
   };
+
   if (executiveLoading) return <p>Loading executive data...</p>;
 
   return (
     <div className="fresh-leads-main-content" style={{ position: "relative" }}>
       {isLoading && <LoadingSpinner text="Loading Fresh Leads..." />}
+
+      {selectedLead && (
+   
+  <div
+    className="client-info"
+    style={{
+      width: "95%",
+      marginLeft:"5px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      padding: "9px",
+      borderRadius: "8px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      background: "#fff",
+      marginBottom: "12px",
+    }}
+  >
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <div
+        className="user-icon-bg"
+        style={{
+          background: "#eee",
+          borderRadius: "50%",
+          width: "40px",
+          height: "40px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginRight: "10px",
+        }}
+      >
+        <div className="user-icon" style={{ fontSize: "20px" }}>👤</div>
+      </div>
+
+      <div className="client-text">
+        <span style={{ fontWeight: "600" }}>
+          Name: {selectedLead.name}
+        </span>
+        {/* Uncomment below if you want Email & Phone */}
+        {/* <span style={{ marginLeft: "10px" }}>
+          <strong>Email:</strong> {selectedLead.email}
+        </span>
+        <span style={{ marginLeft: "10px" }}>
+          <strong>Phone:</strong> {selectedLead.phone}
+        </span> */}
+        <div className="lead-info" style={{ marginTop: "4px" }}>
+          <span
+            className="lead-badge"
+            style={{
+              // background: "#d1e7dd",
+              color: "#0f5132",
+              // padding: "5px",
+              // borderRadius: "4px",
+              fontSize: "12px",
+            }}
+          >
+            Lead
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div
+      // className="close-btn"
+      style={{ cursor: "pointer", fontSize: "18px", color: "#888" }}
+      onClick={() => setSelectedLead(null)}
+    >
+      ✖
+    </div>
+  </div>
+)}
+
+
       <div className="fresh-leads-header">
         <h2 className="fresh-leads-title">Fresh leads list</h2>
-        <h4 className="fresh-leads-subtitle">Click on Add followup to view details</h4>
+     
       </div>
 
       {error && <p className="error-text">{error}</p>}
@@ -205,10 +277,19 @@ function ProcessFreshlead() {
                 </tr>
               </thead>
               <tbody>
-                {customers.length > 0 ? (
-                  customers.map((lead, index) => (
+                {leadData.length > 0 ? (
+                  leadData.map((lead, index) => (
                     <tr key={index}>
-                      <td>
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          setSelectedLead({
+                            name: lead.fullName,
+                            email: lead.email,
+                            phone: lead.phone,
+                          })
+                        }
+                      >
                         <div className="fresh-leads-name">
                           <div className="fresh-lead-detail">
                             <div>{lead.fullName}</div>
@@ -216,29 +297,57 @@ function ProcessFreshlead() {
                           </div>
                         </div>
                       </td>
-                      <td>{lead.phone}</td>
-                      <td>{lead.email}</td>
+
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          setSelectedLead({
+                            name: lead.fullName,
+                            email: lead.email,
+                            phone: lead.phone,
+                          })
+                        }
+                      >
+                        {lead.phone}
+                      </td>
+
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          setSelectedLead({
+                            name: lead.fullName,
+                            email: lead.email,
+                            phone: lead.phone,
+                          })
+                        }
+                      >
+                        {lead.email}
+                      </td>
+
                       <td>
                         <button
                           className="followup-badge"
-                          onClick={() => handleAddFollowUp(lead)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddFollowUp(lead);
+                          }}
                         >
                           Add Follow Up
                           <FontAwesomeIcon icon={faPenToSquare} className="icon" />
                         </button>
                       </td>
+
                       <td>
                         <div className="status-cell">
                           <button
-                            onClick={() => handleVerify(index, lead.phone)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleVerify(index, lead.phone);
+                            }}
                             className="verify-btn"
-                            disabled={
-                              verifyingIndex === index || verificationLoading
-                            }
+                            disabled={verifyingIndex === index || verificationLoading}
                           >
-                            {verifyingIndex === index
-                              ? "Verifying..."
-                              : "Get Verified"}
+                            {verifyingIndex === index ? "Verifying..." : "Get Verified"}
                           </button>
                           {verificationResults[index] && (
                             <div className="verify-result">
@@ -257,41 +366,35 @@ function ProcessFreshlead() {
                           )}
                         </div>
                       </td>
+
                       <td className="call-cell">
                         <button
                           className="call-button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setActivePopoverIndex(
-                              activePopoverIndex === index ? null : index
-                            );
+                            setActivePopoverIndex(activePopoverIndex === index ? null : index);
                           }}
                         >
                           📞
                         </button>
-
                         {activePopoverIndex === index && (
                           <div className="popover">
                             <button
                               className="popover-option"
                               onClick={() => {
-                                localStorage.setItem("activeClient", JSON.stringify({
-                                 name: lead.name,
-                                 phone: lead.phone
-                                }));
+                                localStorage.setItem(
+                                  "activeClient",
+                                  JSON.stringify({
+                                    name: lead.name,
+                                    phone: lead.phone,
+                                  })
+                                );
                                 const cleaned = lead.phone.replace(/[^\d]/g, "");
                                 window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                 setActivePopoverIndex(null);
                               }}
                             >
-                              <FontAwesomeIcon
-                                icon={faWhatsapp}
-                                style={{
-                                  color: "#25D366",
-                                  marginRight: "6px",
-                                  fontSize: "18px",
-                                }}
-                              />
+                              <FontAwesomeIcon icon={faWhatsapp} style={{ color: "#25D366", marginRight: "6px", fontSize: "18px" }} />
                               WhatsApp
                             </button>
                             <button
@@ -302,14 +405,7 @@ function ProcessFreshlead() {
                                 setActivePopoverIndex(null);
                               }}
                             >
-                              <FontAwesomeIcon
-                                icon={faPhone}
-                                style={{
-                                  color: "#4285F4",
-                                  marginRight: "6px",
-                                  fontSize: "16px",
-                                }}
-                              />
+                              <FontAwesomeIcon icon={faPhone} style={{ color: "#4285F4", marginRight: "6px", fontSize: "16px" }} />
                               Normal Call
                             </button>
                           </div>
@@ -319,9 +415,7 @@ function ProcessFreshlead() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="no-leads-text">
-                      No assigned leads available.
-                    </td>
+                    <td colSpan="6" className="no-leads-text">No assigned leads available.</td>
                   </tr>
                 )}
               </tbody>
@@ -330,23 +424,9 @@ function ProcessFreshlead() {
 
           {totalPages > 1 && (
             <div className="fresh-pagination">
-              <button
-                className="fresh-pagination-btn"
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-              >
-                « Prev
-              </button>
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                className="fresh-pagination-btn"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Next »
-              </button>
+              <button className="fresh-pagination-btn" onClick={handlePrevPage} disabled={currentPage === 1}>« Prev</button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <button className="fresh-pagination-btn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next »</button>
             </div>
           )}
         </>

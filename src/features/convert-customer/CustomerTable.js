@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
@@ -31,11 +30,16 @@ const CustomerTable = () => {
       try {
         showLoader("Loading Converted Customers...");
         if (Array.isArray(convertedClients)) {
-          const sorted = [...convertedClients].sort((a, b) => {
+          const filtered = convertedClients.filter(
+            (client) => client.status === "Converted"
+          );
+        
+          const sorted = filtered.sort((a, b) => {
             const timeA = new Date(a.updatedAt || 0).getTime();
             const timeB = new Date(b.updatedAt || 0).getTime();
             return timeB - timeA;
           });
+        
           setCustomers(sorted);
         }
       } catch (error) {
@@ -72,10 +76,32 @@ const CustomerTable = () => {
           item.connect_via || item.followUp?.connect_via || "",
           item.follow_up_type || item.followUp?.follow_up_type || "",
           item.interaction_rating || item.followUp?.interaction_rating || ""
-        ].filter(Boolean)
+        ].filter(Boolean),
+        // Add original timestamp for sorting
+        originalDate: item.follow_up_date || item.followUp?.follow_up_date || "N/A",
+        originalTime: item.follow_up_time || item.followUp?.follow_up_time || "N/A",
       }));
 
-      setFollowUpHistories(parsed);
+      // Sort by date and time in descending order (latest first)
+      const sortedParsed = parsed.sort((a, b) => {
+        // Create comparable datetime strings
+        const dateTimeA = `${a.originalDate} ${a.originalTime}`;
+        const dateTimeB = `${b.originalDate} ${b.originalTime}`;
+        
+        // Try to parse as dates
+        const parsedDateA = new Date(dateTimeA);
+        const parsedDateB = new Date(dateTimeB);
+        
+        // If both dates are valid, sort by them
+        if (!isNaN(parsedDateA.getTime()) && !isNaN(parsedDateB.getTime())) {
+          return parsedDateB.getTime() - parsedDateA.getTime(); // Descending order
+        }
+        
+        // Fallback: string comparison (descending)
+        return dateTimeB.localeCompare(dateTimeA);
+      });
+
+      setFollowUpHistories(sortedParsed);
     } catch (error) {
       console.error("Failed to load follow-up history:", error);
       setFollowUpHistories([]);
@@ -206,4 +232,3 @@ const CustomerTable = () => {
 };
 
 export default CustomerTable;
-

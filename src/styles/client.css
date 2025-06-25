@@ -650,3 +650,40 @@ background: #af8b7c;
 [data-theme="green"] .last-follow-up p {
   color: #000000 !important;
 }
+.followup-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.followup-item {
+  padding-bottom: 16px; /* space after each block */
+  border-bottom: 1px solid #e0e0e0; /* optional */
+}
+
+.followup-name {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.followup-reason {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 8px; /* space before date/time row */
+  margin-top:10px;
+}
+
+.followup-datetime {
+  font-size: 13px;
+  color: #777;
+}
+
+.followup-date {
+  margin-right: 16px; /* space between date and time */
+}
+
+.no-data-text {
+  text-align: center;
+  color: #999;
+  padding: 16px 0;
+}

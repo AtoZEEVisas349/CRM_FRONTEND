@@ -1,12 +1,15 @@
+
 import React, { useState, useEffect } from "react";
 import ClientDetails from "../features/follow-ups/ClientDetails";
 import ClientTable from "../features/follow-ups/ClientTable";
 import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
 import { useLocation } from "react-router-dom";
+import ProcessClientDetails from "../features/follow-ups/ProcessClientDetails";
 import ProcessClientTable from "../features/follow-ups/ProcessClientTable";
 
-const FollowUpRoutes = () => {
+
+const ProcessFollowUpRoutes = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(
     location.state?.activeTab || "All Follow Ups"
@@ -24,9 +27,9 @@ const FollowUpRoutes = () => {
       {/* <SidebarandNavbar /> */}
       <div className="follow-main-content">
         <h2>Client List</h2>
-        <ClientDetails selectedClient={selectedClient} onClose={() => setSelectedClient(null)} />
+        <ProcessClientDetails selectedClient={selectedClient} onClose={() => setSelectedClient(null)} />
         <div className="followup-tabs">
-          {["All Follow Ups", "Interested", "Not Interested"].map((tab) => (
+          {["All Follow Ups", "Document collection", "Payment follow-up","Visa filing"].map((tab) => (
             <button
               key={tab}
               className={activeTab === tab ? "active" : ""}
@@ -36,11 +39,11 @@ const FollowUpRoutes = () => {
             </button>
           ))}
         </div>
-        <ClientTable filter={activeTab} onSelectClient={setSelectedClient} />
+   <ProcessClientTable filter={activeTab} onSelectClient={setSelectedClient} />
       </div>
- 
+    
     </div>
   );
 };
 
-export default FollowUpRoutes;
+export default ProcessFollowUpRoutes;

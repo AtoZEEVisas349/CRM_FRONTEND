@@ -755,4 +755,41 @@ export const markMultipleNotificationsAsRead = async (notificationIds) => {
     throw error;
   }
 };
+
+
+// Function to create a new leave application
+export const createLeaveApplication = async (leaveData) => {
+  try {
+    const response = await apiService.post("/leave/apply", leaveData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating leave application:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const fetchLeaveApplications = async (employeeId = null) => {
+  try {
+    const url = employeeId ? `/leave?employeeId=${employeeId}` : '/leave';
+    const response = await apiService.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching leave applications:", error);
+    throw error;
+  }
+};
+
+export const updateLeaveApplicationStatus = async (leaveId, status) => {
+  try {
+    const response = await apiService.patch('/leave/leave/status', {
+      leaveId,
+      status
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error updating leave application ${leaveId} status:`, error);
+    throw error;
+  }
+};
+
 export default apiService;

@@ -1,0 +1,893 @@
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useProcessService } from "../../context/ProcessServiceContext";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useApi } from "../../context/ApiContext";
+import Swal from "sweetalert2";
+import useCopyNotification from "../../hooks/useCopyNotification";
+import "react-time-picker/dist/TimePicker.css";
+import "react-clock/dist/Clock.css";
+function convertTo24HrFormat(timeStr) {
+  const dateObj = new Date(`1970-01-01 ${timeStr}`);
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  const seconds = "00";
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+const ProcessClientOverview = () => {
+  const { id } = useParams();
+    const { handleUpsertStages, handleGetStages, handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createFinalStage,getProcessAllFollowup,getProcessFollowupHistory,createMeetingApi,getComments,createStages,getProcessHistory } = useProcessService();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const client = useMemo(() => location.state?.client || {}, []);
+  const createFollowUpFlag = location.state?.createFollowUp || false;
+
+  const {
+    updateFreshLeadFollowUp,
+    followUpLoading,
+    fetchFreshLeads,
+  
+    fetchNotifications,
+    createCopyNotification,
+  
+  } = useApi();
+ 
+  useCopyNotification(createCopyNotification, fetchNotifications);
+  const now = new Date();
+  const todayStr = now.toISOString().split("T")[0];
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const ampmValue = currentHour >= 12 ? "PM" : "AM";
+  const hour12 = currentHour % 12 || 12;
+  const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+
+  const [clientInfo, setClientInfo] = useState(client);
+  const [contactMethod, setContactMethod] = useState("");
+  const [followUpType, setFollowUpType] = useState("");
+  const [interactionRating, setInteractionRating] = useState("");
+  const [reasonDesc, setReasonDesc] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [interactionDate, setInteractionDate] = useState(todayStr);
+  const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
+  const [ampm, setAmPm] = useState(ampmValue);
+  const [isTimeEditable, setIsTimeEditable] = useState(false);
+   const [selectedStage, setSelectedStage] = useState("");
+  const [commentText, setCommentText] = useState("");
+  const [stagesData, setStagesData] = useState({});
+  const [stageTimestamp, setStageTimestamp] = useState("");
+  const [customerId, setCustomerId] = useState("1");
+  const [followUpHistory, setFollowUpHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  
+const[followupHistory,setFollowupHistory]=useState();
+   useEffect(() => {
+   const fetchFollowups = async () => {
+     try {
+       const response = await getProcessHistory(id);
+       setFollowupHistory(response)
+       
+     } catch (err) {
+       console.error("❌ Failed to load follow-ups:", err.message);
+     }
+   };
+ 
+   fetchFollowups();
+ }, [id]);
+
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setLoadingHistory(true);
+      try {
+        const result = await getProcessFollowup(id);
+        setFollowUpHistory(result.data); // The backend sends { message, data }
+      } catch (err) {
+        console.error("Failed to load follow-up history", err.message);
+        setFollowUpHistory([]);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    if (id) {
+      fetchHistory();
+    }
+  }, [id]);
+
+  const[historyData,setHistoryData]=useState();
+
+    useEffect(() => {
+        const fetchFollowups = async () => {
+          try {
+            const result = await getProcessFollowupHistory(id);
+            setHistoryData(result);
+          } catch (err) {
+            console.error("❌ Failed to load follow-ups:", err.message);
+            // setError(err.message);
+          } finally {
+            // setLoading(false);
+          }
+        };
+    
+        fetchFollowups();
+      }, []);
+  const handleFinalStage = async () => {
+  try {
+    const freshLeadId = clientInfo.freshLeadId || clientInfo.id;
+
+    const result = await createFinalStage(id);
+
+    Swal.fire({
+      icon: "success",
+      title: "Final Stage Completed",
+      text: result.message || "Lead finalized successfully!",
+    });
+   
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Finalization Failed",
+      text: err.message || "Something went wrong!",
+    });
+  }
+};
+  
+
+  useEffect(() => {
+  if (selectedStage && stagesData) {
+    const stageNum = selectedStage.split(" ")[1];
+    const existingComment = stagesData[`stage${stageNum}_data`] || "";
+    const existingTimestamp = stagesData[`stage${stageNum}_timestamp`] || "";
+    setCommentText(existingComment);
+    setStageTimestamp(existingTimestamp);
+  }
+}, [selectedStage, stagesData]);
+
+
+
+  const convertTo24Hour = (time12h, amPm) => {
+    let [hours, minutes] = time12h.split(':').map(Number);
+    if (amPm === 'PM' && hours !== 12) hours += 12;
+    if (amPm === 'AM' && hours === 12) hours = 0;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
+  const convertTo12Hour = (time24h) => {
+    let [hours, minutes] = time24h.split(':').map(Number);
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return {
+      time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
+      amPm: amPm
+    };
+  };
+
+  const timeSelectRef = useRef(null);
+
+  const recognitionRef = useRef(null);
+  const isListeningRef = useRef(isListening);
+  const interactionTime = useMemo(() => {
+    let [hr, min] = timeOnly.split(":").map(Number);
+    if (ampm === "PM" && hr !== 12) hr += 12;
+    if (ampm === "AM" && hr === 12) hr = 0;
+    return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
+  }, [timeOnly, ampm]);
+
+  const minDate = useMemo(() => todayStr, []);
+  const maxDate = useMemo(() => {
+    const d = new Date(now);
+    d.setFullYear(d.getFullYear() + 5);
+    return d.toISOString().split("T")[0];
+  }, []);
+
+  const minTime = interactionDate === minDate ? `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}` : "00:00";
+
+  const clientFields = [
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone" },
+    { key: "altPhone", label: "Alt Phone" },
+    { key: "education", label: "Education" },
+    { key: "experience", label: "Experience" },
+    { key: "state", label: "State" },
+    { key: "dob", label: "Date of Birth" },
+    { key: "country", label: "Country" },
+  ];
+
+  useEffect(() => {
+    isListeningRef.current = isListening;
+  }, [isListening]);
+
+  const handleChange = (field, value) => {
+    setClientInfo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleTextUpdate = async () => {
+    if (!followUpType || !interactionDate || !interactionTime) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Information",
+        text: "Please select a follow-up type, date and time before updating.",
+      });
+    }
+
+    const followUpId = clientInfo.followUpId || clientInfo.freshLeadId || clientInfo.id;
+    if (!followUpId) {
+      console.error("Missing follow-up ID on clientInfo:", clientInfo);
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Record ID",
+        text: "Unable to find the record to update. Please reload and try again.",
+      });
+    }
+
+    try {
+      if (followUpType === "appointment") {
+        const meetingPayload = {
+          clientName: clientInfo.name,
+          clientEmail: clientInfo.email,
+          clientPhone: clientInfo.phone,
+          reasonForFollowup: reasonDesc,
+          startTime: new Date(`${interactionDate}T${interactionTime}`).toISOString(),
+          endTime: null,
+          fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
+        };
+        await createMeetingApi(meetingPayload);
+   Swal.fire({ 
+               icon: "success", 
+               title: "Meeting Created",
+               text: "Meeting created successfully!"
+             });
+        setTimeout(() => navigate("/process/freshlead"), 2000);
+        return;
+      } else {
+        const updatedData = {
+          followUpStatus: followUpType,
+          followUpDate: interactionDate,
+        };
+
+        await updateFreshLeadFollowUp(followUpId, updatedData);
+           Swal.fire({
+    html: `
+      <div class="custom-success-icon-wrapper">
+        <div class="float-circle float-bottom"></div>
+        <div class="float-circle float-bottom-left"></div>
+        <div class="float-circle float-bottom-right"></div>
+
+        <div class="custom-success-icon">✔</div>
+      </div>
+
+      <div class="custom-success-text">Freshlead Updated</div>
+
+      <div class="custom-success-divider"></div>
+
+      <div class="custom-success-subtext">Freshlead status updated successfully</div>
+
+      <div class="custom-success-buttons">
+        <button class="ok-btn" id="swal-ok-btn">Ok</button>
+      </div>
+    `,
+    showConfirmButton: false,
+    customClass: {
+      popup: 'custom-success-popup',
+      container: 'custom-success-container'
+    },
+    didRender: () => {
+      document.getElementById('swal-ok-btn').addEventListener('click', () => {
+        Swal.close();
+      });
+    }
+  });
+
+        await fetchFreshLeads();
+        setTimeout(() => navigate("executive/freshlead"), 2000);
+      }
+
+      setFollowUpType("");
+      setInteractionDate("");
+      setTimeOnly("12:00");
+      setAmPm("AM");
+      setIsTimeEditable(false);
+      setReasonDesc("");
+    } catch (error) {
+      console.error("Error in handleTextUpdate:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }
+  };
+
+  const handleCreateFollowUp = () => {
+    if (
+      !contactMethod ||
+      !followUpType ||
+      !interactionRating ||
+      !interactionDate ||
+      !interactionTime
+    ) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Information",
+        text: "Please fill out all required fields before creating follow-up.",
+      });
+    }
+    const newFollowUpData= {
+      fresh_lead_id: String(clientInfo.freshLeadId || clientInfo.id),
+        connect_via: contactMethod,
+       follow_up_date: interactionDate,
+       follow_up_time: convertTo24HrFormat(interactionTime),
+        follow_up_type: followUpType,
+   comments: reasonDesc,
+   interaction_rating:interactionRating
+   }
+
+
+    processCreateFollowUp(newFollowUpData)
+        Swal.fire({ 
+                  icon: "success", 
+                  title: "Follow-up Created",
+                  text: "Follow-up and history created successfully!"
+                });
+        };
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      return Swal.fire({
+        icon: "error",
+        title: "Speech Recognition Not Supported",
+        text: "Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome.",
+      });
+    }
+    isListening ? stopListening() : recognitionRef.current.start();
+    setIsListening(!isListening);
+  };
+
+  const stopListening = () => {
+    setIsListening(false);
+    recognitionRef.current?.stop();
+  };
+
+  const isMeetingInPast = useMemo(() => {
+    if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
+    const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
+    const now = new Date();
+    return selectedDateTime < now;
+  }, [followUpType, interactionDate, interactionTime]);
+ 
+  const fetchStages = async () => {
+    try {
+      const data = await handleGetCustomerStagesById(id);
+      setStagesData(data);
+    } catch (err) {
+      console.error("Error fetching stages", err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchStages();
+  }, [customerId]);
+
+  // 🔹 Add or update stage comment
+  const handleAddOrUpdateStage = async () => {
+    if (!selectedStage) {
+      alert("Please select a stage.");
+      return;
+    }
+    if (!commentText.trim()) {
+      alert("Comment cannot be empty.");
+      return;
+    }
+
+    const stageNum = selectedStage.split(" ")[1];
+    const currentDate = new Date().toISOString();
+
+    const updatedStage = {
+      ...stagesData,
+      [`stage${stageNum}_data`]: commentText.trim(),
+      [`stage${stageNum}_completed`]: true,
+      [`stage${stageNum}_timestamp`]: currentDate,
+    customerId: id
+    };
+
+    try {
+      await handleUpsertStages(updatedStage);
+      alert("Stage saved successfully.");
+          await fetchStages();
+    } catch (err) {
+      console.error("Error saving stage", err.message);
+      alert("Failed to save. Please try again.");
+    }
+  };
+const formatDate = (dateStr) => {
+  if (!dateStr) return "N/A";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const formatTime = (timeStr) => {
+  if (!timeStr) return "N/A";
+  const [hour, minute] = timeStr.split(":");
+  const date = new Date();
+  date.setHours(+hour);
+  date.setMinutes(+minute);
+  return date.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+ 
+  const [latestComment, setLatestComment] = useState({});
+  const [history, setHistory] = useState([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newComment, setNewComment] = useState("");
+
+  // Load latest comment when stage is selected
+  const handleStageChange = async (e) => {
+    const stage = e.target.value;
+    setSelectedStage(stage);
+
+    const stageNumber = Number(stage.split(" ")[1]);
+    try {
+      const result = await getComments(id, stageNumber);
+      const comments = result.comments || [];
+
+      if (comments.length) {
+        setLatestComment({
+          [stage]: comments[comments.length - 1]
+        });
+        setHistory(comments);
+      } else {
+        setLatestComment({
+          [stage]: { comment: "-", timestamp: "" }
+        });
+        setHistory([]);
+      }
+    } catch (err) {
+      console.error("Failed to load comments", err.message);
+    }
+  };
+
+  // Open view history modal
+  const handleViewHistory = async () => {
+    setShowHistoryModal(true);
+  };
+
+  // Submit new comment
+  const handleAddCommentSubmit = async () => {
+    const stageNumber = Number(selectedStage.split(" ")[1]);
+    try {
+      await createStages(id, stageNumber, newComment);
+
+      // Refresh latest comment
+      const result = await getComments(id, stageNumber);
+      const comments = result.comments || [];
+
+      if (comments.length) {
+        setLatestComment({
+          [selectedStage]: comments[comments.length - 1]
+        });
+        setHistory(comments);
+      }
+
+      setNewComment("");
+      setShowAddModal(false);
+    } catch (err) {
+      console.error("Failed to add comment", err.message);
+    }
+  };
+
+  return (
+    <div className="client-overview-wrapper">
+      <div className="c-container">
+        <div className="c-header">
+          <h2>Client Details</h2>
+          <button className="c-button">×</button>
+        </div>
+        <div className="c-content">
+          <div className="c-layout">
+            <div className="client-info-column">
+              <div className="c-profile">
+                <div className="c-info">
+                  {clientFields.map(({ key, label }) => (
+                    <div className="info-item" key={key}>
+                      <label className="label">{label}:</label>
+                      <input
+                        type="text"
+                        value={clientInfo[key] || ""}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        className="client-input"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="follow-up-column">
+              <div className="last-follow-up">
+                <h3>Last Follow-up</h3>
+               <div className="table-body">
+                <div className="followup-list">
+                  {Array.isArray(followupHistory) && followupHistory.length > 0 ? (
+                    followupHistory.map((client, index) => (
+                      <div key={index} className="followup-item">
+                      
+                        <div className="followup-reason">
+                          {client.reason_for_follow_up || "N/A"}
+                        </div>
+                        <div className="followup-datetime">
+                          <span className="followup-date">{formatDate(client.follow_up_date)}</span>
+                          <span className="followup-time">{formatTime(client.follow_up_time)}</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-data-text">No follow-up texts </div>
+                  )}
+                </div>
+
+                </div>
+
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="client-interaction-container">
+        <div className="interaction-form">
+        
+     
+
+          <div className="connected-via">
+            <h4>Connected Via</h4>
+            <div className="radio-group">
+              {["Call", "Email", "Call/Email"].map((method) => (
+                <label key={method} className="radio-container">
+                  <input
+                    type="radio"
+                    name="contactMethod"
+                    checked={contactMethod === method}
+                    onChange={() => setContactMethod(method)}
+                  />
+                  <span className="radio-label">{method}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+         <div className="follow-up-type"  style={{ marginBottom: "20px" }}>
+            <h4>Follow-Up Type</h4>
+            <div className="radio-group">
+              {["document collection","payment follow-up","visa filing", "other","appointment"].map((type) => (
+                <label key={type} className="radio-container">
+                  <input
+                    type="radio"
+                    name="followUpType"
+                    checked={followUpType === type}
+                    onChange={() => setFollowUpType(type)}
+                  />
+                  <span className="radio-label">{type.replace("-", " ")}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+ <div className="interaction-rating" >
+            <h4>Interaction Rating</h4>
+            <div className="radio-group">
+              {["hot", "warm", "cold"].map((rating) => (
+                <label key={rating} className="radio-container">
+                  <input
+                    type="radio"
+                    name="interactionRating"
+                    checked={interactionRating === rating}
+                    onChange={() => setInteractionRating(rating)}
+                  />
+                  <span className="radio-label">
+                    {rating.charAt(0).toUpperCase() + rating.slice(1)}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+<div>
+     
+
+ <h4 style={{marginTop:"20px"}}>Add Comments based on Stages</h4>
+   <div className="stage-comments-container">
+      <div className="stage-select-container">
+        <select
+          value={selectedStage}
+          onChange={handleStageChange}
+          className="stage-select"
+        >
+          <option value="" disabled>Select stages</option>
+          {Array.from({ length: 15 }, (_, i) => (
+            <option key={i + 1} value={`Stage ${i + 1}`}>
+              Stage {i + 1}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedStage && (
+        <table className="stage-comments-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Comment</th>
+              <th>View History</th>
+              <th>Add Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{selectedStage}</td>
+              <td>{latestComment[selectedStage]?.comment || "-"}</td>
+              <td>
+                <button
+                  className="action-btn"
+                  onClick={handleViewHistory}
+                  disabled={!history.length}
+                >
+                  View History
+                </button>
+              </td>
+              <td>
+                <button
+                  className="action-btn"
+                  onClick={() => setShowAddModal(true)}
+                >
+                  Add Comment
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+
+      {/* History Modal */}
+      {showHistoryModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h4>History for {selectedStage}</h4>
+            <button className="modal-close-btn" onClick={() => setShowHistoryModal(false)}>×</button>
+            {history.length ? (
+              <ul className="history-list">
+                {history.map((c, idx) => (
+                  <li key={idx}>
+                    <strong>{new Date(c.timestamp).toLocaleString()}:</strong> {c.comment}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No history available</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Add Comment Modal */}
+      {showAddModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h4>Add Comment for {selectedStage}</h4>
+            <button className="modal-close-btn" onClick={() => setShowAddModal(false)}>×</button>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Enter your comment"
+              className="comment-textarea"
+            />
+            <button
+              className="submit-btn"
+              onClick={handleAddCommentSubmit}
+              disabled={!newComment.trim()}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+    </div>
+      </div>
+    
+    </div>
+      <div className="followup-detail-theme">
+        <div className="followup-detail-container">
+          <div className="follow-up-reason">
+            <h3>Reason for followup</h3>
+            <div className="interaction-field">
+              <div className="textarea-with-speech">
+                <textarea
+                  value={reasonDesc}
+                  onChange={(e) => setReasonDesc(e.target.value)}
+                  className="interaction-textarea"
+                  placeholder="Type or speak your follow-up reason using the mic"
+                />
+                <button
+                  type="button"
+                  className={`speech-btn ${isListening ? "listening" : ""}`}
+                  onClick={toggleListening}
+                  aria-label={isListening ? "Stop recording" : "Start recording"}
+                >
+                  {isListening ? "⏹" : "🎤"}
+                </button>
+              </div>
+
+              <div className="interaction-datetime" style={{ marginTop: "20px" }}>
+                <h4>Interaction Schedule and Time</h4>
+                <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                  <div>
+                    <label style={{ display: "block" }}>Date:</label>
+                    <input
+                      type="date"
+                      value={interactionDate}
+                      min={minDate}
+                      max={maxDate}
+                      onChange={(e) => setInteractionDate(e.target.value)}
+                      style={{ padding: "8px", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <label style={{ marginBottom: "4px" }}>Time:</label>
+                    <div
+                      style={{
+                        display: "flex",
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        overflow: "hidden",
+                        width: "150px",
+                        backgroundColor: "white"
+                      }}
+                    >
+                      <div style={{ position: "relative", flex: 1 }}>
+                        {!isTimeEditable ? (
+                          <>
+                            <select
+                              ref={timeSelectRef}
+                              value={timeOnly}
+                              onChange={(e) => {
+                                setTimeOnly(e.target.value);
+                                setIsTimeEditable(true);
+                              }}
+                              style={{
+                                border: "none",
+                                padding: "8px 4px",
+                                width: "100%",
+                                appearance: "none",
+                                backgroundColor: "transparent",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <option value={timeOnly}>{timeOnly}</option>
+                              {[
+                                "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
+                                "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
+                                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
+                              ].filter(opt => opt !== timeOnly).map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                            <span
+                              onClick={() => timeSelectRef.current?.focus()}
+                              style={{
+                                position: "absolute",
+                                right: "9px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                pointerEvents: "none",
+                                fontSize: "12px",
+                                color: "#888"
+                              }}
+                            >
+                              ▼
+                            </span>
+                          </>
+                        ) : (
+                          <input
+                            type="time"
+                            value={convertTo24Hour(timeOnly, ampm)}
+                            onChange={(e) => {
+                              const time24 = e.target.value;
+                              if (time24) {
+                                const converted = convertTo12Hour(time24);
+                                setTimeOnly(converted.time);
+                                setAmPm(converted.amPm);
+                              }
+                            }}
+                            onBlur={() => {
+                              // setIsTimeEditable(false);
+                            }}
+                            style={{
+                              border: "none",
+                              padding: "8px 4px",
+                              width: "100%",
+                              backgroundColor: "transparent",
+                              cursor: "text",
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                    {isTimeEditable && (
+                      <button
+                        type="button"
+                        onClick={() => setIsTimeEditable(false)}
+                        style={{
+                          fontSize: "11px",
+                          color: "#666",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          marginTop: "4px",
+                          alignSelf: "flex-start"
+                        }}
+                      >
+                        Use preset times
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {followUpType === "appointment" && isMeetingInPast && (
+                <div style={{
+                  marginTop: "12px",
+                  color: "#b71c1c",
+                  background: "#fff4f4",
+                  borderLeft: "4px solid #e57373",
+                  padding: "10px 15px",
+                  borderRadius: "6px",
+                  fontSize: "14px"
+                }}>
+                  ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+                </div>
+              )}
+               <div className="client-btn">
+                 {createFollowUpFlag && (
+                  <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
+                    Create Follow-Up
+                  </button>
+                )}
+                {(followUpType === "appointment" || followUpType === "converted" || followUpType === "close") && (
+                <button  className="update-btn"
+                  onClick={handleTextUpdate}
+                  disabled={followUpLoading}
+                  style={{
+                    backgroundColor: followUpType === "converted" ? "#28a745" : followUpType === "close" ? "#dc3545" : followUpType === "appointment" ? "#17a2b8" : "#007bff",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "50px",
+                    border: "none",
+                    cursor: followUpLoading ? "not-allowed" : "pointer",
+                    opacity: followUpLoading ? 0.6 : 1,
+                  }}>
+                    {followUpType === "appointment"
+                      ? "Create Meeting"
+                      : followUpType === "converted"
+                      ? "Convert"
+                      : "Close"}
+                  </button>
+                )}            
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProcessClientOverview;

@@ -1,4 +1,3 @@
-// --- processService.js (Updated with PUT API) ---
 import axios from 'axios';
 
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
@@ -166,7 +165,7 @@ export const importConvertedClients = async () => {
 
 export const getCustomerStagesById = async (customerId) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/customer-stages/customer-stages/${customerId}`, {
+    const res = await fetch(`${API_BASE_URL}/customer-stages/${customerId}`, {
       method: "GET",
       headers: getHeaders(),
       credentials: "include",
@@ -230,4 +229,229 @@ export const getProcessSettings = async () => {
   } catch (error) {
     throw error;
   }
+};
+export const createProcessFollowUpApi = async (payload) => {
+ 
+  try {
+     console.log(payload)
+      const token = localStorage.getItem("token");
+    const response = await fetch(`${API_BASE_URL}/process-history/process-followup`,{
+method: "POST",
+headers: {
+  "Content-Type": "application/json",
+     "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
+       Authorization: `Bearer ${token}`,
+},
+credentials: "include",
+   body: JSON.stringify(payload)  
+});
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+export const getProcessFollowupApi = async (id) => {
+const res = await fetch(`${API_BASE_URL}/process-history/process-followup/${id}`, {
+method: "GET",
+headers: getHeaders(),
+credentials: "include",
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+return data;
+};
+export const createFinalStageApi = async (freshLeadId) => {
+  const res = await fetch(`${API_BASE_URL}/processed/create`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body:JSON.stringify({ fresh_lead_id: freshLeadId })
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to create customer stages");
+  return data;
+};
+export const moveToRejectedApi = async (payload) => {
+  const res = await fetch(`${API_BASE_URL}/process-history/process-followup/reject`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to move to rejected");
+  return data;
+};
+
+export const createCloseLeadApi = async (freshLeadId) => {
+  const res = await fetch(`${API_BASE_URL}/close-leads`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body:JSON.stringify({ fresh_lead_id: freshLeadId })
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to create customer stages");
+  return data;
+};
+
+
+
+
+export const getAllProcessFollowupsApi = async (id) => {
+const res = await fetch(`${API_BASE_URL}/process-history/process-followup`, {
+method: "GET",
+headers: getHeaders(),
+credentials: "include",
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to fetch");
+return data;
+};
+export const getProcessFollowupHistoryApi = async (id) => {
+const res = await fetch(`${API_BASE_URL}/process-history/process-followup/${id}`, {
+method: "GET",
+headers: getHeaders(),
+credentials: "include",
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+return data;
+};
+export const getProcessHistoryApi = async (id) => {
+const res = await fetch(`${API_BASE_URL}/followuphistory/${id}`, {
+method: "GET",
+headers: getHeaders(),
+credentials: "include",
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+return data;
+};
+export const createMeetings = async (meetingData) => {
+  const res = await fetch(`${API_BASE_URL}/process-history/process-followp/create-meeting`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify(meetingData),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to create customer stages");
+  return data;
+};
+export const startWorkApi = async (process_person_id) => {
+  if (!process_person_id) {
+    throw new Error("process_person_id is required");
+  }
+  const response = await fetch(`${API_BASE_URL}/process-person-activities/startWork`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify({ process_person_id }),
+  });
+
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to startwork");
+  return data;// Contains { message, activity }
+};
+export const startBreakApi = async (process_person_id) => {
+  if (!process_person_id) {
+    throw new Error("process_person_id is required");
+  }
+  const response = await fetch(`${API_BASE_URL}/process-person-activities/startBreak`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify({ process_person_id }),
+  });
+
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to startwork");
+  return data;// Contains { message, activity }
+};
+export const stopBreakApi = async (process_person_id) => {
+  if (!process_person_id) {
+    throw new Error("process_person_id is required");
+  }
+  const response = await fetch(`${API_BASE_URL}/process-person-activities/stopBreak`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify({ process_person_id }),
+  });
+
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to startwork");
+  return data;// Contains { message, activity }
+};
+export const stopWorkApi = async (process_person_id) => {
+
+  const response = await fetch(`${API_BASE_URL}/process-person-activities/stopWork`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify({ process_person_id }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to startwork");
+  return data;// Contains { message, activity }
+};
+export const createCustomerStagesApi = async (customerId, stageNumber, newComment) => {
+
+  const response = await fetch(`${API_BASE_URL}/customer-stages/stage-comment/add`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body:  JSON.stringify({ customerId, stageNumber, newComment })
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to startwork");
+  return data;// Contains { message, activity }
+};
+export const getComments = async () => {
+  const res = await fetch(`${API_BASE_URL}/customer-stages/stage-comment/get`, {
+    method: "GET",
+    headers: getHeaders(),
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+  return data;
+};
+export const getFinalStage = async () => {
+  const res = await fetch(`${API_BASE_URL}/processed/`, {
+    method: "GET",
+    headers: getHeaders(),
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+  return data;
+};
+export const getStageComments = async (customerId, stageNumber) => {
+  const res = await fetch(
+    `${API_BASE_URL}/customer-stages/stage-comment/get?customerId=${customerId}&stageNumber=${stageNumber}`,
+    {
+      method: "GET",
+      headers: getHeaders(),
+      credentials: "include",
+    }
+  );
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to fetch stage comments");
+  return data; 
 };

@@ -15,6 +15,7 @@ import NotificationRoutes from "./NotificationRoutes";
 import ChatBotRoutes from "./ChatBotRoutes";
 import ScheduleRoutes from "./ScheduleRoutes";
 import ClientDash from "../features/process-client/ClientDash";
+import ProcessSetting from "../features/process-client/ProcessSettings";
 import ClientSetting from "../features/process-client/ClientSetting";
 import ClientUpload from "../features/process-client/ClientUpload";
 import CreateClient from "../features/process-client/CreateClient";
@@ -24,6 +25,10 @@ import "../styles/process.css";
 import ProcessLayout from "../layouts/ProcessLayout";
 import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import ProcessFreshlead from "../features/freshLeads/ProcessFreshlead";
+import ProcessFollowUpRoutes from "./ProcessFollowupRoutes";
+import ProcessFinalRoutes from "./ProcessFinalRoutes";
+import RejectedLeadRoutes from "./RejectedLeadRoutes";
+import ProcessMeetingRoutes from "./ProcessMeetingRoutes";
 
 const ProcessRoutes = () => {
   const { user } = useProcess(); // ✅ Now it's correctly used inside the component
@@ -37,16 +42,18 @@ const ProcessRoutes = () => {
 
            <Route index element={<><ProcessReportCard /><NewsComponent /></>} />
            <Route path="freshlead" element={<ProcessFreshlead />} />
-                     <Route path="follow-up/*" element={<FollowUpRoutes  />} />  
+                     <Route path="process-follow-up/*" element={<ProcessFollowUpRoutes  />} />  
                      <Route path="clients/*" element={<ClientRoutes />} />
                      <Route path="customer/*" element={<CustomerRoutes />} />
-                     <Route path="close-leads/*" element={<CloseLeadRoutes />} />
-                     <Route path="schedule/*" element={<ScheduleRoutes />} />
+                               <Route path="rejected-leads/*" element={<RejectedLeadRoutes />} />
+                     <Route path="finalstage-leads/*" element={<ProcessFinalRoutes />} />
+                     <Route path="schedule/*" element={<ProcessMeetingRoutes />} />
                       <Route path="invoice" element={<InvoicePage />}/>
                                <Route path="settings/*" element={<SettingRoutes />} />
                                <Route path="notification/*" element={  <NotificationRoutes />
                                }/>
                                <Route path="chat/*" element={<ChatBotRoutes />} />
+                             <Route path="process-settings" element={<ProcessSetting />} />   
         <Route path="client/dashboard" element={<ClientDash />} />
         <Route path="client/settings" element={<ClientSetting />} />
         <Route path="client/upload" element={<ClientUpload />} />

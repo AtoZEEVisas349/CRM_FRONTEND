@@ -31,6 +31,7 @@ import HrRoutes from "./routes/HrRoutes";
 import SettingsRouteWrapper from "./routes/SettingsRouteWrapper";
 import ProcessDashboardRoutes from "./routes/ProcessDashboardRoutes";
 import ClientCustomerRoutes from "./routes/ClientCustomer";
+import SessionTimeout from "./features/authentication/SessionTimeout";
 const App = () => {
   const [followUpText, setFollowUpText] = useState(() => {
     const saved = localStorage.getItem('followUpText');
@@ -65,6 +66,8 @@ useEffect(() => {
 
   return (
     <ThemeProvider>
+      <SessionTimeout timeout={45 * 60 * 1000} />  
+
       <Routes>
       <Route path="/admin/login" element={<Login userType="admin" />} />
       <Route path="/admin/signup" element={<Signup userType="admin" />} />

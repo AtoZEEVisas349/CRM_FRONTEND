@@ -19,7 +19,8 @@ const AllClient = () => {
     fetchConvertedClients,
     convertedLoading,
     convertedError,
-    setConvertedClients, // Assuming you have this setter exposed from context
+    setConvertedClients,
+    getComments // Assuming you have this setter exposed from context
   } = useProcessService();
 
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const AllClient = () => {
   // Map clients to add id property from _id if needed
   // This assumes fetchConvertedClients only fetches raw data, so mapping here is safe
   // Alternatively, do this mapping inside fetchConvertedClients itself
+  
   useEffect(() => {
     fetchCustomers()
       .then((data) => {
@@ -59,7 +61,7 @@ const AllClient = () => {
    const handleCardUpload = (client) => {
     navigate(`/processperson/client/upload/${client.id}`, { state: { client } });
   };
-
+   
   return (
     <div className="all-client-container">
       <div className="all-client-header">

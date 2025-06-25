@@ -947,6 +947,53 @@ const [emailTemplates, setEmailTemplates] = useState([]);
       return { weeklyData: [0, 0, 0, 0, 0, 0, 0] };
     }
   };
+
+  
+  // Create a new leave application
+  const createLeaveApplication = async (leaveData) => {
+    try {
+      const response = await apiService.createLeaveApplication(leaveData);
+      return response;
+    } catch (error) {
+      console.error("❌ Failed to create leave application:", error);
+      throw error;
+    }
+  };
+
+    // New state for leave applications
+  const [leaveApplications, setLeaveApplications] = useState([]);
+  const [leaveApplicationsLoading, setLeaveApplicationsLoading] = useState(false);
+
+  // New function to fetch leave applications
+  const fetchLeaveApplicationsAPI = async (employeeId = null) => {
+    setLeaveApplicationsLoading(true);
+    try {
+      const data = await apiService.fetchLeaveApplications(employeeId);
+      setLeaveApplications(data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error fetching leave applications:", error);
+      return [];
+    } finally {
+      setLeaveApplicationsLoading(false);
+    }
+  };
+
+  // New function to update leave status
+  const updateLeaveStatusAPI = async (leaveId, status) => {
+    try {
+      const response = await apiService.updateLeaveApplicationStatus(leaveId, status);
+      setLeaveApplications(prev => 
+        prev.map(app => app.id === leaveId ? { ...app, status } : app)
+      );
+      return response;
+    } catch (error) {
+      console.error("❌ Error updating leave status:", error);
+      throw error;
+    }
+  };  
+
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -1011,7 +1058,12 @@ const [emailTemplates, setEmailTemplates] = useState([]);
 
  meetings,
  refreshMeetings,
- fetchDealFunnelData: apiService.fetchDealFunnelData
+ fetchDealFunnelData: apiService.fetchDealFunnelData,
+
+ createLeaveApplication,
+ // New leave application functions
+   fetchLeaveApplicationsAPI,
+   updateLeaveStatusAPI,
   };
 
   return (
@@ -1142,6 +1194,13 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         followUpHistoriesLoading,
         fetchFollowUpHistoriesAPI,
         createFollowUpHistoryAPI,
+
+              // New leave applications context
+              leaveApplications,
+              leaveApplicationsLoading,
+              fetchLeaveApplicationsAPI,
+              updateLeaveStatusAPI,
+              
       }}
     >
       {children}

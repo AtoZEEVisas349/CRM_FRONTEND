@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/sidebar.css";
 import BeepNotification from "../BeepNotification";
-import ExecutiveActivity from "../features/executive/ExecutiveActivity";
+import ProcessActivity from "../features/executive/ProcessActivity";
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
@@ -19,6 +19,7 @@ import {
   faHeadphones, faYinYang, faStopCircle,faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 import { FaPlay,FaPause ,BeepNo} from "react-icons/fa";
+import { useProcess } from "../context/ProcessAuthContext";
 // Break timer icons
 const breakIcons = [
   faMugHot, faPersonWalking, faBed, faCouch,
@@ -26,11 +27,12 @@ const breakIcons = [
 ];
 
 const ProcessSidebarNavbar = () => {
-  const { breakTimer, startBreak, stopBreak, isBreakActive, resetBreakTimer } = useBreakTimer();
+  const { breakTimer, startBreak, stopBreak, isBreakActive, resetBreakTimer,processstartBreak,processstopBreak} = useBreakTimer();
+  const {logout}=useProcess();
   const timer = useWorkTimer();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const {
-    executiveInfo, executiveLoading, fetchExecutiveData,
+     executiveLoading, 
     fetchNotifications, unreadCount, notifications,markNotificationReadAPI
   } = useApi();
   const { handleStopWork } = useExecutiveActivity();
@@ -43,6 +45,9 @@ const ProcessSidebarNavbar = () => {
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
+  const userDetails = JSON.parse(localStorage.getItem("user")) || {};
+const { email, fullName,id } = userDetails;
+
 
   const [workTime, setWorkTime] = useState("00:00");
   const [isWorkRunning, setIsWorkRunning] = useState(false);
@@ -62,16 +67,16 @@ const ProcessSidebarNavbar = () => {
   const toggleSidebar = () => setIsActive(prev => !prev);
   const toggle = async () => {
     if (!isBreakActive) {
-      await startBreak();
+      await processstartBreak(id);
     } else {
-      await stopBreak();
+      await processstopBreak(id);
       }
     };
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true); // Start spinner
-      await stopBreak();
+     await processstopBreak(id);
       await logout();
       resetBreakTimer();
     } catch (error) {
@@ -112,8 +117,6 @@ const ProcessSidebarNavbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-
-// BeepNotification handlers
 const handleDismissBeepNotification = () => {
   // This function can be used to handle any additional logic when dismissing
   console.log('BeepNotification dismissed');
@@ -187,29 +190,29 @@ const handleDismissBeepNotification = () => {
             </li>
             <li>
               <Link
-                to="/process/follow-up"
+                to="/process/process-follow-up/"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
                 <FontAwesomeIcon icon={faList} /> Follow ups
               </Link>
             </li>
-            <li>
+             <li>
               <Link
-                to="/process/customer"
+                to="/process/rejected-leads"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
-                <FontAwesomeIcon icon={faClock} /> Convert
+                <FontAwesomeIcon icon={faCircleXmark} />Rejected Leads
               </Link>
             </li>
             <li>
               <Link
-                to="/process/close-leads"
+                to="/process/finalstage-leads"
                 className="submenu_item"
                 onClick={() => setIsOpen(false)}
               >
-                <FontAwesomeIcon icon={faCircleXmark} /> Close
+                <FontAwesomeIcon icon={faCircleXmark} /> Completed Stages
               </Link>
             </li>
           </ul>
@@ -217,7 +220,7 @@ const handleDismissBeepNotification = () => {
         </li>
         <li><Link to="/process/schedule" className="sidebar_nav"><FontAwesomeIcon icon={faFile} /> Scheduled Meetings</Link></li>
         <li><Link to="/process/invoice" className="sidebar_nav"><FontAwesomeIcon icon={faReceipt} /> Invoice</Link></li>
-        <li><Link to="/process/settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
+        <li><Link to="/process/process-settings" className="sidebar_nav"><FontAwesomeIcon icon={faGear} /> Settings</Link></li>
       </ul>
 
      <div className="role-switch-wrapper">
@@ -299,7 +302,7 @@ const handleDismissBeepNotification = () => {
 
       <div onMouseEnter={() => setShowTracker(true)} onMouseLeave={() => setShowTracker(false)}>
       <FontAwesomeIcon 
-        className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ExecutiveActivity /> }
+        className="navbar_icon" icon={faClock} title="Toggle Activity Tracker" onClick={() => setShowTracker(prev => !prev)}  /> {showTracker &&<ProcessActivity /> }
       </div>
         
       <div
@@ -323,11 +326,11 @@ const handleDismissBeepNotification = () => {
         <>
           <div className="user_details">
             <div className="user_avatar">
-              {executiveInfo.username?.charAt(0)}
+              {/* {fullName.charAt(0)} */}
             </div>
             <div>
-              <p className="user_name">{executiveInfo.username}</p>
-              <p className="user_role">{executiveInfo.role}</p>
+              <p className="user_name"  style={{ textTransform: "none" }}>{fullName?.toLowerCase()}</p>
+              <p className="user_role" style={{ textTransform: "none" }}>{userDetails.email?.toLowerCase()}</p>
             </div>
           </div>
           <button 
@@ -368,7 +371,7 @@ const handleDismissBeepNotification = () => {
             <FontAwesomeIcon icon={faMugHot} /> You are on a break
           </div>
           <div className="timer-display">{breakTimer}</div>
-          <button className="stop-break-btn" onClick={stopBreak}>
+          <button className="stop-break-btn" onClick={()=>processstopBreak(id)}>
             <FontAwesomeIcon icon={faStopCircle} /> Stop break
           </button>
         </div>

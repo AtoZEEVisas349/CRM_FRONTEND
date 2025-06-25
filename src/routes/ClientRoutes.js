@@ -4,7 +4,8 @@ import SideandNavbar from "../layouts/SidebarandNavbar";
 import ClientOverview from "../features/client-details/ClientOverview";
 import ClientDetailsOverview from "../features/follow-ups/ClientDetailsOverview";
 import { Routes, Route, useLocation } from "react-router-dom";
-
+import ProcessClientOverview from "../features/client-details/ProcessClientOverview";
+import ProcessClientDetailsOverview from "../features/follow-ups/ProcessClientDetailsOverview";
 const ClientRoutes = () => {
   const location = useLocation(); // ✅ import & use the hook properly
 
@@ -16,6 +17,8 @@ const ClientRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path=":clientId" element={<ClientOverview />} />
           <Route path=":clientId/details" element={<ClientDetailsOverview />} />
+             <Route path="/processperson/:clientId/:id" element={<ProcessClientOverview />} />
+                <Route path="/details/:clientId/:id" element={<ProcessClientDetailsOverview />} />
         </Routes>
       </div>
     </div>

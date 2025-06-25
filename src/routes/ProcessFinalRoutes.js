@@ -4,20 +4,21 @@ import "../styles/closeLeads.css";
 import SideandNavbar from "../layouts/SidebarandNavbar";
 import { SearchContext } from "../context/SearchContext";
 import { useEffect,useContext } from "react";
+import ProcessLeads from "../features/close-leads/ProcessLeads";
 
-const CloseLeadRoutes = () => {
+const ProcessFinalRoutes = () => {
   const { searchQuery, setActivePage } = useContext(SearchContext); 
   useEffect(() => {
     setActivePage("close-leads"); 
   }, []);
   return (
     <div className="close-leads-container">
-      {/* <SideandNavbar/> */}
+   
       <div className="close-leads-main">
-      <Leads searchQuery={searchQuery}/>
+      <ProcessLeads searchQuery={searchQuery}/>
       </div>
     </div>
   );
 };
 
-export default CloseLeadRoutes;
+export default ProcessFinalRoutes;

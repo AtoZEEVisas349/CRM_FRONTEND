@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   loginUser,
   signupUser,
   logoutUser,
 } from "../services/processAuth";
-
+import { useProcessService } from "./ProcessServiceContext";
 //Create Context
 const ProcessContext = createContext();
 
@@ -12,7 +13,8 @@ const ProcessContext = createContext();
 export const ProcessProvider = ({ children }) => {
   const [user, setUser] = useState(null);        
   const [loading, setLoading] = useState(false);  
-
+   const{stopWork}=useProcessService();
+   const navigate=useNavigate();
 // ---------------------------------------
 // Load session from localStorage on refresh
 // ---------------------------------------
@@ -43,6 +45,7 @@ export const ProcessProvider = ({ children }) => {
       }
 
       localStorage.setItem("user", JSON.stringify(userPayload));
+      
 
       return data;
     } catch (error) {
@@ -74,12 +77,15 @@ const signup = async (fullName, email, password, userType) => {
     try {
       const userType = user?.type || "customer";
       await logoutUser(userType);
+      await stopWork(user?.id)
+       navigate("/process/client/login");
     } catch (error) {
       console.error("Logout failed:", error.message);
     } finally {
       setUser(null);
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+       localStorage.removeItem("workStartTime");
     }
   };
 

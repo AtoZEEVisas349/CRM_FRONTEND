@@ -3,18 +3,14 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
 import DealFunnel from "../features/admin/DealFunnel";
-import OpportunityStage from "../features/admin/OpportunityStage";
 import RevenueChart from "../features/admin/RevenueChart";
 import ProfitChart from "../features/admin/ProfitChart";
 import Meetings from "../features/admin/Meetings";
 import LeadGraph from "../features/admin/LeadGraph";
 import ExecutiveActi from "../features/admin/ExecuitveActi";
-import AdminSidebar from "../layouts/AdminSidebar";
-import ManagerSidebar from "../layouts/ManagerSidebar";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
-import AdminNavbar from "./AdminNavbar";
 import RequirePermission from '../features/admin-settings/RequirePermission'
 import HrSidebar from "./HrSidebar";
 import HrNavbar from "./HrNavbar";

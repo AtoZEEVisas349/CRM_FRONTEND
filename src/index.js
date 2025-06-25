@@ -25,11 +25,13 @@ root.render(
   <AuthProvider>
     <ApiProvider>
       <ExecutiveActivityProvider>
-        <BreakTimerProvider>
+     
         <MasterProvider>
           <CompanyProvider>
-            <ProcessProvider>
+          
               <ProcessServiceProvider>
+                  <ProcessProvider>
+                   <BreakTimerProvider>
                 <SearchProvider>
                   <PermissionProvider>
                   <LoadingProvider>
@@ -37,11 +39,12 @@ root.render(
                 </LoadingProvider>
             </PermissionProvider>
             </SearchProvider>
+            </BreakTimerProvider>
+               </ProcessProvider>
             </ProcessServiceProvider>
-            </ProcessProvider>
             </CompanyProvider>
             </MasterProvider>
-        </BreakTimerProvider>
+     
       </ExecutiveActivityProvider>
     </ApiProvider>
   </AuthProvider>

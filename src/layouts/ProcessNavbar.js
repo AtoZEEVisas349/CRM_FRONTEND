@@ -66,9 +66,7 @@ const ProcessNavbar = () => {
           {user?.type === 'customer' && (
             <li><Link to="/customer/client/settings">Settings</Link></li>
           )}
-         {user?.type === 'processperson' && (
-            <li><Link to="/processperson/client/settings">Settings</Link></li>
-          )}
+        
           {/* <li><Link to="/process/client/settings">Settings</Link></li> */}
            {user?.type === 'processperson' && (
             <div className="role-switch-wrapper1">

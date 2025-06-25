@@ -15,26 +15,32 @@ const ProcessReportCard = () => {
     customers,
     setCustomers,
     fetchCustomers,
+    getProcessAllFollowup,
+    getAllFinalStages
     // Assuming you have this setter exposed from context
   } = useProcessService();
   const navigate = useNavigate();
-  
+  const [freshLeadCount,setFreshLeadCount]=useState();
   useEffect(() => {
     fetchCustomers()
       .then((data) => {
         // If data returned from fetchConvertedClients is the raw clients array
         if (data && Array.isArray(data)) {
-          const mappedClients = data.map((client) => ({
-            ...client,
-            id: client.id || client._id, // prefer id, fallback to _id
-          }));
-          setCustomers(mappedClients);
+             const mappedClients = data
+  .filter((client) => client.status === "pending")
+          setFreshLeadCount(mappedClients);
         }
       })
+      
+       
       .catch((err) => {
         console.error("❌ Error fetching clients:", err);
       });
   }, []);
+  const freshLeadCountData= customers
+  .filter((client) => client.status === "pending")
+   const followupCountData= customers
+  .filter((client) => client.status === "under_review")
   const [freshleadCounts, setFreshLeadCounts] = useState(0);
   const [followupCounts, setFollowupCounts] = useState(0);
   const [convertedCounts, setConvertedCounts] = useState(0);
@@ -59,11 +65,11 @@ const ProcessReportCard = () => {
 
   const fetchFollowup = async () => {
     try {
-      const followup = await getAllFollowUps();
-
+      const followup = await getProcessAllFollowup();
+      
       const assignedFollowup = followup.data.filter(
-        (lead) =>
-          lead.clientLeadStatus === "Follow-Up" 
+        (client) =>
+     client?.freshLead?.lead?.clientLead?.status === "Follow-Up" 
       );
 
       setFollowupCounts(assignedFollowup.length);
@@ -75,15 +81,9 @@ const ProcessReportCard = () => {
 
   const fetchConverted = async () => {
     try {
-      const converted = await fetchConvertedClientsAPI();
-
-      const assignedConverted = converted.filter(
-        (lead) =>
-          lead.status === "Converted" 
-      );
-
-      setConvertedCounts(assignedConverted.length);
-      console.log(assignedConverted)
+      const response = await getAllFinalStages();
+       setConvertedCounts(response.data);
+     
     } catch (error) {
       console.error("Failed to fetch converted clients:", error);
     }
@@ -148,29 +148,30 @@ const ProcessReportCard = () => {
   const cards = [
     {
       title: "Fresh Leads",
-      value: <div>{customers.length}</div>,
+      value: <div>{freshLeadCountData.length}</div>,
       route: "/process/freshlead",
       change: "+3.85%",
       icon: <FaUserPlus />,
     },
     {
       title: "Follow-ups",
-      value: <div>{followupCounts}</div>,
-      route: "/process/follow-up",
+      value: <div>{followupCountData.length}</div>,
+      route: "process-follow-up/",
       change: "+6.41%",
       icon: <FaClipboardCheck />,
     },
-    {
-      title: "Converted Clients",
-      value: <div>{convertedCustomerCount}</div>, // ✅ use context count
-      route: "/process/customer",
-      icon: <FaUsers />,
-    },
+  
     {
       title: "Scheduled Meetings",
       value: <div>{meetingsCount}</div>,
       route: "/process/schedule",
       change: "-5.38%",
+      icon: <FaUsers />,
+    },
+      {
+      title: "Completed Stages",
+      value: <div>{convertedCounts.length}</div>, // ✅ use context count
+      route: "finalstage-leads",
       icon: <FaUsers />,
     },
   ];

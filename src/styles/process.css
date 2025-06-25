@@ -2212,4 +2212,148 @@ body {
   text-overflow: ellipsis;
   padding-left: 10px;
 }
+.followup-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
+.followup-modal-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.followup-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.followup-modal-header h4 {
+  margin: 0;
+}
+
+.followup-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+}
+
+.followup-modal-body {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.followup-history-entry {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.followup-history-entry p {
+  margin: 4px 0;
+}
+.stage-comments-container {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.stage-select-container {
+  margin-bottom: 20px;
+}
+
+.stage-select {
+  width: 50%;
+  padding: 6px;
+}
+
+.stage-comments-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.stage-comments-table th,
+.stage-comments-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.action-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  position: relative;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.comment-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.submit-btn {
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.history-list {
+  padding-left: 20px;
+}

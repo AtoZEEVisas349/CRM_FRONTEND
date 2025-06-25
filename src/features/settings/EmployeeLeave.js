@@ -1,26 +1,37 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, User, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { useApi } from '../../context/ApiContext';
+import moment from 'moment';
+import '../../styles/setting.css';
 
 const EmployeeLeave = () => {
+  const { uploadFileAPI, createLeaveApplication, fetchLeaveApplicationsAPI } = useApi();
+
   const [formData, setFormData] = useState({
     employeeId: '',
-    employeeName: '',
-    department: '',
-    position: '',
+    fullName: '',
+    role: '',
+    positionTitle: '',
     leaveType: '',
     startDate: '',
     endDate: '',
     totalDays: '',
     reason: '',
-    emergencyContact: '',
+    emergencyContactName: '',
     emergencyPhone: '',
-    handoverTo: '',
+    workHandoverTo: '',
     handoverNotes: '',
-    attachments: null
+    attachments: null,
+    appliedDate: moment().format('YYYY-MM-DD'),
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submissionError, setSubmissionError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [leaveApplications, setLeaveApplications] = useState([]);
+  const [leaveHistoryLoading, setLeaveHistoryLoading] = useState(false);
 
   const leaveTypes = [
     'Annual Leave',
@@ -30,19 +41,51 @@ const EmployeeLeave = () => {
     'Bereavement Leave',
     'Maternity/Paternity Leave',
     'Study Leave',
-    'Sabbatical Leave'
+    'Sabbatical Leave',
   ];
 
-  const departments = [
-    'Executive Management',
-    'Human Resources',
-    'Finance',
-    'Operations',
-    'Marketing',
-    'Technology',
-    'Legal',
-    'Strategy'
+  const roleOptions = [
+    'Executive',
+    'Team Leader',
+    'Manager',
+    'HR',
+    'Admin',
   ];
+
+  // Fetch user data and leave applications on component mount
+  useEffect(() => {
+    const fetchUserDataAndLeaves = async () => {
+      try {
+        const userData = localStorage.getItem('user');
+        const executiveId = localStorage.getItem('executiveId');
+
+        if (userData) {
+          const user = JSON.parse(userData);
+          const employeeId = user.id || executiveId || user.employeeId || '';
+
+          setFormData(prev => ({
+            ...prev,
+            employeeId,
+            fullName: user.username || user.name || user.fullName || '',
+            role: user.role || '',
+            positionTitle: user.position || user.title || user.designation || '',
+          }));
+
+          if (employeeId) {
+            setLeaveHistoryLoading(true);
+            const applications = await fetchLeaveApplicationsAPI(employeeId);
+            setLeaveApplications(applications || []);
+            setLeaveHistoryLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data or leave applications:', error);
+        setLeaveHistoryLoading(false);
+      }
+    };
+
+    fetchUserDataAndLeaves();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -52,11 +95,10 @@ const EmployeeLeave = () => {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
 
-    // Calculate total days when dates change
     if (name === 'startDate' || name === 'endDate') {
       const startDate = new Date(name === 'startDate' ? value : formData.startDate);
       const endDate = new Date(name === 'endDate' ? value : formData.endDate);
-      
+
       if (startDate && endDate && endDate >= startDate) {
         const timeDiff = endDate.getTime() - startDate.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
@@ -64,7 +106,6 @@ const EmployeeLeave = () => {
       }
     }
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -72,15 +113,15 @@ const EmployeeLeave = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.employeeName.trim()) newErrors.employeeName = 'Employee name is required';
-    if (!formData.department) newErrors.department = 'Department is required';
-    if (!formData.position.trim()) newErrors.position = 'Position is required';
+
+    if (!formData.fullName.trim()) newErrors.fullName = 'Employee name is required';
+    if (!formData.role) newErrors.role = 'Role is required';
+    if (!formData.positionTitle.trim()) newErrors.positionTitle = 'Position is required';
     if (!formData.leaveType) newErrors.leaveType = 'Leave type is required';
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (!formData.endDate) newErrors.endDate = 'End date is required';
     if (!formData.reason.trim()) newErrors.reason = 'Reason is required';
-    if (!formData.emergencyContact.trim()) newErrors.emergencyContact = 'Emergency contact is required';
+    if (!formData.emergencyContactName.trim()) newErrors.emergencyContactName = 'Emergency contact is required';
     if (!formData.emergencyPhone.trim()) newErrors.emergencyPhone = 'Emergency phone is required';
 
     if (formData.startDate && formData.endDate) {
@@ -95,52 +136,126 @@ const EmployeeLeave = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      setIsSubmitted(true);
-      // Here you would typically send the data to your backend
-      console.log('Leave application submitted:', formData);
+    if (!validateForm()) return;
+
+    setUploading(true);
+    setSubmissionError('');
+
+    try {
+      let supportingDocumentPath = null;
+
+      if (formData.attachments) {
+        const uploadResponse = await uploadFileAPI(formData.attachments);
+        supportingDocumentPath = uploadResponse?.filePath || null;
+      }
+
+      const payload = {
+        employeeId: formData.employeeId,
+        fullName: formData.fullName,
+        positionTitle: formData.positionTitle,
+        leaveType: formData.leaveType,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        totalDays: parseInt(formData.totalDays, 10),
+        appliedDate: formData.appliedDate,
+        reason: formData.reason,
+        emergencyContactName: formData.emergencyContactName,
+        emergencyPhone: formData.emergencyPhone,
+        workHandoverTo: formData.workHandoverTo || null,
+        handoverNotes: formData.handoverNotes || null,
+        supportingDocumentPath,
+      };
+
+      const response = await createLeaveApplication(payload);
+      if (response && response.data) {
+        setIsSubmitted(true);
+        // Refresh leave applications after submission
+        const applications = await fetchLeaveApplicationsAPI(formData.employeeId);
+        setLeaveApplications(applications || []);
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Error submitting leave application:', error);
+      setSubmissionError(error.message || 'Failed to submit leave application. Please try again.');
+    } finally {
+      setUploading(false);
     }
   };
 
   const handleReset = () => {
-    setFormData({
+    const userData = localStorage.getItem('user');
+    const executiveId = localStorage.getItem('executiveId');
+
+    let userInfo = {
       employeeId: '',
-      employeeName: '',
-      department: '',
-      position: '',
+      fullName: '',
+      role: '',
+      positionTitle: '',
+    };
+
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        userInfo = {
+          employeeId: user.id || executiveId || user.employeeId || '',
+          fullName: user.username || user.name || user.fullName || '',
+          role: user.role || '',
+          positionTitle: user.position || user.title || user.designation || '',
+        };
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+
+    setFormData({
+      ...userInfo,
       leaveType: '',
       startDate: '',
       endDate: '',
       totalDays: '',
       reason: '',
-      emergencyContact: '',
+      emergencyContactName: '',
       emergencyPhone: '',
-      handoverTo: '',
+      workHandoverTo: '',
       handoverNotes: '',
-      attachments: null
+      attachments: null,
+      appliedDate: moment().format('YYYY-MM-DD'),
     });
     setErrors({});
     setIsSubmitted(false);
+    setSubmissionError('');
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'approved': return '#10b981';
+      case 'rejected': return '#ef4444';
+      case 'pending': return '#f59e0b';
+      default: return '#6b7280';
+    }
   };
 
   if (isSubmitted) {
     return (
-      <div style={styles.container}>
-        <div style={styles.successCard}>
-          <CheckCircle style={styles.successIcon} />
-          <h2 style={styles.successTitle}>Leave Application Submitted Successfully</h2>
-          <p style={styles.successMessage}>
-            Your leave application has been submitted and is pending approval. 
+      <div className="el-container">
+        <div className="el-success-card">
+          <CheckCircle className="el-success-icon" />
+          <h2 className="el-success-title">Leave Application Submitted Successfully</h2>
+          <p className="el-success-message">
+            Your leave application has been submitted and is pending approval.
             You will receive a confirmation email shortly with your application reference number.
           </p>
-          <div style={styles.successDetails}>
-            <p><strong>Employee:</strong> {formData.employeeName}</p>
+          <div className="el-success-details">
+            <p><strong>Employee:</strong> {formData.fullName}</p>
+            <p><strong>Employee ID:</strong> {formData.employeeId}</p>
+            <p><strong>Role:</strong> {formData.role}</p>
             <p><strong>Leave Type:</strong> {formData.leaveType}</p>
             <p><strong>Duration:</strong> {formData.startDate} to {formData.endDate} ({formData.totalDays} days)</p>
           </div>
-          <button onClick={handleReset} style={styles.newApplicationBtn}>
+          <button onClick={handleReset} className="el-new-application-btn">
             Submit New Application
           </button>
         </div>
@@ -149,435 +264,293 @@ const EmployeeLeave = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <div style={styles.headerContent}>
-          <User style={styles.headerIcon} />
+    <div className="el-container">
+      <div className="el-header">
+        <div className="el-header-content">
+          <User className="el-header-icon" />
           <div>
-            <h1 style={styles.title}>Executive Leave Application</h1>
-            <p style={styles.subtitle}>Submit your leave request for approval</p>
+            <h1 className="el-title">Employee Leave Application</h1>
+            <p className="el-subtitle">Submit your leave request or view your leave history</p>
           </div>
         </div>
       </div>
 
-      <div style={styles.form}>
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>
-            <User size={20} style={styles.sectionIcon} />
+      <div className="el-form">
+        {submissionError && (
+          <div className="el-error-banner">
+            <AlertCircle size={20} style={{ color: '#ef4444' }} />
+            <span>{submissionError}</span>
+          </div>
+        )}
+
+        {/* Leave Application Form */}
+        <div className="el-section">
+          <h3 className="el-section-title">
+            <User size={20} className="el-section-icon" />
             Employee Information
           </h3>
-          <div style={styles.grid}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Employee ID</label>
+          <div className="el-grid">
+            <div className="el-form-group">
+              <label className="el-label">Employee ID</label>
               <input
                 type="text"
                 name="employeeId"
                 value={formData.employeeId}
                 onChange={handleInputChange}
-                style={styles.input}
-                placeholder="Enter employee ID"
+                className="el-input el-input-readonly"
+                placeholder="Auto-populated from login"
+                readOnly
               />
+              <span className="el-info-text">Auto-populated from your login session</span>
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Full Name *</label>
+            <div className="el-form-group">
+              <label className="el-label">Full Name *</label>
               <input
                 type="text"
-                name="employeeName"
-                value={formData.employeeName}
+                name="fullName"
+                value={formData.fullName}
                 onChange={handleInputChange}
-                style={errors.employeeName ? { ...styles.input, ...styles.inputError } : styles.input}
-                placeholder="Enter full name"
+                className={`el-input el-input-readonly ${errors.fullName ? 'el-input-error' : ''}`}
+                placeholder="Auto-populated from login"
+                readOnly
               />
-              {errors.employeeName && <span style={styles.errorText}>{errors.employeeName}</span>}
+              <span className="el-info-text">Auto-populated from your login session</span>
+              {errors.fullName && <span className="el-error-text">{errors.fullName}</span>}
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Department *</label>
+            <div className="el-form-group">
+              <label className="el-label">Role *</label>
               <select
-                name="department"
-                value={formData.department}
+                name="role"
+                value={formData.role}
                 onChange={handleInputChange}
-                style={errors.department ? { ...styles.select, ...styles.inputError } : styles.select}
+                className={`el-select el-select-readonly ${errors.role ? 'el-input-error' : ''}`}
+                disabled
               >
-                <option value="">Select Department</option>
-                {departments.map(dept => (
-                  <option key={dept} value={dept}>{dept}</option>
+                <option value="">Select Role</option>
+                {roleOptions.map(roleOption => (
+                  <option key={roleOption} value={roleOption}>{roleOption}</option>
                 ))}
               </select>
-              {errors.department && <span style={styles.errorText}>{errors.department}</span>}
+              <span className="el-info-text">Auto-populated from your login session</span>
+              {errors.role && <span className="el-error-text">{errors.role}</span>}
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Position/Title *</label>
+            <div className="el-form-group">
+              <label className="el-label">Position/Title *</label>
               <input
                 type="text"
-                name="position"
-                value={formData.position}
+                name="positionTitle"
+                value={formData.positionTitle}
                 onChange={handleInputChange}
-                style={errors.position ? { ...styles.input, ...styles.inputError } : styles.input}
+                className={`el-input ${errors.positionTitle ? 'el-input-error' : ''}`}
                 placeholder="Enter position/title"
               />
-              {errors.position && <span style={styles.errorText}>{errors.position}</span>}
+              {errors.positionTitle && <span className="el-error-text">{errors.positionTitle}</span>}
             </div>
           </div>
         </div>
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>
-            <Calendar size={20} style={styles.sectionIcon} />
+        <div className="el-section">
+          <h3 className="el-section-title">
+            <Calendar size={20} className="el-section-icon" />
             Leave Details
           </h3>
-          <div style={styles.grid}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Leave Type *</label>
+          <div className="el-grid">
+            <div className="el-form-group">
+              <label className="el-label">Leave Type *</label>
               <select
                 name="leaveType"
                 value={formData.leaveType}
                 onChange={handleInputChange}
-                style={errors.leaveType ? { ...styles.select, ...styles.inputError } : styles.select}
+                className={`el-select ${errors.leaveType ? 'el-input-error' : ''}`}
               >
                 <option value="">Select Leave Type</option>
                 {leaveTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
-              {errors.leaveType && <span style={styles.errorText}>{errors.leaveType}</span>}
+              {errors.leaveType && <span className="el-error-text">{errors.leaveType}</span>}
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Start Date *</label>
+            <div className="el-form-group">
+              <label className="el-label">Start Date *</label>
               <input
                 type="date"
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleInputChange}
-                style={errors.startDate ? { ...styles.input, ...styles.inputError } : styles.input}
+                className={`el-input ${errors.startDate ? 'el-input-error' : ''}`}
+                min={new Date().toISOString().split('T')[0]}
               />
-              {errors.startDate && <span style={styles.errorText}>{errors.startDate}</span>}
+              {errors.startDate && <span className="el-error-text">{errors.startDate}</span>}
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>End Date *</label>
+            <div className="el-form-group">
+              <label className="el-label">End Date *</label>
               <input
                 type="date"
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleInputChange}
-                style={errors.endDate ? { ...styles.input, ...styles.inputError } : styles.input}
+                className={`el-input ${errors.endDate ? 'el-input-error' : ''}`}
+                min={formData.startDate || new Date().toISOString().split('T')[0]}
               />
-              {errors.endDate && <span style={styles.errorText}>{errors.endDate}</span>}
+              {errors.endDate && <span className="el-error-text">{errors.endDate}</span>}
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Total Days</label>
+            <div className="el-form-group">
+              <label className="el-label">Total Days</label>
               <input
                 type="text"
                 name="totalDays"
                 value={formData.totalDays}
                 readOnly
-                style={{...styles.input, backgroundColor: '#f8f9fa'}}
+                className="el-input el-input-readonly"
                 placeholder="Auto-calculated"
               />
             </div>
           </div>
         </div>
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>
-            <FileText size={20} style={styles.sectionIcon} />
+        <div className="el-section">
+          <h3 className="el-section-title">
+            <FileText size={20} className="el-section-icon" />
             Additional Information
           </h3>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Reason for Leave *</label>
+          <div className="el-form-group">
+            <label className="el-label">Reason for Leave *</label>
             <textarea
               name="reason"
               value={formData.reason}
               onChange={handleInputChange}
-              style={errors.reason ? { ...styles.textarea, ...styles.inputError } : styles.textarea}
+              className={`el-textarea ${errors.reason ? 'el-input-error' : ''}`}
               placeholder="Please provide detailed reason for leave"
               rows="4"
             />
-            {errors.reason && <span style={styles.errorText}>{errors.reason}</span>}
+            {errors.reason && <span className="el-error-text">{errors.reason}</span>}
           </div>
 
-          <div style={styles.grid}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Emergency Contact Name *</label>
+          <div className="el-grid">
+            <div className="el-form-group">
+              <label className="el-label">Emergency Contact Name *</label>
               <input
                 type="text"
-                name="emergencyContact"
-                value={formData.emergencyContact}
+                name="emergencyContactName"
+                value={formData.emergencyContactName}
                 onChange={handleInputChange}
-                style={errors.emergencyContact ? { ...styles.input, ...styles.inputError } : styles.input}
+                className={`el-input ${errors.emergencyContactName ? 'el-input-error' : ''}`}
                 placeholder="Contact person during leave"
               />
-              {errors.emergencyContact && <span style={styles.errorText}>{errors.emergencyContact}</span>}
+              {errors.emergencyContactName && <span className="el-error-text">{errors.emergencyContactName}</span>}
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Emergency Phone *</label>
+            <div className="el-form-group">
+              <label className="el-label">Emergency Phone *</label>
               <input
                 type="tel"
                 name="emergencyPhone"
                 value={formData.emergencyPhone}
                 onChange={handleInputChange}
-                style={errors.emergencyPhone ? { ...styles.input, ...styles.inputError } : styles.input}
+                className={`el-input ${errors.emergencyPhone ? 'el-input-error' : ''}`}
                 placeholder="Phone number"
               />
-              {errors.emergencyPhone && <span style={styles.errorText}>{errors.emergencyPhone}</span>}
+              {errors.emergencyPhone && <span className="el-error-text">{errors.emergencyPhone}</span>}
             </div>
           </div>
 
-          <div style={styles.grid}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Work Handover To</label>
+          <div className="el-grid">
+            <div className="el-form-group">
+              <label className="el-label">Work Handover To</label>
               <input
                 type="text"
-                name="handoverTo"
-                value={formData.handoverTo}
+                name="workHandoverTo"
+                value={formData.workHandoverTo}
                 onChange={handleInputChange}
-                style={styles.input}
+                className="el-input"
                 placeholder="Name of person handling responsibilities"
               />
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Supporting Documents</label>
+            <div className="el-form-group">
+              <label className="el-label">Supporting Documents</label>
               <input
                 type="file"
                 name="attachments"
                 onChange={handleInputChange}
-                style={styles.fileInput}
+                className="el-file-input"
                 accept=".pdf,.doc,.docx,.jpg,.png"
               />
             </div>
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Handover Notes</label>
+          <div className="el-form-group">
+            <label className="el-label">Handover Notes</label>
             <textarea
               name="handoverNotes"
               value={formData.handoverNotes}
               onChange={handleInputChange}
-              style={styles.textarea}
+              className="el-textarea"
               placeholder="Important notes for work handover and coverage"
               rows="3"
             />
           </div>
         </div>
 
-        <div style={styles.actionButtons}>
-          <button type="button" onClick={handleReset} style={styles.resetBtn}>
+        <div className="el-action-buttons">
+          <button type="button" onClick={handleReset} className="el-reset-btn" disabled={uploading}>
             Reset Form
           </button>
-          <button type="button" onClick={handleSubmit} style={styles.submitBtn}>
-            <Clock size={18} style={styles.btnIcon} />
-            Submit Leave Application
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="el-submit-btn"
+            disabled={uploading}
+          >
+            <Clock size={18} className="el-btn-icon" />
+            {uploading ? 'Submitting...' : 'Submit Leave Application'}
           </button>
         </div>
       </div>
+
+      {/* Leave Application History */}
+      <div className="el-section">
+        <h3 className="el-section-title">
+          <Calendar size={20} className="el-section-icon" />
+          Your Leave Application History
+        </h3>
+        {leaveHistoryLoading ? (
+          <div className="el-loading">Loading your leave applications...</div>
+        ) : leaveApplications.length === 0 ? (
+          <div className="el-no-data">No leave applications found.</div>
+        ) : (
+          <div className="el-table-container">
+            <table className="el-table">
+              <thead>
+                <tr>
+                  <th className="el-table-header">Leave Type</th>
+                  <th className="el-table-header">Start Date</th>
+                  <th className="el-table-header">End Date</th>
+                  <th className="el-table-header">Total Days</th>
+                  <th className="el-table-header">Status</th>
+                  <th className="el-table-header">Applied Date</th>
+                  <th className="el-table-header">Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaveApplications.map((application) => (
+                  <tr key={application.id} className="el-table-row">
+                    <td className="el-table-cell">{application.leaveType}</td>
+                    <td className="el-table-cell">{application.startDate}</td>
+                    <td className="el-table-cell">{application.endDate}</td>
+                    <td className="el-table-cell">{application.totalDays}</td>
+                    <td className="el-table-cell" style={{ color: getStatusColor(application.status) }}>
+                      {application.status}
+                    </td>
+                    <td className="el-table-cell">{application.appliedDate}</td>
+                    <td className="el-table-cell">{application.reason}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    backgroundColor: '#f8fafc',
-    padding: '20px',
-    fontFamily: 'system-ui, -apple-system, sans-serif'
-  },
-  header: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: '16px',
-    padding: '32px',
-    marginBottom: '32px',
-    color: 'white',
-    boxShadow: '0 20px 40px rgba(102, 126, 234, 0.15)'
-  },
-  headerContent: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px'
-  },
-  headerIcon: {
-    size: 48,
-    opacity: 0.9
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: '700',
-    margin: '0 0 8px 0',
-    letterSpacing: '-0.5px'
-  },
-  subtitle: {
-    fontSize: '18px',
-    margin: 0,
-    opacity: 0.9,
-    fontWeight: '400'
-  },
-  form: {
-    backgroundColor: 'white',
-    borderRadius: '16px',
-    padding: '40px',
-    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
-    border: '1px solid #e2e8f0'
-  },
-  section: {
-    marginBottom: '40px'
-  },
-  sectionTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: '24px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    paddingBottom: '12px',
-    borderBottom: '2px solid #e2e8f0'
-  },
-  sectionIcon: {
-    color: '#667eea'
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '24px'
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  label: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '8px',
-    letterSpacing: '0.025em'
-  },
-  input: {
-    padding: '12px 16px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '16px',
-    transition: 'all 0.2s ease',
-    backgroundColor: 'white',
-    outline: 'none'
-  },
-  select: {
-    padding: '12px 16px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '16px',
-    transition: 'all 0.2s ease',
-    backgroundColor: 'white',
-    outline: 'none',
-    cursor: 'pointer'
-  },
-  textarea: {
-    padding: '12px 16px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '16px',
-    transition: 'all 0.2s ease',
-    backgroundColor: 'white',
-    outline: 'none',
-    resize: 'vertical',
-    fontFamily: 'inherit'
-  },
-  fileInput: {
-    padding: '8px',
-    border: '2px dashed #d1d5db',
-    borderRadius: '8px',
-    fontSize: '14px',
-    backgroundColor: '#f9fafb',
-    cursor: 'pointer'
-  },
-  inputError: {
-    borderColor: '#ef4444',
-    backgroundColor: '#fef2f2'
-  },
-  errorText: {
-    color: '#ef4444',
-    fontSize: '12px',
-    marginTop: '4px',
-    fontWeight: '500'
-  },
-  actionButtons: {
-    display: 'flex',
-    gap: '16px',
-    justifyContent: 'flex-end',
-    paddingTop: '32px',
-    borderTop: '1px solid #e2e8f0'
-  },
-  resetBtn: {
-    padding: '12px 24px',
-    border: '2px solid #d1d5db',
-    borderRadius: '8px',
-    backgroundColor: 'white',
-    color: '#6b7280',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-  },
-  submitBtn: {
-    padding: '12px 32px',
-    border: 'none',
-    borderRadius: '8px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-  },
-  btnIcon: {
-    size: 18
-  },
-  successCard: {
-    backgroundColor: 'white',
-    borderRadius: '16px',
-    padding: '48px',
-    textAlign: 'center',
-    maxWidth: '600px',
-    margin: '0 auto',
-    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
-    border: '1px solid #e2e8f0'
-  },
-  successIcon: {
-    size: 64,
-    color: '#10b981',
-    marginBottom: '24px'
-  },
-  successTitle: {
-    fontSize: '28px',
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: '16px'
-  },
-  successMessage: {
-    fontSize: '16px',
-    color: '#6b7280',
-    marginBottom: '32px',
-    lineHeight: '1.6'
-  },
-  successDetails: {
-    backgroundColor: '#f0f9ff',
-    padding: '24px',
-    borderRadius: '12px',
-    marginBottom: '32px',
-    textAlign: 'left'
-  },
-  newApplicationBtn: {
-    padding: '12px 32px',
-    border: 'none',
-    borderRadius: '8px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-  }
 };
 
 export default EmployeeLeave;

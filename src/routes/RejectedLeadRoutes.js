@@ -1,11 +1,10 @@
 import React from "react";
-import Leads from "../features/close-leads/leads";
 import "../styles/closeLeads.css";
-import SideandNavbar from "../layouts/SidebarandNavbar";
 import { SearchContext } from "../context/SearchContext";
 import { useEffect,useContext } from "react";
+import RejectedLeads from "../features/rejected-leads/RejectedLeads";
 
-const CloseLeadRoutes = () => {
+const RejectedLeadRoutes = () => {
   const { searchQuery, setActivePage } = useContext(SearchContext); 
   useEffect(() => {
     setActivePage("close-leads"); 
@@ -14,10 +13,10 @@ const CloseLeadRoutes = () => {
     <div className="close-leads-container">
       {/* <SideandNavbar/> */}
       <div className="close-leads-main">
-      <Leads searchQuery={searchQuery}/>
+      <RejectedLeads searchQuery={searchQuery}/>
       </div>
     </div>
   );
 };
 
-export default CloseLeadRoutes;
+export default RejectedLeadRoutes;

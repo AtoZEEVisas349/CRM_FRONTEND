@@ -15,7 +15,7 @@ import Monitoring from "../features/admin/Monitoring";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";
 import HrLayout from "../layouts/HrLayout";
-import LeaveManagement from "../features/admin/LeaveManagement";
+import LeaveManagement from "../features/hr/LeaveManagement";
 const HrRoutes = () => {
   return (
     <Routes>
