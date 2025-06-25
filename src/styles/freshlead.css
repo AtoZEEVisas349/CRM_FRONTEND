@@ -2,7 +2,6 @@
 
 
 
-
 .fresh-leads-table thead {
   background-color: #e5e7eb;
   text-transform: uppercase;
@@ -557,7 +556,13 @@ gap: 10px;
   overflow: hidden;
   animation: popupSlideIn 0.3s ease-out;
   box-sizing: border-box;
+
+  resize: both;              /* ✅ Allow both horizontal and vertical resizing */
+  overflow: auto;            /* ✅ Ensure scroll if content overflows */
+  min-width: 300px;
+  min-height: 300px;
 }
+
 
 /* Chatbot Popup Header */
 .chatbot-popup-header {
@@ -634,8 +639,13 @@ gap: 10px;
 .chatbot-popup-content,
 .chat-page,
 .chat-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
   box-sizing: border-box;
 }
+
 .chat-container {
   overflow-y: auto;
   max-height: calc(80vh - 70px); /* adjust based on header & input height */
@@ -714,5 +724,28 @@ gap: 10px;
 .popover-option:not(:last-child) {
   border-bottom: 1px solid #f1f3f4;
 }
+/* Resize handle styling for chatbot popup */
+.chatbot-popup-container {
+  position: relative;
+  resize: both;
+  overflow: auto;
+}
 
-
+/* Resize handle visual enhancement */
+.chatbot-popup-container::after {
+  content: "";
+  position: absolute;
+  width: 10px;    /* Make handle bigger */
+  height: 10px;
+  right: 2px;
+  bottom: 2px;
+  background: repeating-linear-gradient(
+    135deg,
+    #13293d,
+    #13293d 2px,
+    #fff 2px,
+    #fff 4px
+  );
+  cursor: se-resize;
+  z-index: 10;
+}

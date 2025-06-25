@@ -182,21 +182,6 @@
   }
 }
 
-/* Improved User Popover for Better Context */
-/* .user_popover {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: var(--popover-bg, #ffffff);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  padding: 10px;
-  min-width: 180px;
-  z-index: 1000;
-  animation: popoverSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-} */
-
 @keyframes popoverSlideIn {
   from {
     opacity: 0;
@@ -2689,7 +2674,6 @@
   background: linear-gradient(180deg, #60a5fa, #3b82f6);
 }
 /* Chatbot Popup Overlay */
-/* Chatbot Popup Overlay */
 .chatbot-popup-overlay {
   position: fixed;
   top: 0;
@@ -2875,14 +2859,3 @@
 .popover-option:not(:last-child) {
   border-bottom: 1px solid #f1f3f4;
 }
-
-
-
-
-
-
-
-
-
-
-

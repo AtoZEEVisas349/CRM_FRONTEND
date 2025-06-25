@@ -1,3 +1,5 @@
+
+
 import React, { createContext, useState, useEffect } from 'react';
 
 export const ThemeContext = createContext();
@@ -9,6 +11,10 @@ const themes = {
   blue: '#a9def9',
   green: '#4dff88',
   brown: '#f4ccbb',
+  lavender: '#c5a8ff', // Replacing ocean-sunset with Lavender Twilight theme
+  ocean: '#5e9ad9', // Ocean Blue Mist Theme
+  peach: '#6d4c41'
+
 };
 
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { FaCheck, FaPalette, FaSun, FaMoon, FaEye , FaLeaf } from "react-icons/fa";
+import { FaCheck, FaPalette, FaSun, FaMoon, FaEye, FaLeaf, FaWater } from "react-icons/fa";
 import { ThemeContext } from "../admin/ThemeContext";
 
 const Theme = () => {
@@ -12,7 +12,11 @@ const Theme = () => {
     blue: { name: 'Blue', description: 'Calm and focused', icon: FaEye },
     red: { name: 'Pink', description: 'Warm and energetic', icon: FaPalette },
     green: { name: 'Green', description: 'Natural and fresh', icon: FaLeaf },
-    brown: { name: 'Brown', description: 'Grounded and warm', icon: FaPalette }
+    brown: { name: 'Brown', description: 'Grounded and warm', icon: FaPalette },
+    lavender: { name: 'Lavender Twilight', description: 'Elegant and calming', icon: FaWater },
+    ocean: { name: 'Ocean Blue Mist', description: 'Fresh and modern coastal vibe', icon: FaWater },
+    peach: { name: 'Peach Blossom', description: 'Soothing and flower vibe', icon: FaLeaf }
+
   };
 
   const styles = {
