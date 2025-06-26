@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useApi } from "../../context/ApiContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
@@ -9,13 +10,14 @@ import LoadingSpinner from "../spinner/LoadingSpinner";
 import { useProcessService } from "../../context/ProcessServiceContext";
 
 const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
+  const { followUps, getAllFollowUps } = useApi();
 
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [tableHeight, setTableHeight] = useState("500px");
   const navigate = useNavigate();
   const { searchQuery, setActivePage } = useContext(SearchContext);
   const location = useLocation();
-  const {  isLoading, loadingText } = useLoading();
+  const { showLoader, hideLoader, isLoading, loadingText } = useLoading();
  
   const {getProcessAllFollowup, fetchCustomers, customers, setCustomers}=useProcessService();
 
@@ -31,6 +33,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
      
       } catch (err) {
         console.error("❌ Failed to load follow-ups:", err.message);
+        // setError(err.message);
       } finally {
         // setLoading(false);
       }
@@ -45,11 +48,11 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
           if (data && Array.isArray(data)) {
            const mappedClients = data
     .filter((client) => client.status === "under_review")
+  
             setCustomers(mappedClients);
           }
         })
         .catch((err) => console.error("❌ Error fetching clients:", err));
-        console.log(customers)
     }, []);
     const clients=customers.filter((client) => client.status === "under_review")
 
@@ -61,7 +64,6 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays >= 3;
   };
-
 
   useEffect(() => {
     setActivePage("follow-up");
@@ -85,7 +87,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
 
   const filteredClients = clients.filter((client) => {
     const type = (client.follow_up_type || "").toLowerCase().trim();
-
+ 
     if (filter === "Document collection" && type !== "document collection") return false;
      if (filter === "Payment follow-up" && type !== "payment follow-up") return false; 
      if (filter === "Visa filing" && type !== "visa filing") return false; 
@@ -110,24 +112,15 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
       return;
     }
     const leadData = {
-      name: client.freshLead?.name || "",
-      email: client.freshLead?.email || "",
-      phone: client.freshLead?.phone || "",
-      altPhone: client.freshLead?.altPhone || "",
-      education: client.freshLead?.education || "",
-      experience: client.freshLead?.experience || "",
-      state: client.freshLead?.state || "",
-      dob: client.freshLead?.dob || "",
-      country: client.freshLead?.country || "",
+      ...client.freshLead,
       fresh_lead_id: freshLeadId,
       followUpId: client.id,
     };
-    
-    navigate(`/process/clients/details/${encodeURIComponent(client.id)}/${client.id}`, {
+    navigate(`/process/clients/details/${encodeURIComponent(freshLeadId)}/${freshLeadId}`, {
       state: { client: leadData, createFollowUp: false, from: "followup" },
     });
   };
- 
+
   const getStatusColorClass = (status) => {
     switch ((status || "").toLowerCase()) {
       case "follow-up":
