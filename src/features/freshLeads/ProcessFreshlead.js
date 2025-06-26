@@ -164,10 +164,10 @@ console.log(leadData);
       dob: lead.dob || clientLead.dob || "",
       country: lead.country || clientLead.country || "",
       assignDate: lead.assignDate || lead.assignmentDate || "",
-      freshLeadId: lead.id,
+      freshLeadId: lead.fresh_lead_id,
     };
 
-    navigate(`/process/clients/processperson/${encodeURIComponent(lead.fullName)}/${lead.id}`, {
+    navigate(`/process/clients/processperson/${encodeURIComponent(lead.fullName)}/${lead.fresh_lead_id}`, {
       state: {
         client: clientData,
         createFollowUp: true,

@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
+import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
+import { getEmailTemplates } from "../../static/emailTemplates";
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
+import SendEmailToClients from "./SendEmailToClients";
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
@@ -16,20 +19,16 @@ function convertTo24HrFormat(timeStr) {
 
 const ProcessClientOverview = () => {
   const { id } = useParams();
-    const { handleUpsertStages, handleGetStages, handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createFinalStage,getProcessAllFollowup,getProcessFollowupHistory,createMeetingApi,getComments,createStages,getProcessHistory } = useProcessService();
+    const { handleUpsertStages, handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,getProcessHistory,createReminder } = useProcessService();
   const location = useLocation();
   const navigate = useNavigate();
   const client = useMemo(() => location.state?.client || {}, []);
   const createFollowUpFlag = location.state?.createFollowUp || false;
 
   const {
-    updateFreshLeadFollowUp,
     followUpLoading,
-    fetchFreshLeads,
-  
     fetchNotifications,
     createCopyNotification,
-  
   } = useApi();
  
   useCopyNotification(createCopyNotification, fetchNotifications);
@@ -58,6 +57,7 @@ const ProcessClientOverview = () => {
   const [customerId, setCustomerId] = useState("1");
   const [followUpHistory, setFollowUpHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [showStageCompleted, setShowStageCompleted] = useState(false);
   
 const[followupHistory,setFollowupHistory]=useState();
    useEffect(() => {
@@ -74,13 +74,14 @@ const[followupHistory,setFollowupHistory]=useState();
    fetchFollowups();
  }, [id]);
 
-
+const[historyFollowup,setHistoryFollowup]=useState();
   useEffect(() => {
     const fetchHistory = async () => {
       setLoadingHistory(true);
       try {
         const result = await getProcessFollowup(id);
-        setFollowUpHistory(result.data); // The backend sends { message, data }
+        setHistoryFollowup(result.data); // The backend sends { message, data }
+        console.log(result.data);
       } catch (err) {
         console.error("Failed to load follow-up history", err.message);
         setFollowUpHistory([]);
@@ -94,45 +95,7 @@ const[followupHistory,setFollowupHistory]=useState();
     }
   }, [id]);
 
-  const[historyData,setHistoryData]=useState();
-
-    useEffect(() => {
-        const fetchFollowups = async () => {
-          try {
-            const result = await getProcessFollowupHistory(id);
-            setHistoryData(result);
-          } catch (err) {
-            console.error("❌ Failed to load follow-ups:", err.message);
-            // setError(err.message);
-          } finally {
-            // setLoading(false);
-          }
-        };
-    
-        fetchFollowups();
-      }, []);
-  const handleFinalStage = async () => {
-  try {
-    const freshLeadId = clientInfo.freshLeadId || clientInfo.id;
-
-    const result = await createFinalStage(id);
-
-    Swal.fire({
-      icon: "success",
-      title: "Final Stage Completed",
-      text: result.message || "Lead finalized successfully!",
-    });
-   
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "Finalization Failed",
-      text: err.message || "Something went wrong!",
-    });
-  }
-};
   
-
   useEffect(() => {
   if (selectedStage && stagesData) {
     const stageNum = selectedStage.split(" ")[1];
@@ -163,6 +126,7 @@ const[followupHistory,setFollowupHistory]=useState();
   };
 
   const timeSelectRef = useRef(null);
+  const ampmSelectRef = useRef(null);
 
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
@@ -238,49 +202,16 @@ const[followupHistory,setFollowupHistory]=useState();
                title: "Meeting Created",
                text: "Meeting created successfully!"
              });
-        setTimeout(() => navigate("/process/freshlead"), 2000);
+     
+       
+        
+        setTimeout(() => {
+  window.location.replace('/process/schedule'); // Replace the current URL with the new one
+}, 1000);
         return;
       } else {
-        const updatedData = {
-          followUpStatus: followUpType,
-          followUpDate: interactionDate,
-        };
-
-        await updateFreshLeadFollowUp(followUpId, updatedData);
-           Swal.fire({
-    html: `
-      <div class="custom-success-icon-wrapper">
-        <div class="float-circle float-bottom"></div>
-        <div class="float-circle float-bottom-left"></div>
-        <div class="float-circle float-bottom-right"></div>
-
-        <div class="custom-success-icon">✔</div>
-      </div>
-
-      <div class="custom-success-text">Freshlead Updated</div>
-
-      <div class="custom-success-divider"></div>
-
-      <div class="custom-success-subtext">Freshlead status updated successfully</div>
-
-      <div class="custom-success-buttons">
-        <button class="ok-btn" id="swal-ok-btn">Ok</button>
-      </div>
-    `,
-    showConfirmButton: false,
-    customClass: {
-      popup: 'custom-success-popup',
-      container: 'custom-success-container'
-    },
-    didRender: () => {
-      document.getElementById('swal-ok-btn').addEventListener('click', () => {
-        Swal.close();
-      });
-    }
-  });
-
-        await fetchFreshLeads();
-        setTimeout(() => navigate("executive/freshlead"), 2000);
+ 
+     
       }
 
       setFollowUpType("");
@@ -299,7 +230,7 @@ const[followupHistory,setFollowupHistory]=useState();
     }
   };
 
-  const handleCreateFollowUp = () => {
+  const handleCreateFollowUp = async () => {
     if (
       !contactMethod ||
       !followUpType ||
@@ -313,24 +244,29 @@ const[followupHistory,setFollowupHistory]=useState();
         text: "Please fill out all required fields before creating follow-up.",
       });
     }
-    const newFollowUpData= {
-      fresh_lead_id: String(clientInfo.freshLeadId || clientInfo.id),
-        connect_via: contactMethod,
-       follow_up_date: interactionDate,
-       follow_up_time: convertTo24HrFormat(interactionTime),
+ const newFollowUpData= {
+   fresh_lead_id: String(clientInfo.freshLeadId),
+     connect_via: contactMethod,
+     follow_up_date: interactionDate,
+      follow_up_time: convertTo24HrFormat(interactionTime),
         follow_up_type: followUpType,
    comments: reasonDesc,
    interaction_rating:interactionRating
-   }
 
-
-    processCreateFollowUp(newFollowUpData)
-        Swal.fire({ 
-                  icon: "success", 
-                  title: "Follow-up Created",
-                  text: "Follow-up and history created successfully!"
-                });
-        };
+}
+   await processCreateFollowUp(newFollowUpData);
+  const result=  await getProcessFollowup(id)
+    setHistoryFollowup(result.data);
+  Swal.fire({ 
+            icon: "success", 
+            title: "Follow-up Created",
+            text: "Follow-up and history created successfully!"
+          });
+         setTimeout(() => {
+  window.location.replace('/process/process-follow-up/'); // Replace the current URL with the new one
+}, 1000);
+      
+  };
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
@@ -349,13 +285,24 @@ const[followupHistory,setFollowupHistory]=useState();
     recognitionRef.current?.stop();
   };
 
+  const { handleSendEmail } = useExecutiveActivity();
+  // const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
+
+  const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+
+
+
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
     const now = new Date();
     return selectedDateTime < now;
   }, [followUpType, interactionDate, interactionTime]);
- 
+ // Replace with actual customer ID logic
+
+  // 🔹 Fetch stages on mount / on demand
   const fetchStages = async () => {
     try {
       const data = await handleGetCustomerStagesById(id);
@@ -395,6 +342,9 @@ const[followupHistory,setFollowupHistory]=useState();
       await handleUpsertStages(updatedStage);
       alert("Stage saved successfully.");
           await fetchStages();
+    //   setCommentText("");
+    //   setSelectedStage("");
+    //   fetchStages(); // refresh
     } catch (err) {
       console.error("Error saving stage", err.message);
       alert("Failed to save. Please try again.");
@@ -483,6 +433,40 @@ const formatTime = (timeStr) => {
       console.error("Failed to add comment", err.message);
     }
   };
+const handleSubmit = async () => {
+  const stageNumber = Number(selectedStage.split(" ")[1]);
+
+  const latest = latestComment[selectedStage]?.comment;
+
+  if (!latest) {
+    console.warn("No comment found to send as reminder.");
+    return;
+  }
+
+  try {
+    await createReminder(id, stageNumber, latest); // ✅ Send latest comment
+
+    // Refresh latest comment
+    const result = await getComments(id, stageNumber);
+    const comments = result.comments || [];
+
+    if (comments.length) {
+      const sorted = [...comments].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      setLatestComment((prev) => ({
+        ...prev,
+        [selectedStage]: sorted[0],
+      }));
+    }
+
+    setNewComment("");
+
+  } catch (err) {
+    console.error("Failed to add reminder:", err.message);
+  }
+};
 
   return (
     <div className="client-overview-wrapper">
@@ -515,40 +499,35 @@ const formatTime = (timeStr) => {
               <div className="last-follow-up">
                 <h3>Last Follow-up</h3>
                <div className="table-body">
-                <div className="followup-list">
-                  {Array.isArray(followupHistory) && followupHistory.length > 0 ? (
-                    followupHistory.map((client, index) => (
-                      <div key={index} className="followup-item">
-                      
-                        <div className="followup-reason">
-                          {client.reason_for_follow_up || "N/A"}
-                        </div>
-                        <div className="followup-datetime">
-                          <span className="followup-date">{formatDate(client.follow_up_date)}</span>
-                          <span className="followup-time">{formatTime(client.follow_up_time)}</span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="no-data-text">No follow-up texts </div>
-                  )}
-                </div>
+ <div className="followup-list">
+ {Array.isArray(historyFollowup) && historyFollowup.length > 0 ? (
+  historyFollowup.map((client, index) => (
+    <div key={index} className="followup-item">
+      {/* Reason for follow-up */}
+      <div className="followup-reason">
+        {client.comments|| "N/A"}
+      </div>
 
-                </div>
-
-               
+      {/* Follow-up Date and Time */}
+      <div className="followup-datetime">
+        <span className="followup-date">{formatDate(client.follow_up_date)}</span>
+        <span className="followup-time">{formatTime(client.follow_up_time)}</span>
+      </div>
+    </div>
+  ))
+) : (
+  <div className="no-data-text">No follow-up texts</div>
+)}
+</div>
+</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <div className="client-interaction-container">
         <div className="interaction-form">
-        
-     
-
-          <div className="connected-via">
+         <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">
               {["Call", "Email", "Call/Email"].map((method) => (
@@ -700,7 +679,6 @@ const formatTime = (timeStr) => {
     </div>
     </div>
       </div>
-    
     </div>
       <div className="followup-detail-theme">
         <div className="followup-detail-container">
@@ -861,8 +839,9 @@ const formatTime = (timeStr) => {
                     Create Follow-Up
                   </button>
                 )}
+               
                 {(followUpType === "appointment" || followUpType === "converted" || followUpType === "close") && (
-                <button  className="update-btn"
+  <button  className="update-btn"
                   onClick={handleTextUpdate}
                   disabled={followUpLoading}
                   style={{
@@ -874,13 +853,13 @@ const formatTime = (timeStr) => {
                     cursor: followUpLoading ? "not-allowed" : "pointer",
                     opacity: followUpLoading ? 0.6 : 1,
                   }}>
-                    {followUpType === "appointment"
-                      ? "Create Meeting"
-                      : followUpType === "converted"
-                      ? "Convert"
-                      : "Close"}
-                  </button>
-                )}            
+    {followUpType === "appointment"
+      ? "Create Meeting"
+      : followUpType === "converted"
+      ? "Convert"
+      : "Close"}
+  </button>
+)} 
               </div>
             </div>
           </div>

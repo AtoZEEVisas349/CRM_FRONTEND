@@ -27,7 +27,9 @@ import {
   createCustomerStagesApi,
   getStageComments,
   moveToRejectedApi,
-  getProcessHistoryApi
+  getProcessHistoryApi,
+  addStageCommentAndNotify,
+  getProcessPersonMeetingsApi
 } from "../services/processService";
 
 // 1. Create Context
@@ -429,6 +431,29 @@ const [convertedError, setConvertedError] = useState(null);
       throw error;
     }
   };
+    const createReminder = async ( customerId, stageNumber, newComment) => {
+    try {
+      const response= await addStageCommentAndNotify( customerId, stageNumber, newComment);
+      return response;
+    } catch (error) {
+      console.error("Upload error in context:", error);
+      throw error;
+    }
+  };
+  const getProcessPersonMeetings = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getProcessPersonMeetingsApi();
+      return response.meetings; // returns just the array of meetings
+    } catch (error) {
+      console.error("Error fetching process person meetings:", error);
+      setError(error.message || "Failed to fetch process meetings");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // -----------------------
   // Provider Return
@@ -457,6 +482,7 @@ processProfile,
     convertedError,
     fetchCustomers,
     customers,
+    getProcessPersonMeetings,
     setCustomers,
     handleImportConvertedClients,
     handleGetCustomerStagesById,
@@ -478,7 +504,8 @@ processProfile,
     createStages,
     getComments,
     createRejected,
-    getProcessHistory
+    getProcessHistory,
+    createReminder
       }}
     >
       {children}

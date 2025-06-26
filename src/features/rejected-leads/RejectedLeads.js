@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
@@ -12,7 +13,7 @@ const RejectedLeads = ({searchQuery}) => {
     createCopyNotification,
     fetchFollowUpHistoriesAPI,
    } = useApi();
-   const {getAllFinalStages,fetchCustomers, customers, setCustomers,getProcessHistory} =useProcessService();
+   const {getAllFinalStages,fetchCustomers, customers, setCustomers,getProcessFollowup} =useProcessService();
   const {activePage}= useContext(SearchContext);
   
   // New state for follow-up history modal
@@ -23,7 +24,7 @@ const RejectedLeads = ({searchQuery}) => {
    const[historyData,setHistoryData]=useState();
   
    useCopyNotification(createCopyNotification, fetchNotifications);
-   
+  
    useEffect(() => {
     const loadCloseLeads = async () => {
       try {
@@ -42,7 +43,7 @@ const RejectedLeads = ({searchQuery}) => {
 useEffect(() => {
     const loadFinalStageLeads = async () => {
       try {
-        showLoader("Loading Closed Leads...");
+        showLoader("Loading Rejected Leads...");
        const response= await getAllFinalStages();
        setFinalStageData(response.data);
       } catch (error) {
@@ -100,13 +101,15 @@ useEffect(() => {
     // ✅ Also call getProcessFollowupHistory using lead.id
     const id = lead.id || lead.fresh_lead_id || lead.freshLead?.id || lead.lead?.id;
     if (id) {
-      const result = await getProcessHistory(id);
-      setHistoryData(result || []);
+      const result = await getProcessFollowup(lead.fresh_lead_id );
+      console.log(result.data);
+      console.log(historyData);
+      setHistoryData(result.data || []);
     }
 
   } catch (error) {
     console.error("Failed to load follow-up history:", error);
-    setFollowUpHistories([]);
+ 
     setHistoryData([]);
   } finally {
     setFollowUpHistoriesLoading(false);
@@ -133,14 +136,12 @@ useEffect(() => {
       }, []);
   const clients=customers.filter((client) => client.status === "rejected")
   
-  
-    
   return (
     <>
       <div className="close-leads-page">
       {isLoading && (
         <div className="page-wrapper" style={{ position: "relative" }}>
-          <LoadingSpinner text={loadingText || "Loading Closed Leads..."} />
+          <LoadingSpinner text={loadingText || "Loading Rejected Leads..."} />
         </div>
       )}
         <h2 className="c-heading">Rejected Leads</h2>
@@ -207,7 +208,7 @@ useEffect(() => {
                     </div>
                     <div className="h-followup-reason-box">
                       <p>Follow-Up Reason</p>
-                      <div className="h-reason-text">{entry.reason_for_follow_up}</div>
+                      <div className="h-reason-text">{entry.comments}</div>
                     </div>
                   </div>
                 ))

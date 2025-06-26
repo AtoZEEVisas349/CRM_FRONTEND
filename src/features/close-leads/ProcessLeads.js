@@ -12,7 +12,7 @@ const ProcessLeads = ({searchQuery}) => {
     createCopyNotification,
     fetchFollowUpHistoriesAPI,
    } = useApi();
-   const {getAllFinalStages, fetchCustomers, customers, setCustomers,getProcessHistory} =useProcessService();
+   const {getAllFinalStages, fetchCustomers, customers, setCustomers,getProcessFollowup} =useProcessService();
   const {activePage}= useContext(SearchContext);
   
   // New state for follow-up history modal
@@ -22,24 +22,6 @@ const ProcessLeads = ({searchQuery}) => {
   const { showLoader, hideLoader, isLoading, loadingText } = useLoading(); // ✅ destructure
    const[historyData,setHistoryData]=useState();
    useCopyNotification(createCopyNotification, fetchNotifications);
-   
-   useEffect(() => {
-    const loadCloseLeads = async () => {
-      try {
-        showLoader("Loading Closed Leads...");
-        await fetchAllCloseLeadsAPI();
-      } catch (error) {
-        console.error("Failed to fetch close leads", error);
-      } finally {
-        hideLoader();
-      }
-    };
-
-    loadCloseLeads();
-  }, []);
- 
-
-
   const leadsArray = closeLeads?.data || [];
  // ✅ apply search only if this page is active
  const filteredLeads =
@@ -85,13 +67,15 @@ const ProcessLeads = ({searchQuery}) => {
     // ✅ Also call getProcessFollowupHistory using lead.id
     const id = lead.id || lead.fresh_lead_id || lead.freshLead?.id || lead.lead?.id;
     if (id) {
-      const result = await getProcessHistory(id);
-      setHistoryData(result || []);
+      const result = await getProcessFollowup(lead.fresh_lead_id );
+      console.log(result.data);
+      console.log(historyData);
+      setHistoryData(result.data || []);
     }
 
   } catch (error) {
     console.error("Failed to load follow-up history:", error);
-    setFollowUpHistories([]);
+ 
     setHistoryData([]);
   } finally {
     setFollowUpHistoriesLoading(false);
@@ -102,26 +86,26 @@ const ProcessLeads = ({searchQuery}) => {
   const handleCloseModal = () => {
     setSelectedLead(null);
   };
-//  useEffect(() => {
-//         fetchCustomers()
-//           .then((data) => {
-//             if (data && Array.isArray(data)) {
-//              const mappedClients = data
-//       .filter((client) => client.status === "under_review")
+ useEffect(() => {
+        fetchCustomers()
+          .then((data) => {
+            if (data && Array.isArray(data)) {
+             const mappedClients = data
+      .filter((client) => client.status === "under_review")
     
-//               setCustomers(mappedClients);
-//             }
-//           })
-//           .catch((err) => console.error("❌ Error fetching clients:", err));
-//           console.log(customers)
-//       }, []);
+              setCustomers(mappedClients);
+            }
+          })
+          .catch((err) => console.error("❌ Error fetching clients:", err));
+          console.log(customers)
+      }, []);
   const clients=customers.filter((client) => client.status === "approved")
   return (
     <>
       <div className="close-leads-page">
       {isLoading && (
         <div className="page-wrapper" style={{ position: "relative" }}>
-          <LoadingSpinner text={loadingText || "Loading Closed Leads..."} />
+          <LoadingSpinner text={loadingText || "Loading Final Stage Leads..."} />
         </div>
       )}
         <h2 className="c-heading">Final Stage Leads</h2>
@@ -187,7 +171,7 @@ const ProcessLeads = ({searchQuery}) => {
                     </div>
                     <div className="h-followup-reason-box">
                       <p>Follow-Up Reason</p>
-                      <div className="h-reason-text">{entry.reason_for_follow_up}</div>
+                      <div className="h-reason-text">{entry.comments}</div>
                     </div>
                   </div>
                 ))

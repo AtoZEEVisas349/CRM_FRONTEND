@@ -3,10 +3,12 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
+import { getEmailTemplates } from "../../static/emailTemplates"; 
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
+import SendEmailToClients from "../client-details/SendEmailToClients";
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -19,9 +21,8 @@ const ProcessClientDetailsOverview = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
-  const {createFinalStage,getProcessFollowupHistory,processCreateFollowUp,createMeetingApi,createRejected,getProcessHistory}=useProcessService();
+  const {createFinalStage,getProcessFollowupHistory,processCreateFollowUp,createMeetingApi,createRejected,getProcessHistory,getProcessFollowup}=useProcessService();
   const {
-    
     createConvertedClientAPI,
     createCloseLeadAPI,
     followUpLoading,
@@ -88,6 +89,7 @@ const ProcessClientDetailsOverview = () => {
 
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const timeSelectRef = useRef(null);
   const ampmSelectRef = useRef(null);  
   const [speechError, setSpeechError] = useState(null);
   const recognitionRef = useRef(null);
@@ -281,7 +283,7 @@ useEffect(() => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
 
- const handleCreateFollowUp = () => {
+ const handleCreateFollowUp =async () => {
   const freshLeadId =
       clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
      if (
@@ -311,7 +313,13 @@ useEffect(() => {
  }
  
  
-     processCreateFollowUp(newFollowUpData)
+    await processCreateFollowUp(newFollowUpData);
+  const result=  await getProcessFollowup(id);
+
+    setHistoryFollowup(result.data);
+     setTimeout(() => {
+  window.location.replace('/process/process-follow-up/'); // Replace the current URL with the new one
+}, 1000);
    Swal.fire({ 
              icon: "success", 
              title: "Follow-up Created",
@@ -319,39 +327,7 @@ useEffect(() => {
            });
    };
 
-  const handleUpdateFollowUp = async () => {
-    const freshLeadId =
-      clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
-
-    if (!freshLeadId) {
-      return Swal.fire({
-        icon: "error",
-        title: "Missing Lead ID",
-        text: "Unable to find the lead. Please reload and try again.",
-      });
-    }
-
-    try {
-      const followUpId = clientInfo.followUpId || clientInfo.id;
-
-      // Update follow-up details and create history entry
-      // await updateFollowUpDetails(freshLeadId, followUpId);
-
-      Swal.fire({ icon: "success", title: "Follow-Up Updated" });
-
-      // Refresh data and navigate
-      
-      loadFollowUpHistories(freshLeadId);
-      setTimeout(() => navigate("/process/follow-up"), 1000);
-    } catch (err) {
-      console.error("Follow-Up Update Error:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text: "Something went wrong. Please try again.",
-      });
-    }
-  };
+ 
 
   const handleCreateMeeting = async () => {
     const freshLeadId =
@@ -376,10 +352,7 @@ useEffect(() => {
     try {
       const followUpId = clientInfo.followUpId || clientInfo.id;
 
-      // First, update follow-up details and create history entry
-      // await updateFollowUpDetails(freshLeadId, followUpId);
-
-      // Then, schedule the meeting
+      
      const meetingPayload = {
           clientName: clientInfo.name,
           clientEmail: clientInfo.email,
@@ -393,7 +366,9 @@ useEffect(() => {
 
       Swal.fire({ icon: "success", title: "Meeting Created" });
       loadFollowUpHistories(freshLeadId);
-      setTimeout(() => navigate("process/process-follow-up/"), 1000);
+ setTimeout(() => {
+  window.location.replace('/process/schedule'); // Replace the current URL with the new one
+}, 1000);
     } catch (err) {
       console.error("Meeting Creation Error:", err);
       Swal.fire({
@@ -446,18 +421,12 @@ useEffect(() => {
       } else if (followUpType === "close") {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
         await createFinalStage(freshLeadId);
-        await createFollowUpHistoryAPI({
-       follow_up_id: clientInfo.followUpId || clientInfo.id, 
-        connect_via: capitalize(contactMethod), 
-        follow_up_type: followUpType, 
-        interaction_rating: capitalize(interactionRating), 
-        reason_for_follow_up: reasonDesc, 
-        follow_up_date: interactionDate, 
-        follow_up_time: convertTo24HrFormat(interactionTime), 
-        fresh_lead_id: freshLeadId, 
-      });
+       
       
-        Swal.fire({ icon: "success", title: "Lead Closed" });
+ Swal.fire({ icon: "success", title: "Lead Moved to Final Stage" });
+  setTimeout(() => {
+  window.location.replace('/process/finalstage-leads'); // Replace the current URL with the new one
+}, 1000);
       }
       
       else if (followUpType === "rejected") {
@@ -473,27 +442,17 @@ useEffect(() => {
         fresh_lead_id: freshLeadId, 
       }
       await createRejected(payload);
-       await createFollowUpHistoryAPI({
-       follow_up_id: clientInfo.followUpId || clientInfo.id, 
-        connect_via: capitalize(contactMethod), 
-        follow_up_type: followUpType, 
-        interaction_rating: capitalize(interactionRating), 
-        reason_for_follow_up: reasonDesc, 
-        follow_up_date: interactionDate, 
-        follow_up_time: convertTo24HrFormat(interactionTime), 
-        fresh_lead_id: freshLeadId, 
-      });
-       Swal.fire({ icon: "success", title: "Lead Closed" });
+      
+       Swal.fire({ icon: "success", title: "Lead Moved to Rejected Leads" });
+        setTimeout(() => {
+  window.location.replace('/process/rejected-leads'); // Replace the current URL with the new one
+}, 1000);
     }
       else {
         return; // Do nothing for other types; handled by specific buttons
       }
 
-      // await fetchFreshLeadsAPI();
-      // await fetchMeetings();
-      // await refreshMeetings();
-      // loadFollowUpHistories(freshLeadId);
-      // setTimeout(() => navigate("/executive/follow-up"), 1000);
+     
     } catch (err) {
       console.error("Follow-up Action Error:", err);
       Swal.fire({
@@ -546,7 +505,26 @@ useEffect(() => {
     const now = new Date();
     return selectedDateTime < now;
   }, [followUpType, interactionDate, interactionTime]);
+  const[historyFollowup,setHistoryFollowup]=useState();
+    useEffect(() => {
+      const fetchHistory = async () => {
+       
+        try {
+          const result = await getProcessFollowup(id);
+          setHistoryFollowup(result.data); // The backend sends { message, data }
+          console.log(result.data);
+        } catch (err) {
+          console.error("Failed to load follow-up history", err.message);
+         
+        } finally {
+       
+        }
+      };
   
+      if (id) {
+        fetchHistory();
+      }
+    }, [id]);
 
   return (
     <>
@@ -582,21 +560,26 @@ useEffect(() => {
       <h3>Last Follow-up</h3>
       {isLoading ? (
         <p>Loading follow-up history...</p>
-      ) : Array.isArray(followupHistory) && followupHistory.length > 0? (
-        <div className="followup-entry-horizontal">
-        <p className="followup-reason">
-          {followupHistory[0].reason_for_follow_up || "No description available."}
-        </p>
-        <strong>
-        <p className="followup-time">
-          {new Date(followupHistory[0].follow_up_date).toLocaleDateString()} - {followupHistory[0].follow_up_time}
-        </p>
-        </strong>
+      ) : 
+    Array.isArray(historyFollowup) && historyFollowup.length > 0 ? (
+  historyFollowup.map((client, index) => (
+    <div key={index} className="followup-item">
+      {/* Reason for follow-up */}
+      <div className="followup-reason">
+        {client.comments|| "N/A"}
       </div>
-      
-      ) : (
-        <p>No follow-up history available.</p>
-      )}
+
+      {/* Follow-up Date and Time */}
+      <div className="followup-datetime">
+        <span className="followup-date">{client.follow_up_date}</span>
+        <span className="followup-time">{client.follow_up_time}</span>
+      </div>
+    </div>
+  ))
+) : (
+  <div className="no-data-text">No follow-up texts</div>
+)}
+
  
 
     </div>
@@ -897,7 +880,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-    {/* </div> */}
+   
     </>
   );
 };

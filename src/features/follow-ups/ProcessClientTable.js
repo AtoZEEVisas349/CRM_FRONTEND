@@ -53,8 +53,18 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
           }
         })
         .catch((err) => console.error("❌ Error fetching clients:", err));
+        console.log(customers)
     }, []);
     const clients=customers.filter((client) => client.status === "under_review")
+  console.log(clients);
+// const clients = Array.isArray(processFollowup?.data)
+//   ? processFollowup.data.filter(
+//       (client) =>
+//         (client?.freshLead?.lead?.clientLead?.status || "").toLowerCase() === "follow-up"
+//     )
+//   : [];
+
+
 
   const isFollowUpOld = (followUpDate) => {
     if (!followUpDate) return false;
@@ -64,6 +74,19 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays >= 3;
   };
+
+//   useEffect(() => {
+//     const loadFollowUps = async () => {
+//       try {
+//         showLoader("Loading Follow-Ups...");
+//  const result = await getProcessAllFollowup();
+//         setProcessFollowup(result)
+//       } finally {
+//         hideLoader();
+//       }
+//     };
+//     loadFollowUps();
+//   }, []);
 
   useEffect(() => {
     setActivePage("follow-up");
@@ -86,8 +109,10 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   }, []);
 
   const filteredClients = clients.filter((client) => {
-    const type = (client.follow_up_type || "").toLowerCase().trim();
- 
+    const type = (client.processfollowuphistories?.[0]?.follow_up_type || "").toLowerCase().trim();
+    // const status = (client.clientLeadStatus || "").toLowerCase().trim();
+    // if (status !== "follow-up") return false;
+  
     if (filter === "Document collection" && type !== "document collection") return false;
      if (filter === "Payment follow-up" && type !== "payment follow-up") return false; 
      if (filter === "Visa filing" && type !== "visa filing") return false; 

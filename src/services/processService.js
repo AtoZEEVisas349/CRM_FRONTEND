@@ -1,3 +1,4 @@
+// --- processService.js (Updated with PUT API) ---
 import axios from 'axios';
 
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
@@ -235,7 +236,7 @@ export const createProcessFollowUpApi = async (payload) => {
   try {
      console.log(payload)
       const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/process-history/process-followup`,{
+    const response = await fetch(`${API_BASE_URL}/process-history/process-followup/create`,{
 method: "POST",
 headers: {
   "Content-Type": "application/json",
@@ -249,6 +250,21 @@ credentials: "include",
   } catch (error) {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
+};
+export const addStageCommentAndNotify = async ( customerId, stageNumber, newComment ) => {
+  const response = await fetch(`${API_BASE_URL}/customer-stages/stage-comment/notify`, {
+    method: "POST",
+   headers: getHeaders(),
+    body: JSON.stringify({ customerId, stageNumber, newComment }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to add comment and notify");
+  }
+
+  return data;
 };
 export const getProcessFollowupApi = async (id) => {
 const res = await fetch(`${API_BASE_URL}/process-history/process-followup/${id}`, {
@@ -325,8 +341,8 @@ if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
 return data;
 };
 export const getProcessHistoryApi = async (id) => {
-const res = await fetch(`${API_BASE_URL}/followuphistory/${id}`, {
-method: "GET",
+const res = await fetch(`${API_BASE_URL}/process-history/process-followup/${id}`, {
+method: "GET",  
 headers: getHeaders(),
 credentials: "include",
 });
@@ -453,5 +469,21 @@ export const getStageComments = async (customerId, stageNumber) => {
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Failed to fetch stage comments");
-  return data; 
+  return data; // { comments: [...] }
+};
+export const getProcessPersonMeetingsApi = async () => {
+  const res = await fetch(
+    `${API_BASE_URL}/process-history/process-followup/get-meeting`,
+    {
+      method: "GET",
+      headers: getHeaders(),
+      credentials: "include",
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.error || "Failed to fetch process meetings");
+
+  return data; // expected format: { meetings: [...] }
 };
