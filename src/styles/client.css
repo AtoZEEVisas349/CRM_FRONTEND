@@ -687,3 +687,43 @@ background: #af8b7c;
   color: #999;
   padding: 16px 0;
 }
+.reminder-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.reminder-button {
+  background: transparent;
+  border: none;
+  color: #000;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0;
+  padding-left: 10px;
+}
+
+.reminder-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #ffffff;
+  color: #333;
+  text-align: center;
+  padding:  20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 139, 0.4);
+}
+
+
+.reminder-tooltip-wrapper:hover .reminder-tooltip {
+  visibility: visible;
+  opacity: 1;
+}

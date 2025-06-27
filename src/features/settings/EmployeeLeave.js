@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, User, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { useApi } from '../../context/ApiContext';
@@ -6,7 +5,8 @@ import moment from 'moment';
 import '../../styles/setting.css';
 
 const EmployeeLeave = () => {
-  const { uploadFileAPI, createLeaveApplication, fetchLeaveApplicationsAPI } = useApi();
+  // Added getHrProfile to the destructured imports
+  const { uploadFileAPI, createLeaveApplication, fetchLeaveApplicationsAPI, createCopyNotification, getHrProfile } = useApi();
 
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -170,8 +170,27 @@ const EmployeeLeave = () => {
 
       const response = await createLeaveApplication(payload);
       if (response && response.data) {
+        // ✅ Use existing notification API instead of creating new one
+        let hrId = 2; // fallback
+        try {
+          const hrProfile = await getHrProfile();
+          if (hrProfile?.id) {
+            hrId = hrProfile.id;
+          }
+        } catch (hrError) {
+          console.warn('Failed to fetch HR profile:', hrError);
+        }
+
+        const notificationMessage = `Reminder: ${formData.fullName} has submitted a ${formData.leaveType} application for ${formData.totalDays} days from ${formData.startDate} to ${formData.endDate}.`;
+
+        try {
+          await createCopyNotification(hrId, 'hr', notificationMessage);
+
+        } catch (notificationError) {
+          console.warn('Failed to send HR notification:', notificationError);
+        }
+
         setIsSubmitted(true);
-        // Refresh leave applications after submission
         const applications = await fetchLeaveApplicationsAPI(formData.employeeId);
         setLeaveApplications(applications || []);
       } else {
@@ -184,6 +203,7 @@ const EmployeeLeave = () => {
       setUploading(false);
     }
   };
+
 
   const handleReset = () => {
     const userData = localStorage.getItem('user');

@@ -206,7 +206,7 @@ const[historyFollowup,setHistoryFollowup]=useState();
        
         
         setTimeout(() => {
-  window.location.replace('/process/schedule'); // Replace the current URL with the new one
+  navigate("/process/freshlead"); // Replace the current URL with the new one
 }, 1000);
         return;
       } else {
@@ -263,7 +263,8 @@ const[historyFollowup,setHistoryFollowup]=useState();
             text: "Follow-up and history created successfully!"
           });
          setTimeout(() => {
-  window.location.replace('/process/process-follow-up/'); // Replace the current URL with the new one
+           navigate("/process/freshlead");
+ // Replace the current URL with the new one
 }, 1000);
       
   };
@@ -386,7 +387,7 @@ const formatTime = (timeStr) => {
 
     const stageNumber = Number(stage.split(" ")[1]);
     try {
-      const result = await getComments(id, stageNumber);
+      const result = await getComments(clientInfo.id, stageNumber);
       const comments = result.comments || [];
 
       if (comments.length) {
@@ -414,10 +415,10 @@ const formatTime = (timeStr) => {
   const handleAddCommentSubmit = async () => {
     const stageNumber = Number(selectedStage.split(" ")[1]);
     try {
-      await createStages(id, stageNumber, newComment);
+      await createStages(clientInfo.id, stageNumber, newComment);
 
       // Refresh latest comment
-      const result = await getComments(id, stageNumber);
+      const result = await getComments(clientInfo.id, stageNumber);
       const comments = result.comments || [];
 
       if (comments.length) {
@@ -444,10 +445,10 @@ const handleSubmit = async () => {
   }
 
   try {
-    await createReminder(id, stageNumber, latest); // ✅ Send latest comment
+    await createReminder(clientInfo.id, stageNumber, latest); // ✅ Send latest comment
 
-    // Refresh latest comment
-    const result = await getComments(id, stageNumber);
+   
+    const result = await getComments(clientInfo.id, stageNumber);
     const comments = result.comments || [];
 
     if (comments.length) {
@@ -467,7 +468,7 @@ const handleSubmit = async () => {
     console.error("Failed to add reminder:", err.message);
   }
 };
-
+console.log(clientInfo,"id");
   return (
     <div className="client-overview-wrapper">
       <div className="c-container">
@@ -595,6 +596,11 @@ const handleSubmit = async () => {
             </option>
           ))}
         </select>
+       <div className="reminder-tooltip-wrapper">
+  <button onClick={handleSubmit} className="reminder-button">⏰</button>
+  <span className="reminder-tooltip">Send the latest comment as a reminder</span>
+</div>
+
       </div>
 
       {selectedStage && (

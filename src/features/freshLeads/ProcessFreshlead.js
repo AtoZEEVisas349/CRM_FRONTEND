@@ -165,6 +165,7 @@ console.log(leadData);
       country: lead.country || clientLead.country || "",
       assignDate: lead.assignDate || lead.assignmentDate || "",
       freshLeadId: lead.fresh_lead_id,
+      id:lead.id,
     };
 
     navigate(`/process/clients/processperson/${encodeURIComponent(lead.fullName)}/${lead.fresh_lead_id}`, {

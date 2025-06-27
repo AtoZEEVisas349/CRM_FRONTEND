@@ -140,7 +140,7 @@ const ProcessActivity = () => {
             </div>
             <div className="exec-details">
               <div className="execu-name">
-                <strong>{storedUser.name || "Unknown User"}</strong>
+                <strong>{storedUser.fullName || "Unknown User"}</strong>
               </div>
               <div className="exec-id">
                 ID: <span>{storedUser.id || "N/A"}</span>

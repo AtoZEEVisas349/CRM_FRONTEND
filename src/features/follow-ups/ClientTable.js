@@ -195,9 +195,8 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                           style={
                             isOld
                               ? {
-                                  backgroundColor: "#f44336",
                                   borderColor: "#d32f2f",
-                                  color: "white",
+                                  color: "#d32f2f",
                                 }
                               : {}
                           }
@@ -217,8 +216,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                             style={
                               isOld
                                 ? {
-                                    backgroundColor: "#f44336",
-                                    color: "white",
+                                    color: "#d32f2f",
                                     border: "1px solid #d32f2f",
                                   }
                                 : {}
@@ -235,8 +233,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                             style={
                               isOld
                                 ? {
-                                    backgroundColor: "#f44336",
-                                    color: "white",
+                                    color: "#d32f2f",
                                     border: "1px solid #d32f2f",
                                   }
                                 : {}
@@ -260,8 +257,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                           style={
                             isOld
                               ? {
-                                  backgroundColor: "#f44336",
-                                  color: "white",
+                                  color: "#d32f2f",
                                   border: "1px solid #d32f2f",
                                 }
                               : {}

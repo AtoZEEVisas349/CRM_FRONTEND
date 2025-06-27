@@ -318,7 +318,7 @@ useEffect(() => {
 
     setHistoryFollowup(result.data);
      setTimeout(() => {
-  window.location.replace('/process/process-follow-up/'); // Replace the current URL with the new one
+ navigate("/process/process-follow-up"); // Replace the current URL with the new one
 }, 1000);
    Swal.fire({ 
              icon: "success", 
@@ -367,7 +367,7 @@ useEffect(() => {
       Swal.fire({ icon: "success", title: "Meeting Created" });
       loadFollowUpHistories(freshLeadId);
  setTimeout(() => {
-  window.location.replace('/process/schedule'); // Replace the current URL with the new one
+ navigate("/process/process-follow-up"); // Replace the current URL with the new one
 }, 1000);
     } catch (err) {
       console.error("Meeting Creation Error:", err);
@@ -425,7 +425,7 @@ useEffect(() => {
       
  Swal.fire({ icon: "success", title: "Lead Moved to Final Stage" });
   setTimeout(() => {
-  window.location.replace('/process/finalstage-leads'); // Replace the current URL with the new one
+  navigate("/process/process-follow-up"); // Replace the current URL with the new one
 }, 1000);
       }
       
@@ -445,7 +445,7 @@ useEffect(() => {
       
        Swal.fire({ icon: "success", title: "Lead Moved to Rejected Leads" });
         setTimeout(() => {
-  window.location.replace('/process/rejected-leads'); // Replace the current URL with the new one
+ navigate("/process/process-follow-up"); // Replace the current URL with the new one
 }, 1000);
     }
       else {
@@ -880,7 +880,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-   
+    {/* </div> */}
     </>
   );
 };

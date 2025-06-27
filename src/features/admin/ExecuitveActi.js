@@ -78,7 +78,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
   return (
     <div className="exec-activity">
       <h2 className="exec-section-title">
-        Executive Behaviour:{" "}
+        Behavioral Pattern:{" "}
         <span className="executive-name">
           {executiveName || "Loading..."}
         </span>
