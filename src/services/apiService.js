@@ -598,11 +598,11 @@ export const deleteClientLead = async (leadId) => {
   }
 };
 //EOD Report
-export const sendEodReport = async ({ email, content }) => {
+export const sendEodReport = async ({  executiveId,executiveName,email,fields,startDate,endDate,time }) => {
   try {
     const response = await apiService.post(
       "/report",
-      JSON.stringify({ email, content }),
+      JSON.stringify({ email, executiveName,executiveId,fields,startDate,endDate,time }),
       {
         headers: {
           "Content-Type": "application/json"

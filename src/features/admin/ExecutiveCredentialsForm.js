@@ -42,6 +42,7 @@ const ExecutiveCredentialsForm = () => {
     tax_id: "",
     profile_picture: null,
     role: "",
+    team_id: "",  
   });
 
   const handleInputChange = (e) => {
@@ -239,17 +240,23 @@ const ExecutiveCredentialsForm = () => {
                       </div>
                     </div>
 
-                    <div className="form-group">
-                      <label htmlFor="team_id">Team ID</label>
-                      <div className="input-with-icon">
-                        <FontAwesomeIcon icon={faUsers} className="input-icon" />
-                        <input
-                          type="text"
-                          placeholder="Enter Team ID"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
+                    {formData.role === "Manager" && (
+  <div className="form-group">
+    <label htmlFor="team_id">Team ID</label>
+    <div className="input-with-icon">
+      <FontAwesomeIcon icon={faUsers} className="input-icon" />
+      <input
+        type="text"
+        id="team_id"
+        name="team_id"
+        placeholder="Enter Team ID"
+        value={formData.team_id || ""}
+        onChange={handleInputChange}
+      />
+    </div>
+  </div>
+)}
+
                   </div>
 
                   <div className="right-column">

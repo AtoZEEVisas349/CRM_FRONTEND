@@ -130,6 +130,7 @@ const PageAccessControl = () => {
           "settings",
           "billing",
           "page_access",
+          "create_user",
         ];
         const emailKeys = [
           "weekly_summary",
@@ -181,6 +182,7 @@ const PageAccessControl = () => {
         "billing",
         "invoice",
         "page_access",
+        "create_user",
       ],
       email: ["weekly_summary", "account_updates", "marketing_emails"],
       notification: [
@@ -309,6 +311,7 @@ const PageAccessControl = () => {
                 "Settings",
                 "Billing",
                 "Invoice",
+                "create_user",
                 "Page Access"
               ],
               state: pageAccess,

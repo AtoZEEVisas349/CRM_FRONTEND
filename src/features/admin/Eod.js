@@ -1,228 +1,181 @@
-
-
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../styles/report.css";
 import logo from "../../assets/logo.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useApi } from "../../context/ApiContext";
 import SidebarToggle from "./SidebarToggle";
-import { useLoading } from "../../context/LoadingContext";
-import AdminSpinner from "../spinner/AdminSpinner";
-const options = ["Lead Visit", "Executive Activity", "Profit", "Meeting", "Others"];
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+
+const options = [
+  { key: "leadVisits", label: "Lead Visit" },
+  { key: "executiveActivity", label: "Executive Activity" },
+  { key: "meeting", label: "Meeting" },
+];
+
+const getCurrentDate = () => new Date().toISOString().split("T")[0];
+const getCurrentTime = () => new Date().toTimeString().slice(0, 5);
 
 const Eod = () => {
-  const getCurrentTime = () => new Date().toTimeString().slice(0, 5);
+  const { fetchExecutivesAPI, sendEodReport } = useApi();
+  const calendarRef = useRef(null);
 
-  const {
-    fetchExecutivesAPI,
-    fetchExecutiveDashboardData,
-    adminMeeting,
-    sendEodReport
-  } = useApi();
-  const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const [executives, setExecutives] = useState([]);
   const [cards, setCards] = useState([]);
-  const [dashboardData, setDashboardData] = useState({});
-  const [meetingData, setMeetingData] = useState({});
+  const [openCalendarIndex, setOpenCalendarIndex] = useState(null);
+  const [sidebarCollapsed] = useState(
+    localStorage.getItem("adminSidebarExpanded") === "false"
+  );
 
   useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        showLoader("Loading EOD data...", "admin");
-        const execData = await fetchExecutivesAPI();
-        const dashboardArray = await fetchExecutiveDashboardData();
-        const meetings = await adminMeeting();
-
-        const dashboard = dashboardArray.reduce((acc, item) => {
-          acc[item.ExecutiveId || item.executiveId] = item;
-          return acc;
-        }, {});
-
-        const meetingMap = meetings.reduce((acc, meeting) => {
-          const id = meeting.executiveId || meeting.ExecutiveId;
-          if (!id) return acc;
-          acc[id] = (acc[id] || 0) + 1;
-          return acc;
-        }, {});
-
-        setExecutives(execData);
-        setDashboardData(dashboard);
-        setMeetingData(meetingMap);
-
-        setCards(
-          execData.map(() => ({
-            email: "",
-            selected: [],
-            date: new Date().toISOString().split("T")[0],
-            time: getCurrentTime(),
-            dropdownOpen: false,
-          }))
-        );
-      } catch (error) {
-        console.error("❌ Error fetching data:", error);
-      }
-      finally {
-        hideLoader();
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setOpenCalendarIndex(null);
       }
     };
-
-    fetchAllData();
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const convertTime = (seconds) => {
-    if (seconds > 0) {
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.floor((seconds % 3600) / 60);
-      const secs = seconds % 60;
-      return `${hours}h ${minutes}m ${secs}s`;
-    }
-    return "0h 0m 0s";
-  };
+  useEffect(() => {
+    const fetchExecutives = async () => {
+      try {
+        const data = await fetchExecutivesAPI(); // [{ id, username }]
+        setExecutives(data);
 
-  const getOptionDetails = (execId) => {
-    const data = dashboardData[execId] || {};
-    const dashboardMeetings = data.meetingsConducted || data.meetingCount || 0;
-    const fetchedMeetings = meetingData[execId] || 0;
-
-    return {
-      "Lead Visit": `Visited ${data.leadSectionVisits || 0} potential leads today.`,
-      "Executive Activity": `Work Time: ${convertTime(data.workTime || 0)}, Break Time: ${convertTime(data.breakTime || 0)}, Call Time: ${convertTime(data.dailyCallTime || 0)}.`,
-      Profit: `Calculated daily profit: $${data.profit || 0}.`,
-      Meeting: `Total meetings conducted/scheduled: ${dashboardMeetings + fetchedMeetings}`,
-      Others: data.others || "Miscellaneous tasks not covered above.",
+        const initialCards = data.map(() => ({
+          email: "",
+            
+          selected: [],
+          startDate: getCurrentDate(),
+          endDate: getCurrentDate(),
+          time: getCurrentTime(),
+          dropdownOpen: false,
+        }));
+        setCards(initialCards);
+      } catch (error) {
+        console.error("Error fetching executives:", error);
+        toast.error("Failed to load executives.");
+      }
     };
-  };
 
-  const handleCheckboxChange = (cardIndex, option) => {
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === cardIndex
+    fetchExecutives();
+  }, []);
+
+  const handleCheckboxChange = (index, key) => {
+    setCards((prev) =>
+      prev.map((card, i) =>
+        i === index
           ? {
               ...card,
-              selected: card.selected.includes(option)
-                ? card.selected.filter((item) => item !== option)
-                : [...card.selected, option],
+              selected: card.selected.includes(key)
+                ? card.selected.filter((item) => item !== key)
+                : [...card.selected, key],
             }
           : card
       )
     );
   };
 
-  const handleDateChange = (cardIndex, value) => {
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === cardIndex ? { ...card, date: value } : card
-      )
-    );
-  };
-
-  const handleTimeChange = (cardIndex, value) => {
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === cardIndex ? { ...card, time: value } : card
-      )
-    );
-  };
-
-  const handleEmailChange = (cardIndex, value) => {
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === cardIndex ? { ...card, email: value } : card
-      )
-    );
-  };
-
-  const toggleDropdown = (cardIndex) => {
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === cardIndex
-          ? { ...card, dropdownOpen: !card.dropdownOpen }
+  const handleDateRangeChange = (index, ranges) => {
+    const { startDate, endDate } = ranges.selection;
+    setCards((prev) =>
+      prev.map((card, i) =>
+        i === index
+          ? {
+              ...card,
+              startDate: startDate.toISOString().split("T")[0],
+              endDate: endDate.toISOString().split("T")[0],
+            }
           : card
       )
     );
   };
 
-  const handleSubmit = async (e, cardIndex) => {
+  const handleTimeChange = (index, value) => {
+    setCards((prev) =>
+      prev.map((card, i) => (i === index ? { ...card, time: value } : card))
+    );
+  };
+
+  const handleEmailChange = (index, value) => {
+    setCards((prev) =>
+      prev.map((card, i) => (i === index ? { ...card, email: value } : card))
+    );
+  };
+
+  const toggleDropdown = (index) => {
+    setCards((prev) =>
+      prev.map((card, i) =>
+        i === index ? { ...card, dropdownOpen: !card.dropdownOpen } : card
+      )
+    );
+  };
+
+  const handleSubmit = async (e, index) => {
     e.preventDefault();
-    const card = cards[cardIndex];
-    const exec = executives[cardIndex];
-  
+    const card = cards[index];
+    const exec = executives[index];
+
     if (!card.email) {
-      toast.error("Please enter an email address.");
+      toast.error("Please enter an email.");
       return;
     }
-  
+
     if (card.selected.length === 0) {
-      toast.error("Please select at least one report option.");
+      toast.error("Select at least one report option.");
       return;
     }
-  
-    const { date, time, selected, email } = card;
-    const username = exec?.username || "Unknown Executive";
-    const execId = exec?.id;
-    const optionDetail = getOptionDetails(execId);
-  
-    let content = `EOD Report for ${username}\nDate: ${date}\nTime: ${time}\n\n`;
-    selected.forEach((option) => {
-      content += `🔹 ${option}: ${optionDetail[option] || "N/A"}\n`;
-    });
-  
+
+    const payload = {
+      executiveId: exec.id,
+      executiveName: exec.username,
+      email: card.email,
+      fields: card.selected,
+      startDate: card.startDate,
+      endDate: card.endDate,
+      time: card.time,
+    };
+
+    console.log("✅ Payload being sent:", payload);
+
     try {
-      await sendEodReport({ email, content });
-      toast.success("Email sent successfully!");
+      await sendEodReport(payload);
+      toast.success("Report scheduled successfully!");
     } catch (err) {
-      console.error("❌ Failed to send EOD report:", err);
-      toast.error("Failed to send email.");
+      console.error("❌ Failed to schedule:", err);
+      toast.error("Failed to schedule report.");
     }
   };
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    localStorage.getItem("adminSidebarExpanded") === "false"
-  );
-  
 
   return (
     <div className={`eod-layout-wrapper ${sidebarCollapsed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
-    <aside className="eod-sidebar">
-      <SidebarToggle /> {/* ✅ This goes inside sidebar */}
-      {/* Optional: sidebar icons, nav links etc */}
-    </aside>
-    <div className="eod-container">
-    {isLoading && variant === "admin" && (
-          <AdminSpinner text="Loading Eod Report..." />
-        )}
-      <ToastContainer />
-      <h1 className="eod-main-title">Send Reports</h1>
-
-      <div className="eod-cards-wrapper">
-        {executives.map((exec, index) => {
-          const execId = exec.id;
-
-          return (
-            <form
-              key={exec.id}
-              className="eod-cards"
-              onSubmit={(e) => handleSubmit(e, index)}
-            >
+      <aside className="eod-sidebar">
+        <SidebarToggle />
+      </aside>
+      <div className="eod-container">
+        <ToastContainer />
+        <h1 className="eod-main-title">Send Reports</h1>
+        <div className="eod-cards-wrapper">
+          {executives.map((exec, index) => (
+            <form key={exec.id} className="eod-cards" onSubmit={(e) => handleSubmit(e, index)}>
               <div className="eod-card-header">
-                <input className="eod-checkbox" type="checkbox" />
+                <input type="checkbox" className="eod-checkbox" />
                 <img src={logo} alt="logo" className="eod-logo" />
                 <h3 className="eod-user-name">{exec.username}</h3>
               </div>
 
               <div className="eod-email-container">
-                <label htmlFor={`email-${index}`} className="eod-label">
-                  Enter your Email:
-                </label>
+                <label className="eod-label">Email:</label>
                 <input
-                  className="eod-email-input"
                   type="email"
-                  id={`email-${index}`}
+                  className="eod-email-input"
                   value={cards[index]?.email || ""}
                   onChange={(e) => handleEmailChange(index, e.target.value)}
-                  placeholder="example@domain.com"
                   required
+                  placeholder="example@example.com"
                 />
               </div>
 
@@ -234,22 +187,21 @@ const Eod = () => {
                   className="eod-dropdown-button"
                 >
                   {cards[index].selected.length > 0
-                    ? cards[index].selected.join(", ")
-                    : "Choose EOD Report"}
+                    ? cards[index].selected.map((k) => options.find((o) => o.key === k)?.label).join(", ")
+                    : "Choose Report"}
                 </button>
-
                 {cards[index].dropdownOpen && (
                   <ul className="eod-dropdown-list">
-                    {options.map((option) => (
-                      <li key={option} className="eod-dropdown-item">
+                    {options.map(({ key, label }) => (
+                      <li key={key} className="eod-dropdown-item">
                         <label className="eod-dropdown-label">
                           <input
                             type="checkbox"
-                            checked={cards[index].selected.includes(option)}
-                            onChange={() => handleCheckboxChange(index, option)}
                             className="eod-dropdown-checkbox"
+                            checked={cards[index].selected.includes(key)}
+                            onChange={() => handleCheckboxChange(index, key)}
                           />
-                          {option}
+                          {label}
                         </label>
                       </li>
                     ))}
@@ -259,21 +211,36 @@ const Eod = () => {
 
               <div className="eod-datetime-wrapper">
                 <div className="eod-datetime">
-                  <label htmlFor={`date-${index}`} className="eod-label">
-                    Date:
-                  </label>
-                  <input
-                    type="date"
-                    id={`date-${index}`}
-                    value={cards[index].date}
-                    onChange={(e) => handleDateChange(index, e.target.value)}
+                  <label className="eod-label">Date Range:</label>
+                  <button
+                    type="button"
                     className="eod-date-input"
-                  />
+                    onClick={() =>
+                      setOpenCalendarIndex(openCalendarIndex === index ? null : index)
+                    }
+                  >
+                    {cards[index].startDate} to {cards[index].endDate}
+                  </button>
+                  {openCalendarIndex === index && (
+                    <div ref={calendarRef} style={{ position: "absolute", zIndex: 10 }}>
+                      <DateRange
+                        editableDateInputs={true}
+                        onChange={(item) => handleDateRangeChange(index, item)}
+                        moveRangeOnFirstSelection={false}
+                        ranges={[
+                          {
+                            startDate: new Date(cards[index].startDate),
+                            endDate: new Date(cards[index].endDate),
+                            key: "selection",
+                          },
+                        ]}
+                      />
+                    </div>
+                  )}
                 </div>
+
                 <div className="eod-time">
-                  <label htmlFor={`time-${index}`} className="eod-label">
-                    Time:
-                  </label>
+                  <label className="eod-label" htmlFor={`time-${index}`}>Time:</label>
                   <input
                     type="time"
                     id={`time-${index}`}
@@ -285,17 +252,16 @@ const Eod = () => {
               </div>
 
               <div className="eod-submit">
-                <button type="submit" className="eod-submit-button">
-                  Send Email
-                </button>
+                <button type="submit" className="eod-submit-button">Schedule Email</button>
               </div>
             </form>
-          );
-        })}
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 };
 
 export default Eod;
+
+

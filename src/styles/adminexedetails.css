@@ -158,18 +158,45 @@ input:checked + .sliderexe:before {
 }
 
 .box1 {
-  background-color: #f5f7fa;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #f0f2f8, #ffffff);
+  border-radius: 16px;
   padding: 20px;
+  position: relative;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.3s ease;
-  width: 100%; /* Ensure boxes take full width of their grid cell */
-  box-sizing: border-box;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  border-top: 6px solid #4f52bb;
+  animation: fadeSlideIn 0.4s ease;
 }
+
+.box1:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.user-select-checkbox {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  transform: scale(1.3);
+  cursor: pointer;
+  accent-color: #4f52bb;
+  transition: all 0.2s ease;
+}
+
+.user-select-checkbox:checked {
+  box-shadow: 0 0 10px rgba(79, 82, 187, 0.5);
+}
+
 
 .avatar {
   width: 100px;
@@ -749,20 +776,54 @@ input:checked + .sliderexe:before {
   color: #4f52bb;
   cursor: pointer;
 }
+.assign-panel {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
+  background: linear-gradient(135deg, #4f52bb, #6a7ee2);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  gap: 14px;
+  z-index: 1000;
+  animation: slideUpFade 0.4s ease forwards;
+}
 
+.assign-panel select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background: white;
+  color: #333;
+}
 
+.assign-panel button {
+  background-color: #00c897;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
+.assign-panel button:hover {
+  background-color: #00a07a;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
