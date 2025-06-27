@@ -250,12 +250,12 @@ useEffect(() => {
       email: freshLead.email || "",
     fresh_lead_id: latest.fresh_lead_id,
       // You can optionally add hardcoded or default fields:
-      altPhone: "",
-      education: "",
-      experience: "",
-      state: "",
-      dob: "",
-      country: "",
+      altPhone: freshLead.lead.clientLead.altPhone||"",
+      education:freshLead.lead.clientLead.education || "",
+      experience: freshLead.lead.clientLead.experience || "",
+      state: freshLead.lead.clientLead.state || "",
+      dob: freshLead.lead.clientLead.dob || "",
+      country: freshLead.lead.clientLead.country || "",
     };
 
     setClientInfo(newClientInfo);
@@ -360,9 +360,15 @@ useEffect(() => {
           reasonForFollowup: reasonDesc,
           startTime: new Date(`${interactionDate}T${interactionTime}`).toISOString(),
           endTime: null,
+          connect_via: capitalize(contactMethod), 
+        follow_up_type: followUpType, 
+        interaction_rating: capitalize(interactionRating), 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
           fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.id,
         };
       await createMeetingApi(meetingPayload);
+       await getProcessFollowup(id);
 
       Swal.fire({ icon: "success", title: "Meeting Created" });
       loadFollowUpHistories(freshLeadId);
@@ -418,10 +424,20 @@ useEffect(() => {
         fresh_lead_id: freshLeadId, 
       });
         Swal.fire({ icon: "success", title: "Client Converted" });
-      } else if (followUpType === "close") {
-        await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
-        await createFinalStage(freshLeadId);
-       
+      } else if (followUpType === "final") {
+        const payload={
+      //  follow_up_id: clientInfo.followUpId || clientInfo.id, 
+        connect_via: capitalize(contactMethod), 
+        follow_up_type: followUpType, 
+        interaction_rating: capitalize(interactionRating), 
+        comments: reasonDesc, 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
+        fresh_lead_id: freshLeadId, 
+      }
+    
+        await createFinalStage(payload);
+        await getProcessFollowup(id);
       
  Swal.fire({ icon: "success", title: "Lead Moved to Final Stage" });
   setTimeout(() => {
@@ -500,7 +516,7 @@ useEffect(() => {
 
   
   const isMeetingInPast = useMemo(() => {
-    if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
+    if (followUpType !== "meeting" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
     const now = new Date();
     return selectedDateTime < now;
@@ -525,7 +541,7 @@ useEffect(() => {
         fetchHistory();
       }
     }, [id]);
-
+console.log(clientInfo,"id")
   return (
     <>
     <div className="client-overview-wrapper">
@@ -634,8 +650,8 @@ useEffect(() => {
             <h4>Follow-Up Type</h4>
             <div className="radio-group">
               {[
-               "document collection","payment follow-up","visa filing", "other","appointment","rejected",
-                "close",
+               "document collection","payment follow-up","visa filing", "other","meeting","rejected",
+                "final",
               ].map((type) => (
               <label key={type} className="radio-container">
                   <input
@@ -771,7 +787,7 @@ useEffect(() => {
                 </div>
               </div>
               
-              {followUpType === "appointment" && isMeetingInPast && (
+              {followUpType === "meeting" && isMeetingInPast && (
                 <div style={{
                   marginTop: "12px",
                   color: "#b71c1c",
@@ -823,7 +839,7 @@ useEffect(() => {
                   </button>
                 )}
 
-                {followUpType === "close" && (
+                {followUpType === "final" && (
                   <button
                     onClick={handleFollowUpAction}
                     className="crm-button flw-close-btn"
@@ -858,7 +874,7 @@ useEffect(() => {
                   </button>
                 )}
 
-                {followUpType === "appointment" && (
+                {followUpType === "meeting" && (
                   <button
                     onClick={handleCreateMeeting}
                     className="crm-button meeting-btn"

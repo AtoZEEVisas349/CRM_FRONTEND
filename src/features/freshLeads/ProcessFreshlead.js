@@ -83,39 +83,39 @@ console.log(leadData);
         if (!executiveInfo && !executiveLoading) await fetchExecutiveData();
         const data = await fetchFreshLeadsAPI();
 
-        let leads = [];
-        if (Array.isArray(data)) {
-          leads = data;
-        } else if (data && Array.isArray(data.data)) {
-          leads = data.data;
-        } else {
-          setError("Invalid leads data format.");
-          return;
-        }
+        // let leads = [];
+        // if (Array.isArray(data)) {
+        //   leads = data;
+        // } else if (data && Array.isArray(data.data)) {
+        //   leads = data.data;
+        // } else {
+        //   setError("Invalid leads data format.");
+        //   return;
+        // }
 
-        const filteredLeads = leads
-          .filter(
-            (lead) =>
-              lead.clientLead?.status === "New" ||
-              lead.clientLead?.status === "Assigned"
-          )
-          .sort((a, b) => {
-            const dateA = new Date(
-              a.assignDate ||
-                a.lead?.assignmentDate ||
-                a.clientLead?.assignDate ||
-                0
-            );
-            const dateB = new Date(
-              b.assignDate ||
-                b.lead?.assignmentDate ||
-                b.clientLead?.assignDate ||
-                0
-            );
-            return dateB - dateA;
-          });
+        // const filteredLeads = leads
+        //   .filter(
+        //     (lead) =>
+        //       lead.clientLead?.status === "New" ||
+        //       lead.clientLead?.status === "Assigned"
+        //   )
+        //   .sort((a, b) => {
+        //     const dateA = new Date(
+        //       a.assignDate ||
+        //         a.lead?.assignmentDate ||
+        //         a.clientLead?.assignDate ||
+        //         0
+        //     );
+        //     const dateB = new Date(
+        //       b.assignDate ||
+        //         b.lead?.assignmentDate ||
+        //         b.clientLead?.assignDate ||
+        //         0
+        //     );
+        //     return dateB - dateA;
+        //   });
 
-        setLeadsData(filteredLeads);
+        // setLeadsData(filteredLeads);
         setCurrentPage(1);
         setHasLoaded(true);
       } catch (err) {
@@ -127,7 +127,29 @@ console.log(leadData);
 
     loadLeads();
   }, [executiveInfo, executiveLoading, hasLoaded]);
+  useEffect(() => {
+    const loadLeads = async () => {
+      if (hasLoaded) return;
+      setIsLoading(true);
+const data=customers;
+       let leads = [];
+        if (Array.isArray(data)) {
+          leads = data;
+        } else if (data && Array.isArray(data)) {
+          leads = data;
+        } else {
+          setError("Invalid leads data format.");
+          return;
+        }
+        setCurrentPage(1);
+        setHasLoaded(true);
+    
+    };
 
+    loadLeads();
+  }, []);
+
+  
   const filteredLeadsData = leadsData.filter((lead) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -152,7 +174,7 @@ console.log(leadData);
   };
 
   const handleAddFollowUp = (lead) => {
-    const clientLead = lead.clientLead || {};
+    const clientLead = lead.freshLead.lead.clientLead || {};
     const clientData = {
       name: lead.fullName || clientLead.fullName || "",
       email: lead.email || clientLead.email || "",

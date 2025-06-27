@@ -187,16 +187,22 @@ const[historyFollowup,setHistoryFollowup]=useState();
 
     try {
       if (followUpType === "appointment") {
-        const meetingPayload = {
+     const meetingPayload = {
           clientName: clientInfo.name,
           clientEmail: clientInfo.email,
           clientPhone: clientInfo.phone,
           reasonForFollowup: reasonDesc,
           startTime: new Date(`${interactionDate}T${interactionTime}`).toISOString(),
           endTime: null,
-          fresh_lead_id: clientInfo.freshLeadId || clientInfo.id,
+          connect_via: contactMethod, 
+        follow_up_type: followUpType, 
+        interaction_rating: interactionRating, 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
+          fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.id,
         };
         await createMeetingApi(meetingPayload);
+         await getProcessFollowup(id);
    Swal.fire({ 
                icon: "success", 
                title: "Meeting Created",
