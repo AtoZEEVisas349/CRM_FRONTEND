@@ -99,26 +99,31 @@ const Chat = ({ isCallActive , token}) => {
     setMessages((prev) => [...prev, { text: input, isUser: true }]);
     setUserInput("");
     setIsTyping(true);
-
+  
     try {
+      console.log("📤 Sending:", input);
       const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/crew/crew/executive", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`,
           "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
         },
-        body: JSON.stringify({ prompt: input }),
+        body: JSON.stringify({ question: input }), // ✅ key change here
       });
+  
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to fetch response");
-      setMessages((prev) => [...prev, { text: data.message, isUser: false }]);
+  
+      setMessages((prev) => [...prev, { text: data.answer, isUser: false }]); // backend sends { answer: "..." }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❌ API Error:", error);
       setMessages((prev) => [...prev, { text: "Error: Unable to get response.", isUser: false }]);
     } finally {
       setIsTyping(false);
     }
   };
+  
 
   const toggleRecording = async () => {
   console.log("🎬 toggleRecording clicked");
