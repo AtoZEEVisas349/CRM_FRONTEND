@@ -992,7 +992,56 @@ const [emailTemplates, setEmailTemplates] = useState([]);
       throw error;
     }
   };  
-
+  const [allHRs, setAllHRs] = useState([]);
+  const [allHRsLoading, setAllHRsLoading] = useState(false);
+  
+  const [allManagers, setAllManagers] = useState([]);
+  const [allManagersLoading, setAllManagersLoading] = useState(false);
+  
+  const [allProcessPersons, setAllProcessPersons] = useState([]);
+  const [allProcessPersonsLoading, setAllProcessPersonsLoading] = useState(false);
+  const fetchAllHRsAPI = async () => {
+    setAllHRsLoading(true);
+    try {
+      const data = await apiService.fetchAllHRs();
+      setAllHRs(data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error fetching HRs:", error);
+      return [];
+    } finally {
+      setAllHRsLoading(false);
+    }
+  };
+  
+  const fetchAllManagersAPI = async () => {
+    setAllManagersLoading(true);
+    try {
+      const data = await apiService.fetchAllManagers();
+      setAllManagers(data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error fetching Managers:", error);
+      return [];
+    } finally {
+      setAllManagersLoading(false);
+    }
+  };
+  
+  const fetchAllProcessPersonsAPI = async () => {
+    setAllProcessPersonsLoading(true);
+    try {
+      const data = await apiService.fetchAllProcessPersons();
+      setAllProcessPersons(data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error fetching Process Persons:", error);
+      return [];
+    } finally {
+      setAllProcessPersonsLoading(false);
+    }
+  };
+    
 
   // ✅ Effect to fetch initial data
   useEffect(() => {
@@ -1200,6 +1249,19 @@ const [emailTemplates, setEmailTemplates] = useState([]);
               leaveApplicationsLoading,
               fetchLeaveApplicationsAPI,
               updateLeaveStatusAPI,
+              // HR, Manager, and Process Person Data
+              allHRs,
+              allHRsLoading,
+              fetchAllHRsAPI,
+
+              allManagers,
+              allManagersLoading,
+              fetchAllManagersAPI,
+
+              allProcessPersons,
+              allProcessPersonsLoading,
+              fetchAllProcessPersonsAPI,
+
               
       }}
     >

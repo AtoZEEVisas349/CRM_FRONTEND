@@ -791,5 +791,20 @@ export const updateLeaveApplicationStatus = async (leaveId, status) => {
     throw error;
   }
 };
+export const fetchAllHRs = async () => {
+  const response = await apiService.get("/hr");
+  return response.data.hrs || [];
+};
+
+export const fetchAllManagers = async () => {
+  const response = await apiService.get("/manager");
+  return response.data.managers || [];
+};
+
+export const fetchAllProcessPersons = async () => {
+  const response = await apiService.get("/processperson");
+  return response.data.processPersons || [];
+};
+
 
 export default apiService;

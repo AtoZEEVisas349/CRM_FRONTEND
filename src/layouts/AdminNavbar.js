@@ -1,3 +1,4 @@
+
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../context/ApiContext";
@@ -7,7 +8,7 @@ import {
   FaSun,
   FaMoon,
   FaBell,
-  FaUser, 
+  FaUser,
   FaComment,
   FaSpinner,
   FaSignOutAlt,
@@ -25,7 +26,7 @@ function AdminNavbar() {
     fetchNotifications,
     notifications,
     unreadCount,
-    unreadMeetingsCount
+    unreadMeetingsCount,
   } = useApi();
 
   const navigate = useNavigate();
@@ -104,7 +105,10 @@ function AdminNavbar() {
           {isLight ? <FaMoon /> : <FaSun />}
         </button>
 
-        <div className="admin-icons-group">
+        <div
+          className="admin-icons-group"
+          onClick={() => navigate("/admin/messaging")}
+        >
           <div className="icon-wrapper icon-comment">
             <FaComment size={20} />
           </div>
@@ -115,7 +119,7 @@ function AdminNavbar() {
             onClick={() => navigate("/admin/notification")}
           >
             <FaBell size={20} />
-            {(unreadCount + unreadMeetingsCount) > 0 && (
+            {unreadCount + unreadMeetingsCount > 0 && (
               <span
                 key={location.key}
                 ref={badgeRef}

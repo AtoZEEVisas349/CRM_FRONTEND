@@ -991,3 +991,119 @@ h6 {
 }
 
 
+
+
+/*----------------------------------Lavender--------------------------*/
+[data-theme="lavender"] .follow-app-container {
+  --bg-color: #f1f0f8;
+  --text-color: #3a3a5c;
+}
+
+[data-theme="lavender"] .client-table thead th {
+  background: #9d8ae3;
+  color: white;
+}
+
+[data-theme="lavender"] .followup-tabs .active {
+  background: #9d8ae3;
+  color: white;
+}
+
+[data-theme="lavender"] .followup-tabs button {
+  color: #000000;
+}
+
+[data-theme="lavender"] .last-followup p,
+[data-theme="lavender"] .last-followup h4,
+[data-theme="lavender"] .client-text p,
+[data-theme="lavender"] .client-text h4,
+[data-theme="lavender"] .flw-close-btn {
+  color: #3a3a5c;
+}
+
+[data-theme="lavender"] .client-details,
+[data-theme="lavender"] .client-table-wrapper,
+[data-theme="lavender"] .client-table {
+  background: white;
+  border: 1px solid #d5d1f0;
+}
+
+[data-theme="lavender"] .followup-tabs button {
+  background-color: white;
+  border: 1px solid #d5d1f0;
+}
+
+[data-theme="lavender"] .status-badge {
+  background-color: #9d8ae3;
+  color: white;
+  border-color: #9d8ae3;
+}
+
+[data-theme="lavender"] .user-icon-bg {
+  background-color: #e4e2f7;
+}
+
+
+
+/*----------------------------------Ocean Blue Mist--------------------------*/
+[data-theme="ocean"] .follow-app-container {
+  --bg-color: #e8f6fc;
+  --text-color: #1a3d5d;
+}
+
+[data-theme="ocean"] .follow-main-content {
+  background-color: #e8f6fc;
+  color: #1a3d5d;
+}
+
+[data-theme="ocean"] .client-details,
+[data-theme="ocean"] .client-table-wrapper,
+[data-theme="ocean"] .client-table {
+  background: white;
+  border: 1px solid #b2c8df;
+}
+
+[data-theme="ocean"] .client-table thead th {
+  background-color: #4b6cb7;
+  color: white;
+}
+
+[data-theme="ocean"] .client-table td {
+  background-color: white;
+  color: #1a3d5d;
+  border-color: #d9e8f2;
+}
+
+[data-theme="ocean"] .client-table tr:hover {
+  background-color: #d9edf7 !important;
+}
+
+[data-theme="ocean"] .followup-tabs button {
+  background-color: white;
+  color: #1a3d5d;
+  border: 1px solid #b2c8df;
+}
+
+[data-theme="ocean"] .followup-tabs .active {
+  background-color: #4b6cb7;
+  color: white;
+  border-color: #4b6cb7;
+}
+
+[data-theme="ocean"] .status-badge {
+  background-color: #4b6cb7;
+  color: white;
+  border-color: #4b6cb7;
+}
+
+[data-theme="ocean"] .user-icon-bg {
+  background-color: #d9edf7;
+}
+
+[data-theme="ocean"] .last-followup p,
+[data-theme="ocean"] .last-followup h4,
+[data-theme="ocean"] .client-text p,
+[data-theme="ocean"] .client-text h4,
+[data-theme="ocean"] .flw-close-btn {
+  color: #1a3d5d;
+}

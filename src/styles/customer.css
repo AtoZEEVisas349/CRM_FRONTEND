@@ -695,3 +695,110 @@
   }
 }
 
+
+/*----------------------------------Lavender--------------------------*/
+[data-theme="lavender"] .customer-main-content {
+  --bg-color: #f5f4fa;
+  --text-color: #2c2f4c;
+}
+
+[data-theme="lavender"] .customer-card {
+  background: #ffffff;
+  border-color: #d1cde8;
+}
+
+[data-theme="lavender"] .customer-card:hover {
+  border-color: #b8b1e3;
+}
+
+[data-theme="lavender"] .follow-history-btn {
+  background: linear-gradient(135deg, #bdb4e4, #f2e9fc);
+  color: #2c2f4c;
+}
+
+[data-theme="lavender"] .button {
+  background: linear-gradient(135deg, #6c63ff, #b39ddb);
+  color: white;
+}
+
+[data-theme="lavender"] .button:hover {
+  background: #5e57cc;
+}
+
+[data-theme="lavender"] .convert-heading,
+[data-theme="lavender"] .generate-btn-wrapper {
+  background: #f5f4fa;
+}
+
+[data-theme="lavender"] .h-followup-modal {
+  background: linear-gradient(to bottom, #f2eefb, white);
+}
+
+[data-theme="lavender"] .h-close-btn {
+  background: #6c63ff;
+  color: white;
+}
+
+[data-theme="lavender"] .h-latest-tag {
+  background: #c2b8f2;
+  color: #2c2f4c;
+}
+
+[data-theme="lavender"] .h-followup-entry-card {
+  background: #ffffff;
+}
+
+
+
+/*----------------------------------Ocean Blue Mist--------------------------*/
+[data-theme="ocean"] .customer-main-content {
+  --bg-color: #e8f6fc;
+  --text-color: #1a3d5d;
+}
+
+[data-theme="ocean"] .customer-card {
+  background: #ffffff;
+  border-color: #b2c8df;
+}
+
+[data-theme="ocean"] .customer-card:hover {
+  border-color: #90b4e8;
+}
+
+[data-theme="ocean"] .follow-history-btn {
+  background: linear-gradient(135deg, #4b6cb7, #b2c8df);
+  color: #ffffff;
+}
+
+[data-theme="ocean"] .button {
+  background: linear-gradient(135deg, #4b6cb7, #0284c7);
+  color: white;
+}
+
+[data-theme="ocean"] .button:hover {
+  background: linear-gradient(135deg, #3757a2, #0369a1);
+}
+
+[data-theme="ocean"] .convert-heading,
+[data-theme="ocean"] .generate-btn-wrapper {
+  background: #e8f6fc;
+}
+
+[data-theme="ocean"] .h-followup-modal {
+  background: linear-gradient(to bottom, #def1fd, white);
+}
+
+[data-theme="ocean"] .h-close-btn {
+  background: #0369a1;
+  color: white;
+}
+
+[data-theme="ocean"] .h-latest-tag {
+  background: #0284c7;
+  color: white;
+}
+
+[data-theme="ocean"] .h-followup-entry-card {
+  background: white;
+}
+

@@ -1,7 +1,5 @@
 
 
-
-
 .fresh-leads-table thead {
   background-color: #e5e7eb;
   text-transform: uppercase;
@@ -518,6 +516,7 @@ gap: 10px;
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
+  /* margin-top: 50px; */
   overflow: auto;
   margin-left: -20px;
   background-color: var(--bg-color);
@@ -526,226 +525,145 @@ gap: 10px;
 [data-theme="dark"] .followup-badge{
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
-/* Chatbot Popup Overlay */
-/* Chatbot Popup Overlay */
-.chatbot-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  overflow: hidden;
+
+
+
+/*------------------------------Lavender------------------------------*/
+[data-theme="lavender"] .fresh-leads-main-content,
+[data-theme="lavender"] .lead-assign-container,
+[data-theme="lavender"] .lead-content {
+  background: #f1f0f8; /* Soft lavender */
+  color: #3a3a5c;
 }
 
-/* Chatbot Popup Container */
-.chatbot-popup-container {
+/* Table styling */
+[data-theme="lavender"] .fresh-leads-table {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  width: 95vw;
-  max-width: 800px;
-  height: 80vh;
-  max-height: 600px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: popupSlideIn 0.3s ease-out;
-  box-sizing: border-box;
-
-  resize: both;              /* ✅ Allow both horizontal and vertical resizing */
-  overflow: auto;            /* ✅ Ensure scroll if content overflows */
-  min-width: 300px;
-  min-height: 300px;
+  border: 1px solid #d5d1f0;
+  color: #000000;
 }
 
+/* Table header */
+[data-theme="lavender"] .fresh-leads-table thead {
+  background-color: #9d8ae3;
+  color: white !important;
+}
 
-/* Chatbot Popup Header */
-.chatbot-popup-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Table rows and cells */
+[data-theme="lavender"] .fresh-leads-table th,
+[data-theme="lavender"] .fresh-leads-table td {
+  color: #000000;
+  border-bottom: 1px solid #d5d1f0;
+}
+
+[data-theme="lavender"] .fresh-leads-table tbody tr:hover {
+  background-color: #eae7f8 !important;
+}
+
+/* Pagination */
+[data-theme="lavender"] .fresh-pagination {
+  background: #f1f0f8;
+  border-top: 1px solid #d5d1f0;
+}
+
+[data-theme="lavender"] .fresh-pagination-btn {
+  background-color: #9d8ae3;
   color: white;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
 }
 
-.chatbot-popup-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+[data-theme="lavender"] .fresh-pagination-btn:hover:not(:disabled) {
+  background-color: #7d6bcb;
 }
 
-.chatbot-close-btn {
-  background: transparent;
-  border: none;
+[data-theme="lavender"] .fresh-pagination span {
+  color: #3a3a5c;
+}
+
+/* Popover menu */
+[data-theme="lavender"] .popover {
+  background-color: white;
+  border: 1px solid #d5d1f0;
+}
+
+[data-theme="lavender"] .popover-option {
+  color: #3a3a5c;
+}
+
+[data-theme="lavender"] .popover-option:hover {
+  background-color: #eae7f8;
+}
+
+/* Profession text */
+[data-theme="lavender"] .fresh-leads-profession {
+  color: #6c6a7d !important;
+}
+
+/*------------------------------Ocean Blue Mist------------------------------*/
+[data-theme="ocean"] .fresh-leads-main-content,
+[data-theme="ocean"] .lead-assign-container,
+[data-theme="ocean"] .lead-content {
+  background: #e8f6fc;
+  color: #1a3d5d;
+}
+
+/* Table styling */
+[data-theme="ocean"] .fresh-leads-table {
+  background: white;
+  border: 1px solid #b2c8df;
+  color: #1a3d5d;
+}
+
+/* Table header */
+[data-theme="ocean"] .fresh-leads-table thead {
+  background-color: #4b6cb7;
+  color: white !important;
+}
+
+/* Table rows and cells */
+[data-theme="ocean"] .fresh-leads-table th,
+[data-theme="ocean"] .fresh-leads-table td {
+  color: #1a3d5d;
+  border-bottom: 1px solid #d9e8f2;
+}
+
+[data-theme="ocean"] .fresh-leads-table tbody tr:hover {
+  background-color: #d9edf7 !important;
+}
+
+/* Pagination */
+[data-theme="ocean"] .fresh-pagination {
+  background: #e8f6fc;
+  border-top: 1px solid #b2c8df;
+}
+
+[data-theme="ocean"] .fresh-pagination-btn {
+  background-color: #4b6cb7;
   color: white;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
 }
 
-.chatbot-close-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+[data-theme="ocean"] .fresh-pagination-btn:hover:not(:disabled) {
+  background-color: #3757a2;
 }
 
-/* Chatbot Popup Content */
-.chatbot-popup-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  border-radius: 0 0 12px 12px;
-  overflow: hidden;
-  padding: 0;
-  max-width: 100%;
+[data-theme="ocean"] .fresh-pagination span {
+  color: #1a3d5d;
 }
 
-/* Chat container inside the popup */
-.chatbot-popup-content .chat-page {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+/* Popover menu */
+[data-theme="ocean"] .popover {
+  background-color: white;
+  border: 1px solid #b2c8df;
 }
 
-.chatbot-popup-content .chat-container {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
+[data-theme="ocean"] .popover-option {
+  color: #1a3d5d;
 }
 
-.chatbot-popup-content .chat-header,
-.chatbot-popup-content .chat-input-container {
-  padding: 12px 16px;
-  border-bottom: 1px solid #ccc;
+[data-theme="ocean"] .popover-option:hover {
+  background-color: #d9edf7;
 }
 
-.chatbot-popup-content .chat-input-container {
-  border-top: 1px solid #ccc;
-}
-.chatbot-popup-content,
-.chat-page,
-.chat-container {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
-}
-
-.chat-container {
-  overflow-y: auto;
-  max-height: calc(80vh - 70px); /* adjust based on header & input height */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .chatbot-popup-container {
-    width: 95%;
-    height: 90vh;
-  }
-
-  .chatbot-popup-header h3 {
-    font-size: 15px;
-  }
-
-  .chatbot-popup-content .chat-container {
-    padding: 12px;
-  }
-
-  .chatbot-popup-content .chat-input-container {
-    padding: 10px 14px;
-  }
-}
-
-/* Animation for popup */
-@keyframes popupSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-
-
-/* Enhanced popover styles for better UX */
-.popover {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  z-index: 100;
-  min-width: 150px;
-  overflow: hidden;
-  animation: popoverFadeIn 0.2s ease-out;
-}
-.chat-header h2{
-  color: #f1f7ff !important;
-}
-
-.popover-option {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  background: white;
-  color: #333;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-align: left;
-}
-
-.popover-option:hover {
-  background-color: #f8f9fa;
-}
-
-.popover-option:not(:last-child) {
-  border-bottom: 1px solid #f1f3f4;
-}
-/* Resize handle styling for chatbot popup */
-.chatbot-popup-container {
-  position: relative;
-  resize: both;
-  overflow: auto;
-}
-
-/* Resize handle visual enhancement */
-.chatbot-popup-container::after {
-  content: "";
-  position: absolute;
-  width: 10px;    /* Make handle bigger */
-  height: 10px;
-  right: 2px;
-  bottom: 2px;
-  background: repeating-linear-gradient(
-    135deg,
-    #13293d,
-    #13293d 2px,
-    #fff 2px,
-    #fff 4px
-  );
-  cursor: se-resize;
-  z-index: 10;
+/* Profession text */
+[data-theme="ocean"] .fresh-leads-profession {
+  color: #2c516c !important;
 }

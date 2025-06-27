@@ -12,6 +12,7 @@ import Monitoring from "../features/admin/Monitoring";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";
 import ExecutiveAssignments from "../features/admin/ExecutiveAssignments";
+import Messages from "../features/Messaging/Messages";
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -26,6 +27,7 @@ const AdminRoutes = () => {
         <Route path="notification" element={<AdminNotification />} />
         <Route path="help-support" element ={<ContactUs/>}/>
         <Route path="eod-report" element={<Eod />} /> {/* ✅ EOD route added here */}
+        <Route path="messaging" element={<Messages/>}/>
         <Route path="executive-attendance" element={<AttendanceTable />} />
 
       </Route>

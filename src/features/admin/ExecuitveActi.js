@@ -66,7 +66,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
   const activitiesRaw = [
     { name: "Break Time", value: activityData.breakTime, icon: <FaCoffee />, color: "#8b5cf6" },
     { name: "Work Time", value: activityData.workTime, icon: <FaBriefcase />, color: "#6d28d9" },
-    { name: "Daily Call Time", value: activityData.callTime, icon: <FaUser />, color: "#a78bfa" },
+    { name: "Behavioral Pattern", value: activityData.callTime, icon: <FaUser />, color: "#a78bfa" },
   ];
 
   const activities = activitiesRaw.map((activity) => ({
@@ -78,7 +78,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
   return (
     <div className="exec-activity">
       <h2 className="exec-section-title">
-        Behavioral Pattern:{" "}
+        Executive Behaviour:{" "}
         <span className="executive-name">
           {executiveName || "Loading..."}
         </span>
