@@ -2588,21 +2588,9 @@
 [data-theme="peach"] .sidebar_container::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #ec407a, #ad1457);
 }
-
-
-
-
-
-
-
-
-
-
-
 /*-------------------------------Ocean Blue Mist----------------------------------*/
 /*-------------------------------O`cean Blue Mist with Unique Contrast----------------------------------*/
-*-------------------------------Enhanced Dark Sidebar----------------------------------*/
-C .sidebar_container {
+ .sidebar_container {
   background: linear-gradient(180deg, #0a1929 0%, #1e3a8a 50%, #0f172a 100%);
   color: #e2e8f0;
   box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
