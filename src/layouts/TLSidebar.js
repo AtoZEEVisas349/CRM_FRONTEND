@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  PieChart,
-  FolderOpen,
+  Gauge,
   ClipboardList,
+  UserCheck,
   UserPlus,
   Users,
-  CalendarCheck,
-  Settings,
-  HelpCircle,
-  UserCog,
+  ActivitySquare,
   FileText,
-  Gauge,
+  UserCircle,
+  CalendarDays,
+  LifeBuoy,
+  Settings
 } from "lucide-react";
-
 
 const TLSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -97,19 +95,19 @@ const TLSidebar = () => {
           <ul>
             <li className="active">
               <Link to="/team-lead" className="admin-aside-link">
-                <PieChart className="admin-aside-icon"/>
+                <Gauge className="admin-aside-icon"/>
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
               <Link to="/team-lead/assign-task" className="admin-aside-link">
-                <FolderOpen className="admin-aside-icon"/>
-                <span className="sidebar-label">Assign Task</span>
+                <ClipboardList className="admin-aside-icon"/>
+                <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
               <Link to="/team-lead/leadassign" className="admin-aside-link">
-                <ClipboardList className="admin-aside-icon"/>
+                <UserCheck className="admin-aside-icon"/>
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
@@ -121,7 +119,7 @@ const TLSidebar = () => {
             </li>
             <li>
               <Link to="/team-lead/monitoring" className="admin-aside-link">
-                <UserCog className="admin-aside-icon"/>
+                <ActivitySquare className="admin-aside-icon"/>
                 <span className="sidebar-label">Monitoring</span>
               </Link>
             </li>
@@ -139,7 +137,7 @@ const TLSidebar = () => {
           <ul>
             <li>
               <Link to="/team-lead/executive-details" className="admin-aside-link">
-                <Users className="admin-aside-icon"/>
+                <UserCircle className="admin-aside-icon"/>
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
@@ -147,7 +145,7 @@ const TLSidebar = () => {
           <ul>
             <li>
               <Link to="/team-lead/executive-attendance" className="admin-aside-link">
-                <CalendarCheck className="admin-aside-icon"/>
+                <CalendarDays className="admin-aside-icon"/>
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
@@ -155,7 +153,7 @@ const TLSidebar = () => {
           <ul>
             <li>
             <Link to="/team-lead/help-support" className="admin-aside-link">
-            <HelpCircle className="admin-aside-icon"/>
+            <LifeBuoy className="admin-aside-icon"/>
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>

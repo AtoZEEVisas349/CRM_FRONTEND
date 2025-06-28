@@ -6,6 +6,7 @@ import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTe
   getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId,createTeam,getManagerTeams,
   addExecutiveToTeam
 } from "../services/apiService"
+import { format } from "date-fns";
 const ApiContext = createContext();
 
 export const ApiProvider = ({ children }) => {
@@ -256,28 +257,61 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
- // ✅ Get Executive Activity
- const [activityData, setActivityData] = useState({
-  breakTime: 0,
-  workTime: 0,
-  callTime: 0,
-});
+  const [activityData, setActivityData] = useState({
+    breakTime: 0,
+    workTime: 0,
+    callTime: 0,
+  });
 
-const getExecutiveActivity = async (executiveId) => {
-  if (!executiveId) return;
+  // ✅ Get Executive Activity - Updated to filter by current date
+  const getExecutiveActivity = async (executiveId) => {
+    if (!executiveId) return;
 
-  try {
-    const data = await apiService.fetchExecutiveActivity(executiveId);
-    setActivityData({
-      breakTime: data.breakTime || 0,
-      workTime: data.workTime || 0,
-      callTime: data.callTime || 0,
-    });
-  } catch (error) {
-    console.error("Error fetching executive activity data:", error);
-  }
-};
+    try {
+      const data = await apiService.fetchExecutiveActivity(executiveId);
+      
+      // Get today's date in YYYY-MM-DD format
+      const today = format(new Date(), "yyyy-MM-dd");
 
+      // Filter activities for today only
+      let totalBreakTime = 0;
+      let totalWorkTime = 0;
+      let totalCallTime = 0;
+
+      if (Array.isArray(data)) {
+        // Filter and sum records for today
+        const todayActivities = data.filter(record => record.activityDate === today);
+        todayActivities.forEach(record => {
+          totalBreakTime += record.breakTime || 0;
+          totalWorkTime += record.workTime || 0;
+          totalCallTime += record.dailyCallTime || 0;
+        });
+      } else if (data && typeof data === 'object') {
+        // Handle single object response for today
+        if (data.activityDate === today) {
+          totalBreakTime = data.breakTime || 0;
+          totalWorkTime = data.workTime || 0;
+          totalCallTime = data.dailyCallTime || 0;
+        }
+      }
+
+      setActivityData({
+        breakTime: totalBreakTime,
+        workTime: totalWorkTime,
+        callTime: totalCallTime,
+      });
+
+      console.log('✅ Activity totals for today:', {
+        totalWorkTime,
+        totalBreakTime,
+        totalCallTime
+      });
+
+    } catch (error) {
+      console.error("Error fetching executive activity data:", error);
+    }
+  };
+  
   // ✅ Fetch Fresh Leads API
   const [freshLeads, setFreshLeads] = useState([]);
   const [freshLeadsLoading, setFreshLeadsLoading] = useState(false);

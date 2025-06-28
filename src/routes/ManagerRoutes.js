@@ -12,6 +12,7 @@ import ManagerLayout from "../layouts/ManagerLayout";
 import Monitoring from "../features/admin/Monitoring";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";
+import CRMTeamsInterface from "../features/manager/Team";
 const ManagerRoutes = () => {
   return (
     <Routes>
@@ -50,6 +51,7 @@ const ManagerRoutes = () => {
             <Eod />
             </RequirePermission>} /> {/* ✅ EOD route added here */}
         <Route path="executive-attendance" element={<AttendanceTable />} />
+        <Route path="teams" element={<CRMTeamsInterface />} />
 
       </Route>
     </Routes>

@@ -106,11 +106,11 @@ function AdminNavbar() {
         </button>
 
         <div
-          className="admin-icons-group"
-          onClick={() => navigate("/admin/messaging")}
+          className="admin-icons-group" 
         >
           <div className="icon-wrapper icon-comment">
-            <FaComment size={20} />
+            <FaComment size={20}
+            onClick={() => navigate("/admin/messaging")} />
           </div>
 
           <div

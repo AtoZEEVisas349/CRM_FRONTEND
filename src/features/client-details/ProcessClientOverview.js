@@ -865,13 +865,13 @@ console.log(clientInfo,"id");
                     cursor: followUpLoading ? "not-allowed" : "pointer",
                     opacity: followUpLoading ? 0.6 : 1,
                   }}>
-                    {followUpType === "meeting"
-                      ? "Create Meeting"
-                      : followUpType === "converted"
-                      ? "Convert"
-                      : "Close"}
-                  </button>
-                )} 
+    {followUpType === "meeting"
+      ? "Create Meeting"
+      : followUpType === "converted"
+      ? "Convert"
+      : "Close"}
+  </button>
+)} 
               </div>
             </div>
           </div>

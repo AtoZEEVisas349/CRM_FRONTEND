@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  PieChart,
-  FolderOpen,
+  Gauge,
   ClipboardList,
+  UserCheck,
   UserPlus,
   Users,
-  CalendarCheck,
-  Settings,
-  HelpCircle,
-  UserCog,
+  ActivitySquare,
   FileText,
-  Gauge,
+  UserCircle,
+  CalendarDays,
+  LifeBuoy,
+  Settings
 } from "lucide-react";
-
 
 const ManagerSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -97,19 +95,19 @@ const ManagerSidebar = () => {
           <ul>
             <li className="active">
               <Link to="/manager" className="admin-aside-link">
-                <PieChart className="admin-aside-icon"/>
+                <Gauge className="admin-aside-icon"/>
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
               <Link to="/manager/assign-task" className="admin-aside-link">
-                <FolderOpen className="admin-aside-icon"/>
-                <span className="sidebar-label">Assign Task</span>
+                <ClipboardList className="admin-aside-icon"/>
+                <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
               <Link to="/manager/leadassign" className="admin-aside-link">
-                <ClipboardList className="admin-aside-icon"/>
+                <UserCheck className="admin-aside-icon"/>
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
@@ -119,9 +117,10 @@ const ManagerSidebar = () => {
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
+           
             <li>
               <Link to="/manager/monitoring" className="admin-aside-link">
-                <UserCog className="admin-aside-icon"/>
+                <ActivitySquare className="admin-aside-icon"/>
                 <span className="sidebar-label">Monitoring</span>
               </Link>
             </li>
@@ -135,27 +134,28 @@ const ManagerSidebar = () => {
             <span className="sidebar-label">EOD Report</span>
           </Link>
         </li>
-          </ul>
-          <ul>
             <li>
               <Link to="/manager/executive-details" className="admin-aside-link">
-                <Users className="admin-aside-icon"/>
+                <UserCircle className="admin-aside-icon"/>
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
-          </ul>
-          <ul>
+            <li>
+              <Link to="/manager/teams" className="admin-aside-link">
+                <Users className="admin-aside-icon"/>
+                <span className="sidebar-label">Team Management</span>
+              </Link>
+            </li>
             <li>
               <Link to="/manager/executive-attendance" className="admin-aside-link">
-                <CalendarCheck className="admin-aside-icon"/>
+                <CalendarDays className="admin-aside-icon"/>
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
-          </ul>
-          <ul>
+         
             <li>
             <Link to="/manager/help-support" className="admin-aside-link">
-            <HelpCircle className="admin-aside-icon"/>
+            <LifeBuoy className="admin-aside-icon"/>
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>

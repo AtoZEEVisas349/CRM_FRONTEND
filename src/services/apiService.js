@@ -219,6 +219,9 @@ export const fetchExecutiveActivity = async (executiveId) => {
     const response = await apiService.get(
       `/executive-activities/${executiveId}`
     );
+    
+    console.log('✅ API Response:', response.data);
+    
     return response.data;
   } catch (error) {
     console.error(
@@ -601,7 +604,7 @@ export const deleteClientLead = async (leadId) => {
 export const sendEodReport = async ({  executiveId,executiveName,email,fields,startDate,endDate,time }) => {
   try {
     const response = await apiService.post(
-      "/report",
+      "/eod-report/schedule",
       JSON.stringify({ email, executiveName,executiveId,fields,startDate,endDate,time }),
       {
         headers: {
@@ -844,8 +847,8 @@ export const getManagerTeams = async () => {
 export const addExecutiveToTeam = async ({ teamId, executiveId }) => {
   try {
     const response = await apiService.post("/manager/addExecutive", {
-      teamId,
-      executiveId,
+      team_id: teamId,
+      user_id: executiveId,
     });
     return response.data;
   } catch (error) {
@@ -853,5 +856,6 @@ export const addExecutiveToTeam = async ({ teamId, executiveId }) => {
     throw error;
   }
 };
+
 
 export default apiService;
