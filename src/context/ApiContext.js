@@ -256,27 +256,27 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
-  // ✅ Get Executive Activity
-  const [activityData, setActivityData] = useState({
-    breakTime: 0,
-    workTime: 0,
-    callTime: 0,
-  });
+ // ✅ Get Executive Activity
+ const [activityData, setActivityData] = useState({
+  breakTime: 0,
+  workTime: 0,
+  callTime: 0,
+});
 
-  const getExecutiveActivity = async (executiveId) => {
-    if (!executiveId) return;
+const getExecutiveActivity = async (executiveId) => {
+  if (!executiveId) return;
 
-    try {
-      const data = await apiService.fetchExecutiveActivity(executiveId);
-      setActivityData({
-        breakTime: data.breakTime || 0,
-        workTime: data.workTime || 0,
-        callTime: data.callTime || 0,
-      });
-    } catch (error) {
-      console.error("Error fetching executive activity data:", error);
-    }
-  };
+  try {
+    const data = await apiService.fetchExecutiveActivity(executiveId);
+    setActivityData({
+      breakTime: data.breakTime || 0,
+      workTime: data.workTime || 0,
+      callTime: data.callTime || 0,
+    });
+  } catch (error) {
+    console.error("Error fetching executive activity data:", error);
+  }
+};
 
   // ✅ Fetch Fresh Leads API
   const [freshLeads, setFreshLeads] = useState([]);
