@@ -83,7 +83,8 @@ const [weekStart, setWeekStart] = useState(
 <input
   type="date"
   value={endDate.format("YYYY-MM-DD")}
-  disabled
+  onChange={(e) => setEndDate(dayjs(e.target.value))}
+
   className="select-date"
 />
 

@@ -806,5 +806,52 @@ export const fetchAllProcessPersons = async () => {
   return response.data.processPersons || [];
 };
 
+// ✅ Fetch all Team Leads (Admin-only)
+export const fetchAllTeamLeads = async () => {
+  try {
+    const response = await apiService.get("/team-leads");
+    return response.data.teamLeads || []; // Adjust key based on actual backend response
+  } catch (error) {
+    console.error("❌ Error fetching team leads:", error);
+    throw error;
+  }
+};
+// ================== 👥 Manager Team APIs ==================
+
+// ✅ Create a new Team (Manager only)
+export const createTeam = async (teamData) => {
+  try {
+    const response = await apiService.post("/manager/teams", teamData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error creating team:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// ✅ Fetch all teams for the logged-in Manager
+export const getManagerTeams = async () => {
+  try {
+    const response = await apiService.get("/manager/teams");
+    return response.data.teams || [];
+  } catch (error) {
+    console.error("❌ Error fetching manager's teams:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// ✅ Add an executive to a team (Manager only)
+export const addExecutiveToTeam = async ({ teamId, executiveId }) => {
+  try {
+    const response = await apiService.post("/manager/addExecutive", {
+      teamId,
+      executiveId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error adding executive to team:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export default apiService;

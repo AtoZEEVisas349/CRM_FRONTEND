@@ -18,10 +18,43 @@ const ExecutiveActivity = () => {
   const {handleStartBreak,handleStopBreak,handleStartCall,handleEndCall}=useExecutiveActivity()
   const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading } = useBreakTimer();
   const timer = useWorkTimer();
-   const { executiveInfo, executiveLoading, fetchExecutiveData } = useApi();
-   useEffect(() => {
+  const { executiveInfo, executiveLoading, fetchExecutiveData, activityData, getExecutiveActivity } = useApi();
+  
+  // ✅ State to hold calculated totals
+  const [dailyTotals, setDailyTotals] = useState({
+    totalWorkTime: 0,
+    totalBreakTime: 0
+  });
+  
+  useEffect(() => {
     fetchExecutiveData(); // Call it only once on mount
   }, []);
+
+  // ✅ Fetch daily activity data when executiveInfo is available
+  useEffect(() => {
+    if (executiveInfo?.id) {
+      getExecutiveActivity(executiveInfo.id);
+    }
+  }, [executiveInfo?.id]);
+
+  // ✅ Calculate totals when activityData changes
+  useEffect(() => {
+    if (activityData && Array.isArray(activityData)) {
+      const totalWorkTime = activityData.reduce((sum, record) => sum + (record.workTime || 0), 0);
+      const totalBreakTime = activityData.reduce((sum, record) => sum + (record.breakTime || 0), 0);
+      
+      setDailyTotals({
+        totalWorkTime,
+        totalBreakTime
+      });
+    } else if (activityData && typeof activityData === 'object') {
+      // Handle case where API returns single object instead of array
+      setDailyTotals({
+        totalWorkTime: activityData.workTime || 0,
+        totalBreakTime: activityData.breakTime || 0
+      });
+    }
+  }, [activityData]);
   
   const [callText, setCallText] = useState('Start Call');
   
@@ -135,8 +168,13 @@ const ExecutiveActivity = () => {
 
   const handleManualRefresh = () => {
     fetchActivityStatus();
+    // ✅ Also refresh daily activity data
+    if (executiveInfo?.id) {
+      getExecutiveActivity(executiveInfo.id);
+    }
     toast.info("Activity data refreshed");
   };
+  
   const toggleCall = (e) => {
     if (callText === 'Start Call') {
        handleStartCall();
@@ -148,6 +186,7 @@ const ExecutiveActivity = () => {
         // ✅ Save call status
     }
   }
+  
   return (
     <div className="activity-tracker-container">
       <div className="tracker-widget">
@@ -183,13 +222,16 @@ const ExecutiveActivity = () => {
               <span className="time-value">{timer}</span>
             </div>
 
-<div className="daily-summary">
+            <div className="daily-summary">
               <h4 className="summary-text">Today's Summary</h4>
               <ul>
-                <li>Total Break Time: {breakTimer}</li>
-                <li>Working Time So Far: {timer}</li>
+                <li>Break Time for current login: {breakTimer}</li>
+                <li>Working Time for current login: {timer}</li>
+                <li>Total Work Time Today: {formatTime(dailyTotals.totalWorkTime)}</li>
+                <li>Total Break Time Today: {formatTime(dailyTotals.totalBreakTime)}</li>
               </ul>
             </div>
+            
             <div className="motivation-box">
               <blockquote>"Small consistent actions lead to big results."</blockquote>
               <small>- AtoZee Motivation</small>

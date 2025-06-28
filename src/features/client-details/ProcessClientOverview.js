@@ -186,7 +186,7 @@ const[historyFollowup,setHistoryFollowup]=useState();
     }
 
     try {
-      if (followUpType === "appointment") {
+      if (followUpType === "meeting") {
      const meetingPayload = {
           clientName: clientInfo.name,
           clientEmail: clientInfo.email,
@@ -302,7 +302,7 @@ const[historyFollowup,setHistoryFollowup]=useState();
 
 
   const isMeetingInPast = useMemo(() => {
-    if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
+    if (followUpType !== "meeting" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
     const now = new Date();
     return selectedDateTime < now;
@@ -553,7 +553,7 @@ console.log(clientInfo,"id");
          <div className="follow-up-type"  style={{ marginBottom: "20px" }}>
             <h4>Follow-Up Type</h4>
             <div className="radio-group">
-              {["document collection","payment follow-up","visa filing", "other","appointment"].map((type) => (
+              {["document collection","payment follow-up","visa filing", "other","meeting"].map((type) => (
                 <label key={type} className="radio-container">
                   <input
                     type="radio"
@@ -832,7 +832,7 @@ console.log(clientInfo,"id");
                 </div>
               </div>
 
-              {followUpType === "appointment" && isMeetingInPast && (
+              {followUpType === "meeting" && isMeetingInPast && (
                 <div style={{
                   marginTop: "12px",
                   color: "#b71c1c",
@@ -852,12 +852,12 @@ console.log(clientInfo,"id");
                   </button>
                 )}
                
-                {(followUpType === "appointment" || followUpType === "converted" || followUpType === "close") && (
+                {(followUpType === "meeting" || followUpType === "converted" || followUpType === "close") && (
   <button  className="update-btn"
                   onClick={handleTextUpdate}
                   disabled={followUpLoading}
                   style={{
-                    backgroundColor: followUpType === "converted" ? "#28a745" : followUpType === "close" ? "#dc3545" : followUpType === "appointment" ? "#17a2b8" : "#007bff",
+                    backgroundColor: followUpType === "converted" ? "#28a745" : followUpType === "close" ? "#dc3545" : followUpType === "meeting" ? "#17a2b8" : "#007bff",
                     color: "white",
                     padding: "10px 20px",
                     borderRadius: "50px",
@@ -865,13 +865,13 @@ console.log(clientInfo,"id");
                     cursor: followUpLoading ? "not-allowed" : "pointer",
                     opacity: followUpLoading ? 0.6 : 1,
                   }}>
-    {followUpType === "appointment"
-      ? "Create Meeting"
-      : followUpType === "converted"
-      ? "Convert"
-      : "Close"}
-  </button>
-)} 
+                    {followUpType === "meeting"
+                      ? "Create Meeting"
+                      : followUpType === "converted"
+                      ? "Convert"
+                      : "Close"}
+                  </button>
+                )} 
               </div>
             </div>
           </div>

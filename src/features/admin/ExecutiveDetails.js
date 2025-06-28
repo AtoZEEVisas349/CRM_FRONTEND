@@ -16,6 +16,7 @@ const ExecutiveDetails = () => {
     fetchAllHRsAPI,
     fetchAllProcessPersonsAPI,
     updateUserLoginStatus,
+    fetchAllTeamLeadsAPI,
   } = useApi();
   
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
@@ -126,21 +127,22 @@ const ExecutiveDetails = () => {
           data = await fetchAllHRsAPI();
         } else if (filter === "Process") {
           data = await fetchAllProcessPersonsAPI();
-        }        
-      
-
+        } else if (filter === "TL") {
+          data = await fetchAllTeamLeadsAPI();   // ✅ Add support here
+        }
+               
         const mapped = data.map((person) => ({
           id: person.id,
           image: img2,
-          name: person.name || person.fullName || "Unknown", // fallback to fullName
-          profession:
-            person.role || (filter === "Process" ? "Process" : "User"), // assign profession
+          name: person.name || person.fullName || person.firstname || person.username || "Unknown",  // ✅ added more fallback options
+          profession: person.role || filter || "User",
           technology: person.skills || "Not specified",
           emailId: person.email || "N/A",
           country: person.country || "N/A",
           city: person.city || "N/A",
           canLogin: person.can_login,
         }));
+        
 
         setPeople(mapped);
         const toggles = {};
@@ -312,8 +314,8 @@ const ExecutiveDetails = () => {
             <option value="Manager">All Managers</option>
             <option value="HR">All HR</option>
             <option value="Process">All Process Persons</option>
+            <option value="TL">All Team Leads</option>  {/* ✅ ADD THIS */}
           </select>
-          <button onClick={() => setFilter("Team Lead")}>Team Lead</button>
           <button
             onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
           >

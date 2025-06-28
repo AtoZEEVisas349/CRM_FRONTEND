@@ -3,7 +3,8 @@ import * as apiService from "../services/apiService";
 import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
 import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
-  getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId
+  getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId,createTeam,getManagerTeams,
+  addExecutiveToTeam
 } from "../services/apiService"
 const ApiContext = createContext();
 
@@ -1041,8 +1042,66 @@ const [emailTemplates, setEmailTemplates] = useState([]);
       setAllProcessPersonsLoading(false);
     }
   };
+  const [allTeamLeads, setAllTeamLeads] = useState([]);
+  const [allTeamLeadsLoading, setAllTeamLeadsLoading] = useState(false);
+  const fetchAllTeamLeadsAPI = async () => {
+    setAllTeamLeadsLoading(true);
+    try {
+      const data = await apiService.fetchAllTeamLeads();
+      setAllTeamLeads(data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error fetching Team Leads:", error);
+      return [];
+    } finally {
+      setAllTeamLeadsLoading(false);
+    }
+  };
     
+  const [managerTeams, setManagerTeams] = useState([]);
+  const [managerTeamsLoading, setManagerTeamsLoading] = useState(false);
+  const [managerTeamsError, setManagerTeamsError] = useState(null);
+// ✅ Create a new team
+const createManagerTeam = async (teamData) => {
+  try {
+    const response = await createTeam(teamData);
+    // Optional: Add new team to state
+    setManagerTeams((prev) => [...prev, response]);
+    return response;
+  } catch (error) {
+    console.error("❌ Error creating manager team:", error);
+    throw error;
+  }
+};
 
+// ✅ Fetch manager's teams
+const fetchManagerTeams = async () => {
+  setManagerTeamsLoading(true);
+  setManagerTeamsError(null);
+  try {
+    const teams = await getManagerTeams();
+    setManagerTeams(teams);
+    return teams;
+  } catch (error) {
+    console.error("❌ Error fetching manager teams:", error);
+    setManagerTeamsError(error);
+    return [];
+  } finally {
+    setManagerTeamsLoading(false);
+  }
+};
+
+// ✅ Add executive to a team
+const assignExecutiveToTeam = async ({ teamId, executiveId }) => {
+  try {
+    const response = await addExecutiveToTeam({ teamId, executiveId });
+    return response;
+  } catch (error) {
+    console.error("❌ Error assigning executive to team:", error);
+    throw error;
+  }
+};
+  
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -1133,6 +1192,10 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         fetchExecutiveData,
         createFreshLeadAPI,
         createLeadAPI,
+        allTeamLeads,
+allTeamLeadsLoading,
+fetchAllTeamLeadsAPI,
+
         updateFreshLeadFollowUp,
         executiveDashboardData,
         executiveDashboardLoading,
@@ -1193,7 +1256,13 @@ const [emailTemplates, setEmailTemplates] = useState([]);
         onlineExecutives,
         onlineLoading,
         fetchOnlineExecutivesData,
-
+        managerTeams,
+        managerTeamsLoading,
+        managerTeamsError,
+        createManagerTeam,
+        fetchManagerTeams,
+        assignExecutiveToTeam,
+        
         // ✅ Admin Profile
         adminProfile,
         loading,
