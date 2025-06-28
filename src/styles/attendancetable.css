@@ -61,12 +61,15 @@
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow-y: hidden; /* Optional: to avoid unnecessary vertical scroll */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
 }
 
+
 .attendance-table {
-  width: 100%;
+  width: max-content;
   border-collapse: collapse;
   border-radius: 16px;
   overflow: hidden;

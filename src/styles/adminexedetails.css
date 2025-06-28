@@ -879,6 +879,45 @@ input:checked + .sliderexe:before {
   cursor: pointer;
   transform: translateX(2px);
 }
+.team-select-checkbox {
+  transform: scale(1.2);
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.team-assignment-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.team-assignment-bar select,
+.team-assignment-bar button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.team-assignment-bar button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.team-assignment-bar button:hover {
+  background-color: #3e8e41;
+}
+
+.selected-card {
+  border: 2px solid #4caf50;
+  box-shadow: 0 0 10px #4caf5075;
+}
 
 
 
