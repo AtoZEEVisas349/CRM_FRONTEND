@@ -1,4 +1,5 @@
 
+
 /* Sidebar.css */
 
 .sidebar_nav {
@@ -182,19 +183,6 @@
 }
 
 /* Improved User Popover for Better Context */
-/* .user_popover {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: var(--popover-bg, #ffffff);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  padding: 10px;
-  min-width: 180px;
-  z-index: 1000;
-  animation: popoverSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-} */
 
 @keyframes popoverSlideIn {
   from {
@@ -547,23 +535,7 @@
 
 }
 
-/* .user_popover {
-  position: absolute;
-  top: 50px; 
-  right: 0px;
-  left:85%;
-  width: 250px;
-  padding: 15px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  z-index: 9999; 
-  animation: fadeInSlideDown 0.4s ease-in-out;
-  transition: all 0.3s ease;
-} */
+
 
 @keyframes fadeInSlideDown {
   0% {
@@ -2588,10 +2560,8 @@
 [data-theme="peach"] .sidebar_container::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #ec407a, #ad1457);
 }
-/*-------------------------------Ocean Blue Mist----------------------------------*/
-/*-------------------------------O`cean Blue Mist with Unique Contrast----------------------------------*/
- .sidebar_container {
-  background: linear-gradient(180deg, #0a1929 0%, #1e3a8a 50%, #0f172a 100%);
+.sidebar_container {
+  /* background: linear-gradient(180deg, #0a1929 0%, #1e3a8a 50%, #0f172a 100%); */
   color: #e2e8f0;
   box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
   border-right: 1px solid rgba(59, 130, 246, 0.2);
