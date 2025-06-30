@@ -12,6 +12,7 @@ import {
   UserCircle,
   CalendarDays,
   LifeBuoy,
+  BarChart,
   Settings
 } from "lucide-react";
 
@@ -136,7 +137,7 @@ const AdminSidebar = () => {
             </li>
             <li>
               <Link to="/admin/full-report" className="admin-aside-link">
-                <FileText className="admin-aside-icon" />
+                <BarChart className="admin-aside-icon" />
                 <span className="sidebar-label">Full Report</span>
               </Link>
             </li>
