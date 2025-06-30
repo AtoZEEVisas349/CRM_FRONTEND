@@ -1,39 +1,38 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/adminsidebar.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Gauge,
+  PieChart,
+  FolderOpen,
   ClipboardList,
-  UserCheck,
   UserPlus,
   Users,
-  ActivitySquare,
-  FileText,
-  UserCircle,
-  CalendarDays,
-  LifeBuoy,
   CalendarCheck,
-  Settings
+  Settings,
+  HelpCircle,
+  UserCog,
+  FileText,
+  Gauge,
 } from "lucide-react";
 
-
-
 const HrSidebar = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const stored = localStorage.getItem("adminSidebarExpanded");
+    return stored === "true";
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Initialize sidebar state from localStorage
-    const stored = localStorage.getItem("adminSidebarExpanded");
-    const initialExpanded = stored === "false" ? false : true;
-    setIsExpanded(initialExpanded);
-    document.body.classList.toggle("sidebar-mobile-active", !initialExpanded);
+    // Update body classes whenever isExpanded changes
+    document.body.classList.toggle("sidebar-expanded", isExpanded);
+    document.body.classList.toggle("sidebar-collapsed", !isExpanded);
+    document.body.classList.toggle("sidebar-mobile-active", !isExpanded);
 
     const handleSidebarToggle = () => {
       const updated = localStorage.getItem("adminSidebarExpanded") === "true";
       setIsExpanded(updated);
-      document.body.classList.toggle("sidebar-mobile-active", !updated);
     };
 
     window.addEventListener("sidebarToggle", handleSidebarToggle);
@@ -74,9 +73,7 @@ const HrSidebar = () => {
     const newState = !isExpanded;
     setIsExpanded(newState);
     localStorage.setItem("adminSidebarExpanded", newState.toString());
-    window.dispatchEvent(new Event("sidebarToggle"));
-    document.body.classList.toggle("sidebar-mobile-active", !newState);
-  };
+    window.dispatchEvent(new Event("sidebarToggle"));  };
 
   return (
     <section>
@@ -85,9 +82,13 @@ const HrSidebar = () => {
         onClick={toggleSidebar}
         aria-label={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
       >
-        <Gauge className="admin-aside-icon"/>
+        <Gauge className="admin-aside-icon" />
       </button>
-      <aside className={`admin-sidebar ${isExpanded ? "expanded active" : "collapsed"}`}>
+      <aside
+        className={`admin-sidebar ${
+          isExpanded ? "expanded active" : "collapsed"
+        }`}
+      >
         <div className="admin-header-wrapper">
           <h2>
             <span className="highlight">Atozee Visas</span>
@@ -99,31 +100,31 @@ const HrSidebar = () => {
           <ul>
             <li className="active">
               <Link to="/hr" className="admin-aside-link">
-                <Gauge className="admin-aside-icon"/>
+                <PieChart className="admin-aside-icon" />
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
               <Link to="/hr/assign-task" className="admin-aside-link">
-                <ClipboardList className="admin-aside-icon"/>
-                <span className="sidebar-label">Upload Leads</span>
+                <FolderOpen className="admin-aside-icon" />
+                <span className="sidebar-label">Assign Task</span>
               </Link>
             </li>
             <li>
               <Link to="/hr/leadassign" className="admin-aside-link">
-                <UserCheck className="admin-aside-icon"/>
+                <ClipboardList className="admin-aside-icon" />
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
               <Link to="/hr/executiveform" className="admin-aside-link">
-                <UserPlus className="admin-aside-icon"/>
+                <UserPlus className="admin-aside-icon" />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
             <li>
               <Link to="/hr/monitoring" className="admin-aside-link">
-                <ActivitySquare className="admin-aside-icon"/>
+                <UserCog className="admin-aside-icon" />
                 <span className="sidebar-label">Monitoring</span>
               </Link>
             </li>
@@ -131,43 +132,47 @@ const HrSidebar = () => {
 
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
-          <li>
-          <Link to="/hr/eod-report" className="admin-aside-link">
-            <FileText className="admin-aside-icon"/>
-            <span className="sidebar-label">EOD Report</span>
-          </Link>
-        </li>
-         
+            <li>
+              <Link to="/hr/eod-report" className="admin-aside-link">
+                <FileText className="admin-aside-icon" />
+                <span className="sidebar-label">EOD Report</span>
+              </Link>
+            </li>
+          </ul>
+          <ul>
             <li>
               <Link to="/hr/executive-details" className="admin-aside-link">
-                <UserCircle className="admin-aside-icon"/>
+                <Users className="admin-aside-icon" />
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
-        
+          </ul>
+          <ul>
             <li>
               <Link to="/hr/leave-management" className="admin-aside-link">
-                <CalendarCheck className="admin-aside-icon"/>
+                <Users className="admin-aside-icon" />
                 <span className="sidebar-label">Leave Management</span>
               </Link>
             </li>
-        
+          </ul>
+          <ul>
             <li>
               <Link to="/hr/executive-attendance" className="admin-aside-link">
-                <CalendarDays className="admin-aside-icon"/>
+                <CalendarCheck className="admin-aside-icon" />
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
-        
+          </ul>
+          <ul>
             <li>
-            <Link to="/hr/help-support" className="admin-aside-link">
-            <LifeBuoy className="admin-aside-icon"/>
+              <Link to="/hr/help-support" className="admin-aside-link">
+                <HelpCircle className="admin-aside-icon" />
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>
             <li>
               <Link to="/hr/settings" className="admin-aside-link">
-                <Settings className="admin-aside-icon"/>
+                <Settings className="admin-aside-icon" />
                 <span className="sidebar-label">Settings</span>
               </Link>
             </li>

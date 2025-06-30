@@ -78,7 +78,7 @@ const AttendanceTable = () => {
           />
         </div>
 
-        <div className="table-scroll-wrapper">
+        <div className="table-wrapper">
           <table className="attendance-table">
             <thead>
               <tr>

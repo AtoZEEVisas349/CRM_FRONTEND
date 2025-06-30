@@ -856,6 +856,39 @@ export const addExecutiveToTeam = async ({ teamId, executiveId }) => {
     throw error;
   }
 };
+export const getAllTeamMembers = async (team_id) => {
+  try {
+    const response = await apiService.post("/manager/get-team", { team_id });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching team members:", error);
+    throw error;
+  } 
+};
+export const fetchMeetingsByExecutive = async (executiveName) => {
+  try {
+    const response = await apiService.get(`/meetings/admin/${encodeURIComponent(executiveName)}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error fetching meetings by executive:", error);
+    throw error;
+  }
+};
 
+// ---- CONVERTED ----
+export const fetchConvertedByExecutive = async (execName) => {
+  const res = await apiService.get(`/converted/admin/${encodeURIComponent(execName.trim())}`);
+  return res.data.data;
+};
+
+export const fetchClosedByExecutive = async (execName) => {
+  const res = await apiService.get(`/close-leads/by-executive/${encodeURIComponent(execName)}`);
+  return res.data.data;
+};
+
+export const fetchFollowUpsByExecutive = async (execName) => {
+  const res = await apiService.get(`/followup/by-executive/${encodeURIComponent(execName)}`);
+  return res.data.data;
+};
 
 export default apiService;

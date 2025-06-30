@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUserPlus, FaClipboardCheck, FaUsers } from "react-icons/fa";
+import { FaUserPlus, FaClipboardCheck, FaUsers, FaExclamationTriangle } from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 
@@ -9,7 +9,7 @@ const ReportCard = () => {
     fetchConvertedClientsAPI,
     getAllFollowUps,
     fetchFreshLeadsAPI,
-    convertedCustomerCount
+    executiveInfo
   } = useApi();
 
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const ReportCard = () => {
   const [followupCounts, setFollowupCounts] = useState(0);
   const [convertedCounts, setConvertedCounts] = useState(0);
   const [meetingsCount, setMeetings] = useState(0);
+  const [missedMeetingsCount, setMissedMeetingsCount] = useState(0);
 
   const fetchFreshLeads = async () => {
     try {
@@ -30,7 +31,7 @@ const ReportCard = () => {
       );
 
       setFreshLeadCounts(assignedFreshLeads.length);
-      console.log(assignedFreshLeads)
+      console.log(assignedFreshLeads);
     } catch (error) {
       console.error("Failed to fetch fresh leads:", error);
     }
@@ -46,7 +47,7 @@ const ReportCard = () => {
       );
 
       setFollowupCounts(assignedFollowup.length);
-      console.log(assignedFollowup)
+      console.log(assignedFollowup);
     } catch (error) {
       console.error("Failed to fetch followups:", error);
     }
@@ -54,7 +55,14 @@ const ReportCard = () => {
 
   const fetchConverted = async () => {
     try {
-      const converted = await fetchConvertedClientsAPI();
+      const executiveId = executiveInfo?.id;
+      if (!executiveId) {
+        console.error("No executive ID found!");
+        setConvertedCounts(0);
+        return;
+      }
+
+      const converted = await fetchConvertedClientsAPI(executiveId);
 
       const assignedConverted = converted.filter(
         (lead) =>
@@ -62,9 +70,10 @@ const ReportCard = () => {
       );
 
       setConvertedCounts(assignedConverted.length);
-      console.log(assignedConverted)
+      console.log(assignedConverted);
     } catch (error) {
       console.error("Failed to fetch converted clients:", error);
+      setConvertedCounts(0);
     }
   };
 
@@ -72,31 +81,57 @@ const ReportCard = () => {
     try {
       const meeting = await fetchMeetings();
       const currentDateTime = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+      const endOfToday = new Date(today);
+      endOfToday.setHours(23, 59, 59, 999); // End of today
 
-      // Filter meetings with "Meeting" status and future dates only
+      // Filter meetings with "Meeting" status
       const meetingsWithStatus = meeting.filter(
         (lead) => lead.clientLead?.status === "Meeting"
       );
 
-      // Filter out past meetings
+      // Separate today's meetings and future meetings
+      const todaysMeetings = meetingsWithStatus.filter((lead) => {
+        if (!lead.startTime) return false;
+        const meetingDate = new Date(lead.startTime);
+        return meetingDate >= today && meetingDate <= endOfToday;
+      });
+
       const futureMeetings = meetingsWithStatus.filter((lead) => {
         if (!lead.startTime) return false;
         const meetingDate = new Date(lead.startTime);
-        return meetingDate > currentDateTime;
+        return meetingDate > endOfToday;
       });
+
+      // Count missed meetings (today's meetings that have passed)
+      const missedTodayMeetings = todaysMeetings.filter((lead) => {
+        const meetingDate = new Date(lead.startTime);
+        return meetingDate < currentDateTime;
+      });
+
+      // Count upcoming meetings (today's meetings that haven't happened yet + future meetings)
+      const upcomingTodayMeetings = todaysMeetings.filter((lead) => {
+        const meetingDate = new Date(lead.startTime);
+        return meetingDate >= currentDateTime;
+      });
+
+      // Combine upcoming today's meetings with future meetings
+      const allUpcomingMeetings = [...upcomingTodayMeetings, ...futureMeetings];
 
       // Group by fresh_lead_id and keep only the latest meeting for each fresh_lead_id
       const meetingsByFreshLeadId = {};
+      const missedMeetingsByFreshLeadId = {};
       
-      futureMeetings.forEach((meeting) => {
+      // Process upcoming meetings
+      allUpcomingMeetings.forEach((meeting) => {
         const freshLeadId = meeting.freshLead?.id;
         
-        if (!freshLeadId) return; // Skip if no fresh_lead_id
+        if (!freshLeadId) return;
         
         if (!meetingsByFreshLeadId[freshLeadId]) {
           meetingsByFreshLeadId[freshLeadId] = meeting;
         } else {
-          // Compare dates and keep the latest one
           const existingMeetingDate = new Date(meetingsByFreshLeadId[freshLeadId].startTime);
           const currentMeetingDate = new Date(meeting.startTime);
           
@@ -106,12 +141,35 @@ const ReportCard = () => {
         }
       });
 
+      // Process missed meetings
+      missedTodayMeetings.forEach((meeting) => {
+        const freshLeadId = meeting.freshLead?.id;
+        
+        if (!freshLeadId) return;
+        
+        if (!missedMeetingsByFreshLeadId[freshLeadId]) {
+          missedMeetingsByFreshLeadId[freshLeadId] = meeting;
+        } else {
+          const existingMeetingDate = new Date(missedMeetingsByFreshLeadId[freshLeadId].startTime);
+          const currentMeetingDate = new Date(meeting.startTime);
+          
+          if (currentMeetingDate > existingMeetingDate) {
+            missedMeetingsByFreshLeadId[freshLeadId] = meeting;
+          }
+        }
+      });
+
       // Count unique meetings
       const uniqueMeetingsCount = Object.keys(meetingsByFreshLeadId).length;
+      const uniqueMissedMeetingsCount = Object.keys(missedMeetingsByFreshLeadId).length;
       
       setMeetings(uniqueMeetingsCount);
-      console.log("Filtered meetings:", Object.values(meetingsByFreshLeadId));
-      console.log("Total unique future meetings:", uniqueMeetingsCount);
+      setMissedMeetingsCount(uniqueMissedMeetingsCount);
+      
+      console.log("Filtered upcoming meetings:", Object.values(meetingsByFreshLeadId));
+      console.log("Total unique upcoming meetings:", uniqueMeetingsCount);
+      console.log("Filtered missed meetings:", Object.values(missedMeetingsByFreshLeadId));
+      console.log("Total unique missed meetings:", uniqueMissedMeetingsCount);
     } catch (error) {
       console.error("Failed to fetch meetings:", error);
     }
@@ -122,7 +180,7 @@ const ReportCard = () => {
     fetchConverted();
     fetchFollowup();
     fetchFreshLeads();
-  }, [])
+  }, [executiveInfo]);
 
   const cards = [
     {
@@ -141,7 +199,7 @@ const ReportCard = () => {
     },
     {
       title: "Converted Clients",
-      value: <div>{convertedCustomerCount}</div>, // ✅ use context count
+      value: <div>{convertedCounts}</div>,
       route: "/executive/customer",
       icon: <FaUsers />,
     },
@@ -151,6 +209,7 @@ const ReportCard = () => {
       route: "/executive/schedule",
       change: "-5.38%",
       icon: <FaUsers />,
+      missedCount: missedMeetingsCount,
     },
   ];
 
@@ -160,18 +219,23 @@ const ReportCard = () => {
         <div
           key={index}
           className={`report-card report-card-${index}`}
-
           onClick={() => navigate(card.route)}
         >
-          <div class="bubble-small bubble-1"></div>
-        <div class="bubble-small bubble-2"></div>
-        <div class="bubble-small bubble-3"></div>
-        <div class="bubble-small bubble-4"></div>
+          <div className="bubble-small bubble-1"></div>
+          <div className="bubble-small bubble-2"></div>
+          <div className="bubble-small bubble-3"></div>
+          <div className="bubble-small bubble-4"></div>
           <div className="card-icon">{card.icon}</div>
           <div className="card-details">
             <h4>{card.title}</h4>
             <p className="card-value1">{card.value}</p>
           </div>
+          {card.missedCount !== undefined && card.missedCount > 0 && (
+            <div className="missed-meetings-badge">
+              <FaExclamationTriangle className="missed-icon" />
+              <span className="missed-count">Missed {card.missedCount} meeting</span>
+            </div>
+          )}
         </div>
       ))}
     </div>

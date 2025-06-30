@@ -67,6 +67,15 @@
   scrollbar-color: #ccc transparent;
 }
 
+.attendance-table .sticky-col {
+  position: sticky;
+  left: 0;
+  background: #fff; /* Or your table background */
+  z-index: 2; /* Ensure it stays above other cells */
+}
+.attendance-table .sticky-col {
+  border-right: 1px solid #ddd;
+}
 
 .attendance-table {
   width: max-content;

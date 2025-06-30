@@ -107,10 +107,11 @@ export const ApiProvider = ({ children }) => {
     try {
       const data = await apiService.fetchOnlineExecutives();
       setOnlineExecutives(data);
+      return data; // <-- add this
     } catch (error) {
       console.error("Error fetching online executives:", error);
     } finally {
-      setOnlineLoading(false);
+      setOnlineLoading(false); 
     }
   };
 
@@ -1135,7 +1136,62 @@ const assignExecutiveToTeam = async ({ teamId, executiveId }) => {
     throw error;
   }
 };
-  
+
+const [teamMembers, setTeamMembers] = useState([]);
+const [teamMembersLoading, setTeamMembersLoading] = useState(false);
+
+const fetchAllTeamMembersAPI = useCallback(async (team_id) => {
+  setTeamMembersLoading(true);
+  try {
+    const data = await apiService.getAllTeamMembers(team_id);
+    setTeamMembers(data || []);
+    return data || [];
+  } catch (error) {
+    console.error("❌ Error fetching team members:", error);
+    return [];
+  } finally {
+    setTeamMembersLoading(false);
+  }
+}, []);
+const fetchMeetingsByExecutive = async (executiveName) => {
+  try {
+    const response = await apiService.fetchMeetingsByExecutive(executiveName);
+    return response;
+  } catch (error) {
+    console.error("❌ Error fetching meetings by executive:", error);
+    return [];
+  }
+};
+
+const fetchConvertedByExecutive = async (execName) => {
+  if (!execName) return [];
+  try {
+    return await apiService.fetchConvertedByExecutive(execName);
+  } catch (err) {
+    console.error("❌ converted exec", err);
+    return [];
+  }
+};
+// Closed by executive
+const fetchClosedByExecutive = async (execName) => {
+  if (!execName) return [];
+  try {
+    return await apiService.fetchClosedByExecutive(execName);
+  } catch (err) {
+     console.error("❌ closed exec", err);
+     return [];
+   }
+ };
+ // Follow-ups by executive
+const fetchFollowUpsByExecutive = async (execName) => {
+  if (!execName) return [];
+  try {
+   return await apiService.fetchFollowUpsByExecutive(execName);
+ } catch (err) {
+   console.error("❌ follow-ups exec", err);
+   return [];
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -1180,12 +1236,15 @@ const assignExecutiveToTeam = async ({ teamId, executiveId }) => {
     sendEodReport: apiService.sendEodReport,
     createSingleLeadAPI,
     updateUserLoginStatus,
+    fetchConvertedByExecutive,
+    fetchClosedByExecutive,
+    fetchFollowUpsByExecutive,
     // Follow-ups
     createFollowUp,
     fetchFreshLeadsAPI,
     updateMeetingAPI,
     updateClientLead,
-  
+    fetchMeetingsByExecutive,
     createCloseLeadAPI,
     fetchAllCloseLeadsAPI,
     fetchExecutiveCallDurations,
@@ -1296,7 +1355,7 @@ fetchAllTeamLeadsAPI,
         createManagerTeam,
         fetchManagerTeams,
         assignExecutiveToTeam,
-        
+        fetchMeetingsByExecutive,
         // ✅ Admin Profile
         adminProfile,
         loading,
@@ -1323,6 +1382,9 @@ fetchAllTeamLeadsAPI,
         isPasswordUpdating,
         setPasswordUpdating,
         // ✅ Top Executive
+        teamMembers,
+        teamMembersLoading,
+        fetchAllTeamMembersAPI,
         topExecutive,
         fetchExecutives,
         handleCreateTemplate,

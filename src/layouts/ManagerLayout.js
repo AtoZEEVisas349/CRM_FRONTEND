@@ -26,7 +26,8 @@ const ManagerLayout = () => {
   
     const user = JSON.parse(localStorage.getItem("user"));
     const roleLabel = user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1);
-  
+    localStorage.setItem("adminSidebarExpanded", "false");
+    window.dispatchEvent(new Event("sidebarToggle"));
     useEffect(() => {
       fetchExecutives();
       fetchExecutivesList();

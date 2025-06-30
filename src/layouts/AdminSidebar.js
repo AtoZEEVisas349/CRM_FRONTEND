@@ -134,7 +134,12 @@ const AdminSidebar = () => {
                 <span className="sidebar-label">EOD Report</span>
               </Link>
             </li>
-        
+            <li>
+              <Link to="/admin/full-report" className="admin-aside-link">
+                <FileText className="admin-aside-icon" />
+                <span className="sidebar-label">Full Report</span>
+              </Link>
+            </li>
             <li>
               <Link to="/admin/executive-details" className="admin-aside-link">
                 <UserCircle className="admin-aside-icon" />

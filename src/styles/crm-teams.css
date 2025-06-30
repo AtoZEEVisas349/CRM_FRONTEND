@@ -1,26 +1,22 @@
 
-
-/* CRM Teams Component Styles */
-
 /* Container */
 .crm-teams-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+    background: linear-gradient(135deg, #243761 0%, #4f52bb 50%, #0f172a 100%);
     padding: 1.5rem;
   }
-  
-  /* Header Section */
-  .crm-teams-header {
+    .crm-teams-header {
     margin-bottom: 2rem;
   }
-  
+  .crm-manager-detail{
+    color: #ffffff;
+  }
   .crm-teams-header-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1.5rem;
   }
-  
   .crm-teams-title {
     font-size: 2.25rem;
     font-weight: 700;
@@ -36,34 +32,6 @@
     color: #d1d5db;
     font-size: 1.125rem;
   }
-  
-  /* Buttons */
-  .crm-btn-primary {
-    background: linear-gradient(135deg, #8b5cf6, #ec4899);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    border: none;
-    cursor: pointer;
-    transform: scale(1);
-    transition: all 0.2s ease;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  }
-  
-  .crm-btn-primary:hover {
-    background: linear-gradient(135deg, #7c3aed, #db2777);
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px -3px rgba(139, 92, 246, 0.25);
-  }
-  
-  .crm-btn-add-team {
-    /* Additional styles for add team button if needed */
-  }
-  
   /* Search and Filter Bar */
   .crm-search-filter-bar {
     display: flex;
@@ -114,7 +82,7 @@
     color: white;
     min-width: 150px;
   }
-  
+   
   .crm-filter-select:focus {
     outline: none;
     ring: 2px solid #8b5cf6;
@@ -156,10 +124,6 @@
     font-size: 1.5rem;
     font-weight: 700;
     color: white;
-  }
-  
-  .crm-stat-icon {
-    /* Base icon styles */
   }
   
   .crm-icon-purple {
@@ -525,3 +489,65 @@
       flex-direction: column;
     }
   }
+  /* Animations */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Member Item Animation */
+.crm-member-item {
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.crm-member-item:hover {
+  transform: translateY(-4px);
+}
+
+/* Card Animation */
+.crm-team-card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.crm-team-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.3);
+}
+
+/* Icon Animations */
+.crm-action-btn {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.crm-action-btn:hover {
+  color: #ffffff;
+  transform: scale(1.2);
+}
+
+.crm-action-btn:hover svg {
+  animation: bounce 0.6s;
+}
+
+/* Stat Card Animation */
+.crm-stat-card {
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.crm-stat-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Animate stat icons */
+.crm-stat-icon {
+  transition: transform 0.4s ease;
+}
+
+.crm-stat-card:hover .crm-stat-icon {
+  animation: icon-pulse 1s infinite;
+}
