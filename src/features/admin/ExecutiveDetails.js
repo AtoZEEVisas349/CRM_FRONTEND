@@ -18,6 +18,7 @@ const ExecutiveDetails = () => {
     fetchManagerTeams,
     managerTeams,
     assignExecutiveToTeam,
+    updateUserLoginStatus
   } = useApi();
 
   const { showLoader, hideLoader, isLoading, variant } = useLoading();

@@ -6,7 +6,7 @@ import '../../styles/setting.css';
 
 const EmployeeLeave = () => {
   // Added getHrProfile to the destructured imports
-  const { uploadFileAPI, createLeaveApplication, fetchLeaveApplicationsAPI, createCopyNotification, getHrProfile } = useApi();
+  const { uploadFileAPI, createLeaveApplication, fetchLeaveApplicationsAPI, getHrProfile, fetchNotificationsByUser } = useApi();
 
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -137,72 +137,72 @@ const EmployeeLeave = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    setUploading(true);
-    setSubmissionError('');
+  setUploading(true);
+  setSubmissionError('');
 
-    try {
-      let supportingDocumentPath = null;
+  try {
+    let supportingDocumentPath = null;
 
-      if (formData.attachments) {
-        const uploadResponse = await uploadFileAPI(formData.attachments);
-        supportingDocumentPath = uploadResponse?.filePath || null;
-      }
-
-      const payload = {
-        employeeId: formData.employeeId,
-        fullName: formData.fullName,
-        positionTitle: formData.positionTitle,
-        leaveType: formData.leaveType,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        totalDays: parseInt(formData.totalDays, 10),
-        appliedDate: formData.appliedDate,
-        reason: formData.reason,
-        emergencyContactName: formData.emergencyContactName,
-        emergencyPhone: formData.emergencyPhone,
-        workHandoverTo: formData.workHandoverTo || null,
-        handoverNotes: formData.handoverNotes || null,
-        supportingDocumentPath,
-      };
-
-      const response = await createLeaveApplication(payload);
-      if (response && response.data) {
-        // ✅ Use existing notification API instead of creating new one
-        let hrId = 2; // fallback
-        try {
-          const hrProfile = await getHrProfile();
-          if (hrProfile?.id) {
-            hrId = hrProfile.id;
-          }
-        } catch (hrError) {
-          console.warn('Failed to fetch HR profile:', hrError);
-        }
-
-        const notificationMessage = `Reminder: ${formData.fullName} has submitted a ${formData.leaveType} application for ${formData.totalDays} days from ${formData.startDate} to ${formData.endDate}.`;
-
-        try {
-          await createCopyNotification(hrId, 'hr', notificationMessage);
-
-        } catch (notificationError) {
-          console.warn('Failed to send HR notification:', notificationError);
-        }
-
-        setIsSubmitted(true);
-        const applications = await fetchLeaveApplicationsAPI(formData.employeeId);
-        setLeaveApplications(applications || []);
-      } else {
-        throw new Error('Invalid response from server');
-      }
-    } catch (error) {
-      console.error('Error submitting leave application:', error);
-      setSubmissionError(error.message || 'Failed to submit leave application. Please try again.');
-    } finally {
-      setUploading(false);
+    if (formData.attachments) {
+      const uploadResponse = await uploadFileAPI(formData.attachments);
+      supportingDocumentPath = uploadResponse?.filePath || null;
     }
-  };
+
+    const payload = {
+      employeeId: formData.employeeId,
+      fullName: formData.fullName,
+      positionTitle: formData.positionTitle,
+      leaveType: formData.leaveType,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      totalDays: parseInt(formData.totalDays, 10),
+      appliedDate: formData.appliedDate,
+      reason: formData.reason,
+      emergencyContactName: formData.emergencyContactName,
+      emergencyPhone: formData.emergencyPhone,
+      workHandoverTo: formData.workHandoverTo || null,
+      handoverNotes: formData.handoverNotes || null,
+      supportingDocumentPath,
+    };
+
+    const response = await createLeaveApplication(payload);
+    if (response && response.data) {
+      // Fetch HR profile for notification
+      let hrId = 2; // Fallback
+      try {
+        const hrProfile = await getHrProfile();
+        if (hrProfile?.id) {
+          hrId = hrProfile.id;
+        }
+      } catch (hrError) {
+        console.warn('Failed to fetch HR profile:', hrError);
+      }
+
+      const notificationMessage = `Reminder: ${formData.fullName} has submitted a ${formData.leaveType} application for ${formData.totalDays} days from ${formData.startDate} to ${formData.endDate}.`;
+
+      // Debug: Log before calling fetchNotificationsByUser
+      console.log('Attempting to fetch notifications with:', {
+        userId: formData.employeeId,
+        userRole: formData.role,
+      });
+
+    
+      setIsSubmitted(true);
+      const applications = await fetchLeaveApplicationsAPI(formData.employeeId);
+      setLeaveApplications(applications || []);
+    } else {
+      throw new Error('Invalid response from server');
+    }
+  } catch (error) {
+    console.error('Error submitting leave application:', error);
+    setSubmissionError(error.message || 'Failed to submit leave application. Please try again.');
+  } finally {
+    setUploading(false);
+  }
+};
 
 
   const handleReset = () => {
