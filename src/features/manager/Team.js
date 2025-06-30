@@ -6,7 +6,7 @@ import {
   MessageCircle,
   Phone,
   Mail,
-  Activity
+  UserCheck
 } from 'lucide-react';
 import '../../styles/crm-teams.css';
 import { useLoading } from '../../context/LoadingContext';
@@ -188,7 +188,7 @@ const Team = () => {
                 <p className="crm-stat-label">Total Members</p>
                 <p className="crm-stat-value">{totalMembers}</p>
               </div>
-              <Activity className="crm-stat-icon crm-icon-blue" size={24} />
+              <UserPlus className="crm-stat-icon crm-icon-blue" size={24} />
             </div>
           </div>
           <div className="crm-stat-card">
@@ -197,7 +197,7 @@ const Team = () => {
                 <p className="crm-stat-label">Online Members</p>
                 <p className="crm-stat-value">{totalOnlineMembers}</p>
               </div>
-              <Activity className="crm-stat-icon crm-icon-green" size={24} />
+              <UserCheck className="crm-stat-icon crm-icon-green" size={24} />
             </div>
           </div>
         </div>
