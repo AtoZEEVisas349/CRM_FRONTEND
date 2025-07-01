@@ -17,6 +17,7 @@ import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm
 import HrLayout from "../layouts/HrLayout";
 import LeaveManagement from "../features/hr/LeaveManagement";
 import HrNotification from "../features/hr/HrNotification";
+import HrSettings from "../features/hr/HrSettings";
 const HrRoutes = () => {
   return (
     <Routes>
@@ -56,7 +57,8 @@ const HrRoutes = () => {
             <Eod />
             </RequirePermission>} /> {/* ✅ EOD route added here */}
         <Route path="executive-attendance" element={<AttendanceTable />} />
-        <Route path="hr-notification" element={<HrNotification />} />
+        <Route path="hr/notification" element={<HrNotification />} />
+        <Route path="hr/settings" element={<HrSettings />} />
 
       </Route>
     </Routes>

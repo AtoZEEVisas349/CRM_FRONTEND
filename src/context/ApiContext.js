@@ -1192,6 +1192,29 @@ const fetchFollowUpsByExecutive = async (execName) => {
    return [];
   }
 };
+
+// ✅ Get HR profile by ID
+const fetchHrById = async (hrId) => {
+  try {
+    const response = await apiService.getHrById(hrId);
+    return response;
+  } catch (error) {
+    console.error("❌ Error fetching HR by ID in context:", error);
+    throw error;
+  }
+};
+
+// ✅ Update HR profile
+const updateHrProfileById = async (hrId, updateData) => {
+  try {
+    const response = await apiService.updateHrProfile(hrId, updateData);
+    return response;
+  } catch (error) {
+    console.error("❌ Error updating HR profile in context:", error);
+    throw error;
+  }
+};
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     fetchExecutiveData();
@@ -1280,6 +1303,8 @@ const fetchFollowUpsByExecutive = async (execName) => {
         executiveLoading,
         unreadMeetingsCount,
         readMeetings,
+        fetchHrById,
+       updateHrProfileById,
         markMeetingAsRead,
         unreadMeetingsCount,
         fetchExecutiveData,

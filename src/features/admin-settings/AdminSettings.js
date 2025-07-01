@@ -320,7 +320,6 @@ const AdminSettings = () => {
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Write a short bio..."
                     />
-                    <small>{275 - bio.length} characters left</small>
                   </div>
                   
                   <div className="form-group full save-btn-wrapper">

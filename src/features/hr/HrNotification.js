@@ -24,9 +24,9 @@ function HrNotification() {
   const [executiveMap, setExecutiveMap] = useState({});
   const [meetings, setMeetings] = useState([]);
   const [meetingsLoading, setMeetingsLoading] = useState(false);
-  const [meetingPage, setMeetingPage] = useState(1); // ✅ New
+  const [meetingPage, setMeetingPage] = useState(1);
   const itemsPerPage = 8;
-  const meetingsPerPage = 8; // ✅ New
+  const meetingsPerPage = 8;
 
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
   const sidebarCollapsed = localStorage.getItem("adminSidebarExpanded") === "false";
@@ -101,21 +101,20 @@ function HrNotification() {
     markNotificationReadAPI(notificationId);
   };
 
-  const formatCopyMessage = (userId, message, createdAt) => {
-    const copiedText = message.split(":")[1] || "something";
-    const cleanedText = copiedText.replace(/['"]+/g, "").trim();
-    const executiveName = executiveMap[userId] || `#${userId}`;
-    const time = new Date(createdAt).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  // ✅ Simply return the message as-is from the API
+  const formatNotificationMessage = (notification) => {
+    return notification.message;
+  };
 
-    return (
-      <>
-        Executive <strong>{executiveName}</strong> has copied <strong>{cleanedText}</strong> at {time}
-      </>
-    );
+  // ✅ Helper function to get notification type for display
+  const getNotificationType = (message) => {
+    if (message.toLowerCase().includes("leave application")) {
+      return "Leave Application";
+    }
+    if (message.toLowerCase().includes("copied")) {
+      return "Copied";
+    }
+    return "Notification";
   };
 
   const unreadMeetingsCount = useMemo(() => {
@@ -167,7 +166,7 @@ function HrNotification() {
                 .map((n) => (
                   <li key={n.id} className={`admin-notification-item ${n.is_read ? "admin-notification-read" : ""}`}>
                     <div className="admin-notification-item-header">
-                      <strong>Copied</strong>
+                      <strong>{getNotificationType(n.message)}</strong>
                       <div className="admin-notification-meta">
                         <span className="admin-notification-time">
                           {new Date(n.createdAt).toLocaleTimeString()}
@@ -184,7 +183,7 @@ function HrNotification() {
                       </div>
                     </div>
                     <p className="admin-notification-message">
-                      {formatCopyMessage(n.userId, n.message, n.createdAt)}
+                      {formatNotificationMessage(n)}
                     </p>
                   </li>
                 ))}

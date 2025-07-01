@@ -874,6 +874,27 @@ export const fetchMeetingsByExecutive = async (executiveName) => {
     throw error;
   }
 };
+// Get HR profile by ID
+export const getHrById = async (hrId) => {
+  try {
+    const response = await apiService.get(`/hr/${hrId}`);
+    return response.data.hr;
+  } catch (error) {
+    console.error("❌ Error fetching HR by ID:", error);
+    throw error;
+  }
+};
+
+// Update HR profile by ID
+export const updateHrProfile = async (hrId, updateData) => {
+  try {
+    const response = await apiService.put(`/hr/${hrId}`, updateData);
+    return response.data.hr;
+  } catch (error) {
+    console.error("❌ Error updating HR profile:", error);
+    throw error;
+  }
+};
 
 // ---- CONVERTED ----
 export const fetchConvertedByExecutive = async (execName) => {

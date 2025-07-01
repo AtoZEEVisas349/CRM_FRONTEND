@@ -31,9 +31,7 @@ import {
   exportToPDF,
 } from "../../utils/exportUtils";
 import { useApi } from "../../context/ApiContext";
-
-/* ─────────────────────────────────── */
-
+import "../../styles/full-report.css";
 const FullReport = () => {
   /* ========== context fns ========== */
   const {

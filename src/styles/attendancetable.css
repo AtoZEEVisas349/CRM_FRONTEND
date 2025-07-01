@@ -57,7 +57,6 @@
   background: #ffffff;
 }
 
-/* Table wrapper for horizontal scrolling on small screens */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -70,7 +69,8 @@
 .attendance-table .sticky-col {
   position: sticky;
   left: 0;
-  background: #fff; /* Or your table background */
+  color: #2e2e2e;
+  background: #ffffff; /* Or your table background */
   z-index: 2; /* Ensure it stays above other cells */
 }
 .attendance-table .sticky-col {
