@@ -1195,14 +1195,21 @@ const fetchFollowUpsByExecutive = async (execName) => {
 
 // ✅ Get HR profile by ID
 const fetchHrById = async (hrId) => {
+  setUserLoading(true);
   try {
-    const response = await apiService.getHrById(hrId);
-    return response;
+    const hr = await apiService.getHrById(hrId); // uses param correctly
+    const { name, email, role, username, website, jobTitle, alternateEmail, bio } = hr;
+    setUser({ username: name, email, role });
+    return { id: hrId, name, email, role, username, website, jobTitle, alternateEmail, bio };
   } catch (error) {
-    console.error("❌ Error fetching HR by ID in context:", error);
+    console.error("❌ Error fetching HR profile:", error);
     throw error;
+  } finally {
+    setUserLoading(false);
   }
 };
+
+
 
 // ✅ Update HR profile
 const updateHrProfileById = async (hrId, updateData) => {
@@ -1262,6 +1269,7 @@ const updateHrProfileById = async (hrId, updateData) => {
     fetchConvertedByExecutive,
     fetchClosedByExecutive,
     fetchFollowUpsByExecutive,
+    fetchHrById,
     // Follow-ups
     createFollowUp,
     fetchFreshLeadsAPI,

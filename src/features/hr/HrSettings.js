@@ -14,7 +14,7 @@ const HrSettings = () => {
 
   const [hrProfile, setHrProfile] = useState({
     id: "",
-    name: "",
+    name: "", 
     email: "",
     username: "",
     role: "",

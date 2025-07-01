@@ -569,4 +569,6 @@
     background-color: #222 !important;
     border: none !important;
   }
-  
+  [data-theme="dark"] div h4{
+    color: #ddeaff;
+  }
