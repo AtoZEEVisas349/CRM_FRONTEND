@@ -2001,8 +2001,7 @@
   background-color: #d9cac4;
   color: #3d2f29;
 }
-
-
+/* Container for the entire component */
 .el-container {
   min-height: 100vh;
   background-color: #f8fafc;
@@ -2010,6 +2009,7 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* Header styling with flexbox to position button on the right */
 .el-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 16px;
@@ -2017,20 +2017,26 @@
   margin-bottom: 32px;
   color: white;
   box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+  display: flex; /* Added flexbox */
+  justify-content: space-between; /* Space between content and buttons */
+  align-items: center; /* Vertically center content */
 }
 
+/* Header content (title and subtitle) */
 .el-header-content {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
+/* Header icon */
 .el-header-icon {
   width: 48px;
   height: 48px;
   opacity: 0.9;
 }
 
+/* Header title */
 .el-title {
   font-size: 32px;
   font-weight: 700;
@@ -2038,6 +2044,7 @@
   letter-spacing: -0.5px;
 }
 
+/* Header subtitle */
 .el-subtitle {
   font-size: 18px;
   margin: 0;
@@ -2045,6 +2052,47 @@
   font-weight: 400;
 }
 
+/* Container for the toggle button */
+.el-header-buttons {
+  display: flex;
+  align-items: center;
+}
+
+/* Single toggle button styling */
+.el-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff; /* White text */
+  background-color: #3b82f6; /* Blue background */
+  border: 1px solid #2563eb; /* Darker blue border */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  outline: none;
+}
+
+.el-toggle-btn:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+  border-color: #1d4ed8;
+}
+
+.el-toggle-btn:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Blue focus ring */
+  outline: none;
+}
+
+.el-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor; /* Inherit color from parent for icons */
+}
+
+/* Form container */
 .el-form {
   background-color: white;
   border-radius: 16px;
@@ -2054,10 +2102,12 @@
   margin-bottom: 32px;
 }
 
+/* Section styling */
 .el-section {
   margin-bottom: 40px;
 }
 
+/* Section title */
 .el-section-title {
   font-size: 20px;
   font-weight: 600;
@@ -2070,21 +2120,25 @@
   border-bottom: 2px solid #e2e8f0;
 }
 
+/* Section icon */
 .el-section-icon {
   color: #667eea;
 }
 
+/* Grid layout for form fields */
 .el-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
 }
 
+/* Form group */
 .el-form-group {
   display: flex;
   flex-direction: column;
 }
 
+/* Label styling */
 .el-label {
   font-size: 14px;
   font-weight: 600;
@@ -2093,6 +2147,7 @@
   letter-spacing: 0.025em;
 }
 
+/* Input field styling */
 .el-input {
   padding: 12px 16px;
   border: 2px solid #e5e7eb;
@@ -2103,11 +2158,13 @@
   outline: none;
 }
 
+/* Read-only input */
 .el-input-readonly {
   background-color: #f8f9fa;
   color: #6c757d;
 }
 
+/* Select field styling */
 .el-select {
   padding: 12px 16px;
   border: 2px solid #e5e7eb;
@@ -2119,11 +2176,13 @@
   cursor: pointer;
 }
 
+/* Read-only select */
 .el-select-readonly {
   background-color: #f8f9fa;
   color: #6c757d;
 }
 
+/* Textarea styling */
 .el-textarea {
   padding: 12px 16px;
   border: 2px solid #e5e7eb;
@@ -2136,6 +2195,7 @@
   font-family: inherit;
 }
 
+/* File input styling */
 .el-file-input {
   padding: 8px;
   border: 2px dashed #d1d5db;
@@ -2145,11 +2205,13 @@
   cursor: pointer;
 }
 
+/* Error state for inputs */
 .el-input-error {
   border-color: #ef4444;
   background-color: #fef2f2;
 }
 
+/* Error text */
 .el-error-text {
   color: #ef4444;
   font-size: 12px;
@@ -2157,6 +2219,7 @@
   font-weight: 500;
 }
 
+/* Error banner */
 .el-error-banner {
   background-color: #fef2f2;
   color: #ef4444;
@@ -2169,6 +2232,7 @@
   font-weight: 500;
 }
 
+/* Action buttons container */
 .el-action-buttons {
   display: flex;
   gap: 16px;
@@ -2177,6 +2241,7 @@
   border-top: 1px solid #e2e8f0;
 }
 
+/* Reset button */
 .el-reset-btn {
   padding: 12px 24px;
   border: 2px solid #d1d5db;
@@ -2189,6 +2254,7 @@
   transition: all 0.2s ease;
 }
 
+/* Submit button */
 .el-submit-btn {
   padding: 12px 32px;
   border: none;
@@ -2205,11 +2271,13 @@
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
+/* Button icon */
 .el-btn-icon {
   width: 18px;
   height: 18px;
 }
 
+/* Success card */
 .el-success-card {
   background-color: white;
   border-radius: 16px;
@@ -2221,6 +2289,7 @@
   border: 1px solid #e2e8f0;
 }
 
+/* Success icon */
 .el-success-icon {
   width: 64px;
   height: 64px;
@@ -2228,6 +2297,7 @@
   margin-bottom: 24px;
 }
 
+/* Success title */
 .el-success-title {
   font-size: 28px;
   font-weight: 700;
@@ -2235,6 +2305,7 @@
   margin-bottom: 16px;
 }
 
+/* Success message */
 .el-success-message {
   font-size: 16px;
   color: #6b7280;
@@ -2242,6 +2313,7 @@
   line-height: 1.6;
 }
 
+/* Success details */
 .el-success-details {
   background-color: #f0f9ff;
   padding: 24px;
@@ -2250,6 +2322,7 @@
   text-align: left;
 }
 
+/* New application button */
 .el-new-application-btn {
   padding: 12px 32px;
   border: none;
@@ -2262,16 +2335,19 @@
   transition: all 0.2s ease;
 }
 
+/* Info text */
 .el-info-text {
   font-size: 12px;
   color: #6b7280;
   margin-top: 4px;
 }
 
+/* Table container */
 .el-table-container {
   overflow-x: auto;
 }
 
+/* Table styling */
 .el-table {
   width: 100%;
   border-collapse: collapse;
@@ -2280,6 +2356,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+/* Table header */
 .el-table-header {
   padding: 12px;
   background-color: #f1f5f9;
@@ -2290,16 +2367,19 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
+/* Table row */
 .el-table-row {
   border-bottom: 1px solid #e2e8f0;
 }
 
+/* Table cell */
 .el-table-cell {
   padding: 12px;
   font-size: 14px;
   color: #374151;
 }
 
+/* Loading state */
 .el-loading {
   font-size: 16px;
   color: #6b7280;
@@ -2307,9 +2387,242 @@
   padding: 20px;
 }
 
+/* No data state */
 .el-no-data {
   font-size: 16px;
   color: #6b7280;
   text-align: center;
   padding: 20px;
+}
+
+/* Sandwich Leave Popup Styles */
+
+/* Overlay that covers the entire screen */
+.el-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+/* Main popup container */
+.el-popup-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: popupSlideIn 0.3s ease-out;
+}
+
+/* Popup slide-in animation */
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Popup header */
+.el-popup-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+
+/* Warning icon in header */
+.el-popup-icon {
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+/* Popup title */
+.el-popup-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Close button */
+.el-popup-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.el-popup-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Popup content area */
+.el-popup-content {
+  padding: 24px;
+}
+
+/* Main message text */
+.el-popup-message {
+  font-size: 14px;
+  color: #374151;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+/* Container for Sunday list */
+.el-sunday-list {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+/* Individual Sunday item */
+.el-sunday-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.el-sunday-item:not(:last-child) {
+  border-bottom: 1px solid #fde68a;
+}
+
+/* Warning note */
+.el-popup-warning {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.el-popup-warning strong {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.el-popup-warning {
+  font-size: 13px;
+  color: #7f1d1d;
+  line-height: 1.4;
+}
+
+/* Action buttons container */
+.el-popup-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 24px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Cancel button */
+.el-popup-cancel-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #374151;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.el-popup-cancel-btn:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Confirm button */
+.el-popup-confirm-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background-color: #f59e0b;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.el-popup-confirm-btn:hover:not(:disabled) {
+  background-color: #d97706;
+}
+
+.el-popup-confirm-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .el-header {
+    flex-direction: column; /* Stack content and button vertically on mobile */
+    align-items: flex-start; /* Align content to the left */
+  }
+
+  .el-header-buttons {
+    justify-content: flex-end; /* Align button to the right */
+    width: 100%; /* Full width to ensure right alignment */
+    margin-top: 16px; /* Space between content and button */
+  }
+
+  .el-toggle-btn {
+    width: auto; /* Allow button to size naturally */
+    max-width: 200px; /* Limit width to prevent overly wide button */
+  }
+}
+
+@media (max-width: 640px) {
+  .el-popup-container {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .el-popup-header,
+  .el-popup-content,
+  .el-popup-actions {
+    padding: 16px;
+  }
+  
+  .el-popup-actions {
+    flex-direction: column;
+  }
+  
+  .el-popup-cancel-btn,
+  .el-popup-confirm-btn {
+    width: 100%;
+    margin: 4px 0;
+  }
 }
