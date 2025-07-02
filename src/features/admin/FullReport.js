@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import "../../styles/full-report.css"
+import "../../styles/full-report.css";
+import SidebarToggle from "./SidebarToggle";
 import {
   FaUserPlus,
   FaClipboardCheck,
@@ -58,6 +59,9 @@ const TABLE_HEADERS = {
 
 const FullReport = () => {
   /* ========== context fns ========== */
+  const isSidebarExpanded =
+    localStorage.getItem("adminSidebarExpanded") === "true";
+
   const {
     /* generic */
     fetchExecutivesAPI,
@@ -103,19 +107,14 @@ const FullReport = () => {
     async (exec) => {
       if (!exec) return;
 
-      const [
-        freshLeads,
-        followUpsRaw,
-        convertedRaw,
-        closedRaw,
-        meetingsRaw,
-      ] = await Promise.all([
-        fetchAssignedLeads(exec.username),
-        fetchFollowUpsByExecutive(exec.username),
-        fetchConvertedByExecutive(exec.username),
-        fetchClosedByExecutive(exec.username),
-        fetchMeetingsByExecutive(exec.username),
-      ]);
+      const [freshLeads, followUpsRaw, convertedRaw, closedRaw, meetingsRaw] =
+        await Promise.all([
+          fetchAssignedLeads(exec.username),
+          fetchFollowUpsByExecutive(exec.username),
+          fetchConvertedByExecutive(exec.username),
+          fetchClosedByExecutive(exec.username),
+          fetchMeetingsByExecutive(exec.username),
+        ]);
 
       /* group follow-ups by fresh_lead_id & keep only latest */
       const fuMap = {};
@@ -205,6 +204,20 @@ const FullReport = () => {
     if (activeCard === "meetings") return raw.meetings;
     return [];
   };
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
+  // Calculate paginated rows
+  const paginatedRows = useMemo(() => {
+    const allRows = getTableRows();
+    const start = (currentPage - 1) * rowsPerPage;
+    return allRows.slice(start, start + rowsPerPage);
+  }, [getTableRows(), currentPage]);
+
+  // Reset to first page when table changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCard]);
 
   /* FOLLOW-UP HISTORY MODAL */
   const [historyModal, setHistoryModal] = useState({
@@ -418,265 +431,318 @@ const FullReport = () => {
   /* ─────────────────────────────────── JSX ─────────────────────────────────── */
 
   return (
-    <div className="admin-full-report">
-      <h2>{compareMode ? "Compare Executives" : "Full Report"}</h2>
+    <div
+      className={` ${
+        isSidebarExpanded ? "sidebar-expanded" : "sidebar-collapsed"
+      }`}
+    >
+      <SidebarToggle />
+      <div className="admin-full-report">
+        <h2>{compareMode ? "Compare Executives" : "Full Report"}</h2>
 
-      {/* ───────────── Selector Section ───────────── */}
-      {!compareMode && (
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom:"1rem" }}>
-          <select
-            value={selectedExec ? getExecId(selectedExec) : ""}
-            onChange={(e) => {
-              const exec = executives.find(
-                (x) => getExecId(x) === e.target.value
-              );
-              setSelectedExec(exec || null);
+        {/* ───────────── Selector Section ───────────── */}
+        {!compareMode && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              marginBottom: "1rem",
             }}
-            className="fullreport-admin-dropdown"
           >
-            <option value="">-- Select Executive --</option>
-            {executives.map((ex) => (
-              <option key={getExecId(ex)} value={getExecId(ex)}>
-                {ex.username}
-              </option>
-            ))}
-          </select>
-
-          <button className="fullreport-compare-btn" onClick={() => setCompareMode(true)}>
-            Compare
-          </button>
-        </div>
-      )}
-
-      {/* ───────────── Single Exec View ───────────── */}
-      {!compareMode && selectedExec && (
-        <>
-          {/* cards */}
-          <div className="card-grid">
-            {CARDS.map(({ key, icon, label }) => (
-              <div
-                key={key}
-                className={`report-card ${
-                  activeCard === key ? "active" : ""
-                }`}
-                onClick={() =>
-                  setActiveCard((prev) => (prev === key ? "" : key))
-                }
-              >
-                {icon}
-                <div className="count">{counts[key]}</div>
-                <div className="label">{label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* table */}
-          {activeCard && (
-            <>
-              <div className="table-actions">
-                <h3 style={{ margin: 0 }}>
-                  {CARDS.find((c) => c.key === activeCard).label}
-                </h3>
-                <div>
-                  <button onClick={() => handleExport("excel")}>Excel</button>
-                  <button onClick={() => handleExport("csv")}>CSV</button>
-                  <button onClick={() => handleExport("pdf")}>PDF</button>
-                  <button onClick={() => setActiveCard("")}>Close</button>
-                </div>
-              </div>
-
-              <div className="table-wrapper">
-                <table>
-                  <thead>
-                    <tr>
-                      {TABLE_HEADERS[activeCard].map((h) => (
-                        <th key={h}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getTableRows().map((row, idx) => renderRow(row, idx))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </>
-      )}
-
-      {/* ───────────── Compare Mode UI ───────────── */}
-      {compareMode && (
-        <>
-          {/* checkbox list */}
-          <div className="multi-select">
-            <label>Select Executives (max 5)</label>
-            <div className="dropdown-box">
+            <select
+              value={selectedExec ? getExecId(selectedExec) : ""}
+              onChange={(e) => {
+                const exec = executives.find(
+                  (x) => getExecId(x) === e.target.value
+                );
+                setSelectedExec(exec || null);
+              }}
+              className="fullreport-admin-dropdown"
+            >
+              <option value="">-- Select Executive --</option>
               {executives.map((ex) => (
-                <label key={getExecId(ex)} style={{ marginRight: "1rem" }}>
-                  <input
-                    type="checkbox"
-                    value={getExecId(ex)}
-                    checked={isChecked(getExecId(ex))}
-                    onChange={(e) => toggleExecCheckbox(e.target.value)}
-                  />
+                <option key={getExecId(ex)} value={getExecId(ex)}>
                   {ex.username}
-                </label>
+                </option>
               ))}
-            </div>
-          </div>
+            </select>
 
-          {/* buttons */}
-          <div style={{ marginTop: "1rem" }}>
-            <button className="compare-btn" onClick={applyCompare}>
+            <button
+              className="fullreport-compare-btn"
+              onClick={() => setCompareMode(true)}
+            >
               Compare
             </button>
-            <button
-              className="back-btn"
-              style={{ marginLeft: "1rem" }}
-              onClick={() => {
-                setCompareMode(false);
-                setSelectedExecs([]);
-                setCompareStats({});
-                setActiveRadar("");
-              }}
-            >
-              ✕ Cancel
-            </button>
           </div>
+        )}
 
-          {/* results */}
-          {Object.keys(compareStats).length > 0 && (
-            <>
-              {/* summary grid */}
-              <div className="compare-results">
-                {CARDS.map(({ key, icon, label }) => (
-                  <div className="compare-card" key={key}>
-                    <div className="compare-icon">{icon}</div>
-                    <h4>{label}</h4>
-                    <div className="compare-values">
-                      {selectedExecs.map((ex, idx) => (
-                        <div key={ex.username} style={{ fontSize: ".85rem" }}>
-                          <b>{ex.username}</b>:{" "}
-                          {compareStats[ex.username]?.[key] || 0}
-                          {idx > 0 && (
-                            <small style={{ marginLeft: 4 }}>
-                              ({getDelta(
-                                compareStats[selectedExecs[0].username]?.[key] ||
-                                  0,
-                                compareStats[ex.username]?.[key] || 0
-                              )}
-                              )
-                            </small>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+        {/* ───────────── Single Exec View ───────────── */}
+        {!compareMode && selectedExec && (
+          <>
+            {/* cards */}
+            <div className="fullreport-card-grid">
+              {CARDS.map(({ key, icon, label }) => (
+                <div key={key} className="report-card-animated-border">
+                  <div
+                    className={`fullreport-reports-card ${
+                      activeCard === key ? "active" : ""
+                    }`}
+                    onClick={() =>
+                      setActiveCard((prev) => (prev === key ? "" : key))
+                    }
+                  >
+                    {icon}
+                    <div className="count">{counts[key]}</div>
+                    <div className="label">{label}</div>
                   </div>
+                </div>
+              ))}
+            </div>
+
+            {/* table */}
+            {activeCard && (
+              <>
+                <div className="fullreport-table-actions">
+                  <h3 style={{ margin: 0 }}>
+                    {CARDS.find((c) => c.key === activeCard).label}
+                  </h3>
+                  <div>
+                    <button onClick={() => handleExport("excel")}>Excel</button>
+                    <button onClick={() => handleExport("csv")}>CSV</button>
+                    <button onClick={() => handleExport("pdf")}>PDF</button>
+                    <button onClick={() => setActiveCard("")}>Close</button>
+                  </div>
+                </div>
+
+                <div className="fullreport-table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        {TABLE_HEADERS[activeCard].map((h) => (
+                          <th key={h}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedRows.map((row, idx) => renderRow(row, idx))}
+                    </tbody>
+                  </table>
+                  {getTableRows().length > rowsPerPage && (
+                    <div className="fullreport-pagination-controls">
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.max(p - 1, 1))
+                        }
+                        disabled={currentPage === 1}
+                      >
+                        Prev
+                      </button>
+                      <span>
+                        Page {currentPage} of{" "}
+                        {Math.ceil(getTableRows().length / rowsPerPage)}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) =>
+                            Math.min(
+                              p + 1,
+                              Math.ceil(getTableRows().length / rowsPerPage)
+                            )
+                          )
+                        }
+                        disabled={
+                          currentPage ===
+                          Math.ceil(getTableRows().length / rowsPerPage)
+                        }
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {/* ───────────── Compare Mode UI ───────────── */}
+        {compareMode && (
+          <>
+            {/* checkbox list */}
+            <div className="fullreport-multi-select">
+              <label>Select Executives (max 5)</label>
+              <div className="fullreport-dropdown-box">
+                {executives.map((ex) => (
+                  <label key={getExecId(ex)} style={{ marginRight: "1rem" }}>
+                    <input
+                      type="checkbox"
+                      value={getExecId(ex)}
+                      checked={isChecked(getExecId(ex))}
+                      onChange={(e) => toggleExecCheckbox(e.target.value)}
+                    />
+                    {ex.username}
+                  </label>
                 ))}
               </div>
+            </div>
 
-              {/* bar chart */}
-              <div style={{ marginTop: "2.5rem" }}>
-                <h3 style={{ marginBottom: "1rem" }}>
-                  Performance Comparison Chart
-                </h3>
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart
-                    data={barData}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    {selectedExecs.map((ex, idx) => (
-                      <Bar
-                        key={ex.username}
-                        dataKey={ex.username}
-                        fill={barColor(idx)}
-                      />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+            {/* buttons */}
+            <div style={{ marginTop: "1rem" }}>
+              <button className="fullreport-compare-btn" onClick={applyCompare}>
+                Compare
+              </button>
+              <button
+                className="fullreport-back-btn"
+                style={{ marginLeft: "1rem" }}
+                onClick={() => {
+                  setCompareMode(false);
+                  setSelectedExecs([]);
+                  setCompareStats({});
+                  setActiveRadar("");
+                }}
+              >
+                ✕ Cancel
+              </button>
+            </div>
 
-              {/* radar selector + chart */}
-              <div style={{ marginTop: "3rem" }}>
-                <h3>Radar Chart (select executive)</h3>
-                <select
-                  value={activeRadar || ""}
-                  onChange={(e) => setActiveRadar(e.target.value)}
-                  className="admin-dropdown"
-                >
-                  <option value="">-- Select Executive --</option>
-                  {selectedExecs.map((ex) => (
-                    <option key={ex.username} value={ex.username}>
-                      {ex.username}
-                    </option>
+            {/* results */}
+            {Object.keys(compareStats).length > 0 && (
+              <>
+                {/* summary grid */}
+                <div className="fullreport-compare-results">
+                  {CARDS.map(({ key, icon, label }) => (
+                    <div className="fullreport-compare-card" key={key}>
+                      <div className="fullreport-compare-icon">{icon}</div>
+                      <h4>{label}</h4>
+                      <div className="compare-values">
+                        {selectedExecs.map((ex, idx) => (
+                          <div key={ex.username} style={{ fontSize: ".85rem" }}>
+                            <b>{ex.username}</b>:{" "}
+                            {compareStats[ex.username]?.[key] || 0}
+                            {idx > 0 && (
+                              <small style={{ marginLeft: 4 }}>
+                                (
+                                {getDelta(
+                                  compareStats[selectedExecs[0].username]?.[
+                                    key
+                                  ] || 0,
+                                  compareStats[ex.username]?.[key] || 0
+                                )}
+                                )
+                              </small>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))}
-                </select>
+                </div>
 
-                {activeRadar && (
+                {/* bar chart */}
+                <div style={{ marginTop: "2.5rem" }}>
+                  <h3 style={{ marginBottom: "0.2rem" }}>
+                    Performance Comparison Chart
+                  </h3>
+                  <div className="fullreport-accent-line" />
+
+                  <ResponsiveContainer width="100%" height={320}>
+                    <BarChart
+                      data={barData}
+                      margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      {selectedExecs.map((ex, idx) => (
+                        <Bar
+                          key={ex.username}
+                          dataKey={ex.username}
+                          fill={barColor(idx)}
+                        />
+                      ))}
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* radar selector + chart */}
+                {/* radar charts for all executives */}
+                <div style={{ marginTop: "3rem" }}>
+                  <h3 style={{ textAlign: "center", marginBottom: "0.2rem" }}>
+                    Radar Charts for Selected Executives
+                  </h3>
+                  <div className="fullreport-accent-line1 center-line" />
+
                   <div
                     style={{
                       display: "flex",
+                      flexWrap: "wrap",
                       justifyContent: "center",
-                      marginTop: "1.2rem",
+                      gap: "2rem",
                     }}
                   >
-                    <RadarChart
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={110}
-                      width={420}
-                      height={320}
-                      data={radarData}
-                    >
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="category" />
-                      <PolarRadiusAxis />
-                      <Radar
-                        name={activeRadar}
-                        dataKey="value"
-                        stroke="#8884d8"
-                        fill="#8884d8"
-                        fillOpacity={0.6}
-                      />
-                    </RadarChart>
+                    {selectedExecs.map((ex, idx) => (
+                      <div key={ex.username}>
+                        <h4 style={{ textAlign: "center" }}>{ex.username}</h4>
+                        <RadarChart
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={90}
+                          width={300}
+                          height={260}
+                          data={CARDS.map(({ key, label }) => ({
+                            category: label,
+                            value: compareStats[ex.username]?.[key] || 0,
+                          }))}
+                        >
+                          <PolarGrid />
+                          <PolarAngleAxis dataKey="category" />
+                          <PolarRadiusAxis />
+                          <Radar
+                            name={ex.username}
+                            dataKey="value"
+                            stroke={barColor(idx)}
+                            fill={barColor(idx)}
+                            fillOpacity={0.6}
+                          />
+                        </RadarChart>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </div>
-            </>
-          )}
-        </>
-      )}
-
-      {/* ───────────── Follow-Up History Modal ───────────── */}
-      {historyModal.open && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <button className="modal-close" onClick={closeHistory}>
-              <FaTimes />
-            </button>
-            <h3>
-              Follow-Up History — <b>{historyModal.clientName}</b>
-            </h3>
-            {historyModal.items.length ? (
-              <ul className="history-list">
-                {historyModal.items.map((it, idx) => (
-                  <li key={idx}>
-                    <span>{new Date(it.createdAt).toLocaleString()}:</span>{" "}
-                    {it.notes || it.status}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No history found.</p>
+                </div>
+              </>
             )}
+          </>
+        )}
+
+        {/* ───────────── Follow-Up History Modal ───────────── */}
+        {historyModal.open && (
+          <div className="fullreport-modal-overlay">
+            <div className="fullreport-modal">
+              <button className="fullreport-modal-close" onClick={closeHistory}>
+                <FaTimes />
+              </button>
+              <h3>
+                Follow-Up History — <b>{historyModal.clientName}</b>
+              </h3>
+              {historyModal.items.length ? (
+                <ul className="fullreport-history-list">
+                  {historyModal.items.map((it, idx) => (
+                    <li key={idx}>
+                      <span>{new Date(it.createdAt).toLocaleString()}:</span>{" "}
+                      {it.notes || it.status}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No history found.</p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

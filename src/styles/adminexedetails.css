@@ -1263,12 +1263,53 @@ input:checked + .sliderexe:before {
   text-overflow: ellipsis;
   margin-left: -25px;                /* 👈 Ensure no unnecessary offset */
 }
-
-
-
+[data-theme="dark"] .styled-select{
+  color: #111010;   
+}
+[data-theme="dark"] .team-header{
+  color: #ffffff;   
+}
 .styled-button:hover {
   background: linear-gradient(135deg, #4f52bb, #667eea);
   color: #ffffff;
+}
+/* Remove border from outer container */
+.drag-drop-container {
+  position: relative;
+  padding: 20px;
+  border: none; /* REMOVE BORDER HERE */
+  background-color: #fafafa;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+
+.drag-drop-close-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  z-index: 10;
+}
+
+.close-drag-container {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s ease-in-out;
+}
+
+.close-drag-container:hover {
+  color: #b10000;
+}
+
+.drag-drop-title {
+  text-align: center;
+  font-weight: 600;
+  color: #4a56e2;
+  margin-bottom: 15px;
 }
 
 .styled-select:focus {

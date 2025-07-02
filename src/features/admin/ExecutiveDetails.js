@@ -444,6 +444,15 @@ const ExecutiveDetails = () => {
     {focusedTeamId ? (
       <div className="drag-drop-container">
         <div className="manager-teams-section">
+        <div className="drag-drop-close-wrapper">
+  <button
+    className="close-drag-container"
+    onClick={() => setFocusedTeamId("")}
+    title="Close"
+  >
+    &times;
+  </button>
+</div>
           <h3>🧩 Drag executives into the selected team</h3>
           <div className="teams-grid">
             {managerTeams
