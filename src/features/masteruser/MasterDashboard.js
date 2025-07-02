@@ -55,6 +55,7 @@ const MasterDashboard = () => {
 
   return (
     <>
+    <div className={`table-section-wrapper`}>
       <div className={`table-section ${showModal ? 'blurred' : ''}`}>
         <div className="table-header">
           <h2>Companies</h2>
@@ -142,6 +143,7 @@ const MasterDashboard = () => {
           onCreated={fetchCompanies}
         />
       )}
+      </div>
     </>
   );
 };

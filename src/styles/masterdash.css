@@ -451,6 +451,39 @@ input:checked + .slider {
 input:not(:checked) + .slider {
   background-color: #f44336; /* Red */
 }
+.table-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 16px;
+}
+
+.table-loading-overlay .spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #8000ff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.table-section-wrapper {
+  position: relative; /* for loading overlay */
+}
 
 .set-expiry-btn {
   background-color: #4a4aee;
