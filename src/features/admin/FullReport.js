@@ -387,7 +387,7 @@ const FullReport = () => {
             <td>{row.status}</td>
             <td style={{ textAlign: "center" }}>
               <FaEye
-                className="eye-icon"
+                className="fullreport-eye-icon"
                 onClick={() => openHistory(row.id, row.name)}
               />
             </td>
@@ -432,7 +432,7 @@ const FullReport = () => {
               );
               setSelectedExec(exec || null);
             }}
-            className="admin-dropdown"
+            className="fullreport-admin-dropdown"
           >
             <option value="">-- Select Executive --</option>
             {executives.map((ex) => (
@@ -442,7 +442,7 @@ const FullReport = () => {
             ))}
           </select>
 
-          <button className="compare-btn" onClick={() => setCompareMode(true)}>
+          <button className="fullreport-compare-btn" onClick={() => setCompareMode(true)}>
             Compare
           </button>
         </div>

@@ -1,4 +1,4 @@
-/* Container */
+Container
 .admin-full-report {
     background: linear-gradient(135deg, #f8fafc, #ffffff);
     padding: 1.5rem;
@@ -19,7 +19,7 @@
   }
   
   /* Dropdown and Buttons */
-  .admin-dropdown {
+  .fullreport-admin-dropdown {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     border: 2px solid #e2e8f0;
@@ -30,18 +30,18 @@
     transition: all 0.3s ease;
   }
   
-  .admin-dropdown:focus {
+  .fullreport-admin-dropdown:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
   }
   
-  .admin-dropdown option {
+  .fullreport-admin-dropdown option {
     background: #f8fafc;
     color: #1e293b;
   }
   
-  .compare-btn, .back-btn {
+  .fullreport-compare-btn, .back-btn {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     border: none;
@@ -51,12 +51,12 @@
     transition: all 0.2s ease;
   }
   
-  .compare-btn {
+  .fullreport-compare-btn {
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: #ffffff;
   }
   
-  .compare-btn:hover {
+  .fullreport-compare-btn:hover {
     background: linear-gradient(135deg, #5a67d8, #6b46c1);
     transform: scale(1.05);
   }
@@ -207,14 +207,14 @@
     color: #1e293b;
   }
   
-  .eye-icon {
+  .fullrepot-eye-icon {
     cursor: pointer;
     color: #667eea;
     font-size: 1.25rem;
     transition: transform 0.3s ease;
   }
   
-  .eye-icon:hover {
+  .fullreport-eye-icon:hover {
     transform: scale(1.2);
     color: #764ba2;
   }
@@ -395,27 +395,27 @@
     -webkit-text-fill-color: transparent;
   }
   
-  [data-theme="dark"] .admin-dropdown {
+  [data-theme="dark"] .fullreport-admin-dropdown {
     background: linear-gradient(135deg, #33394f, #2a2a3c);
     border: 2px solid #555;
     color: #f0f0f0;
   }
   
-  [data-theme="dark"] .admin-dropdown option {
+  [data-theme="dark"] .fullreport-admin-dropdown option {
     background: #33394f;
     color: #f0f0f0;
   }
   
-  [data-theme="dark"] .admin-dropdown:focus {
+  [data-theme="dark"] .fullreport-admin-dropdown:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
   }
   
-  [data-theme="dark"] .compare-btn {
+  [data-theme="dark"] .fullreport-compare-btn {
     background: linear-gradient(135deg, #667eea, #f093fb);
   }
   
-  [data-theme="dark"] .compare-btn:hover {
+  [data-theme="dark"] .fullreport-compare-btn:hover {
     background: linear-gradient(135deg, #5a67d8, #d53f8c);
   }
   
@@ -488,11 +488,11 @@
     color: #f0f0f0;
   }
   
-  [data-theme="dark"] .eye-icon {
+  [data-theme="dark"] .fullreport-eye-icon {
     color: #f093fb;
   }
   
-  [data-theme="dark"] .eye-icon:hover {
+  [data-theme="dark"] .fullreport-eye-icon:hover {
     color: #d53f8c;
   }
   

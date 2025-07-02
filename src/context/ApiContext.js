@@ -1167,6 +1167,29 @@ const assignExecutiveToTeam = async ({ teamId, executiveId, managerId }) => {
     throw error;
   }
 };
+const [allTeams, setAllTeams] = useState([]);
+const [allTeamsLoading, setAllTeamsLoading] = useState(false);
+const [allTeamsError, setAllTeamsError] = useState(null);
+const fetchAllTeamsAPI = async () => {
+  setAllTeamsLoading(true);
+  setAllTeamsError(null);
+  try {
+    const data = await apiService.getAllTeams();
+    const teams = (data || []).map(team => ({
+      ...team,
+      managerId: team.manager_id,
+    }));
+    setAllTeams(teams);
+    setManagerTeams(teams); // ✅ critical
+    return teams;
+  } catch (error) {
+    setAllTeamsError(error);
+    console.error("❌ Error in fetchAllTeamsAPI:", error);
+    return [];
+  } finally {
+    setAllTeamsLoading(false);
+  }
+};
 
 
 const [teamMembers, setTeamMembers] = useState([]);
@@ -1499,7 +1522,11 @@ fetchAllTeamLeadsAPI,
               allProcessPersons,
               allProcessPersonsLoading,
               fetchAllProcessPersonsAPI,
-
+              allTeams,
+              allTeamsLoading,
+              allTeamsError,
+              fetchAllTeamsAPI,
+              
               
       }}
     >

@@ -651,7 +651,7 @@ h6 {
 }
 
 .client-table th {
-  color: white;
+  color: rgb(0, 0, 0);
   padding: 12px 10px;
   text-align: left;
 }

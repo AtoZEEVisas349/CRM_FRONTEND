@@ -973,22 +973,7 @@ const ClientOverview = () => {
               )}
 
               <div className="client-btn">
-                <button
-                  className="update-btn"
-                  onClick={handleTextUpdate}
-                  disabled={followUpLoading}
-                  style={{
-                    backgroundColor: followUpType === "converted" ? "#28a745" : followUpType === "close" ? "#dc3545" : followUpType === "appointment" ? "#17a2b8" : "#007bff",
-                    color: "white",
-                    padding: "10px 20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    cursor: followUpLoading ? "not-allowed" : "pointer",
-                    opacity: followUpLoading ? 0.6 : 1,
-                  }}
-                >
-                  {followUpType === "appointment" ? "Create Meeting" : followUpType === "converted" ? "Convert" : followUpType === "close" ? "Close" : "Update Followup"}
-                </button>
+           
                 {createFollowUpFlag && (
                   <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
                     Create Follow-Up

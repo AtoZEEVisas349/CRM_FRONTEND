@@ -857,6 +857,16 @@ export const getTeamMembersById = async (teamId) => {
   }
 };
 
+// ✅ Get all teams (Admin or Manager)
+export const getAllTeams = async () => {
+  try {
+    const response = await apiService.get("/manager/all-teams");
+    return response.data.teams; // returns the array of teams
+  } catch (error) {
+    console.error("❌ Error fetching all teams:", error.response?.data || error.message);
+    throw error;
+  }
+};
 // ✅ Add an executive to a team (Manager only)
 export const addExecutiveToTeam = async ({ teamId, executiveId, managerId }) => {
   try {

@@ -110,6 +110,11 @@ input:checked + .sliderexe:before {
   font-weight: 600;
   color: #2c3e50;
 }
+.text-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 👈 This pushes children (like team tag) to the left */
+}
 
 /* Popup styling */
 .popup-message {
@@ -1240,11 +1245,26 @@ input:checked + .sliderexe:before {
   font-size: 16px;
 }
 .team-assigned-info {
-  color: #4f52bb;
+  display: inline-block;
+  background-color: #f0f8ff;
+  color: #007b5e;
   font-weight: 600;
-  margin-top: 5px;
-  display: block;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  text-align: left;              /* 👈 Align text to the left */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.4px;
+  transition: all 0.3s ease-in-out;
+  max-width: 90%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-left: -25px;                /* 👈 Ensure no unnecessary offset */
 }
+
+
 
 .styled-button:hover {
   background: linear-gradient(135deg, #4f52bb, #667eea);
@@ -1275,7 +1295,12 @@ input:checked + .sliderexe:before {
   flex-direction: column;
   gap: 30px;
   margin-top: 20px;
+  width: 50%;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto; /* or shorthand: margin: 20px auto 0; */
 }
+
 
 .manager-teams-section {
   background: linear-gradient(135deg, #f8f9fa, #ffffff);
@@ -1284,6 +1309,15 @@ input:checked + .sliderexe:before {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 2px dashed #4f52bb;
   transition: all 0.3s ease;
+}
+.success-border {
+  border: 2px solid #28a745 !important;
+  box-shadow: 0 0 10px #28a745;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+.team-drop-zone.drag-over {
+  background-color: #e9fbe9;
+  border: 2px dashed #28a745;
 }
 
 .manager-teams-section h3 {
@@ -1294,20 +1328,23 @@ input:checked + .sliderexe:before {
 }
 
 .teams-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
+  overflow-x: auto;
 }
 
 .team-drop-zone {
   background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
   border: 2px dashed #667eea;
-  border-radius: 12px;
-  padding: 20px;
-  min-height: 150px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  min-width: 300px;
+  margin: 12px;
+  padding: 16px;
+  border: 2px dashed #7f8c8d;
+  border-radius: 10px;
+  background: #f8f9fa;
+  transition: box-shadow 0.2s ease;
 }
 
 .team-drop-zone::before {
