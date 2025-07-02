@@ -15,41 +15,42 @@ const MasterDashboard = () => {
   } = useCompany();
 
   const [showModal, setShowModal] = useState(false);
+  const [expiryDates, setExpiryDates] = useState({}); // Local expiry input
 
   useEffect(() => {
-    fetchCompanies(); // Initial fetch
+    fetchCompanies();
   }, []);
 
-  // 👉 Pause handler
-  const handlePause = async (id) => {
-    if (window.confirm("Pause this company?")) {
-      try {
-        await pauseCompany(id);
-        await fetchCompanies();
-      } catch (err) {
-        alert(err?.error || "Failed to pause company");
-      }
-    }
-  };
-
-  // 👉 Resume handler
-  const handleResume = async (id) => {
+  // ✅ Toggle ON = resumeCompany | Toggle OFF = pauseCompany
+  const handleToggleStatus = async (company, isChecked) => {
     try {
-      await resumeCompany(id);
+      const currentStatus = company.status?.toLowerCase();
+  
+      if (isChecked && currentStatus === "paused") {
+        await resumeCompany(company.id); // Resume only if it’s currently paused
+      } else if (!isChecked && currentStatus === "active") {
+        await pauseCompany(company.id); // Pause only if it’s currently active
+      }
+  
       await fetchCompanies();
     } catch (err) {
-      alert(err?.error || "Failed to resume company");
+      alert(err?.error || "Failed to update company status");
     }
   };
+  
 
-  // 👉 Expiry handler
-  const handleSetExpiry = async (id) => {
-    const input = prompt("Enter expiry date (YYYY-MM-DD):");
-    if (!input) return;
+  // ⏳ Date input state
+  const handleExpiryChange = (companyId, dateStr) => {
+    setExpiryDates((prev) => ({ ...prev, [companyId]: dateStr }));
+  };
 
+  // 📅 Submit expiry API
+  const submitExpiryDate = async (companyId) => {
+    const dateStr = expiryDates[companyId];
+    if (!dateStr) return alert("Please select a date first.");
     try {
-      const iso = new Date(input).toISOString();
-      await updateCompanyExpiry(id, iso);
+      const iso = new Date(dateStr).toISOString();
+      await updateCompanyExpiry(companyId, iso);
       await fetchCompanies();
     } catch (err) {
       alert(err?.error || "Failed to set expiry date");
@@ -79,12 +80,16 @@ const MasterDashboard = () => {
                 <th>DB Name</th>
                 <th>Created At</th>
                 <th>Expiry Date</th>
-                <th>Status / Actions</th>
+                <th>Toggle Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {companies.map((company) => {
                 const status = company.status?.toLowerCase() || "unknown";
+                const currentExpiry = company.expiryDate
+                  ? new Date(company.expiryDate).toLocaleDateString()
+                  : "None";
 
                 return (
                   <tr key={company.id}>
@@ -92,44 +97,38 @@ const MasterDashboard = () => {
                     <td>{company.name}</td>
                     <td>{company.db_name}</td>
                     <td>{new Date(company.createdAt).toLocaleDateString()}</td>
+                    <td>{currentExpiry}</td>
+
+                    {/* ✅ Toggle Switch */}
                     <td>
-                      {company.expiryDate
-                        ? new Date(company.expiryDate).toLocaleDateString()
-                        : <span style={{ fontStyle: "italic", color: "#888" }}>None</span>}
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          checked={status === "active"}
+                          onChange={(e) =>
+                            handleToggleStatus(company, e.target.checked)
+                          }
+                        />
+<span className="slider"></span>
+</label>
                     </td>
+
+                    {/* 📅 Expiry Input + Set Button */}
                     <td>
-                      <span className={`status ${status}`}>{status}</span>
-                      <div className="company-actions">
-                        {status === "active" && (
-                          <>
-                            <button
-                              className="pause-btn"
-                              onClick={() => handlePause(company.id)}
-                            >
-                              Pause
-                            </button>
-                            <button
-                              className="expiry-btn"
-                              onClick={() => handleSetExpiry(company.id)}
-                            >
-                              Set Expiry
-                            </button>
-                          </>
-                        )}
-                        {status === "paused" && (
-                          <button
-                            className="resume-btn"
-                            onClick={() => handleResume(company.id)}
-                          >
-                            Resume
-                          </button>
-                        )}
-                        {status === "unknown" && (
-                          <span style={{ fontSize: "12px", color: "#888" }}>
-                            No actions available
-                          </span>
-                        )}
-                      </div>
+                      <input
+                        type="date"
+                        value={expiryDates[company.id] || ""}
+                        onChange={(e) =>
+                          handleExpiryChange(company.id, e.target.value)
+                        }
+                        className="date-input"
+                      />
+                      <button
+                        className="set-expiry-btn"
+                        onClick={() => submitExpiryDate(company.id)}
+                      >
+                        Set
+                      </button>
                     </td>
                   </tr>
                 );
