@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
-import {
   faCalendarAlt,
   faClock as farClockRegular,
   faEnvelope,
@@ -20,73 +18,128 @@ import { useProcessService } from "../../context/ProcessServiceContext";
 import ProcessMeetingItem from "./ProcessMeetingItem";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 import { isSameDay } from "../../utils/helpers";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ProcessScheduleMeeting = () => {
   const {
-    createFollowUp,
     getProcessPersonMeetings,
-    updateFollowUp,
-    createFollowUpHistoryAPI,
-    getProcessFollowup, // ✅ pulled from context
+    getProcessFollowup,
+    processCreateFollowUp,
+    fetchCustomers,
+    customers,
+    setCustomers,
+    createMeetingApi,
+    createFinalStage,
+    createRejected
   } = useProcessService();
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const client = useMemo(() => location?.state?.client || {}, [location]);
 
   const [meetings, setMeetings] = useState([]);
   const [activeFilter, setActiveFilter] = useState("today");
   const [loading, setLoading] = useState(false);
+
   const [selectedMeetingForFollowUp, setSelectedMeetingForFollowUp] = useState(null);
   const [selectedMeetingForHistory, setSelectedMeetingForHistory] = useState(null);
-  const [followUpHistoryList, setFollowUpHistoryList] = useState([]); // ✅ new state
+  const [followUpHistoryList, setFollowUpHistoryList] = useState([]);
+
+  const [contactMethod, setContactMethod] = useState("");
+  const [followUpType, setFollowUpType] = useState("");
+  const [interactionRating, setInteractionRating] = useState("");
+  const [interactionDate, setInteractionDate] = useState(new Date().toISOString().split("T")[0]);
+  const [interactionTime, setInteractionTime] = useState("12:00");
+  const [comments, setComments] = useState("");
 
   useEffect(() => {
     loadMeetings();
   }, [activeFilter]);
+  useEffect(() => {
+    fetchCustomers()
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+         const mappedClients = data
+  .filter((client) => client.status === "pending")
+  // .map((client) => ({
+  //   ...client,
+  //   id: client.id || client._id,
+  // }));
 
-  const loadMeetings = async () => {
-    setLoading(true);
-    try {
-      const allMeetings = await getProcessPersonMeetings(); // ✅ from context
-      const today = new Date();
-  
-      const filtered = allMeetings.filter((m) => {
+          setCustomers(mappedClients);
+        }
+      })
+      .catch((err) => console.error("❌ Error fetching clients:", err));
+      console.log(customers)
+  }, []);
+  function convertTo24HrFormat(timeStr) {
+  const dateObj = new Date(`1970-01-01 ${timeStr}`);
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}:00`;
+}
+const[meetingData,setMeetingData]=useState();
+const loadMeetings = async () => {
+  setLoading(true);
+  try {
+    const response = await getProcessPersonMeetings();
+
+    setMeetingData(response); // if you still want to store full data
+
+    const allMeetings = response.filter(
+      (m) => m?.freshLead?.CustomerStatus?.status === "meeting"
+    );
+     const uniqueMeetingsMap = new Map();
+    allMeetings.forEach((meeting) => {
+      const leadId = meeting.fresh_lead_id;
+      if (!uniqueMeetingsMap.has(leadId)) {
+        uniqueMeetingsMap.set(leadId, meeting);
+      }
+    });
+
+    const uniqueMeetings = Array.from(uniqueMeetingsMap.values());
+    const today = new Date();
+      const filtered = uniqueMeetings.filter((m) => {
         const start = new Date(m.startTime);
-  
         if (activeFilter === "today") return isSameDay(start, today);
-  
         if (activeFilter === "week") {
           const week = new Date(today);
           week.setDate(week.getDate() + 7);
           return start >= today && start < week;
         }
-  
         if (activeFilter === "month") {
           const month = new Date(today);
           month.setDate(month.getDate() + 30);
           return start >= today && start < month;
         }
-  
         return true;
       });
-  
-      setMeetings(filtered);
-    } catch (err) {
-      console.error("Failed to fetch process meetings", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setMeetings(filtered);
+  } catch (err) {
+    console.error("Failed to fetch process meetings", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
   
 
+  
+useEffect(() => {
+  if (meetingData && Array.isArray(meetingData)) {
+    const filtered = meetingData.filter(
+      (m) => m.freshLead?.CustomerStatus?.status === "meeting"
+    );
+    setMeetings(filtered);
+  }
+}, []);
+console.log(meetings);
   const handleShowHistory = async (meeting) => {
     setSelectedMeetingForHistory(meeting);
     setLoading(true);
-
     try {
-      const leadId =
-        meeting?.fresh_lead_id ||
-        meeting?.freshLead?.id ||
-        meeting?.lead?.id ||
-        meeting?.id;
-
+      const leadId = meeting?.fresh_lead_id 
       if (!leadId) {
         console.warn("❌ Missing leadId in meeting:", meeting);
         setFollowUpHistoryList([]);
@@ -108,36 +161,191 @@ const ProcessScheduleMeeting = () => {
     }
   };
 
-  
+  const handleCreateFollowUp = async () => {
+    if (!contactMethod || !followUpType || !interactionRating || !interactionDate || !interactionTime) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Please fill all fields before submitting.",
+      });
+    }
 
-  const handleSubmitFollowUp = async (data) => {
+    const leadId =
+      selectedMeetingForFollowUp?.fresh_lead_id 
+     
+
+    if (!leadId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Lead ID",
+        text: "Unable to determine fresh_lead_id from the selected meeting.",
+      });
+    }
+
+    const payload = {
+      fresh_lead_id: String(selectedMeetingForFollowUp.fresh_lead_id),
+      connect_via: contactMethod,
+      follow_up_type: followUpType,
+      interaction_rating: interactionRating,
+      follow_up_date: interactionDate,
+      follow_up_time: interactionTime,
+      comments: comments || "-",
+    };
+
     try {
-      const { reason, method, type, date, time } = data;
-      const leadId = selectedMeetingForFollowUp?.leadId;
-
-      const payload = {
-        follow_up_type: type,
-        follow_up_date: date,
-        follow_up_time: time,
-        reason_for_follow_up: reason,
-        connect_via: method,
-        lead_id: leadId,
-      };
-
-      const res = await createFollowUp(payload);
-      payload.follow_up_id = res?.data?.id;
-
-      await createFollowUpHistoryAPI(payload);
-
-      Swal.fire({ icon: "success", title: "Follow-Up Saved!" });
+      await processCreateFollowUp(payload);
+        const result=  await getProcessFollowup(leadId)
+        setFollowUpHistoryList(result.data);
+        loadMeetings();
+     
+      Swal.fire({ icon: "success", title: "Follow-Up Created" });
       setSelectedMeetingForFollowUp(null);
-      loadMeetings();
+      setContactMethod("");
+      setFollowUpType("");
+      setInteractionRating("");
+      setComments("");
     } catch (err) {
-      console.error("Follow-up failed", err);
-      Swal.fire({ icon: "error", title: "Failed to submit follow-up" });
+      console.error("Create Follow-Up error", err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Could not create follow-up.",
+      });
     }
   };
+ const handleCreateMeeting = async () => {
+    const leadId =
+      selectedMeetingForFollowUp?.fresh_lead_id 
+     
 
+    if (!leadId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Lead ID",
+        text: "Unable to determine fresh_lead_id from the selected meeting.",
+      });
+    }
+
+    if (!comments) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Reason",
+        text: "Please add a reason before creating a meeting.",
+      });
+    }
+
+    try {
+      
+
+      
+     const meetingPayload = {
+          clientName: selectedMeetingForFollowUp.clientName,
+          clientEmail: selectedMeetingForFollowUp.clientEmail,
+          clientPhone: selectedMeetingForFollowUp.clientPhone,
+          reasonForFollowup: comments,
+          startTime: new Date(`${interactionDate}T${interactionTime}`).toISOString(),
+          endTime: null,
+          connect_via: contactMethod, 
+        follow_up_type: followUpType, 
+        interaction_rating: interactionRating, 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
+          fresh_lead_id:  String(selectedMeetingForFollowUp.fresh_lead_id),
+        };
+      await createMeetingApi(meetingPayload);
+       await getProcessFollowup(leadId);
+     loadMeetings();
+
+      Swal.fire({ icon: "success", title: "Meeting Created" });
+
+    } catch (err) {
+      console.error("Meeting Creation Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }
+  };
+   const handleFollowUpAction = async () => {
+     const leadId =
+      selectedMeetingForFollowUp?.fresh_lead_id 
+     
+
+    if (!leadId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Lead ID",
+        text: "Unable to determine fresh_lead_id from the selected meeting.",
+      });
+    }
+
+    if (!comments) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Reason",
+        text: "Please add a reason before creating a meeting.",
+      });
+    }
+  
+      try {
+       if (followUpType === "final") {
+          const payload={
+        //  follow_up_id: clientInfo.followUpId || clientInfo.id, 
+          connect_via: contactMethod, 
+          follow_up_type: followUpType, 
+          interaction_rating: interactionRating, 
+          comments: comments, 
+          follow_up_date: interactionDate, 
+          follow_up_time: interactionTime, 
+          fresh_lead_id:  String(selectedMeetingForFollowUp.fresh_lead_id), 
+        }
+      
+          await createFinalStage(payload);
+          await getProcessFollowup(leadId);
+           loadMeetings();
+        
+   Swal.fire({ icon: "success", title: "Lead Moved to Final Stage" });
+    setTimeout(() => {
+    navigate("/process/process-follow-up"); // Replace the current URL with the new one
+  }, 1000);
+        }
+        
+        else if (followUpType === "rejected") {
+        
+        const payload={
+        //  follow_up_id: clientInfo.followUpId || clientInfo.id, 
+          connect_via:contactMethod, 
+          follow_up_type: followUpType, 
+          interaction_rating:interactionRating, 
+          comments: comments, 
+          follow_up_date: interactionDate, 
+          follow_up_time: interactionTime, 
+          fresh_lead_id:  String(selectedMeetingForFollowUp.fresh_lead_id), 
+        }
+        await createRejected(payload);
+         await getProcessFollowup(leadId);
+           loadMeetings();
+        
+         Swal.fire({ icon: "success", title: "Lead Moved to Rejected Leads" });
+          setTimeout(() => {
+   navigate("/process/process-follow-up"); // Replace the current URL with the new one
+  }, 1000);
+      }
+        else {
+          return; // Do nothing for other types; handled by specific buttons
+        }
+  
+       
+      } catch (err) {
+        console.error("Follow-up Action Error:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: "Something went wrong. Please try again.",
+        });
+      }
+    };
   return (
     <div className="task-management-container">
       {loading && <LoadingSpinner text="Loading Process Meetings..." />}
@@ -148,15 +356,8 @@ const ProcessScheduleMeeting = () => {
             <div className="header-left">
               <h2 className="meetings-title">Process Person Meetings</h2>
               <div className="date-section">
-                <p className="day-name">
-                  {new Date().toLocaleDateString(undefined, { weekday: "long" })}
-                </p>
-                <p className="current-date">
-                  {new Date().toLocaleDateString(undefined, {
-                    day: "numeric",
-                    month: "long",
-                  })}
-                </p>
+                <p className="day-name">{new Date().toLocaleDateString(undefined, { weekday: "long" })}</p>
+                <p className="current-date">{new Date().toLocaleDateString(undefined, { day: "numeric", month: "long" })}</p>
                 <FontAwesomeIcon icon={faChevronDown} className="date-dropdown" />
               </div>
             </div>
@@ -182,7 +383,7 @@ const ProcessScheduleMeeting = () => {
                 key={m.id}
                 meeting={m}
                 onAddFollowUp={() => setSelectedMeetingForFollowUp(m)}
-                onShowHistory={() => handleShowHistory(m)} // ✅ use handler
+                onShowHistory={() => handleShowHistory(m)}
               />
             ))
           ) : (
@@ -191,96 +392,139 @@ const ProcessScheduleMeeting = () => {
         </ul>
       </div>
 
+      {/* Follow-Up Modal */}
       {selectedMeetingForFollowUp && (
-  <div className="followup-form-overlay">
-    <div className="followup-form-modal">
-      <div className="followup-form-header">
-        <h3>Add Follow-Up for {selectedMeetingForFollowUp.clientName || "Unnamed Client"}</h3>
-        <button
-          className="close-form-btn"
-          onClick={() => setSelectedMeetingForFollowUp(null)}
-        >
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
-      </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const form = e.target;
-          const reason = form.reason.value;
-          const method = form.method.value;
-          const type = form.type.value;
-          const date = form.date.value;
-          const time = form.time.value;
-          handleSubmitFollowUp({ reason, method, type, date, time });
-        }}
-        className="followup-form-content"
-      >
-        <div className="form-group">
-          <label>Follow-Up Reason</label>
-          <textarea
-            name="reason"
-            className="interaction-textarea"
-            required
-          ></textarea>
-        </div>
+        <div className="followup-form-overlay">
+          <div className="followup-form-modal">
+            <div className="followup-form-header">
+              <h3>Add Follow-Up for {selectedMeetingForFollowUp.clientName || "Unnamed Client"}</h3>
+              <button className="close-form-btn" onClick={() => setSelectedMeetingForFollowUp(null)}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
 
-        <div className="form-group">
-          <label>Connected Via</label>
-          <div className="radio-group">
-            {["call", "email"].map((method) => (
-              <label key={method} className="radio-container">
-                <input type="radio" name="method" value={method} required />
-                <span className="radio-label">
-                  {method.charAt(0).toUpperCase() + method.slice(1)}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+            <div className="create-followup-container">
+              <div style={{ margin: "20px" }}>
+                <label>Reason for Followup</label>
+                <textarea
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                  placeholder="Reason for followup"
+                  rows="4"
+                  style={{ width: "100%", marginTop: "5px",padding:"20px" }}
+                />
+              </div>
+              <h4 style={{ margin: "20px" }}>Connected Via</h4>
+<div className="radio-group">
+  {["Call", "Email", "Call/Email"].map((method) => (
+    <label key={method} style={{ marginRight: "15px" }}>
+      <input
+        type="radio"
+        name="contactMethod"
+        value={method}
+        checked={contactMethod === method}
+        onChange={() => setContactMethod(method)}
+      />
+      {method}
+    </label>
+  ))}
+</div>
 
-        <div className="form-group">
-          <label>Follow-Up Type</label>
-          <div className="radio-group">
-            {["interested", "not interested", "appointment"].map((type) => (
-              <label key={type} className="radio-container">
-                <input type="radio" name="type" value={type} required />
-                <span className="radio-label">
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+<h4 style={{ margin: "20px" }}>Follow-Up Type</h4>
+<div className="radio-group">
+  {["document collection", "payment follow-up", "visa filing", "other", "meeting","rejected","final"].map((type) => (
+    <label key={type} style={{ marginRight: "15px" }}>
+      <input
+        type="radio"
+        name="followUpType"
+        value={type}
+        checked={followUpType === type}
+        onChange={() => setFollowUpType(type)}
+      />
+      {type}
+    </label>
+  ))}
+</div>
 
-        <div className="form-group-horizontal">
-          <div className="form-subgroup">
-            <label>Date</label>
-            <input type="date" name="date" className="form-input" required />
-          </div>
-          <div className="form-subgroup">
-            <label>Time</label>
-            <input type="time" name="time" className="form-input" required />
-          </div>
-        </div>
+<h4 style={{ margin: "20px" }}>Interaction Rating</h4>
+<div className="radio-group">
+  {["hot", "warm", "cold"].map((rating) => (
+    <label key={rating} style={{ marginRight: "15px" }}>
+      <input
+        type="radio"
+        name="interactionRating"
+        value={rating}
+        checked={interactionRating === rating}
+        onChange={() => setInteractionRating(rating)}
+      />
+      {rating}
+    </label>
+  ))}
+</div>
 
-        <div className="form-actions">
-          <button type="submit" className="submit-btn">
-            Save Follow-Up
-          </button>
-          <button
-            type="button"
-            className="cancel-btn"
-            onClick={() => setSelectedMeetingForFollowUp(null)}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+<h4 style={{ margin: "20px" }}>Interaction Date & Time</h4>
+<div style={{ display: "flex", alignItems: "center", gap: "20px", margin: "10px" }}>
+  <div>
+    <label style={{ marginRight: "5px" }}>Date:</label>
+    <input
+      type="date"
+      value={interactionDate}
+      onChange={(e) => setInteractionDate(e.target.value)}
+    />
   </div>
-)}
 
+  <div>
+    <label style={{ marginRight: "5px" }}>Time:</label>
+    <input
+      type="time"
+      value={interactionTime}
+      onChange={(e) => setInteractionTime(e.target.value)}
+    />
+  </div>
+</div>
+
+              
+
+      <div style={{ display: "flex", justifyContent: "flex-end", margin: "20px" }}>
+  <button
+    onClick={
+      followUpType === "meeting"
+        ? handleCreateMeeting
+        : followUpType === "rejected" || followUpType === "final"
+        ? handleFollowUpAction
+        : handleCreateFollowUp
+    }
+    style={{
+      backgroundColor: "#4CAF50",
+      color: "white",
+      padding: "10px 18px",
+      border: "none",
+      borderRadius: "6px",
+      fontSize: "14px",
+      fontWeight: "bold",
+      cursor: "pointer",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      transition: "background-color 0.3s ease",
+    }}
+    onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+    onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
+  >
+    {followUpType === "meeting"
+      ? "Update Meeting"
+      : followUpType === "rejected"
+      ? "Rejected Leads"
+      : followUpType === "final"
+      ? "Final Stage Leads"
+      : "Create Follow-Up"}
+  </button>
+</div>
+
+
+
+            </div>
+          </div>
+        </div>
+      )}
 {selectedMeetingForHistory && (
   <div className="followup-history-overlay">
     <div className="followup-history-modal">
@@ -427,6 +671,8 @@ const ProcessScheduleMeeting = () => {
   </div>
 )}
 
+      {/* History Modal remains unchanged... */}
+      {/* You can append it below if needed */}
     </div>
   );
 };

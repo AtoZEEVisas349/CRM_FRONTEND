@@ -50,18 +50,27 @@ const AllClient = () => {
     const handleClick = async () => {
     try {
       const result = await handleImportConvertedClients();
-     
+     await fetchCustomers();
     } catch (error) {
       alert("Failed to import: " + error.message);
     }
   };
   const handleCardClick = (client) => {
-    navigate(`/processperson/client/dashboard/${client.id}`, { state: { client } });
+   navigate(`/processperson/client/dashboard/${client.id}`, {
+  state: {
+    clientId: client.id,
+    clientName: client.fullName,
+  },
+});
+
   };
    const handleCardUpload = (client) => {
     navigate(`/processperson/client/upload/${client.id}`, { state: { client } });
   };
-   
+   const customerData = customers.filter(
+  (client) => client.status === "pending" || client.status === "under_review"
+);
+
   return (
     <div className="all-client-container">
       <div className="all-client-header">
@@ -77,7 +86,7 @@ const AllClient = () => {
       ) : ( */}
         <>
           <div className="client-count-row">
-            <p className="client-count">Total clients: {customers.length}</p>
+            <p className="client-count">Total clients: {customerData.length}</p>
             <button
               className="new-client-btn"
               onClick={handleClick}
@@ -92,7 +101,7 @@ const AllClient = () => {
       {/* )} */}
 
       <div className="client-list">
-        {customers.map((client) => (
+        {customerData.map((client) => (
           <div
             className="client-card"
             key={client.id}

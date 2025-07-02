@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useProcess } from "../../context/ProcessAuthContext";
-import { useParams } from "react-router-dom";
+import { useParams,useLocation } from "react-router-dom";
 import img1 from '../../assets/user.png';
 import img2 from '../../assets/user1.png';
 
@@ -9,7 +9,8 @@ const ClientDash = ({ initialStages = 6 }) => {
   const { id } = useParams();
   const { handleUpsertStages, handleGetStages, handleGetCustomerStagesById,createStages,getComments } = useProcessService();
   const { user } = useProcess();
-
+   const location = useLocation();
+  const clientName = location.state?.clientName || "Unknown";
   const [comments, setComments] = useState([]);
   const [expanded, setExpanded] = useState([]);
   const [activeIcon, setActiveIcon] = useState(null);
@@ -350,56 +351,6 @@ const handleSubmit = async (customerId, stageNumber, commentsArray) => {
 };
 
 
-// const handleSubmit = async (customerId, stageNumber, commentsArray) => {
-//   if (!customerId || !stageNumber || !commentsArray.length) {
-//     setMessage("All fields are required");
-//     return;
-//   }
-
-//   try {
-//     for (let newComment of commentsArray) {
-//       const result = await createStages(
-//         customerId,
-//         Number(stageNumber),
-//         newComment
-//       );
-//       console.log("Added comment:", result.message);
-//     }
-
-//     setMessage("All comments added successfully");
-//     setComment("");
-//     setStageNumber("");
-//     setInputValue("");         
-//     setActiveIcon(null);       
-
-//     const latestStages = await handleGetCustomerStagesById(customerId);
-
-//     const updatedComments = [];
-//     for (let i = 0; i < stageCount; i++) {
-//       const dataArray = latestStages[`stage${i + 1}_data`] || [];
-      
-//       // Get latest comment if exists
-//       const latestCommentObj = Array.isArray(dataArray) && dataArray.length > 0
-//         ? dataArray[dataArray.length - 1]
-//         : null;
-
-//       updatedComments.push({
-//         text: latestCommentObj ? latestCommentObj.comment : "",
-//         date: latestCommentObj 
-//           ? new Date(latestCommentObj.timestamp).toLocaleString()
-//           : ""
-//       });
-//     }
-
-//     setComments(updatedComments);
-//     setStageData(latestStages);
-
-//   } catch (err) {
-//     console.error("Failed to add comment:", err);
-//     setMessage(err?.response?.data?.error || "Something went wrong");
-//   }
-// };
-
 
   
 
@@ -489,7 +440,12 @@ fetchComments()
 
 
   return (
+    <div>
+      {user?.type==="processperson" && (
+        <h1 style={{margin:"20px"}}>Client : {clientName}</h1>)}
+        
     <div className="road-timeline-container">
+    
       <h2 className="descriptions-title">Activity Roadmap</h2>
       <div className="stage-controls">
         <button onClick={addStage} className="control-btn">Add Stage</button>
@@ -671,7 +627,8 @@ fetchComments()
               </div>
             )}
           </div>
-        ))}
+        ))
+        }
 
         {user?.type === "processperson" && activeIcon !== null && (
           <div
@@ -854,62 +811,7 @@ onClick={() =>
   )}
 </td>
 
-      {/* <td
-        style={{
-          padding: '10px',
-          border: '1px solid #ddd',
-          position: 'relative',
-          maxWidth: '360px',
-          wordWrap: 'break-word',
-          wordBreak: 'break-word',
-          whiteSpace: 'normal',
-        }}
-      >
-        <div
-          style={{
-            maxHeight: expandedCards[stageIndex] ? 'none' : '40px',
-            overflow: 'hidden',
-            paddingRight: '60px',
-          }}
-        >
-          {Array.isArray(comment.text) && comment.text.length > 0 ? (
-            comment.text.map((item, idx) => (
-              <div key={idx} style={{ marginBottom: '4px' }}>
-                <p style={{ margin: 0 }}>{item.comment}</p>
-                <small style={{ color: '#888' }}>
-                  {new Date(item.timestamp).toLocaleString()}
-                </small>
-              </div>
-            ))
-          ) : (
-            ' - '
-          )}
-        </div>
-
-        {Array.isArray(comment.text) && comment.text.length > 1 && (
-          <button
-            style={{
-              position: 'absolute',
-              bottom: '8px',
-              right: '10px',
-              background: 'none',
-              border: 'none',
-              color: '#3b82f6',
-              fontSize: '11px',
-              cursor: 'pointer',
-              padding: 0,
-              fontWeight: '500',
-              textDecoration: 'underline'
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleCardExpand(stageIndex);
-            }}
-          >
-            {expandedCards[stageIndex] ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </td> */}
+   
       <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
         <button
           style={{
@@ -932,82 +834,6 @@ onClick={() =>
 
         </tbody>
       </table>
-      {/* <table
-  style={{
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontFamily: 'Segoe UI, sans-serif',
-    tableLayout: 'fixed',
-    minWidth: '1000px'
-  }}
->
-  <thead>
-    <tr style={{ backgroundColor: '#3b82f6', color: 'white' }}>
-      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Stage</th>
-      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Comment</th>
-      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Follow-up History</th>
-    </tr>
-  </thead>
-  <tbody>
-    {currentStages.map((_, indexOnPage) => {
-      const stageIndex = startIdx + indexOnPage;
-      const commentObj = comments[stageIndex] || {};
-      const textArray = Array.isArray(commentObj.text) ? commentObj.text : [];
-      const latestComment = textArray.length > 0 ? textArray[textArray.length - 1] : null;
-
-      return (
-        <tr key={stageIndex}>
-          <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
-            <div>Stage {stageIndex + 1}</div>
-            {commentObj.date && (
-              <div style={{ fontSize: '11px', color: 'red', marginTop: '4px' }}>
-                {commentObj.date}
-              </div>
-            )}
-          </td>
-
-          <td style={{
-            padding: '10px',
-            border: '1px solid #ddd',
-            maxWidth: '360px',
-            wordWrap: 'break-word',
-            wordBreak: 'break-word',
-            whiteSpace: 'normal',
-            textAlign: 'left'
-          }}>
-            {latestComment ? (
-              <>
-                <div>{latestComment.comment}</div>
-                <small style={{ color: '#888' }}>
-                  {new Date(latestComment.timestamp).toLocaleString()}
-                </small>
-              </>
-            ) : (
-              "-"
-            )}
-          </td>
-
-          <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
-            <button
-              style={{
-                padding: '6px 12px',
-                fontSize: '12px',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-              onClick={() => handleOpenFollowupModal(stageIndex)}
-            >
-              View History
-            </button>
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>
-</table> */}
 
 
       {/* Pagination Controls */}
@@ -1060,116 +886,8 @@ onClick={() =>
   </div>
 )}
 
-
-        {/* <h3> Stage Summary</h3>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'nowrap',
-            gap: '30px',
-            minWidth: '1000px',
-          }}
-        >
-          {[0, 5, 10].map((startIdx) => (
-            <div
-              key={startIdx}
-              style={{
-                flex: '0 0 33%',
-                minWidth: '320px',
-                maxWidth: '460px',
-              }}
-            >
-              <table
-                style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                  fontFamily: 'Segoe UI, sans-serif',
-                  tableLayout: 'fixed'
-                }}
-              >
-                <thead>
-                  <tr style={{ backgroundColor: '#3b82f6', color: 'white' }}>
-                    <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Stage</th>
-                    <th
-                      style={{
-                        width: '360px',
-                        padding: '12px',
-                        border: '1px solid #ddd',
-                        textAlign: 'center'
-                      }}
-                    >
-                      Comments
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: 5 }).map((_, i) => {
-                    const index = startIdx + i;
-                    const comment = comments[index] || {};
-                    return (
-                      <tr key={index}>
-                        <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
-                          <div>Stage {index + 1}</div>
-                          {comment.date && (
-                            <div style={{ fontSize: '11px', color: 'red', marginTop: '4px' }}>
-                              {comment.date}
-                            </div>
-                          )}
-                        </td>
-                        <td
-                          style={{
-                            padding: '10px',
-                            border: '1px solid #ddd',
-                            position: 'relative',
-                            maxWidth: '360px',
-                            wordWrap: 'break-word',
-                            wordBreak: 'break-word',
-                            whiteSpace: 'normal',
-                          }}
-                        >
-                          <div
-                            style={{
-                              maxHeight: expandedCards[index] ? 'none' : '40px',
-                              overflow: 'hidden',
-                              paddingRight: '60px',
-                            }}
-                          >
-                            {comment.text?.trim() || " - "}
-                          </div>
-                          {comment.text?.length > 20 && (
-                            <button
-                              style={{
-                                position: 'absolute',
-                                bottom: '8px',
-                                right: '10px',
-                                background: 'none',
-                                border: 'none',
-                                color: '#3b82f6',
-                                fontSize: '11px',
-                                cursor: 'pointer',
-                                padding: 0,
-                                fontWeight: '500',
-                                textDecoration: 'underline'
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleCardExpand(index);
-                              }}
-                            >
-                              {expandedCards[index] ? 'See Less' : 'See More'}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ))}
-        </div> */}
       </div>
-    </div>
+    </div></div>
   );
 };
 

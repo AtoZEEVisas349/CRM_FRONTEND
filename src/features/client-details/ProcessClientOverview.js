@@ -199,7 +199,7 @@ const[historyFollowup,setHistoryFollowup]=useState();
         interaction_rating: interactionRating, 
         follow_up_date: interactionDate, 
         follow_up_time: convertTo24HrFormat(interactionTime), 
-          fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.id,
+          fresh_lead_id:  String(clientInfo.freshLeadId),
         };
         await createMeetingApi(meetingPayload);
          await getProcessFollowup(id);
@@ -250,6 +250,7 @@ const[historyFollowup,setHistoryFollowup]=useState();
         text: "Please fill out all required fields before creating follow-up.",
       });
     }
+        try {
  const newFollowUpData= {
    fresh_lead_id: String(clientInfo.freshLeadId),
      connect_via: contactMethod,
@@ -272,7 +273,14 @@ const[historyFollowup,setHistoryFollowup]=useState();
            navigate("/process/freshlead");
  // Replace the current URL with the new one
 }, 1000);
-      
+}catch (error) {
+    
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }   
   };
 
   const toggleListening = () => {

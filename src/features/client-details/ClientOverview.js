@@ -18,6 +18,7 @@ function convertTo24HrFormat(timeStr) {
 }
 
 const ClientOverview = () => {
+  
   const { clientId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const ClientOverview = () => {
     createFollowUpHistoryAPI,
     createConvertedClientAPI,
     createCloseLeadAPI,
+    updateClientLead,
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
@@ -65,7 +67,7 @@ const ClientOverview = () => {
   const [emailSubject, setEmailSubject] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
-
+  const [isSaving, setIsSaving] = useState(false); // Added
   const convertTo24Hour = (time12h, amPm) => {
     let [hours, minutes] = time12h.split(':').map(Number);
     if (amPm === 'PM' && hours !== 12) hours += 12;
@@ -120,44 +122,44 @@ const ClientOverview = () => {
     isListeningRef.current = isListening;
   }, [isListening]);
 
-useEffect(() => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true; // ENABLE continuous listening
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true; // ENABLE continuous listening
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
 
-    recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-      setReasonDesc((prev) => `${prev} ${transcript}`);
-    };
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        setReasonDesc((prev) => `${prev} ${transcript}`);
+      };
 
-    recognition.onerror = (event) => {
-      Swal.fire({
-        icon: "error",
-        title: "Speech Error",
-        text: `Speech recognition error: ${event.error}`,
-      });
-      setIsListening(false);
-    };
+      recognition.onerror = (event) => {
+        Swal.fire({
+          icon: "error",
+          title: "Speech Error",
+          text: `Speech recognition error: ${event.error}`,
+        });
+        setIsListening(false);
+      };
 
-    recognition.onend = () => {
-      // Don’t reset isListening here if we're actively listening
-      if (isListeningRef.current) {
-        recognition.start(); // restart automatically
-      } else {
-        setIsListening(false); // only stop if we actually intended to
-      }
-    };
+      recognition.onend = () => {
+        // Don’t reset isListening here if we're actively listening
+        if (isListeningRef.current) {
+          recognition.start(); // restart automatically
+        } else {
+          setIsListening(false); // only stop if we actually intended to
+        }
+      };
 
-    recognitionRef.current = recognition;
-  } else {
-    recognitionRef.current = null;
-  }
-}, []);
+      recognitionRef.current = recognition;
+    } else {
+      recognitionRef.current = null;
+    }
+  }, []);
 
-  
+
   const handleChange = (field, value) => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
   };
@@ -173,7 +175,48 @@ useEffect(() => {
       setFollowUpHistory(location.state.followUpHistory);
     }
   }, [location.state]);
-  
+
+  // ✅ Updated handleSaveClientDetails to use clientId from useParams
+  const handleSaveClientDetails = async () => {
+    if (!clientId) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Client ID",
+        text: "Unable to save client details without a valid client ID.",
+      });
+    }
+
+    setIsSaving(true);
+    try {
+      const updateFields = {
+        name: clientInfo.name || "",
+        email: clientInfo.email || "",
+        phone: clientInfo.phone || "",
+        altPhone: clientInfo.altPhone || "",
+        education: clientInfo.education || "",
+        experience: clientInfo.experience || "",
+        state: clientInfo.state || "",
+        dob: clientInfo.dob || "",
+        country: clientInfo.country || "",
+      };
+
+      await updateClientLead(clientId, updateFields); // ✅ Use clientId from useParams
+      await Swal.fire({
+        icon: "success",
+        title: "Client Updated",
+        text: "Client details have been updated successfully!",
+      });
+    } catch (error) {
+      console.error("❌ Error updating client details:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: "Failed to update client details. Please try again.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const handleTextUpdate = async () => {
     if (!followUpType || !interactionDate || !interactionTime) {
       return Swal.fire({
@@ -239,13 +282,13 @@ useEffect(() => {
         };
         await createMeetingAPI(meetingPayload);
         await createFollowUpHistoryAPI(followUpHistoryPayload);
-        
-        await Swal.fire({ 
-          icon: "success", 
+
+        await Swal.fire({
+          icon: "success",
           title: "Appointment Created",
           text: "Appointment created and lead moved to Meeting"
         });
-        
+
         setTimeout(() => navigate("/executive/freshlead"), 1000);
         return;
       } else if (followUpType === "converted") {
@@ -286,9 +329,9 @@ useEffect(() => {
 
         await updateFreshLeadFollowUp(freshLeadId, updatedData);
         await createFollowUpHistoryAPI(followUpHistoryPayload);
-        
-        await Swal.fire({ 
-          icon: "success", 
+
+        await Swal.fire({
+          icon: "success",
           title: "Follow-up Updated",
           text: "Follow-up status updated successfully"
         });
@@ -377,8 +420,8 @@ useEffect(() => {
 
       await createFollowUpHistoryAPI(followUpHistoryData);
 
-      Swal.fire({ 
-        icon: "success", 
+      Swal.fire({
+        icon: "success",
         title: "Follow-up Created",
         text: "Follow-up and history created successfully!"
       });
@@ -414,7 +457,7 @@ useEffect(() => {
         text: "Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome.",
       });
     }
-  
+
     if (isListening) {
       stopListening(); // Ensure this executes fully before setting state
     } else {
@@ -426,7 +469,7 @@ useEffect(() => {
     recognitionRef.current?.stop();
     setIsListening(false);
   };
-  
+
 
   const { handleSendEmail } = useExecutiveActivity();
 
@@ -498,56 +541,72 @@ useEffect(() => {
                       <label className="label">{label}:</label>
                       <input
                         type="text"
-                        value={clientInfo[key] || ""} 
+                        value={clientInfo[key] || ""}
                         onChange={(e) => handleChange(key, e.target.value)}
                         className="client-input"
                       />
                     </div>
                   ))}
+                  <button
+                    onClick={handleSaveClientDetails}
+                    disabled={isSaving}
+                    style={{
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      padding: "10px 20px",
+                      borderRadius: "5px",
+                      border: "none",
+                      cursor: isSaving ? "not-allowed" : "pointer",
+                      opacity: isSaving ? 0.6 : 1,
+                      marginTop: "20px",
+                    }}
+                  >
+                    {isSaving ? "Saving..." : "Save Client Details"}
+                  </button>
                 </div>
               </div>
             </div>
 
             <div className="follow-up-column">
-  <div className="follow-up-box">
-    <div className="last-follow-up">
-      <h3>Last Follow-up</h3>
-      {followUpHistory.length > 0 ? (
-        <div className="followup-entry-horizontal">
-          <p className="followup-reason">
-            {followUpHistory[0].reason_for_follow_up || "No description available."}
-          </p>
-          <strong>
-            <p className="followup-time">
-              {new Date(followUpHistory[0].follow_up_date).toLocaleDateString()} - {followUpHistory[0].follow_up_time}
-            </p>
-          </strong>
-        </div>
-      ) : (
-        <p>No follow-up history available.</p>
-      )}
-    </div>
+              <div className="follow-up-box">
+                <div className="last-follow-up">
+                  <h3>Last Follow-up</h3>
+                  {followUpHistory.length > 0 ? (
+                    <div className="followup-entry-horizontal">
+                      <p className="followup-reason">
+                        {followUpHistory[0].reason_for_follow_up || "No description available."}
+                      </p>
+                      <strong>
+                        <p className="followup-time">
+                          {new Date(followUpHistory[0].follow_up_date).toLocaleDateString()} - {followUpHistory[0].follow_up_time}
+                        </p>
+                      </strong>
+                    </div>
+                  ) : (
+                    <p>No follow-up history available.</p>
+                  )}
+                </div>
 
-    {followUpHistory.length > 1 && (
-      <div className="follow-up-history-summary">
-        <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
-          {followUpHistory.slice(1).map((history, index) => (
-            <div key={index} className="followup-entry-plain">
-              <p className="followup-reason">{history.reason_for_follow_up || "—"}</p>
-              <p className="followup-time">
-                {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
-              </p>
+                {followUpHistory.length > 1 && (
+                  <div className="follow-up-history-summary">
+                    <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {followUpHistory.slice(1).map((history, index) => (
+                        <div key={index} className="followup-entry-plain">
+                          <p className="followup-reason">{history.reason_for_follow_up || "—"}</p>
+                          <p className="followup-time">
+                            {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
+
+          </div>
         </div>
       </div>
-    )}
-  </div>
-</div>
-
-</div>
-</div>
-</div>
       <div className="client-interaction-container">
         <div className="interaction-form">
           <div style={{ position: "relative" }}>
@@ -663,7 +722,7 @@ useEffect(() => {
                 </div>
               </div>
             )}
-          
+
           </div>
 
           <div className="connected-via" style={{ marginBottom: "20px" }}>
@@ -682,7 +741,7 @@ useEffect(() => {
               ))}
             </div>
           </div>
-          <div className="follow-up-type"  style={{ marginBottom: "20px" }}>
+          <div className="follow-up-type" style={{ marginBottom: "20px" }}>
             <h4>Follow-Up Type</h4>
             <div className="radio-group">
               {["interested", "appointment", "no response", "converted", "not interested", "close"].map((type) => (
@@ -814,66 +873,66 @@ useEffect(() => {
                           </>
                         ) : (
                           <div>
-                          <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              border: "1px solid #ccc",
-                              borderRadius: "6px",
-                              padding: "0 10px",
-                              backgroundColor: "#fff",
-                              height: "38px"
-                            }}
-                          >
-                            {/* HH:MM SELECT */}
-                            <select
-                              value={timeOnly}
-                              onChange={(e) => setTimeOnly(e.target.value)}
+                            <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
+                            <div
                               style={{
-                                border: "none",
-                                padding: "8px 6px",
-                                fontSize: "14px",
-                                height: "100%",
-                                outline: "none",
-                                backgroundColor: "transparent",
-                                appearance: "none"
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                border: "1px solid #ccc",
+                                borderRadius: "6px",
+                                padding: "0 10px",
+                                backgroundColor: "#fff",
+                                height: "38px"
                               }}
                             >
-                              {Array.from({ length: 12 }, (_, i) =>
-                                [0, 15, 30, 45].map((min) => {
-                                  const hour = i + 1;
-                                  const hStr = hour.toString().padStart(2, "0");
-                                  const mStr = min.toString().padStart(2, "0");
-                                  return (
-                                    <option key={`${hStr}:${mStr}`} value={`${hStr}:${mStr}`}>
-                                      {`${hStr}:${mStr}`}
-                                    </option>
-                                  );
-                                })
-                              ).flat()}
-                            </select>
-                        
-                            {/* AM/PM SELECT */}
-                            <select
-                              value={ampm}
-                              onChange={(e) => setAmPm(e.target.value)}
-                              style={{
-                                border: "none",
-                                padding: "8px 6px",
-                                fontSize: "14px",
-                                height: "100%",
-                                outline: "none",
-                                backgroundColor: "transparent",
-                                appearance: "none"
-                              }}
-                            >
-                              <option value="AM">AM</option>
-                              <option value="PM">PM</option>
-                            </select>
+                              {/* HH:MM SELECT */}
+                              <select
+                                value={timeOnly}
+                                onChange={(e) => setTimeOnly(e.target.value)}
+                                style={{
+                                  border: "none",
+                                  padding: "8px 6px",
+                                  fontSize: "14px",
+                                  height: "100%",
+                                  outline: "none",
+                                  backgroundColor: "transparent",
+                                  appearance: "none"
+                                }}
+                              >
+                                {Array.from({ length: 12 }, (_, i) =>
+                                  [0, 15, 30, 45].map((min) => {
+                                    const hour = i + 1;
+                                    const hStr = hour.toString().padStart(2, "0");
+                                    const mStr = min.toString().padStart(2, "0");
+                                    return (
+                                      <option key={`${hStr}:${mStr}`} value={`${hStr}:${mStr}`}>
+                                        {`${hStr}:${mStr}`}
+                                      </option>
+                                    );
+                                  })
+                                ).flat()}
+                              </select>
+
+                              {/* AM/PM SELECT */}
+                              <select
+                                value={ampm}
+                                onChange={(e) => setAmPm(e.target.value)}
+                                style={{
+                                  border: "none",
+                                  padding: "8px 6px",
+                                  fontSize: "14px",
+                                  height: "100%",
+                                  outline: "none",
+                                  backgroundColor: "transparent",
+                                  appearance: "none"
+                                }}
+                              >
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                              </select>
+                            </div>
                           </div>
-                        </div>
                         )}
                       </div>
                     </div>

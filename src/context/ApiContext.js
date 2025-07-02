@@ -3,7 +3,7 @@ import * as apiService from "../services/apiService";
 import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
 import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
-  getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId,createTeam,getManagerTeams,
+  getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId,createTeam,getManagerTeamsById,
   addExecutiveToTeam
 } from "../services/apiService"
 import { format } from "date-fns";
@@ -57,14 +57,14 @@ export const ApiProvider = ({ children }) => {
     }
   };
 
-  const fetchUserData = async () => {
+  const fetchAdminUserData = async () => {
     setUserLoading(true);
     try {
       const response = await apiService.fetchAdminProfile();
-      const { username, email, role } = response; // ✅ NOT `response.data` because `fetchAdminProfile` already returns `response.data`
+      const { username, email, role } = response;
       setUser({ username, email, role });
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("❌ Error fetching Admin user data:", error);
     } finally {
       setUserLoading(false);
     }
@@ -1097,10 +1097,10 @@ const [emailTemplates, setEmailTemplates] = useState([]);
   const [managerTeamsLoading, setManagerTeamsLoading] = useState(false);
   const [managerTeamsError, setManagerTeamsError] = useState(null);
 // ✅ Create a new team
+
 const createManagerTeam = async (teamData) => {
   try {
-    const response = await createTeam(teamData);
-    // Optional: Add new team to state
+    const response = await createTeam(teamData); // teamData includes name and managerId
     setManagerTeams((prev) => [...prev, response]);
     return response;
   } catch (error) {
@@ -1109,33 +1109,65 @@ const createManagerTeam = async (teamData) => {
   }
 };
 
-// ✅ Fetch manager's teams
-const fetchManagerTeams = async () => {
+
+const fetchManagerTeams = async (managerId) => {
+  if (!managerId) {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    managerId = currentUser?.id;
+  }
+
+  if (!managerId) {
+    console.warn("⚠️ No managerId provided or found in storage.");
+    return [];
+  }
+
   setManagerTeamsLoading(true);
   setManagerTeamsError(null);
+
   try {
-    const teams = await getManagerTeams();
-    setManagerTeams(teams);
+    const teams = await getManagerTeamsById(managerId);
+    console.log("✅ Fetched manager teams from API:", teams);
+
+    if (Array.isArray(teams)) {
+      setManagerTeams(teams); // important: update state
+    } else {
+      console.warn("⚠️ Unexpected teams format:", teams);
+      setManagerTeams([]);
+    }
     return teams;
   } catch (error) {
     console.error("❌ Error fetching manager teams:", error);
     setManagerTeamsError(error);
+    setManagerTeams([]);
     return [];
   } finally {
     setManagerTeamsLoading(false);
   }
 };
 
-// ✅ Add executive to a team
-const assignExecutiveToTeam = async ({ teamId, executiveId }) => {
+
+// ✅ Fetch members of a specific team by ID (manager only)
+const fetchTeamMembersById = useCallback(async (teamId) => {
   try {
-    const response = await addExecutiveToTeam({ teamId, executiveId });
+    const members = await apiService.getTeamMembersById(teamId);
+    return members || [];
+  } catch (error) {
+    console.error("❌ Error in fetchTeamMembersById:", error);
+    return [];
+  }
+}, []);
+
+// ✅ Add executive to a team
+const assignExecutiveToTeam = async ({ teamId, executiveId, managerId }) => {
+  try {
+    const response = await addExecutiveToTeam({ teamId, executiveId, managerId });
     return response;
   } catch (error) {
     console.error("❌ Error assigning executive to team:", error);
     throw error;
   }
 };
+
 
 const [teamMembers, setTeamMembers] = useState([]);
 const [teamMembersLoading, setTeamMembersLoading] = useState(false);
@@ -1193,17 +1225,16 @@ const fetchFollowUpsByExecutive = async (execName) => {
   }
 };
 
-// ✅ Get HR profile by ID
-const fetchHrById = async (hrId) => {
+
+const fetchHrUserData = async () => {
   setUserLoading(true);
   try {
-    const hr = await apiService.getHrById(hrId); // uses param correctly
-    const { name, email, role, username, website, jobTitle, alternateEmail, bio } = hr;
-    setUser({ username: name, email, role });
-    return { id: hrId, name, email, role, username, website, jobTitle, alternateEmail, bio };
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const hr = await apiService.getHrById(currentUser.id);
+    const { name, email, role, username } = hr;
+    setUser({ username: name || username, email, role });
   } catch (error) {
-    console.error("❌ Error fetching HR profile:", error);
-    throw error;
+    console.error("❌ Error fetching HR user data:", error);
   } finally {
     setUserLoading(false);
   }
@@ -1224,20 +1255,29 @@ const updateHrProfileById = async (hrId, updateData) => {
 
   // ✅ Effect to fetch initial data
   useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (!currentUser?.role) return;
+  
+    if (currentUser.role === "Admin") {
+      fetchAdminUserData();
+      fetchAdmin();
+    } else if (currentUser.role === "HR") {
+      fetchHrUserData();
+    }
+  
     fetchExecutiveData();
-    fetchUserData();
     fetchOnlineExecutivesData();
-    fetchAdmin();
     fetchLeadSectionVisitsAPI();
     fetchExecutives();
     fetchAllCloseLeadsAPI();
     getExecutiveActivity();
-    fetchFollowUpHistoriesAPI(); 
-    const currentUser = JSON.parse(localStorage.getItem("user"));
+    fetchFollowUpHistoriesAPI();
+  
     if (currentUser?.id) {
       fetchNotifications(currentUser.id);
     }
   }, []);
+  
 
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -1269,7 +1309,6 @@ const updateHrProfileById = async (hrId, updateData) => {
     fetchConvertedByExecutive,
     fetchClosedByExecutive,
     fetchFollowUpsByExecutive,
-    fetchHrById,
     // Follow-ups
     createFollowUp,
     fetchFreshLeadsAPI,
@@ -1310,8 +1349,9 @@ const updateHrProfileById = async (hrId, updateData) => {
         executiveInfo,
         executiveLoading,
         unreadMeetingsCount,
+        fetchTeamMembersById,
         readMeetings,
-        fetchHrById,
+        fetchHrUserData,
        updateHrProfileById,
         markMeetingAsRead,
         unreadMeetingsCount,
@@ -1372,11 +1412,12 @@ fetchAllTeamLeadsAPI,
         revenueChartData,
         revenueChartLoading,
         fetchRevenueChartDataAPI,
+        fetchManagerTeams,
         // ✅ User state
         user,
         setUser,
         userLoading,
-        fetchUserData,
+        fetchAdminUserData,
         getHrProfile,
         // ✅ Online Executives
         onlineExecutives,
@@ -1386,7 +1427,6 @@ fetchAllTeamLeadsAPI,
         managerTeamsLoading,
         managerTeamsError,
         createManagerTeam,
-        fetchManagerTeams,
         assignExecutiveToTeam,
         fetchMeetingsByExecutive,
         // ✅ Admin Profile

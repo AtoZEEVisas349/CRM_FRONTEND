@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/process.css';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes,FaBell } from 'react-icons/fa';
 import { useProcess } from '../context/ProcessAuthContext';
+import { useProcessService } from '../context/ProcessServiceContext';
 
 const ProcessNavbar = () => {
+  const{fetchNotifications}=useProcessService();
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const { logout, user } = useProcess(); // ✅ Get `user` from context
-
+const userRole = localStorage.getItem("userType");
   const handleLogout = async () => {
     try {
       await logout();
@@ -27,6 +29,22 @@ const ProcessNavbar = () => {
       console.error("Logout failed:", error);
     }
   };
+   
+
+useEffect(() => {
+  const getNotifications = async () => {
+    if (userRole === "customer") {
+      try {
+        await fetchNotifications(userRole);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
+  };
+
+  getNotifications();
+}, [userRole]);
+
   const dashboardTitle = user?.type === 'processperson' ? 'Process Dashboard' : 'Client Dashboard';
     const [selectedRole, setSelectedRole] = useState("processperson"); 
  const handleToggle = (role) => {
@@ -43,6 +61,10 @@ const ProcessNavbar = () => {
     } else {
       handleToggle("process");
     }
+  };
+  
+  const handleBellClick = () => {
+    navigate('/process/client/notifications');
   };
   return (
     <nav className="process-navbar">
@@ -80,6 +102,8 @@ const ProcessNavbar = () => {
   </div>
 </div>
     )}
+     {user?.type === 'customer' && (
+    <li><Link to="/customer/client/notifications"><FaBell style={{ color: 'white', fontSize: '20px' }} /></Link></li>    )}
         <li><button className="process-logout-btn" onClick={handleLogout}>Logout</button></li>
       </ul>
 

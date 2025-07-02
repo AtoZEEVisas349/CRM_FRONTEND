@@ -8,6 +8,7 @@ import ClientUpload from "../features/process-client/ClientUpload";
 
 import { useProcess } from "../context/ProcessAuthContext"; // ✅ Make sure to import it
 import "../styles/process.css";
+import ProcessNotification from "../features/process-client/ProcessNotification";
 
 
 const ClientCustomerRoutes = () => {
@@ -22,7 +23,7 @@ const ClientCustomerRoutes = () => {
        <Route path="client/dashboard" element={<ClientDash />} />
         <Route path="client/settings" element={<ClientSetting />} />
         <Route path="client/upload" element={<ClientUpload />} />
-       
+          <Route path="client/notifications" element={<ProcessNotification />} />
       </Routes>
     </>
   );

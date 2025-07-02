@@ -300,6 +300,7 @@ useEffect(() => {
          text: "Please fill out all required fields before creating follow-up.",
        });
      }
+     
   const newFollowUpData= {
     fresh_lead_id: freshLeadId,
       connect_via: contactMethod,
@@ -365,7 +366,7 @@ useEffect(() => {
         interaction_rating: capitalize(interactionRating), 
         follow_up_date: interactionDate, 
         follow_up_time: convertTo24HrFormat(interactionTime), 
-          fresh_lead_id: clientInfo.fresh_lead_id || clientInfo.id,
+          fresh_lead_id: clientInfo.fresh_lead_id,
         };
       await createMeetingApi(meetingPayload);
        await getProcessFollowup(id);

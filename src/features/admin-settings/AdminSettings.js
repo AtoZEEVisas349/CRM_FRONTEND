@@ -11,7 +11,7 @@ const AdminSettings = () => {
   const [showJobTitle, setShowJobTitle] = useState(false);
   const { 
     user,
-    fetchUserData,
+    fetchAdminUserData,
     handleUpdateProfile,
     handleChangePassword,
     isProfileUpdating,
@@ -34,7 +34,7 @@ const AdminSettings = () => {
 
       try {
         showLoader("Loading settings...", "admin");
-        await fetchUserData();
+        await fetchAdminUserData();
       } catch (err) {
         console.error("Failed to load user settings:", err);
       } finally {
@@ -47,7 +47,7 @@ const AdminSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [fetchUserData]);
+  }, [fetchAdminUserData]);
 
   useEffect(() => {
     if (user) {

@@ -8,7 +8,7 @@ import AdminSpinner from "../spinner/AdminSpinner";
 
 const HrSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
-  const { fetchHrById, updateHrProfileById } = useApi();
+  const { fetchHrUserData, updateHrProfileById } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const hasLoaded = useRef(false);
 
@@ -43,7 +43,7 @@ const HrSettings = () => {
         const currentUser = JSON.parse(localStorage.getItem("user"));
         if (!currentUser?.id) throw new Error("No HR ID found");
 
-        const hrData = await fetchHrById(currentUser.id);
+        const hrData = await fetchHrUserData(currentUser.id);
         setHrProfile({
           id: hrData.id,
           name: hrData.name || "",
@@ -67,7 +67,7 @@ const HrSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [fetchHrById]);
+  }, [fetchHrUserData]);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();

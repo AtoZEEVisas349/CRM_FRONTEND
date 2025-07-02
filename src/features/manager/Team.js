@@ -26,7 +26,8 @@ const Team = () => {
     managerTeams,
     fetchManagerTeams,
     fetchAllTeamMembersAPI,
-    fetchOnlineExecutivesData
+    fetchOnlineExecutivesData,
+    fetchTeamMembersById
   } = useApi();
 
   const isSidebarExpanded =
@@ -58,12 +59,14 @@ const Team = () => {
   
     for (let team of managerTeams) {
       newLoading[team.id] = true;
+      console.log('Calling fetchTeamMembersById for team:', team.id);
+
       try {
-        const members = await fetchAllTeamMembersAPI(team.id);
+        const members = await fetchTeamMembersById(team.id); // ✅ now POST-based
         const mappedMembers = (members || []).map((m) => ({
           id: m.id,
           username: m.username,
-          email: m.email,
+          email: m.email, 
           role: 'Executive',
           avatar: m.profile_picture || null,
           status: onlineData.some(e => e.id === m.id) ? 'online' : 'offline'
@@ -75,30 +78,41 @@ const Team = () => {
       }
       newLoading[team.id] = false;
     }
-  
+    
     setTeamMembersById(newMembersById);
     setTeamMembersLoading(newLoading);
   };
   
 
   useEffect(() => {
-    const loadTeams = async () => {
-      showLoader('Loading teams...', 'admin');
-      await fetchManagerTeams();
-      hideLoader();
-    };
-    loadTeams();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (managerTeams.length > 0) {
-        await fetchAllTeamMembers();
+    const loadTeamsAndMembers = async () => {
+      showLoader("Loading teams...", "admin");
+  
+      try {
+        await fetchManagerTeams(); // sets managerTeams
+      } catch (error) {
+        console.error("Error fetching manager teams:", error);
+      } finally {
+        hideLoader();
       }
     };
-    fetchData();
+  
+    loadTeamsAndMembers();
+  }, []);
+  
+  useEffect(() => {
+    if (managerTeams.length === 0) return;
+  
+    const loadMembers = async () => {
+      await fetchAllTeamMembers();
+    };
+  
+    loadMembers();
+  }, [managerTeams]); // ✅ runs when managerTeams is actually updated
+  useEffect(() => {
+    console.log("🟡 managerTeams updated:", managerTeams);
   }, [managerTeams]);
+  
   
 
   const getStatusColor = (status) => {

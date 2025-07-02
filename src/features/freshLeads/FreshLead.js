@@ -243,7 +243,7 @@ function FreshLead() {
       // fallback to empty array
     }
 
-    navigate(`/executive/clients/${encodeURIComponent(lead.name)}`, {
+    navigate(`/executive/clients/${encodeURIComponent(clientData.id)}`, {
       state: {
         client: clientData,
         createFollowUp: true,

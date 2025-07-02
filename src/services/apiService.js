@@ -832,23 +832,38 @@ export const createTeam = async (teamData) => {
   }
 };
 
-// ✅ Fetch all teams for the logged-in Manager
-export const getManagerTeams = async () => {
+
+export const getManagerTeamsById = async (managerId) => {
   try {
-    const response = await apiService.get("/manager/teams");
+    const response = await apiService.post("/manager/get-teams", {
+      managerId,
+    });
     return response.data.teams || [];
   } catch (error) {
     console.error("❌ Error fetching manager's teams:", error.response?.data || error.message);
     throw error;
   }
 };
+// ✅ Fetch all team members for a given team ID (Manager only)
+export const getTeamMembersById = async (teamId) => {
+  try {
+    const response = await apiService.post("/manager/get-team", {
+      team_id: teamId,
+    });
+    return response.data; // array of team members
+  } catch (error) {
+    console.error("❌ Error fetching team members:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 // ✅ Add an executive to a team (Manager only)
-export const addExecutiveToTeam = async ({ teamId, executiveId }) => {
+export const addExecutiveToTeam = async ({ teamId, executiveId, managerId }) => {
   try {
     const response = await apiService.post("/manager/addExecutive", {
       team_id: teamId,
       user_id: executiveId,
+      managerId: managerId,
     });
     return response.data;
   } catch (error) {
@@ -856,6 +871,8 @@ export const addExecutiveToTeam = async ({ teamId, executiveId }) => {
     throw error;
   }
 };
+
+
 export const getAllTeamMembers = async (team_id) => {
   try {
     const response = await apiService.post("/manager/get-team", { team_id });
