@@ -24,20 +24,16 @@ const MasterDashboard = () => {
   // ✅ Toggle ON = resumeCompany | Toggle OFF = pauseCompany
   const handleToggleStatus = async (company, isChecked) => {
     try {
-      const currentStatus = company.status?.toLowerCase();
-  
-      if (isChecked && currentStatus === "paused") {
-        await resumeCompany(company.id); // Resume only if it’s currently paused
-      } else if (!isChecked && currentStatus === "active") {
-        await pauseCompany(company.id); // Pause only if it’s currently active
+      if (isChecked) {
+        await resumeCompany(company.id);  // ✅ Toggled ON
+      } else {
+        await pauseCompany(company.id);   // ❌ Toggled OFF
       }
-  
       await fetchCompanies();
     } catch (err) {
       alert(err?.error || "Failed to update company status");
     }
   };
-  
 
   // ⏳ Date input state
   const handleExpiryChange = (companyId, dateStr) => {
