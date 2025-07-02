@@ -139,7 +139,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
     const leadData = {
       ...client.freshLead,
       fresh_lead_id: freshLeadId,
-      followUpId: client.id,
+      id: client.id,
     };
     navigate(`/process/clients/details/${encodeURIComponent(freshLeadId)}/${freshLeadId}`, {
       state: { client: leadData, createFollowUp: false, from: "followup" },
@@ -254,7 +254,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                         >
                           {filter === "All Follow Ups"
                             ? "Create"
-                            : (client.follow_up_type || "").toLowerCase()}
+                            : (client.processfollowuphistories?.[0]?.follow_up_type  || "").toLowerCase()}
                           <FontAwesomeIcon icon={faPenToSquare} className="icon" />
                         </button>
                       </td>
