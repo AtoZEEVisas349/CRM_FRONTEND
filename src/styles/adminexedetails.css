@@ -1269,3 +1269,250 @@ input:checked + .sliderexe:before {
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(76, 175, 80, 0.5); }
   50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
 }
+/* Drag and Drop Styles */
+.drag-drop-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.manager-teams-section {
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 2px dashed #4f52bb;
+  transition: all 0.3s ease;
+}
+
+.manager-teams-section h3 {
+  color: #4f52bb;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.team-drop-zone {
+  background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+  border: 2px dashed #667eea;
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 150px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.team-drop-zone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 12px 12px 0 0;
+}
+
+.team-drop-zone.drag-over {
+  border-color: #4caf50;
+  background: linear-gradient(135deg, #e8f5e8, #f0fff0);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.team-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.team-count {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.team-members {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-member-item {
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  font-size: 14px;
+  color: #2c3e50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.team-member-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.empty-team-message {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+}
+
+/* Draggable Executive Cards */
+.draggable-executive {
+  cursor: grab;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.draggable-executive:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(79, 82, 187, 0.2);
+}
+
+.draggable-executive.dragging {
+  opacity: 0.6;
+  transform: rotate(5deg) scale(1.05);
+  cursor: grabbing;
+  z-index: 1000;
+  box-shadow: 0 12px 32px rgba(79, 82, 187, 0.4);
+}
+
+.draggable-executive.dragging .text-content {
+  pointer-events: none;
+}
+
+/* Drag indicator */
+.drag-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #667eea;
+  font-size: 18px;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.draggable-executive:hover .drag-indicator {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Drop zone states */
+.drop-zone-active {
+  border-color: #4caf50 !important;
+  background: linear-gradient(135deg, #e8f5e8, #f0fff0) !important;
+}
+
+.drop-zone-valid {
+  border-color: #2196f3 !important;
+  background: linear-gradient(135deg, #e3f2fd, #f3e5f5) !important;
+}
+
+/* Drag ghost/preview */
+.drag-preview {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1001;
+  opacity: 0.8;
+  transform: rotate(-5deg);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+}
+
+/* Success animation */
+@keyframes dropSuccess {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); background: linear-gradient(135deg, #4caf50, #66bb6a); }
+  100% { transform: scale(1); }
+}
+
+.drop-success {
+  animation: dropSuccess 0.5s ease;
+}
+
+/* Responsive adjustments for drag and drop */
+@media screen and (max-width: 767px) {
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .team-drop-zone {
+    min-height: 120px;
+    padding: 15px;
+  }
+  
+  .drag-indicator {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .teams-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Dark mode support for drag and drop */
+[data-theme="dark"] .manager-teams-section {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-color: #667eea;
+}
+
+[data-theme="dark"] .team-drop-zone {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+  border-color: #667eea;
+}
+
+[data-theme="dark"] .team-drop-zone.drag-over {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+[data-theme="dark"] .team-name {
+  color: #ecf0f1;
+}
+
+[data-theme="dark"] .team-member-item {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: #ecf0f1;
+  border-left-color: #667eea;
+}
+
+[data-theme="dark"] .empty-team-message {
+  color: #bdc3c7;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="dark"] .drag-indicator {
+  color: #667eea;
+}

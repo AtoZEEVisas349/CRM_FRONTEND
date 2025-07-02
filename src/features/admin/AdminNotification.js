@@ -113,7 +113,7 @@ function AdminNotification() {
 
     return (
       <>
-        Executive <strong>{executiveName}</strong> has copied <strong>{cleanedText}</strong> at {time}
+         {message}
       </>
     );
   };

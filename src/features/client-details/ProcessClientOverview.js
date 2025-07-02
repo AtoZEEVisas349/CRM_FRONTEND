@@ -459,10 +459,10 @@ const handleSubmit = async () => {
   }
 
   try {
-    await createReminder(clientInfo.id, stageNumber, latest); // ✅ Send latest comment
+    await createReminder(client.id, stageNumber, latest); // ✅ Send latest comment
 
    
-    const result = await getComments(clientInfo.id, stageNumber);
+    const result = await getComments(client.id, stageNumber);
     const comments = result.comments || [];
 
     if (comments.length) {
@@ -511,10 +511,10 @@ console.log(clientInfo,"id");
             </div>
 
             <div className="follow-up-column">
-              <div className="last-follow-up">
+              <div className="follow-up-box">
                 <h3>Last Follow-up</h3>
                <div className="table-body">
- <div className="followup-list">
+ <div className="last-follow-up">
  {Array.isArray(historyFollowup) && historyFollowup.length > 0 ? (
   historyFollowup.map((client, index) => (
     <div key={index} className="followup-item">

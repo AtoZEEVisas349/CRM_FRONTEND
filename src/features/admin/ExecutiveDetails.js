@@ -32,8 +32,14 @@ const ExecutiveDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [selectedManagers, setSelectedManagers] = useState([]);
+  const [managers, setManagers] = useState([]);
   const [isTeamLoading, setIsTeamLoading] = useState(false);
   const [teamAssigning, setTeamAssigning] = useState(false);
+
+  // Drag and Drop States
+  const [draggedExecutive, setDraggedExecutive] = useState(null);
+  const [dragOverTeam, setDragOverTeam] = useState(null);
+  const [teamMembers, setTeamMembers] = useState({});
 
   // 1️⃣ Fetch people on filter change
   useEffect(() => {
@@ -59,11 +65,32 @@ const ExecutiveDetails = () => {
           city: person.city || "N/A",
           canLogin: person.can_login,
           teamName: person.teamName || person.team?.name || null,
+          teamId: person.team_id || null,
         }));
 
         setPeople(mapped);
         setSelectedMembers([]);
         setSelectedManagers([]);
+
+        // Store managers separately for team creation
+        if (filter === "Manager") {
+          setManagers(mapped);
+        }
+
+        // Group team members
+        if (filter === "All") {
+          const teamMembersMap = {};
+          mapped.forEach(person => {
+            if (person.teamId) {
+              if (!teamMembersMap[person.teamId]) {
+                teamMembersMap[person.teamId] = [];
+              }
+              teamMembersMap[person.teamId].push(person);
+            }
+          });
+          setTeamMembers(teamMembersMap);
+        }
+
       } catch (err) {
         console.error("❌ Error fetching people:", err);
         setPeople([]);
@@ -75,17 +102,132 @@ const ExecutiveDetails = () => {
     fetchData();
   }, [filter]);
 
-  // 2️⃣ Auto-fetch teams when executives selected
+  // 2️⃣ Auto-fetch teams when executives selected or managers available
   useEffect(() => {
-    const loadTeamsIfExecutivesSelected = async () => {
-      if (filter === "All" && selectedMembers.length > 0 && managerTeams.length === 0) {
+    const loadTeamsIfNeeded = async () => {
+      if (filter === "All") {
         setIsTeamLoading(true);
-        await fetchManagerTeams(); // uses user.id from localStorage
+        await fetchManagerTeams();
         setIsTeamLoading(false);
       }
     };
-    loadTeamsIfExecutivesSelected();
-  }, [selectedMembers]);
+    loadTeamsIfNeeded();
+  }, [filter]);
+  
+  
+
+  // Drag and Drop Handlers
+  const handleDragStart = (e, executive) => {
+    // Only allow dragging executives (filter === "All")
+    if (filter !== "All") return;
+    
+    setDraggedExecutive(executive);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", e.target.outerHTML);
+    
+    // Add dragging class after a small delay to avoid flickering
+    setTimeout(() => {
+      e.target.classList.add("dragging");
+    }, 0);
+  };
+
+  const handleDragEnd = (e) => {
+    e.target.classList.remove("dragging");
+    setDraggedExecutive(null);
+    setDragOverTeam(null);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDragEnter = (e, teamId) => {
+    e.preventDefault();
+    setDragOverTeam(teamId);
+  };
+
+  const handleDragLeave = (e) => {
+    // Only reset if we're actually leaving the drop zone
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setDragOverTeam(null);
+    }
+  };
+
+  const handleDrop = async (e, teamId) => {
+    e.preventDefault();
+    setDragOverTeam(null);
+
+    if (!draggedExecutive) return;
+
+    // Check if executive is already in this team
+    if (draggedExecutive.teamId === teamId) {
+      toast.info(`${draggedExecutive.name} is already in this team.`);
+      return;
+    }
+
+    try {
+      setTeamAssigning(true);
+      
+      await assignExecutiveToTeam({
+        teamId: Number(teamId),
+        executiveId: Number(draggedExecutive.id),
+        managerId: Number(user?.id),
+      });
+
+      // Update the executive's team assignment
+      setPeople(prevPeople =>
+        prevPeople.map(person => {
+          if (person.id === draggedExecutive.id) {
+            const assignedTeam = managerTeams.find(team => team.id === teamId);
+            return {
+              ...person,
+              teamName: assignedTeam ? assignedTeam.name : `Team ${teamId}`,
+              teamId: teamId,
+            };
+          }
+          return person;
+        })
+      );
+
+      // Update team members mapping
+      setTeamMembers(prev => {
+        const updated = { ...prev };
+        
+        // Remove from old team
+        if (draggedExecutive.teamId) {
+          updated[draggedExecutive.teamId] = updated[draggedExecutive.teamId]?.filter(
+            member => member.id !== draggedExecutive.id
+          ) || [];
+        }
+        
+        // Add to new team
+        if (!updated[teamId]) updated[teamId] = [];
+        const assignedTeam = managerTeams.find(team => team.id === teamId);
+        updated[teamId].push({
+          ...draggedExecutive,
+          teamName: assignedTeam ? assignedTeam.name : `Team ${teamId}`,
+          teamId: teamId,
+        });
+        
+        return updated;
+      });
+
+      // Add drop success animation
+      const dropZone = e.currentTarget;
+      dropZone.classList.add("drop-success");
+      setTimeout(() => dropZone.classList.remove("drop-success"), 500);
+
+      toast.success(`Successfully assigned ${draggedExecutive.name} to the team!`);
+      
+    } catch (error) {
+      toast.error("❌ Failed to assign executive to team.");
+      console.error(error);
+    } finally {
+      setTeamAssigning(false);
+      setDraggedExecutive(null);
+    }
+  };
 
   const handleMemberSelect = (id) => {
     setSelectedMembers((prev) =>
@@ -105,7 +247,7 @@ const ExecutiveDetails = () => {
       return;
     }
   
-    setTeamAssigning(true); // start loading
+    setTeamAssigning(true);
     try {
       const responses = await Promise.all(
         selectedMembers.map((executiveId) =>
@@ -116,7 +258,7 @@ const ExecutiveDetails = () => {
           })
         )
       );
-  
+
       setPeople((prevPeople) =>
         prevPeople.map((person) => {
           const updated = responses.find((res) => res.user?.id === person.id);
@@ -125,12 +267,13 @@ const ExecutiveDetails = () => {
             return {
               ...person,
               teamName: assignedTeam ? assignedTeam.name : `Team ${updated.user.team_id}`,
+              teamId: updated.user.team_id,
             };
           }
           return person;
         })
       );
-  
+
       toast.success(`Assigned ${selectedMembers.length} member(s) to the selected team!`);
       setSelectedMembers([]);
       setSelectedTeam("");
@@ -138,10 +281,9 @@ const ExecutiveDetails = () => {
       toast.error("❌ Failed to assign members to the team.");
       console.error(error);
     } finally {
-      setTeamAssigning(false); // stop loading
+      setTeamAssigning(false);
     }
   };
-  
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
@@ -162,11 +304,15 @@ const ExecutiveDetails = () => {
       toast.success(`Team "${newTeamName}" created successfully!`);
       setNewTeamName("");
       setShowModal(false);
+      setSelectedManagers([]);
     } catch (err) {
       toast.error("Error creating team.");
       console.error(err);
     }
   };
+
+  // Get unassigned executives (those without a team)
+  const unassignedExecutives = people.filter(person => !person.teamId);
 
   return (
     <div style={{ display: "flex" }}>
@@ -194,7 +340,7 @@ const ExecutiveDetails = () => {
           )}
         </div>
 
-        {/* Team Assignment Bar */}
+        {/* Traditional Team Assignment Bar (fallback) */}
         {isAdmin && selectedMembers.length > 0 && (
           <div className="team-assignment-bar animated-slide">
             <select
@@ -214,15 +360,53 @@ const ExecutiveDetails = () => {
               )}
             </select>
             <button
-  className="styled-button"
-  onClick={handleAssignTeam}
-  disabled={teamAssigning}
->
-  {teamAssigning ? "Assigning..." : "Assign Selected Members"}
-</button>
-
+              className="styled-button"
+              onClick={handleAssignTeam}
+              disabled={teamAssigning}
+            >
+              {teamAssigning ? "Assigning..." : "Assign Selected Members"}
+            </button>
           </div>
         )}
+
+{isAdmin && filter === "All" && managerTeams.length > 0 && (
+  <div className="drag-drop-container">
+    <div className="manager-teams-section">
+      <h3>🧩 Drag executives into any team box to assign them</h3>
+      <div className="teams-grid">
+        {managerTeams.map((team) => (
+          <div
+            key={team.id}
+            className={`team-drop-zone ${dragOverTeam === team.id ? 'drag-over' : ''}`}
+            onDragOver={handleDragOver}
+            onDragEnter={(e) => handleDragEnter(e, team.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, team.id)}
+          >
+            <div className="team-header">
+              <strong>{team.name}</strong>
+              <div className="team-subtitle">Manager: {team.managerName || 'Unknown'}</div>
+            </div>
+            <div className="team-members">
+              {teamMembers[team.id]?.length > 0 ? (
+                teamMembers[team.id].map((member) => (
+                  <div key={member.id} className="team-member-item">
+                    👤 {member.name} - {member.profession}
+                  </div>
+                ))
+              ) : (
+                <div className="empty-team-message">
+                  Drop executives here
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
 
         {/* Display Cards or Table */}
         {viewMode === "grid" ? (
@@ -234,9 +418,17 @@ const ExecutiveDetails = () => {
                   selectedMembers.includes(person.id) || selectedManagers.includes(person.id)
                     ? "selected-card"
                     : ""
-                }`}
+                } ${filter === "All" && !person.teamId ? "draggable-executive" : ""}`}
                 style={{ display: "flex", alignItems: "flex-start" }}
+                draggable={filter === "All" && !person.teamId}
+                onDragStart={(e) => handleDragStart(e, person)}
+                onDragEnd={handleDragEnd}
               >
+                {filter === "All" && !person.teamId && (
+                  <div className="drag-indicator" title="Drag to assign to team">
+                    ↔️
+                  </div>
+                )}
                 {isAdmin && (filter === "All" || filter === "Manager") && (
                   <input
                     type="checkbox"
@@ -256,8 +448,8 @@ const ExecutiveDetails = () => {
                 )}
                 <div className="text-content">
                   {person.teamName && (
-                    <div className="team-name-banner">
-                      <strong>Team:</strong> {person.teamName}
+                    <div className="team-assigned-info">
+                      Team: {person.teamName}
                     </div>
                   )}
                   <img src={person.image} alt={person.name} className="avatar" />
@@ -272,50 +464,62 @@ const ExecutiveDetails = () => {
             ))}
           </div>
         ) : (
-          <table className="people-table">
-            <thead>
-              <tr>
-                {isAdmin && (filter === "All" || filter === "Manager") && <th>Select</th>}
-                <th>Photo</th>
-                <th>Name</th>
-                <th>UserID</th>
-                <th>Profession</th>
-                <th>Technology</th>
-                <th>Email ID</th>
-                <th>City</th>
-              </tr>
-            </thead>
-            <tbody>
-              {people.map((person) => (
-                <tr key={person.id}>
-                  <td>
-                    {isAdmin && (filter === "All" || filter === "Manager") && (
-                      <input
-                        type="checkbox"
-                        checked={
-                          filter === "Manager"
-                            ? selectedManagers.includes(person.id)
-                            : selectedMembers.includes(person.id)
-                        }
-                        onChange={() =>
-                          filter === "Manager"
-                            ? handleManagerSelect(person.id)
-                            : handleMemberSelect(person.id)
-                        }
-                      />
-                    )}
-                  </td>
-                  <td><img src={person.image} alt={person.name} className="avatar-small" /></td>
-                  <td>{person.name}</td>
-                  <td>{person.id}</td>
-                  <td>{person.profession}</td>
-                  <td>{person.technology}</td>
-                  <td>{person.emailId}</td>
-                  <td>{person.city}</td>
+          <div className="table-responsive-wrapper">
+            <table className="people-table">
+              <thead>
+                <tr>
+                  {isAdmin && (filter === "All" || filter === "Manager") && <th>Select</th>}
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>UserID</th>
+                  <th>Profession</th>
+                  <th>Technology</th>
+                  <th>Email ID</th>
+                  <th>City</th>
+                  {filter === "All" && <th>Team</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {people.map((person) => (
+                  <tr key={person.id}>
+                    {isAdmin && (filter === "All" || filter === "Manager") && (
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={
+                            filter === "Manager"
+                              ? selectedManagers.includes(person.id)
+                              : selectedMembers.includes(person.id)
+                          }
+                          onChange={() =>
+                            filter === "Manager"
+                              ? handleManagerSelect(person.id)
+                              : handleMemberSelect(person.id)
+                          }
+                        />
+                      </td>
+                    )}
+                    <td><img src={person.image} alt={person.name} className="avatar-small" /></td>
+                    <td>{person.name}</td>
+                    <td>{person.id}</td>
+                    <td>{person.profession}</td>
+                    <td>{person.technology}</td>
+                    <td>{person.emailId}</td>
+                    <td>{person.city}</td>
+                    {filter === "All" && (
+                      <td>
+                        {person.teamName ? (
+                          <span className="team-assigned-info">{person.teamName}</span>
+                        ) : (
+                          <span style={{ color: '#6c757d', fontStyle: 'italic' }}>Unassigned</span>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -323,26 +527,26 @@ const ExecutiveDetails = () => {
       {showModal && (
         <div className="admin-modal-overlay">
           <div className="admin-modal">
-            <h2 className="modal-header">
+            <div className="modal-header">
               Add New Team
               <button className="modal-close-btn" onClick={() => setShowModal(false)}>
                 &times;
               </button>
-            </h2>
+            </div>
             <form onSubmit={handleCreateTeam}>
               <label>Team Name</label>
               <input
                 type="text"
-                placeholder="Team Name"
+                placeholder="Enter team name"
                 value={newTeamName}
                 onChange={(e) => setNewTeamName(e.target.value)}
                 required
               />
-              <div className="admin-modal-actions right-align">
+              <div className="admin-modal-actions">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-close">
-                  Close
+                  Cancel
                 </button>
-                <button type="submit" className="btn-save">Save Changes</button>
+                <button type="submit" className="btn-save">Create Team</button>
               </div>
             </form>
           </div>

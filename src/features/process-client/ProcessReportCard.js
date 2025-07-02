@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaUserPlus, FaClipboardCheck, FaUsers } from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
+import { isSameDay } from "../../utils/helpers";
 import { useProcessService } from "../../context/ProcessServiceContext";
 const ProcessReportCard = () => {
   
@@ -9,6 +10,7 @@ const ProcessReportCard = () => {
     customers,
     setCustomers,
     fetchCustomers,
+  getProcessPersonMeetings
   } = useProcessService();
   const navigate = useNavigate();
   const [freshLeadCount,setFreshLeadCount]=useState();
@@ -28,12 +30,56 @@ const ProcessReportCard = () => {
         console.error("❌ Error fetching clients:", err);
       });
   }, []);
+  const[meetingData,setMeetingData]=useState();
+const loadMeetings = async () => {
+
+  try {
+    const response = await getProcessPersonMeetings();
+
+    // Filter only meetings where status is "meeting"
+    const allMeetings = response.filter(
+      (m) => m?.freshLead?.CustomerStatus?.status === "meeting"
+    );
+
+    // Get unique meetings based on fresh_lead_id
+    const uniqueMeetingsMap = new Map();
+    allMeetings.forEach((meeting) => {
+      const leadId = meeting.fresh_lead_id;
+      if (!uniqueMeetingsMap.has(leadId)) {
+        uniqueMeetingsMap.set(leadId, meeting);
+      }
+    });
+
+    const uniqueMeetings = Array.from(uniqueMeetingsMap.values());
+
+    // Get today's date
+    const today = new Date();
+
+    // Count how many meetings are scheduled for today
+    const todayCount = uniqueMeetings.filter((m) =>
+      isSameDay(new Date(m.startTime), today)
+    ).length;
+
+    // Set that count
+    setMeetingData(todayCount); // or rename this state to `setTodayMeetingCount` for clarity
+  } catch (err) {
+    console.error("Failed to fetch process meetings", err);
+  } finally {
+   
+  }
+};
+
+     useEffect(() => {
+        loadMeetings();
+      }, []);
+     
   const freshLeadCountData= customers
   .filter((client) => client.status === "pending")
    const followupCountData= customers
   .filter((client) => client.status === "under_review")
    const finalStageData= customers
   .filter((client) => client.status === "approved")
+ 
 
   const cards = [
     {
@@ -53,7 +99,7 @@ const ProcessReportCard = () => {
   
     {
       title: "Scheduled Meetings",
-      value: <div>{0}</div>,
+      value: <div>{meetingData||0}</div>,
       route: "/process/schedule",
       change: "-5.38%",
       icon: <FaUsers />,

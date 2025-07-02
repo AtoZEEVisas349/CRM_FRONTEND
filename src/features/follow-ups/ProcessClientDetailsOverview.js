@@ -21,7 +21,16 @@ const ProcessClientDetailsOverview = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
-  const {createFinalStage,getProcessFollowupHistory,processCreateFollowUp,createMeetingApi,createRejected,getProcessHistory,getProcessFollowup}=useProcessService();
+  const {createFinalStage,
+    getProcessFollowupHistory,
+    processCreateFollowUp,
+    createMeetingApi,
+    createRejected,
+    getProcessFollowup,
+    getComments,
+    createStages,
+    getProcessHistory,
+    createReminder}=useProcessService();
   const {
     createConvertedClientAPI,
     createCloseLeadAPI,
@@ -53,6 +62,10 @@ const ProcessClientDetailsOverview = () => {
   const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
   const [ampm, setAmPm] = useState(ampmValue);
   const [isTimeEditable, setIsTimeEditable] = useState(false);
+     const [selectedStage, setSelectedStage] = useState("");
+     const [commentText, setCommentText] = useState("");
+       const [stagesData, setStagesData] = useState({});
+       const [stageTimestamp, setStageTimestamp] = useState("");
 
   // Add time conversion functions
   const convertTo24Hour = (time12h, amPm) => {
@@ -543,6 +556,101 @@ useEffect(() => {
       }
     }, [id]);
 console.log(clientInfo,"id")
+ const [latestComment, setLatestComment] = useState({});
+  const [history, setHistory] = useState([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newComment, setNewComment] = useState("");
+
+  // Load latest comment when stage is selected
+  const handleStageChange = async (e) => {
+    const stage = e.target.value;
+    setSelectedStage(stage);
+
+    const stageNumber = Number(stage.split(" ")[1]);
+    try {
+      const result = await getComments(clientInfo.id, stageNumber);
+      const comments = result.comments || [];
+
+      if (comments.length) {
+        setLatestComment({
+          [stage]: comments[comments.length - 1]
+        });
+        setHistory(comments);
+      } else {
+        setLatestComment({
+          [stage]: { comment: "-", timestamp: "" }
+        });
+        setHistory([]);
+      }
+    } catch (err) {
+      console.error("Failed to load comments", err.message);
+    }
+  };
+
+  // Open view history modal
+  const handleViewHistory = async () => {
+    setShowHistoryModal(true);
+  };
+
+  // Submit new comment
+  const handleAddCommentSubmit = async () => {
+    const stageNumber = Number(selectedStage.split(" ")[1]);
+    try {
+      await createStages(client.id, stageNumber, newComment);
+
+      // Refresh latest comment
+      const result = await getComments(client.id, stageNumber);
+      const comments = result.comments || [];
+
+      if (comments.length) {
+        setLatestComment({
+          [selectedStage]: comments[comments.length - 1]
+        });
+        setHistory(comments);
+      }
+
+      setNewComment("");
+      setShowAddModal(false);
+    } catch (err) {
+      console.error("Failed to add comment", err.message);
+    }
+  };
+const handleSubmit = async () => {
+  const stageNumber = Number(selectedStage.split(" ")[1]);
+
+  const latest = latestComment[selectedStage]?.comment;
+
+  if (!latest) {
+    console.warn("No comment found to send as reminder.");
+    return;
+  }
+
+  try {
+    await createReminder(client.id, stageNumber, latest); // ✅ Send latest comment
+
+   
+    const result = await getComments(client.id, stageNumber);
+    const comments = result.comments || [];
+
+    if (comments.length) {
+      const sorted = [...comments].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      setLatestComment((prev) => ({
+        ...prev,
+        [selectedStage]: sorted[0],
+      }));
+    }
+
+    setNewComment("");
+
+  } catch (err) {
+    console.error("Failed to add reminder:", err.message);
+  }
+};
+console.log(clientInfo,"id");
   return (
     <>
     <div className="client-overview-wrapper">
@@ -687,7 +795,108 @@ console.log(clientInfo,"id")
           </div>
         </div>
       </div>
+ <h4 style={{marginTop:"20px"}}>Add Comments based on Stages</h4>
+   <div className="stage-comments-container">
+      <div className="stage-select-container">
+        <select
+          value={selectedStage}
+          onChange={handleStageChange}
+          className="stage-select"
+        >
+          <option value="" disabled>Select stages</option>
+          {Array.from({ length: 15 }, (_, i) => (
+            <option key={i + 1} value={`Stage ${i + 1}`}>
+              Stage {i + 1}
+            </option>
+          ))}
+        </select>
+       <div className="reminder-tooltip-wrapper">
+  <button onClick={handleSubmit} className="reminder-button">⏰</button>
+  <span className="reminder-tooltip">Send the latest comment as a reminder</span>
+</div>
 
+      </div>
+
+      {selectedStage && (
+        <table className="stage-comments-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Comment</th>
+              <th>View History</th>
+              <th>Add Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{selectedStage}</td>
+              <td>{latestComment[selectedStage]?.comment || "-"}</td>
+              <td>
+                <button
+                  className="action-btn"
+                  onClick={handleViewHistory}
+                  disabled={!history.length}
+                >
+                  View History
+                </button>
+              </td>
+              <td>
+                <button
+                  className="action-btn"
+                  onClick={() => setShowAddModal(true)}
+                >
+                  Add Comment
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+
+      {/* History Modal */}
+      {showHistoryModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h4>History for {selectedStage}</h4>
+            <button className="modal-close-btn" onClick={() => setShowHistoryModal(false)}>×</button>
+            {history.length ? (
+              <ul className="history-list">
+                {history.map((c, idx) => (
+                  <li key={idx}>
+                    <strong>{new Date(c.timestamp).toLocaleString()}:</strong> {c.comment}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No history available</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Add Comment Modal */}
+      {showAddModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h4>Add Comment for {selectedStage}</h4>
+            <button className="modal-close-btn" onClick={() => setShowAddModal(false)}>×</button>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Enter your comment"
+              className="comment-textarea"
+            />
+            <button
+              className="submit-btn"
+              onClick={handleAddCommentSubmit}
+              disabled={!newComment.trim()}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
       {/* Follow-Up Detail */}
       <div className="followup-detail-theme">
         <div className="followup-detail-container">
