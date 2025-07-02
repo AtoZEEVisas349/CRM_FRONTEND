@@ -2,6 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   createCompany,
   getCompaniesForMaster,
+  pauseCompanyById,
+  resumeCompanyById,
+  setCompanyExpiry
 } from "../services/companyService";
 
 // 1. Create Context
@@ -58,7 +61,44 @@ export const CompanyProvider = ({ children }) => {
       setLoading(false);
     }
   };
+ // -------------------------
+  // Set Expiry Date for a Company
+  // -------------------------
+  const updateCompanyExpiry = async (companyId, expiryDate) => {
+    try {
+      const res = await setCompanyExpiry(companyId, expiryDate);
+      await fetchCompanies(); // refresh list
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  };
 
+  // -------------------------
+  // Pause a Company
+  // -------------------------
+  const pauseCompany = async (companyId) => {
+    try {
+      const res = await pauseCompanyById(companyId);
+      await fetchCompanies();
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  // -------------------------
+  // Resume a Company
+  // -------------------------
+  const resumeCompany = async (companyId) => {
+    try {
+      const res = await resumeCompanyById(companyId);
+      await fetchCompanies();
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  };
   // -------------------------
   // Provider Return
   // -------------------------
@@ -70,6 +110,9 @@ export const CompanyProvider = ({ children }) => {
         error,
         fetchCompanies,
         addCompany,
+        updateCompanyExpiry,
+        pauseCompany,
+        resumeCompany,
       }}
     >
       {children}

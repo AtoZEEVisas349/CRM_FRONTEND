@@ -23,9 +23,7 @@ companyApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/**
- * Create a new company
- */
+
 export const createCompany = async (data) => {
   try {
     const response = await companyApi.post("/company/create-company", data);
@@ -35,14 +33,43 @@ export const createCompany = async (data) => {
   }
 };
 
-/**
- * Get all companies for master user
- */
+
 export const getCompaniesForMaster = async () => {
   try {
     const response = await companyApi.get("/company/master/companies");
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: "Failed to fetch companies" };
+  }
+};
+
+export const setCompanyExpiry = async (companyId, expiryDate) => {
+  try {
+    const response = await companyApi.post(`/company/companies/${companyId}/expiry`, {
+      expiryDate,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: "Failed to set expiry date" };
+  }
+};
+
+
+export const pauseCompanyById = async (companyId) => {
+  try {
+    const response = await companyApi.post(`/company/companies/${companyId}/pause`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: "Failed to pause company" };
+  }
+};
+
+
+export const resumeCompanyById = async (companyId) => {
+  try {
+    const response = await companyApi.post(`/company/companies/${companyId}/resume`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: "Failed to resume company" };
   }
 };
