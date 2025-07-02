@@ -194,7 +194,7 @@ const ExecutiveActivity = () => {
           <div className="time-display">
             <div className="time-block">
               <span className="time-label">Working Time:</span>
-              <span className="time-value">{timer}</span>
+              <span className="time-value">{formatTime(activityData.workTime)}</span>
             </div>
 
             <div className="daily-summary">

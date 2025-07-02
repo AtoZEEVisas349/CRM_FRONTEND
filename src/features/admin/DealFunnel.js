@@ -53,7 +53,10 @@ const DealFunnel = ({ executiveName }) => {
         percent: totalLeads ? ((item.value / totalLeads) * 100).toFixed(1) + "%" : "N/A",
       }));
 
-      setData(enriched);
+      // Sort by value in descending order (highest to lowest)
+      const sortedData = enriched.sort((a, b) => b.value - a.value);
+
+      setData(sortedData);
     } catch (err) {
       console.error("Error fetching deal funnel data:", err);
     }
@@ -162,6 +165,7 @@ const getStatusColor = (status) => {
     New: "#3498db",
     Assigned: "#f39c12",
     "Follow-Up": "#9b59b6",
+    Meeting: "#8e44ad", // Added color for Meeting
     Converted: "#2ecc71",
     Closed: "#34495e",
     Rejected: "#e74c3c",
