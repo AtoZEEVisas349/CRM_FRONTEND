@@ -1595,8 +1595,8 @@ input:checked + .sliderexe:before {
   color: #667eea;
 }/* From Uiverse.io by chicogale */ 
 .neo-toggle-container {
-  --toggle-width: 80px;
-  --toggle-height: 38px;
+  --toggle-width: 65px;
+  --toggle-height: 30px;
   --toggle-bg: #181c20;
   --toggle-off-color: #475057;
   --toggle-on-color: #36f9c7;
@@ -1700,10 +1700,10 @@ input:checked + .sliderexe:before {
 /* Thumb styles */
 .neo-thumb {
   position: absolute;
-  top: 4px;
+  top: 2px;
   left: 4px;
   width: 30px;
-  height: 30px;
+  height: 25px;
   border-radius: 50%;
   transform-style: preserve-3d;
   transition: transform var(--toggle-transition);
@@ -1923,7 +1923,7 @@ input:checked + .sliderexe:before {
 }
 
 .neo-toggle-input:checked + .neo-toggle .neo-status-text {
-  color: var(--toggle-on-color);
+  color: #36cca6;
   content: "ACTIVE";
 }
 
@@ -2006,4 +2006,10 @@ input:checked + .sliderexe:before {
 
 .neo-toggle-input:not(:checked) + .neo-toggle .neo-status-text::before {
   content: "STANDBY";
+}
+.neo-toggle-container {
+  position: absolute;
+  top: 20px;
+  right: 10px; /* adjust as needed for spacing */
+  z-index: 2;
 }

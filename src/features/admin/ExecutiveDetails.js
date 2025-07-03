@@ -693,7 +693,7 @@ const ExecutiveDetails = () => {
                   <span>{person.country}</span>
                   <span>{person.city}</span>
                 </div>
-                <div className="neo-toggle-container" style={{ position: "absolute", top: "10px", right: "180px" }}>
+                <div className="neo-toggle-container">
                   <input
                     className="neo-toggle-input"
                     id={`neo-toggle-${person.id}`}

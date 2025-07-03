@@ -344,8 +344,9 @@ useEffect(() => {
 
   switch (filterType) {
     case "converted": filtered = filtered.filter((lead) => lead.status === "Converted"); break;
+    case "new": filtered = filtered.filter((lead) => lead.status === "New"); break;
     case "followup": filtered = filtered.filter((lead) => lead.status === "Follow-Up"); break;
-    case "fresh": filtered = filtered.filter((lead) => lead.status === "New"); break;
+    case "fresh": filtered = filtered.filter((lead) => lead.status === "Assigned"); break;
     case "meeting": filtered = filtered.filter((lead) => lead.status === "Meeting"); break;
     case "closed": filtered = filtered.filter((lead) => lead.status === "Closed"); break;
     default: break;
@@ -448,13 +449,7 @@ const handleProcessChange = (e) => setSelectedProcess(e.target.value);
   loadDataByView();
 }, [viewMode]);
 
-// useEffect(() => {
-//   if (viewMode === "process") {
-//     handleFilterChange("converted");
-//   } else {
-//     handleFilterChange(previousFilterType);
-//   }
-// }, [viewMode]);
+
 const handleImportToProcess = async () => {
   if (!selectedProcess) return alert("Select a process person first.");
   if (selectedLeads.length === 0) return alert("Select at least one client.");
@@ -483,11 +478,7 @@ const handleImportToProcess = async () => {
   }
 };
 
-
-
   return (
-    
-
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
     
@@ -588,17 +579,9 @@ const handleImportToProcess = async () => {
       </button>
     </div>
 
- 
-
-   
-
-    {/* Other Buttons */}
-   
-
-    {/* Lead Filter Buttons */}
     
     <div className="lead-filter-buttons">
-      {["all", "fresh", "followup","converted", "closed", "meeting"].map(
+      {["all", "new", "fresh", "followup","converted", "closed", "meeting"].map(
         (type) =>
           viewMode === "executive"|| type==="converted" ?(
             <button
