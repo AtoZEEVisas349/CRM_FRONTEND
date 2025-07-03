@@ -1058,12 +1058,11 @@ const [emailTemplates, setEmailTemplates] = useState([]);
     }
   };
 
-  // New function to update leave status
-  const updateLeaveStatusAPI = async (leaveId, status) => {
+  const updateLeaveStatusAPI = async (leaveId, status, hrComment = '') => {
     try {
-      const response = await apiService.updateLeaveApplicationStatus(leaveId, status);
+      const response = await apiService.updateLeaveApplicationStatus(leaveId, status, hrComment);
       setLeaveApplications(prev => 
-        prev.map(app => app.id === leaveId ? { ...app, status } : app)
+        prev.map(app => app.id === leaveId ? { ...app, status, hrComment } : app)
       );
       return response;
     } catch (error) {

@@ -77,8 +77,6 @@ const PageAccessControl = () => {
       role: selectedRole,
     };
 
-    console.log("Permission payload:", payload); // Debug payload
-
     try {
       await createPermission(payload);
       setCreateStatus("Permission created successfully!");
@@ -223,37 +221,51 @@ const PageAccessControl = () => {
       <div className="create-permission-section" style={{ marginTop: "20px" }}>
         <h3>Create New Permission</h3>
         <div className="form-row">
-          <select
-            value={selectedUser}
-            onChange={(e) => {
-              const selectedValue = e.target.value;
-              if (!selectedValue) {
-                setSelectedUser("");
-                setSelectedRole("");
-                return;
-              }
-              const [id, role] = selectedValue.split("-");
-              const selectedUserObj = users.find(
-                (u) => String(u.id) === String(id) && u.label.includes(role)
-              );
-              if (selectedUserObj) {
-                setSelectedUser(selectedValue);
-                setSelectedRole(role);
-              }
-            }}
-          >
-            <option value="">Select User</option>
-            {users.map((user) => {
-              const match = user.label.match(/id\s*-\s*(\d+)\s*-\s*(\w+)/i);
-              const role = match ? match[2].trim() : "";
-              const value = `${user.id}-${role}`;
-              return (
-                <option key={value} value={value}>
-                  {user.label}
-                </option>
-              );
-            })}
-          </select>
+        <select
+  value={selectedUser}
+  onChange={(e) => {
+    const selectedValue = e.target.value;
+    if (!selectedValue) {
+      setSelectedUser("");
+      setSelectedRole("");
+      return;
+    }
+    const [id, role] = selectedValue.split("-");
+    setSelectedUser(selectedValue);
+    setSelectedRole(role);
+  }}
+>
+  <option value="">Select User</option>
+
+  {["Executive", "Manager", "TL", "HR", "Process"].map((roleGroup) => {
+  const roleUsers = users.filter((u) => {
+    const match = u.label?.match(/id\s*-\s*(\d+)\s*-\s*(\w+)/i);
+    const role = match ? match[2].trim() : "";
+    return role.toLowerCase() === roleGroup.toLowerCase();
+  });
+
+  if (roleUsers.length === 0) return null;
+
+  return (
+    <optgroup key={roleGroup} label={roleGroup}>
+      {roleUsers.map((user) => {
+        const match = user.label?.match(/id\s*-\s*(\d+)\s*-\s*(\w+)\s*-\s*(.*)/i);
+        const role = match ? match[2].trim() : "";
+        const name = match ? match[3].trim() : "Unnamed";
+
+        return (
+          <option key={user.id} value={`${user.id}-${role}`}>
+            {`[${role.padEnd(9)}] ID: ${String(user.id).padEnd(3)}  ${name}`}
+          </option>
+        );
+      })}
+    </optgroup>
+  );
+})}
+
+</select>
+
+
 
           <button className="primary-btn" onClick={handleCreatePermission}>
             Grant Access
@@ -275,19 +287,45 @@ const PageAccessControl = () => {
       <div className="create-permission-section" style={{ marginTop: "20px" }}>
         <h3>Select From Existing Permissions</h3>
         <select
-          value={selectedPermission?.id || ""}
-          onChange={(e) => {
-            const selected = permissions.find((p) => p.id === e.target.value);
-            setSelectedPermission(selected);
-          }}
-        >
-          <option value="">Select Permissions for users</option>
-          {permissions.map((perm) => (
-            <option key={perm.id} value={perm.id}>
-              {perm.label}
-            </option>
-          ))}
-        </select>
+  value={selectedPermission?.id || ""}
+  onChange={(e) => {
+    const selected = permissions.find((p) => p.id === e.target.value);
+    setSelectedPermission(selected);
+  }}
+  style={{ fontFamily: "monospace", whiteSpace: "pre" }}
+>
+  <option value="">Select Permissions for users</option>
+
+  {(() => {
+    // Group permissions by role
+    const grouped = permissions.reduce((acc, perm) => {
+      const match = perm.label?.match(/Role:\s*(\w+)\s*\|\s*(.+?)\s*\(ID:\s*(\d+)\)/i);
+      const role = match ? match[1].trim() : "Unknown";
+      const name = match ? match[2].trim() : "Unnamed";
+      const id = match ? match[3].trim() : "??";
+
+      if (!acc[role]) acc[role] = [];
+      acc[role].push({
+        id: perm.id,
+        display: `[${role.padEnd(9)}] ID: ${String(id).padEnd(3)}  ${name}`,
+      });
+
+      return acc;
+    }, {});
+
+    // Render grouped <optgroup>s
+    return Object.entries(grouped).map(([role, options]) => (
+      <optgroup key={role} label={role}>
+        {options.map((opt) => (
+          <option key={opt.id} value={opt.id}>
+            {opt.display}
+          </option>
+        ))}
+      </optgroup>
+    ));
+  })()}
+</select>
+
       </div>
 
       {selectedPermission && (

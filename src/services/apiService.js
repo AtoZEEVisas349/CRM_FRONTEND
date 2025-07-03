@@ -816,11 +816,12 @@ export const fetchLeaveApplications = async (employeeId = null) => {
   }
 };
 
-export const updateLeaveApplicationStatus = async (leaveId, status) => {
+export const updateLeaveApplicationStatus = async (leaveId, status, hrComment = '') => {
   try {
     const response = await apiService.patch('/leave/leave/status', {
       leaveId,
-      status
+      status,
+      hrComment
     });
     return response.data;
   } catch (error) {
@@ -828,6 +829,7 @@ export const updateLeaveApplicationStatus = async (leaveId, status) => {
     throw error;
   }
 };
+
 export const fetchAllHRs = async () => {
   const response = await apiService.get("/hr");
   return response.data.hrs || [];

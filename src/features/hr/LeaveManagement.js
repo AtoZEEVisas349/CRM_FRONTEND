@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, Clock, CheckCircle, XCircle, Filter, Search, Download } from 'lucide-react';
+import { Calendar, User, Clock, CheckCircle, XCircle, Filter, Search, Download, MessageSquare } from 'lucide-react';
 import { useApi } from '../../context/ApiContext';
 import '../../styles/leave-managment.css';
 
@@ -10,6 +10,14 @@ const LeaveManagement = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLeave, setSelectedLeave] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // New state for HR comment modal
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [commentAction, setCommentAction] = useState(null); // 'approve' or 'reject'
+  const [commentLeaveId, setCommentLeaveId] = useState(null);
+  const [hrComment, setHrComment] = useState('');
+
 
   useEffect(() => {
     const fetchAllLeaves = async () => {
@@ -34,36 +42,57 @@ const LeaveManagement = () => {
     fetchAllLeaves();
   }, [fetchExecutivesAPI]);
 
-  const handleApprove = async (id) => {
+  // Open comment modal
+  const openCommentModal = (leaveId, action) => {
+    setCommentLeaveId(leaveId);
+    setCommentAction(action);
+    setHrComment('');
+    setShowCommentModal(true);
+  };
+
+  // Close comment modal
+  const closeCommentModal = () => {
+    setShowCommentModal(false);
+    setCommentAction(null);
+    setCommentLeaveId(null);
+    setHrComment('');
+    setIsSubmitting(false); // Reset submitting state
+  };
+
+  // Handle comment submission
+  const handleCommentSubmission = async () => {
+    if (!commentLeaveId || !commentAction) return;
+    setIsSubmitting(true); // Start loading
     try {
-      await updateLeaveStatusAPI(id, 'Approved');
-      // Refresh the leave applications after approval
+      const status = commentAction === 'approve' ? 'Approved' : 'Rejected';
+      await updateLeaveStatusAPI(commentLeaveId, status, hrComment);
+
+      // Refresh the leave applications after status update
       const executives = await fetchExecutivesAPI();
       const leavePromises = executives.map(exec => fetchLeaveApplicationsAPI(exec.id));
       const leaveResults = await Promise.all(leavePromises);
       setAllLeaveApplications(leaveResults.flat());
+
+      closeCommentModal();
     } catch (error) {
-      console.error('Error approving leave:', error);
+      console.error(`Error ${commentAction}ing leave:`, error);
+    } finally {
+      setIsSubmitting(false); // End loading
     }
   };
 
+  const handleApprove = async (id) => {
+    openCommentModal(id, 'approve');
+  };
+
   const handleReject = async (id) => {
-    try {
-      await updateLeaveStatusAPI(id, 'Rejected');
-      // Refresh the leave applications after rejection
-      const executives = await fetchExecutivesAPI();
-      const leavePromises = executives.map(exec => fetchLeaveApplicationsAPI(exec.id));
-      const leaveResults = await Promise.all(leavePromises);
-      setAllLeaveApplications(leaveResults.flat());
-    } catch (error) {
-      console.error('Error rejecting leave:', error);
-    }
+    openCommentModal(id, 'reject');
   };
 
   const filteredRequests = allLeaveApplications.filter(request => {
     const matchesFilter = selectedFilter === 'all' || request.status.toLowerCase() === selectedFilter;
     const matchesSearch = request.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.leaveType.toLowerCase().includes(searchTerm.toLowerCase());
+      request.leaveType.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -246,18 +275,7 @@ const LeaveManagement = () => {
                         </button>
                         {request.status.toLowerCase() === 'pending' && (
                           <>
-                            <button
-                              onClick={() => handleApprove(request.id)}
-                              className="lm-approve-btn"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleReject(request.id)}
-                              className="lm-reject-btn"
-                            >
-                              Reject
-                            </button>
+
                           </>
                         )}
                       </div>
@@ -285,7 +303,7 @@ const LeaveManagement = () => {
                 ×
               </button>
             </div>
-            
+
             <div className="lm-modal-body">
               <div className="lm-modal-grid-2">
                 <div>
@@ -305,7 +323,7 @@ const LeaveManagement = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="lm-modal-grid-2">
                 <div>
                   <label className="lm-modal-label">
@@ -409,6 +427,18 @@ const LeaveManagement = () => {
                 </div>
               </div>
 
+              {/* Display HR Comment if available */}
+              {selectedLeave.hrComment && (
+                <div>
+                  <label className="lm-modal-label">
+                    HR Comment
+                  </label>
+                  <div className="lm-modal-textarea">
+                    {selectedLeave.hrComment}
+                  </div>
+                </div>
+              )}
+
               {selectedLeave.status.toLowerCase() === 'pending' && (
                 <div className="lm-modal-actions">
                   <button
@@ -431,6 +461,69 @@ const LeaveManagement = () => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* HR Comment Modal */}
+      {showCommentModal && (
+        <div className="lm-modal-overlay">
+          <div className="lm-modal-content lm-comment-modal">
+            <div className="lm-modal-header">
+              <h2 className="lm-modal-title">
+                <MessageSquare size={20} style={{ marginRight: '8px' }} />
+                {commentAction === 'approve' ? 'Approve' : 'Reject'} Leave Request
+              </h2>
+              <button
+                onClick={closeCommentModal}
+                className="lm-modal-close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="lm-modal-body">
+              <div className="lm-comment-section">
+                <label className="lm-modal-label">
+                  HR Comment {commentAction === 'reject' ? '(Required)' : '(Optional)'}
+                </label>
+                <textarea
+                  value={hrComment}
+                  onChange={(e) => setHrComment(e.target.value)}
+                  placeholder={
+                    commentAction === 'approve'
+                      ? 'Add any additional notes for approval...'
+                      : 'Please provide a reason for rejection...'
+                  }
+                  className="lm-comment-textarea"
+                  rows="4"
+                />
+              </div>
+
+              <div className="lm-comment-actions">
+                <button
+                  onClick={closeCommentModal}
+                  className="lm-comment-cancel-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCommentSubmission}
+                  className={`lm-comment-submit-btn ${commentAction === 'approve' ? 'lm-comment-approve' : 'lm-comment-reject'
+                    }`}
+                  disabled={isSubmitting || (commentAction === 'reject' && !hrComment.trim())}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="lm-spinner"></div>
+                      {commentAction === 'approve' ? 'Approving...' : 'Rejecting...'}
+                    </>
+                  ) : (
+                    `${commentAction === 'approve' ? 'Approve' : 'Reject'} Leave`
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
