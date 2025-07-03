@@ -19,12 +19,18 @@ const ExecutiveDetails = () => {
     fetchAllTeamsAPI,
     managerTeams,
     assignExecutiveToTeam,
+    updateUserLoginStatus,
+    toggleManagerLoginAccess,
+    toggleHrLoginAccess,
+    toggleProcessPersonLoginAccess,
+    toggleTlLoginAccess,
   } = useApi();
   const { user } = useAuth();
   const isAdmin = user?.role?.toLowerCase() === "admin";
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const [recentlyAssigned, setRecentlyAssigned] = useState(null);
-
+  const [cooldownUsers, setCooldownUsers] = useState(new Map());
+  const [cooldownTimers, setCooldownTimers] = useState(new Map());  
   const [people, setPeople] = useState([]);
   const [filter, setFilter] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -42,7 +48,104 @@ const ExecutiveDetails = () => {
   const [draggedExecutive, setDraggedExecutive] = useState(null);
   const [dragOverTeam, setDragOverTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState({});
+  
+  const startCooldown = (userId) => {
+    const cooldownDuration = 15; // seconds
+    setCooldownUsers(prev => new Map(prev).set(userId, true));
+    setCooldownTimers(prev => new Map(prev).set(userId, cooldownDuration));
+  
+    const intervalId = setInterval(() => {
+      setCooldownTimers(prev => {
+        const newTimers = new Map(prev);
+        const timeLeft = newTimers.get(userId);
+        if (timeLeft <= 1) {
+          clearInterval(intervalId);
+          newTimers.delete(userId);
+          setCooldownUsers(p => {
+            const copy = new Map(p);
+            copy.delete(userId);
+            return copy;
+          });
+          return newTimers;
+        } else {
+          newTimers.set(userId, timeLeft - 1);
+          return newTimers;
+        }
+      });
+    }, 1000);
+  
+    setCooldownTimers(prev => new Map(prev).set(`interval_${userId}`, intervalId));
+  };
+  
 
+  const handleToggleLoginStatus = async (personId, currentStatus) => {
+    if (cooldownUsers.has(personId)) {
+      toast.warning(`Please wait ${cooldownTimers.get(personId) || 0}s`);
+      return;
+    }
+  
+    const newStatus = !currentStatus;
+  
+    try {
+      await updateUserLoginStatus(personId, newStatus);
+      setPeople(prev =>
+        prev.map(p => p.id === personId ? { ...p, canLogin: newStatus } : p)
+      );
+      toast.success(`Login ${newStatus ? "enabled" : "disabled"}`);
+      if (!newStatus) {
+        startCooldown(personId);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to toggle login.");
+    }
+  };
+  
+  const handleToggleRoleLoginStatus = async (role, userId, currentStatus) => {
+    if (cooldownUsers.has(userId)) {
+      toast.warning(`Please wait ${cooldownTimers.get(userId) || 0}s`);
+      return;
+    }
+  
+    const newStatus = !currentStatus;
+    const r = role.toLowerCase();
+  
+    try {
+      if (r === "manager") {
+        await toggleManagerLoginAccess(userId, newStatus);
+      } else if (r === "hr") {
+        await toggleHrLoginAccess(userId, newStatus);
+      } else if (r === "tl" || r === "team lead") {
+        await toggleTlLoginAccess(userId, newStatus);
+      } else if (r === "process" || r.includes("process")) {
+        await toggleProcessPersonLoginAccess(userId, newStatus);
+      } else {
+        toast.error("Unsupported role");
+        return;
+      }
+  
+      setPeople(prev =>
+        prev.map(p => p.id === userId ? { ...p, canLogin: newStatus } : p)
+      );
+      toast.success(`${role} login ${newStatus ? "enabled" : "disabled"}`);
+      if (!newStatus) {
+        startCooldown(userId);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Toggle failed");
+    }
+  };
+  useEffect(() => {
+    return () => {
+      cooldownTimers.forEach((id, key) => {
+        if (key.toString().startsWith("interval_")) {
+          clearInterval(id);
+        }
+      });
+    };
+  }, []);
+  
   // 1️⃣ Fetch people on filter change
   useEffect(() => {
     const fetchData = async () => {
@@ -544,6 +647,28 @@ const ExecutiveDetails = () => {
                   <span>{person.country}</span>
                   <span>{person.city}</span>
                 </div>
+                <div style={{ marginTop: "8px", fontSize: "12px" }}>
+  <label>
+    <input
+      type="checkbox"
+      checked={person.canLogin || false}
+      disabled={cooldownUsers.has(person.id)}
+      onChange={() => {
+        if (person.profession.toLowerCase() === "executive") {
+          handleToggleLoginStatus(person.id, person.canLogin);
+        } else {
+          handleToggleRoleLoginStatus(person.profession, person.id, person.canLogin);
+        }
+      }}
+    />
+    <span style={{ marginLeft: "5px" }}>
+      {cooldownUsers.has(person.id)
+        ? `Locked (${cooldownTimers.get(person.id) || 0}s)`
+        : person.canLogin ? "Login ON" : "Login OFF"}
+    </span>
+  </label>
+</div>
+
               </div>
             ))}
           </div>
@@ -593,6 +718,26 @@ const ExecutiveDetails = () => {
                         )}
                       </td>
                     )}
+                    <td>
+  <input
+    type="checkbox"
+    checked={person.canLogin || false}
+    disabled={cooldownUsers.has(person.id)}
+    onChange={() => {
+      if (person.profession.toLowerCase() === "executive") {
+        handleToggleLoginStatus(person.id, person.canLogin);
+      } else {
+        handleToggleRoleLoginStatus(person.profession, person.id, person.canLogin);
+      }
+    }}
+  />
+  {cooldownUsers.has(person.id) && (
+    <span style={{ fontSize: "10px", color: "red", marginLeft: "5px" }}>
+      {cooldownTimers.get(person.id) || 0}s
+    </span>
+  )}
+</td>
+
                   </tr>
                 ))}
               </tbody>

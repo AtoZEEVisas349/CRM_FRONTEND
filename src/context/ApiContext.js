@@ -659,6 +659,48 @@ const updateUserLoginStatus = async (userId, canLogin) => {
     throw error;
     }
   };
+
+
+const toggleManagerLoginAccess = async (managerId, can_login) => {
+  try {
+    const response = await apiService.toggleManagerLoginAccess(managerId, can_login);
+    return response.data;
+  } catch (err) {
+    console.error("❌ Error toggling manager login:", err);
+    throw err;
+  }
+};
+
+const toggleHrLoginAccess = async (hrId, can_login) => {
+  try {
+    const response = await apiService.toggleHrLoginAccess(hrId, can_login);
+    return response.data;
+  } catch (err) {
+    console.error("❌ Error toggling HR login:", err);
+    throw err;
+  }
+};
+
+const toggleProcessPersonLoginAccess = async (processPersonId, can_login) => {
+  try {
+    const response = await apiService.toggleProcessPersonLoginAccess(processPersonId, can_login);
+    return response.data;
+  } catch (err) {
+    console.error("❌ Error toggling Process Person login:", err);
+    throw err;
+  }
+};
+
+const toggleTlLoginAccess = async (userId, can_login) => {
+  try {
+    const response = await apiService.toggleTeamLeadLoginAccess(userId, can_login);
+    return response.data;
+  } catch (err) {
+    console.error("❌ Error toggling Team Lead login:", err);
+    throw err;
+  }
+};
+
 const [verificationResults, setVerificationResults] = useState({});
 const [verificationLoading, setVerificationLoading] = useState(false);
 
@@ -1349,7 +1391,10 @@ const updateHrProfileById = async (hrId, updateData) => {
     // Meetings
  createMeetingAPI: apiService.createMeetingAPI, 
  fetchMeetings:    apiService.fetchMeetings,
-
+ toggleManagerLoginAccess,
+        toggleHrLoginAccess,
+        toggleProcessPersonLoginAccess,
+        toggleTlLoginAccess,
  meetings,
  refreshMeetings,
  fetchDealFunnelData: apiService.fetchDealFunnelData,

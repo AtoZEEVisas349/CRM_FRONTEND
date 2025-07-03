@@ -37,6 +37,31 @@ export const updateUserLoginStatus = async (userId, canLogin) => {
     throw error;
   }
 };
+
+// Toggle Manager Login Access
+export const toggleManagerLoginAccess = async (managerId, can_login) => {
+  return await apiService.post("/manager/toggle-login", { managerId, can_login });
+};
+
+// Toggle HR Login Access
+export const toggleHrLoginAccess = async (hrId, can_login) => {
+  return await apiService.post("/hr/toggle-login", { hrId, can_login });
+};
+
+// Toggle Process Person Login Access
+export const toggleProcessPersonLoginAccess = async (processPersonId, can_login) => {
+  return await apiService.post("/processperson/toggle-login", { processPersonId, can_login });
+};
+
+export const toggleTeamLeadLoginAccess = async (userId, can_login) => {
+  try {
+    const response = await apiService.post("/admin/toggle-login", { userId, can_login });
+    return response.data;
+  } catch (err) {
+    console.error("❌ Error toggling Team Lead login:", err);
+    throw err;
+  }
+};
 // ✅ Function to fetch all leads
 export const fetchLeadsAPI = async (limit = 10, offset = 0) => {
   try {
