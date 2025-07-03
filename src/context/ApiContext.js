@@ -977,6 +977,7 @@ const [emailTemplates, setEmailTemplates] = useState([]);
     try {
       const templates = await getAllEmailTemplates();
       setEmailTemplates(templates);
+      return templates; // ✅ return for component use
     } catch (error) {
       setTemplateError(error);
     } finally {

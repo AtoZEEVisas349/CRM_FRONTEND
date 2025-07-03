@@ -11,24 +11,47 @@ export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [emailTemplates, setEmailTemplates] = useState([]);
   const user=localStorage.getItem("user")
+ 
+ 
   useEffect(() => {
-    // Fetch templates from the static file since fetchAllTemplates might be an API call
-    const templates = getEmailTemplates(clientInfo, executiveInfo);
-    setEmailTemplates(templates);
-  }, [clientInfo, executiveInfo]);
+    const loadTemplates = async () => {
+      try {
+        const templates = await fetchAllTemplates();
+        if (Array.isArray(templates)) {
+          setEmailTemplates(templates);
+        }
+      } catch (error) {
+        console.error("❌ Failed to fetch templates:", error);
+      }
+    };
+  
+    if (clientInfo?.email) {
+      loadTemplates();
+    }
+  }, [clientInfo?.email]);
+  
 
-  const handleTemplateChange = (e) => {
+  const handleTemplateChange = async (e) => {
     const templateId = e.target.value;
     setSelectedTemplateId(templateId);
-    if (templateId) {
-      const selectedTemplate = emailTemplates.find((t) => t.id === templateId);
-      if (selectedTemplate) {
-        onTemplateSelect(selectedTemplate, clientInfo.email);
-      }
-    } else {
+  
+    if (!templateId) {
       onTemplateSelect(null, clientInfo.email);
+      return;
+    }
+  
+    try {
+      const fullTemplate = await fetchTemplateById(templateId);
+      if (fullTemplate?.id && clientInfo.email) {
+        onTemplateSelect(fullTemplate, clientInfo.email);
+      } else {
+        console.warn("Template or client email missing:", fullTemplate, clientInfo.email);
+      }
+    } catch (err) {
+      console.error("Failed to load template by ID:", err);
     }
   };
+  
 
   if (!clientInfo?.email) {
     return <p>Client info not available</p>;
@@ -95,7 +118,7 @@ export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
                 </option>
               ))}
             </select>
-          </label>
+          </label> 
         </div>
       </div>
     </div>

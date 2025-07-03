@@ -30,7 +30,7 @@ const ExecutiveDetails = () => {
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const [recentlyAssigned, setRecentlyAssigned] = useState(null);
   const [cooldownUsers, setCooldownUsers] = useState(new Map());
-  const [cooldownTimers, setCooldownTimers] = useState(new Map());  
+  const [cooldownTimers, setCooldownTimers] = useState(new Map());
   const [people, setPeople] = useState([]);
   const [filter, setFilter] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -43,17 +43,72 @@ const ExecutiveDetails = () => {
   const [isTeamLoading, setIsTeamLoading] = useState(false);
   const [teamAssigning, setTeamAssigning] = useState(false);
   const [focusedTeamId, setFocusedTeamId] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   // Drag and Drop States
   const [draggedExecutive, setDraggedExecutive] = useState(null);
   const [dragOverTeam, setDragOverTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState({});
-  
-  const startCooldown = (userId) => {
-    const cooldownDuration = 15; // seconds
+
+  // Initialize cooldown state from localStorage
+  useEffect(() => {
+    const savedCooldowns = JSON.parse(localStorage.getItem("cooldownUsers") || "{}");
+    const savedTimers = JSON.parse(localStorage.getItem("cooldownTimers") || "{}");
+    const now = Date.now();
+
+    const activeCooldowns = new Map();
+    const activeTimers = new Map();
+
+    Object.entries(savedCooldowns).forEach(([userId, expiry]) => {
+      if (now < expiry) {
+        activeCooldowns.set(userId, true);
+        const timeLeft = Math.ceil((expiry - now) / 1000);
+        activeTimers.set(userId, timeLeft);
+      }
+    });
+
+    setCooldownUsers(activeCooldowns);
+    setCooldownTimers(activeTimers);
+
+    // Start timers for active cooldowns
+    activeCooldowns.forEach((_, userId) => {
+      startCooldown(userId, activeTimers.get(userId));
+    });
+
+    return () => {
+      cooldownTimers.forEach((id, key) => {
+        if (key.toString().startsWith("interval_")) {
+          clearInterval(id);
+        }
+      });
+    };
+  }, []);
+
+  const startCooldown = (userId, initialTime = 15) => {
+    const cooldownDuration = initialTime; // seconds
+    const expiry = Date.now() + cooldownDuration * 1000;
+
+    // Update state
     setCooldownUsers(prev => new Map(prev).set(userId, true));
     setCooldownTimers(prev => new Map(prev).set(userId, cooldownDuration));
-  
+
+    // Save to localStorage
+    localStorage.setItem(
+      "cooldownUsers",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("cooldownUsers") || "{}"),
+        [userId]: expiry,
+      })
+    );
+    localStorage.setItem(
+      "cooldownTimers",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("cooldownTimers") || "{}"),
+        [userId]: cooldownDuration,
+      })
+    );
+
     const intervalId = setInterval(() => {
       setCooldownTimers(prev => {
         const newTimers = new Map(prev);
@@ -66,50 +121,69 @@ const ExecutiveDetails = () => {
             copy.delete(userId);
             return copy;
           });
+          // Clean up localStorage
+          const savedCooldowns = JSON.parse(localStorage.getItem("cooldownUsers") || "{}");
+          const savedTimers = JSON.parse(localStorage.getItem("cooldownTimers") || "{}");
+          delete savedCooldowns[userId];
+          delete savedTimers[userId];
+          localStorage.setItem("cooldownUsers", JSON.stringify(savedCooldowns));
+          localStorage.setItem("cooldownTimers", JSON.stringify(savedTimers));
           return newTimers;
         } else {
           newTimers.set(userId, timeLeft - 1);
+          localStorage.setItem(
+            "cooldownTimers",
+            JSON.stringify({
+              ...JSON.parse(localStorage.getItem("cooldownTimers") || "{}"),
+              [userId]: timeLeft - 1,
+            })
+          );
           return newTimers;
         }
       });
     }, 1000);
-  
+
     setCooldownTimers(prev => new Map(prev).set(`interval_${userId}`, intervalId));
   };
-  
 
   const handleToggleLoginStatus = async (personId, currentStatus) => {
     if (cooldownUsers.has(personId)) {
-      toast.warning(`Please wait ${cooldownTimers.get(personId) || 0}s`);
+      const timeLeft = cooldownTimers.get(personId) || 0;
+      showCustomPopup(`Please wait ${timeLeft}s before toggling again`, 'cooldown');
       return;
     }
-  
+
     const newStatus = !currentStatus;
-  
+
     try {
       await updateUserLoginStatus(personId, newStatus);
       setPeople(prev =>
         prev.map(p => p.id === personId ? { ...p, canLogin: newStatus } : p)
       );
-      toast.success(`Login ${newStatus ? "enabled" : "disabled"}`);
+
+      showCustomPopup(
+        `Login access ${newStatus ? "enabled" : "disabled"} successfully`,
+        newStatus ? 'success' : 'warning'
+      );
+
       if (!newStatus) {
         startCooldown(personId);
       }
     } catch (err) {
       console.error(err);
-      toast.error("Failed to toggle login.");
+      showCustomPopup("Failed to toggle login access", 'error');
     }
   };
-  
+
   const handleToggleRoleLoginStatus = async (role, userId, currentStatus) => {
     if (cooldownUsers.has(userId)) {
       toast.warning(`Please wait ${cooldownTimers.get(userId) || 0}s`);
       return;
     }
-  
+
     const newStatus = !currentStatus;
     const r = role.toLowerCase();
-  
+
     try {
       if (r === "manager") {
         await toggleManagerLoginAccess(userId, newStatus);
@@ -123,7 +197,7 @@ const ExecutiveDetails = () => {
         toast.error("Unsupported role");
         return;
       }
-  
+
       setPeople(prev =>
         prev.map(p => p.id === userId ? { ...p, canLogin: newStatus } : p)
       );
@@ -136,27 +210,23 @@ const ExecutiveDetails = () => {
       toast.error("Toggle failed");
     }
   };
-  useEffect(() => {
-    return () => {
-      cooldownTimers.forEach((id, key) => {
-        if (key.toString().startsWith("interval_")) {
-          clearInterval(id);
-        }
-      });
-    };
-  }, []);
-  
-  // 1️⃣ Fetch people on filter change
+
+  const showCustomPopup = (message, type) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         showLoader("Loading data...", "admin");
-  
+
         let data = [];
         let fetchedTeams = [];
-  
+
         if (filter === "All") {
-          fetchedTeams = await fetchAllTeamsAPI(); // ← store result directly
+          fetchedTeams = await fetchAllTeamsAPI();
           data = await fetchExecutivesAPI();
         } else if (filter === "Manager") {
           data = await fetchAllManagersAPI();
@@ -167,12 +237,12 @@ const ExecutiveDetails = () => {
         } else if (filter === "TL") {
           data = await fetchAllTeamLeadsAPI();
         }
-  
+
         const teamLookup = {};
         (fetchedTeams || []).forEach((t) => {
           teamLookup[t.id] = t.name;
         });
-  
+
         const mapped = data.map((person) => {
           const teamId = person.team_id || person.teamId || null;
           return {
@@ -192,15 +262,15 @@ const ExecutiveDetails = () => {
               (teamId ? teamLookup[teamId] : null),
           };
         });
-  
+
         setPeople(mapped);
         setSelectedMembers([]);
         setSelectedManagers([]);
-  
+
         if (filter === "Manager") {
           setManagers(mapped);
         }
-  
+
         if (filter === "All") {
           const teamMembersMap = {};
           mapped.forEach((person) => {
@@ -220,13 +290,10 @@ const ExecutiveDetails = () => {
         hideLoader();
       }
     };
-  
+
     fetchData();
   }, [filter]);
-  
-  
 
-  // 2️⃣ Auto-fetch teams when executives selected or managers available
   useEffect(() => {
     const loadTeamsIfNeeded = async () => {
       if (filter === "All") {
@@ -237,18 +304,14 @@ const ExecutiveDetails = () => {
     };
     loadTeamsIfNeeded();
   }, [filter]);
-  
-  
-  // Drag and Drop Handlers
+
   const handleDragStart = (e, executive) => {
-    // Only allow dragging executives (filter === "All")
     if (filter !== "All") return;
-    
+
     setDraggedExecutive(executive);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/html", e.target.outerHTML);
-    
-    // Add dragging class after a small delay to avoid flickering
+
     setTimeout(() => {
       e.target.classList.add("dragging");
     }, 0);
@@ -271,7 +334,6 @@ const ExecutiveDetails = () => {
   };
 
   const handleDragLeave = (e) => {
-    // Only reset if we're actually leaving the drop zone
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setDragOverTeam(null);
     }
@@ -280,34 +342,30 @@ const ExecutiveDetails = () => {
   const handleDrop = async (e, teamId) => {
     e.preventDefault();
     setDragOverTeam(null);
-  
+
     if (!draggedExecutive) return;
-  
-    // Check if executive is already in this team
+
     if (draggedExecutive.teamId === teamId) {
       toast.info(`${draggedExecutive.name} is already in this team.`);
       return;
     }
-  
+
     try {
       setTeamAssigning(true);
-  
+
       const assignedTeam = managerTeams.find(team => team.id === teamId);
-      
+
       await assignExecutiveToTeam({
         teamId: Number(teamId),
         executiveId: Number(draggedExecutive.id),
         managerId: Number(assignedTeam?.managerId),
       });
-  
-      // ✅ Show toast IMMEDIATELY here (before state updates)
+
       toast.success(`Successfully assigned ${draggedExecutive.name} to the team!`);
-      
-      // ✅ Mark as recently assigned
+
       setRecentlyAssigned(draggedExecutive.id);
       setTimeout(() => setRecentlyAssigned(null), 5000);
-  
-      // ✅ Update people
+
       setPeople(prevPeople =>
         prevPeople.map(person => {
           if (person.id === draggedExecutive.id) {
@@ -320,35 +378,30 @@ const ExecutiveDetails = () => {
           return person;
         })
       );
-  
-      // ✅ Update teamMembers
+
       setTeamMembers(prev => {
         const updated = { ...prev };
-  
-        // Remove from old team
+
         if (draggedExecutive.teamId) {
           updated[draggedExecutive.teamId] =
             updated[draggedExecutive.teamId]?.filter(
               member => member.id !== draggedExecutive.id
             ) || [];
         }
-  
-        // Add to new team
+
         if (!updated[teamId]) updated[teamId] = [];
         updated[teamId].push({
           ...draggedExecutive,
           teamName: assignedTeam ? assignedTeam.name : `Team ${teamId}`,
           teamId: teamId,
         });
-  
+
         return updated;
       });
-  
-      // ✅ Success drop animation (optional)
+
       const dropZone = e.currentTarget;
       dropZone.classList.add("drop-success");
       setTimeout(() => dropZone.classList.remove("drop-success"), 500);
-  
     } catch (error) {
       toast.error("❌ Failed to assign executive to team.");
       console.error(error);
@@ -356,7 +409,7 @@ const ExecutiveDetails = () => {
       setTeamAssigning(false);
       setDraggedExecutive(null);
     }
-  };  
+  };
 
   const handleMemberSelect = (id) => {
     setSelectedMembers((prev) =>
@@ -375,25 +428,25 @@ const ExecutiveDetails = () => {
       toast.error("Please select a team and at least one executive.");
       return;
     }
-  
+
     setTeamAssigning(true);
     try {
       const assignedTeam = managerTeams.find(team => team.id === Number(selectedTeam));
 
       const responses = await Promise.all(
         selectedMembers.map((executiveId) =>
-          assignExecutiveToTeam({   
+          assignExecutiveToTeam({
             teamId: Number(selectedTeam),
             executiveId: Number(executiveId),
             managerId: Number(assignedTeam?.managerId),
           })
         )
       );
-      
-      setFocusedTeamId(selectedTeam); // highlight that team visually
+
+      setFocusedTeamId(selectedTeam);
       setSelectedMembers([]);
       setSelectedTeam("");
-      
+
       setPeople((prevPeople) =>
         prevPeople.map((person) => {
           const updated = responses.find((res) => res.user?.id === person.id);
@@ -435,7 +488,7 @@ const ExecutiveDetails = () => {
 
     try {
       await createManagerTeam({ name: newTeamName, managerId });
-      await fetchAllTeamsAPI(); // or await fetchAllTeamsAPI(managerId) if needed
+      await fetchAllTeamsAPI();
       toast.success(`Team "${newTeamName}" created successfully!`);
       setNewTeamName("");
       setShowModal(false);
@@ -445,24 +498,24 @@ const ExecutiveDetails = () => {
       console.error(err);
     }
   };
+
   useEffect(() => {
     const scrollOnEdge = (e) => {
       const { clientY } = e;
-      const threshold = 100; // pixels from edge
+      const threshold = 100;
       const scrollSpeed = 10;
-  
+
       if (clientY < threshold) {
         window.scrollBy(0, -scrollSpeed);
       } else if (window.innerHeight - clientY < threshold) {
         window.scrollBy(0, scrollSpeed);
       }
     };
-  
+
     window.addEventListener("dragover", scrollOnEdge);
     return () => window.removeEventListener("dragover", scrollOnEdge);
   }, []);
-  
-  // Get unassigned executives (those without a team)
+
   const unassignedExecutives = people.filter(person => !person.teamId);
 
   return (
@@ -474,47 +527,46 @@ const ExecutiveDetails = () => {
 
         {/* Top Filter */}
         <div className="filter-buttons">
-        <select value={filter} onChange={(e) => {
-        setFilter(e.target.value);
-        setFocusedTeamId(""); 
-        setSelectedMembers([]); // clear bulk selection
-      }}>
-    <option value="All">All Executives</option>
-    <option value="Manager">All Managers</option>
-    <option value="HR">All HR</option>
-    <option value="Process">All Process Persons</option>
-    <option value="TL">All Team Leads</option>
-  </select>
+          <select value={filter} onChange={(e) => {
+            setFilter(e.target.value);
+            setFocusedTeamId("");
+            setSelectedMembers([]);
+          }}>
+            <option value="All">All Executives</option>
+            <option value="Manager">All Managers</option>
+            <option value="HR">All HR</option>
+            <option value="Process">All Process Persons</option>
+            <option value="TL">All Team Leads</option>
+          </select>
 
-  <button onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}>
-    {viewMode === "grid" ? "Table View" : "Grid View"}
-  </button>
+          <button onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}>
+            {viewMode === "grid" ? "Table View" : "Grid View"}
+          </button>
 
-  {isAdmin && filter === "All" && (
-    <select
-      className="styled-select"
-      style={{ marginLeft: "10px" }}
-      value={focusedTeamId}
-      onChange={(e) => setFocusedTeamId(e.target.value)}
-    >
-      <option value="">Select Team</option>
-      {managerTeams.map(team => (
-        <option key={team.id} value={team.id}>
-          {team.name}
-        </option>
-      ))}
-    </select>
-  )}
+          {isAdmin && filter === "All" && (
+            <select
+              className="styled-select"
+              style={{ marginLeft: "10px" }}
+              value={focusedTeamId}
+              onChange={(e) => setFocusedTeamId(e.target.value)}
+            >
+              <option value="">Select Team</option>
+              {managerTeams.map(team => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
+          )}
 
-  {isAdmin && filter === "Manager" && selectedManagers.length > 0 && (
-    <button className="create-team-button" onClick={() => setShowModal(true)}>
-      + Create Team
-    </button>
-  )}
-</div>
+          {isAdmin && filter === "Manager" && selectedManagers.length > 0 && (
+            <button className="create-team-button" onClick={() => setShowModal(true)}>
+              + Create Team
+            </button>
+          )}
+        </div>
 
-
-        {/* Traditional Team Assignment Bar (fallback) */}
+        {/* Traditional Team Assignment Bar */}
         {isAdmin && selectedMembers.length > 0 && filter !== "All" && (
           <div className="team-assignment-bar animated-slide">
             <select
@@ -542,64 +594,60 @@ const ExecutiveDetails = () => {
             </button>
           </div>
         )}
-{isAdmin && filter === "All" && (
-  <>
-    {focusedTeamId ? (
-      <div className="drag-drop-container">
-        <div className="manager-teams-section">
-        <div className="drag-drop-close-wrapper">
-  <button
-    className="close-drag-container"
-    onClick={() => setFocusedTeamId("")}
-    title="Close"
-  >
-    &times;
-  </button>
-</div>
-          <h3>🧩 Drag executives into the selected team</h3>
-          <div className="teams-grid">
-            {managerTeams
-              .filter((team) => team.id === Number(focusedTeamId))
-              .map((team) => (
-                <div
-                  key={team.id}
-                  className={`team-drop-zone ${dragOverTeam === team.id ? 'drag-over' : ''}`}
-                  onDragOver={handleDragOver}
-                  onDragEnter={(e) => handleDragEnter(e, team.id)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, team.id)}
-                >
-                  <div className="team-header">
-                    <strong>{team.name}</strong>
-                    <div className="team-subtitle">
-                    Manager: {team.managerName || `ID: ${team.managerId || "Unknown"}`}
-                    </div>
-                  </div>
-                  <div className="team-members">
-                    {teamMembers[team.id]?.length > 0 ? (
-                      teamMembers[team.id].map((member) => (
-                        <div key={member.id} className="team-member-item">
-                          👤 {member.name} - {member.profession}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="empty-team-message">Drop executives here</div>
-                    )}
-                  </div>
+        {isAdmin && filter === "All" && (
+          <>
+            {focusedTeamId ? (
+              <div className="drag-drop-container">
+                <div className="drag-drop-close-wrapper">
+                  <button
+                    className="close-drag-container"
+                    onClick={() => setFocusedTeamId("")}
+                    title="Close"
+                  >
+                    &times;
+                  </button>
                 </div>
-              ))}
-          </div>
-        </div>
-      </div>
-    ) : (
-      <div className="no-team-selected-message" style={{ padding: "20px", textAlign: "center", color: "#888" }}>
-        🔍 Please select a team to view or assign executives
-      </div>
-    )}
-  </>
-)}
-
-
+                <h3>🧩 Drag executives into the selected team</h3>
+                <div className="teams-grid">
+                  {managerTeams
+                    .filter((team) => team.id === Number(focusedTeamId))
+                    .map((team) => (
+                      <div
+                        key={team.id}
+                        className={`team-drop-zone ${dragOverTeam === team.id ? 'drag-over' : ''}`}
+                        onDragOver={handleDragOver}
+                        onDragEnter={(e) => handleDragEnter(e, team.id)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, team.id)}
+                      >
+                        <div className="team-header">
+                          <strong>{team.name}</strong>
+                          <div className="team-subtitle">
+                            Manager: {team.managerName || `ID: ${team.managerId || "Unknown"}`}
+                          </div>
+                        </div>
+                        <div className="team-members">
+                          {teamMembers[team.id]?.length > 0 ? (
+                            teamMembers[team.id].map((member) => (
+                              <div key={member.id} className="team-member-item">
+                                👤 {member.name} - {member.profession}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="empty-team-message">Drop executives here</div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ) : (
+              <div className="no-team-selected-message" style={{ padding: "20px", textAlign: "center", color: "#888" }}>
+                🔍 Please select a team to view or assign executives
+              </div>
+            )}
+          </>
+        )}
 
         {/* Display Cards or Table */}
         {viewMode === "grid" ? (
@@ -607,11 +655,10 @@ const ExecutiveDetails = () => {
             {people.map((person) => (
               <div
                 key={person.id}
-                className={`box1 ${
-                  selectedMembers.includes(person.id) || selectedManagers.includes(person.id)
-                    ? "selected-card"
-                    : ""
-                } ${Number(recentlyAssigned) === Number(person.id) ? "success-border" : ""} ${filter === "All" && !person.teamId ? "draggable-executive" : ""}`}                
+                className={`box1 ${selectedMembers.includes(person.id) || selectedManagers.includes(person.id)
+                  ? "selected-card"
+                  : ""
+                } ${Number(recentlyAssigned) === Number(person.id) ? "success-border" : ""} ${filter === "All" && !person.teamId ? "draggable-executive" : ""}`}
                 style={{ display: "flex", alignItems: "flex-start" }}
                 draggable={filter === "All" && !person.teamId}
                 onDragStart={(e) => handleDragStart(e, person)}
@@ -622,23 +669,22 @@ const ExecutiveDetails = () => {
                     ↔️
                   </div>
                 )}
-            {isAdmin && filter === "Manager" && (
-  <input
-    type="checkbox"
-    className="team-select-checkbox"
-    checked={selectedManagers.includes(person.id)}
-    onChange={() => handleManagerSelect(person.id)}
-    style={{ marginRight: "10px" }}
-  />
-)}
+                {isAdmin && filter === "Manager" && (
+                  <input
+                    type="checkbox"
+                    className="team-select-checkbox"
+                    checked={selectedManagers.includes(person.id)}
+                    onChange={() => handleManagerSelect(person.id)}
+                    style={{ marginRight: "10px" }}
+                  />
+                )}
 
-              
-<div className="text-content">
-  {person.teamName && (
-    <div className="team-assigned-info">
-      🏷️ {person.teamName}
-    </div>
-  )}
+                <div className="text-content">
+                  {person.teamName && (
+                    <div className="team-assigned-info">
+                      🏷️ {person.teamName}
+                    </div>
+                  )}
                   <img src={person.image} alt={person.name} className="avatar" />
                   <div><strong>User Id:</strong> {person.id}</div>
                   <span>{person.name}</span>
@@ -647,28 +693,70 @@ const ExecutiveDetails = () => {
                   <span>{person.country}</span>
                   <span>{person.city}</span>
                 </div>
-                <div style={{ marginTop: "8px", fontSize: "12px" }}>
-  <label>
-    <input
-      type="checkbox"
-      checked={person.canLogin || false}
-      disabled={cooldownUsers.has(person.id)}
-      onChange={() => {
-        if (person.profession.toLowerCase() === "executive") {
-          handleToggleLoginStatus(person.id, person.canLogin);
-        } else {
-          handleToggleRoleLoginStatus(person.profession, person.id, person.canLogin);
-        }
-      }}
-    />
-    <span style={{ marginLeft: "5px" }}>
-      {cooldownUsers.has(person.id)
-        ? `Locked (${cooldownTimers.get(person.id) || 0}s)`
-        : person.canLogin ? "Login ON" : "Login OFF"}
-    </span>
-  </label>
-</div>
-
+                <div className="neo-toggle-container" style={{ position: "absolute", top: "10px", right: "180px" }}>
+                  <input
+                    className="neo-toggle-input"
+                    id={`neo-toggle-${person.id}`}
+                    type="checkbox"
+                    checked={person.canLogin || false}
+                    disabled={cooldownUsers.has(person.id)}
+                    onChange={() => {
+                      if (person.profession.toLowerCase() === "executive") {
+                        handleToggleLoginStatus(person.id, person.canLogin);
+                      } else {
+                        handleToggleRoleLoginStatus(person.profession, person.id, person.canLogin);
+                      }
+                    }}
+                  />
+                  <label className="neo-toggle" htmlFor={`neo-toggle-${person.id}`}>
+                    <div className="neo-track">
+                      <div className="neo-background-layer"></div>
+                      <div className="neo-grid-layer"></div>
+                      <div className="neo-spectrum-analyzer">
+                        <div className="neo-spectrum-bar"></div>
+                        <div className="neo-spectrum-bar"></div>
+                        <div className="neo-spectrum-bar"></div>
+                        <div className="neo-spectrum-bar"></div>
+                        <div className="neo-spectrum-bar"></div>
+                      </div>
+                      <div className="neo-track-highlight"></div>
+                    </div>
+                    <div className="neo-thumb">
+                      <div className="neo-thumb-ring"></div>
+                      <div className="neo-thumb-core">
+                        <div className="neo-thumb-icon">
+                          <div className="neo-thumb-wave"></div>
+                          <div className="neo-thumb-pulse"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="neo-gesture-area"></div>
+                    <div className="neo-interaction-feedback">
+                      <div className="neo-ripple"></div>
+                      <div className="neo-progress-arc"></div>
+                    </div>
+                    <div className="neo-status">
+                      <div className="neo-status-indicator">
+                        <div className="neo-status-dot"></div>
+                        <div className="neo-status-text"></div>
+                      </div>
+                    </div>
+                  </label>
+                  {cooldownUsers.has(person.id) && !person.canLogin && (
+                    <div style={{
+                      position: "absolute",
+                      left: "90px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      fontSize: "12px",
+                      color: "#ff4444",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap"
+                    }}>
+                      {cooldownTimers.get(person.id) || 0}s
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -677,8 +765,8 @@ const ExecutiveDetails = () => {
             <table className="people-table">
               <thead>
                 <tr>
-                {isAdmin && filter === "Manager" && <th>Select</th>}
-                <th>Photo</th>
+                  {isAdmin && filter === "Manager" && <th>Select</th>}
+                  <th>Photo</th>
                   <th>Name</th>
                   <th>UserID</th>
                   <th>Profession</th>
@@ -691,17 +779,15 @@ const ExecutiveDetails = () => {
               <tbody>
                 {people.map((person) => (
                   <tr key={person.id}>
-               {isAdmin && filter === "Manager" && (
-  <td>
-    <input
-      type="checkbox"
-      checked={selectedManagers.includes(person.id)}
-      onChange={() => handleManagerSelect(person.id)}
-    />
-  </td>
-)}
-
-                  
+                    {isAdmin && filter === "Manager" && (
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedManagers.includes(person.id)}
+                          onChange={() => handleManagerSelect(person.id)}
+                        />
+                      </td>
+                    )}
                     <td><img src={person.image} alt={person.name} className="avatar-small" /></td>
                     <td>{person.name}</td>
                     <td>{person.id}</td>
@@ -718,26 +804,63 @@ const ExecutiveDetails = () => {
                         )}
                       </td>
                     )}
-                    <td>
-  <input
-    type="checkbox"
-    checked={person.canLogin || false}
-    disabled={cooldownUsers.has(person.id)}
-    onChange={() => {
-      if (person.profession.toLowerCase() === "executive") {
-        handleToggleLoginStatus(person.id, person.canLogin);
-      } else {
-        handleToggleRoleLoginStatus(person.profession, person.id, person.canLogin);
-      }
-    }}
-  />
-  {cooldownUsers.has(person.id) && (
-    <span style={{ fontSize: "10px", color: "red", marginLeft: "5px" }}>
-      {cooldownTimers.get(person.id) || 0}s
-    </span>
-  )}
-</td>
-
+                    <td style={{ position: "relative" }}>
+                      <div className="neo-toggle-container">
+                        <input
+                          className="neo-toggle-input"
+                          id={`neo-toggle-table-${person.id}`}
+                          type="checkbox"
+                          checked={person.canLogin || false}
+                          disabled={cooldownUsers.has(person.id)}
+                          onChange={() => {
+                            if (person.profession.toLowerCase() === "executive") {
+                              handleToggleLoginStatus(person.id, person.canLogin);
+                            } else {
+                              handleToggleRoleLoginStatus(person.profession, person.id, person.canLogin);
+                            }
+                          }}
+                        />
+                        <label className="neo-toggle" htmlFor={`neo-toggle-table-${person.id}`}>
+                          <div className="neo-track">
+                            <div className="neo-background-layer"></div>
+                            <div className="neo-grid-layer"></div>
+                            <div className="neo-spectrum-analyzer">
+                              <div className="neo-spectrum-bar"></div>
+                              <div className="neo-spectrum-bar"></div>
+                              <div className="neo-spectrum-bar"></div>
+                              <div className="neo-spectrum-bar"></div>
+                              <div className="neo-spectrum-bar"></div>
+                            </div>
+                            <div className="neo-track-highlight"></div>
+                          </div>
+                          <div className="neo-thumb">
+                            <div className="neo-thumb-ring"></div>
+                            <div className="neo-thumb-core">
+                              <div className="neo-thumb-icon">
+                                <div className="neo-thumb-wave"></div>
+                                <div className="neo-thumb-pulse"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="neo-gesture-area"></div>
+                          <div className="neo-interaction-feedback">
+                            <div className="neo-ripple"></div>
+                            <div className="neo-progress-arc"></div>
+                          </div>
+                          <div className="neo-status">
+                            <div className="neo-status-indicator">
+                              <div className="neo-status-dot"></div>
+                              <div className="neo-status-text"></div>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                      {cooldownUsers.has(person.id) && !person.canLogin && (
+                        <span style={{ fontSize: "10px", color: "red", marginLeft: "5px" }}>
+                          {cooldownTimers.get(person.id) || 0}s
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -772,6 +895,13 @@ const ExecutiveDetails = () => {
                 <button type="submit" className="btn-save">Create Team</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {showPopup && (
+        <div className={`custom-popup`}>
+          <div className="popup-content">
+            <span className="popup-message">{popupMessage}</span>
           </div>
         </div>
       )}

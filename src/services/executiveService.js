@@ -198,7 +198,7 @@ export const sendEmail = async ({
 }) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/email/send-email`,
+      `${API_BASE_URL}/template/send-email`,
       {
         templateId,
         executiveName,

@@ -30,9 +30,7 @@ const ClientOverview = () => {
     createFollowUp,
     followUpLoading,
     createMeetingAPI,
-    fetchMeetings,
     fetchFreshLeads,
-    refreshMeetings,
     executiveInfo,
     fetchNotifications,
     createCopyNotification,
@@ -488,7 +486,11 @@ const ClientOverview = () => {
       setClientEmail("");
     }
   };
-
+  useEffect(() => {
+    console.log("Template selected:", selectedTemplate);
+    console.log("Show Email Modal?", showEmailModal);
+  }, [selectedTemplate, showEmailModal]);
+  
   const handleEmailSubmit = async () => {
     setSendingEmail(true);
 
@@ -973,7 +975,34 @@ const ClientOverview = () => {
               )}
 
               <div className="client-btn">
-           
+              {["appointment", "converted", "close"].includes(followUpType) && (
+  <button
+    className="update-btn"
+    onClick={handleTextUpdate}
+    disabled={followUpLoading}
+    style={{
+      backgroundColor:
+        followUpType === "converted"
+          ? "#28a745"
+          : followUpType === "close"
+          ? "#dc3545"
+          : "#17a2b8", // for "appointment"
+      color: "white",
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      cursor: followUpLoading ? "not-allowed" : "pointer",
+      opacity: followUpLoading ? 0.6 : 1,
+    }}
+  >
+    {followUpType === "appointment"
+      ? "Create Meeting"
+      : followUpType === "converted"
+      ? "Convert"
+      : "Close"}
+  </button>
+)}
+
                 {createFollowUpFlag && (
                   <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
                     Create Follow-Up

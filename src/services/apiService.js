@@ -37,6 +37,7 @@ export const updateUserLoginStatus = async (userId, canLogin) => {
     throw error;
   }
 };
+
 export const getAllConvertedClientsApi = async () => {
   try {
     const response = await apiService.get("/converted"); // 👉 No params

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
@@ -108,10 +107,12 @@ const [processPersons, setProcessPersons] = useState([]);
           assignedToExecutive: lead.assignedTo|| "", // or maybe `lead.processPersonName` if available
           status: "Converted", // You can hardcode this to enable filtering
         }));
+const sortedLeads = [...normalizedLeads].sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
 
-    setLeads(normalizedLeads);
-    setAllClients(normalizedLeads);
-    setTotalLeads(normalizedLeads.length);
+setLeads(sortedLeads);
+setAllClients(sortedLeads);
+setTotalLeads(data.pagination?.total || sortedLeads.length);
+    
   } catch (error) {
     console.error("Error fetching converted clients:", error);
     setLeads([]);
@@ -132,9 +133,12 @@ const [processPersons, setProcessPersons] = useState([]);
         // const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
         const data = await fetchAllClients();
         const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
-        setLeads(normalizedLeads);
-        setAllClients(normalizedLeads); 
-        setTotalLeads(data.pagination?.total || normalizedLeads.length);
+        const sortedLeads = [...normalizedLeads].sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
+
+setLeads(sortedLeads);
+setAllClients(sortedLeads);
+setTotalLeads(data.pagination?.total || sortedLeads.length);
+       
       } catch (error) {
         console.error("Error fetching leads:", error);
         setLeads([]);
@@ -295,10 +299,21 @@ const assignLeads = async () => {
     showLoader("Refreshing leads...", "admin");
     const refreshedData = await fetchAllClients();
     const refreshedLeads = Array.isArray(refreshedData)
-      ? refreshedData
-      : refreshedData.leads || [];
+  ? refreshedData
+  : refreshedData.leads || [];
 
-    setAllClients(refreshedLeads);
+// Sort by most recent lead first (if `createdAt` or `id` indicates order)
+const sortedLeads = [...refreshedLeads].sort((a, b) => {
+  return new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id);
+});
+
+setAllClients(sortedLeads);
+
+    // const refreshedLeads = Array.isArray(refreshedData)
+    //   ? refreshedData
+    //   : refreshedData.leads || [];
+
+    // setAllClients(refreshedLeads);
     setCurrentPage(1);
     setFilterType((prev) => prev); // Trigger re-filter and pagination
   } catch (fetchErr) {
@@ -520,7 +535,7 @@ const handleImportToProcess = async () => {
       {/* Executive Select Dropdown */}
     {viewMode === "executive" && (
       <select value={selectedExecutive} onChange={handleExecutiveChange}>
-        <option value="">-- Select Executive --</option>
+        <option value=""> Select Executive </option>
         {executives.map((exec) => (
           <option key={exec.id} value={String(exec.id)}>
             {exec.username}
@@ -533,7 +548,7 @@ const handleImportToProcess = async () => {
     {viewMode === "process" && (
       <>
         <select value={selectedProcess} onChange={handleProcessChange}>
-          <option value="">-- Select Process --</option>
+          <option value="">Select Process </option>
           {processPersons.map((proc) => (
             <option key={proc.id} value={proc.id}>
               {proc.fullName}

@@ -218,40 +218,41 @@ function FreshLead() {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-const handleAddFollowUp = async (lead) => {
-  const clientLead = lead.clientLead || {};
-  const clientData = {
-    name: lead.name || clientLead.name || "",
-    email: lead.email || clientLead.email || "",
-    phone: lead.phone || clientLead.phone || "",
-    altPhone: lead.altPhone || clientLead.altPhone || "",
-    education: lead.education || clientLead.education || "",
-    experience: lead.experience || clientLead.experience || "",
-    state: lead.state || clientLead.state || "",
-    dob: lead.dob || clientLead.dob || "",
-    country: lead.country || clientLead.country || "",
-    assignDate: lead.assignDate || lead.assignmentDate || "",
-    freshLeadId: lead.id,
-    id: clientLead.id || lead.id, // Use clientLead.id if available, otherwise fall back to lead.id
+  const handleAddFollowUp = async (lead) => {
+    const clientLead = lead.clientLead || {};
+    const clientData = {
+      name: lead.name || clientLead.name || "",
+      email: lead.email || clientLead.email || "",
+      phone: lead.phone || clientLead.phone || "",
+      altPhone: lead.altPhone || clientLead.altPhone || "",
+      education: lead.education || clientLead.education || "",
+      experience: lead.experience || clientLead.experience || "",
+      state: lead.state || clientLead.state || "",
+      dob: lead.dob || clientLead.dob || "",
+      country: lead.country || clientLead.country || "",
+      assignDate: lead.assignDate || lead.assignmentDate || "",
+      freshLeadId: lead.id,
+      id: clientLead.id || lead.id,
+    };
+  
+    let followUpHistory = [];
+  
+    try {
+      followUpHistory = await getFollowUpHistory(lead.id);
+    } catch (error) {
+      console.error("Failed to fetch follow-up history:", error);
+    }
+  
+    navigate(`/executive/clients/${encodeURIComponent(clientData.id)}`, {
+      state: {
+        client: clientData,
+        createFollowUp: true,
+        followUpHistory: followUpHistory,
+        clientId: clientData.id,
+      },
+    });
   };
-
-  let followUpHistory = [];
-
-  try {
-    followUpHistory = await getFollowUpHistory(lead.id);
-  } catch (error) {
-    console.error("Failed to fetch follow-up history:", error);
-  }
-
-  navigate(`/executive/clients/${encodeURIComponent(clientData.id)}`, {
-    state: {
-      client: clientData,
-      createFollowUp: true,
-      followUpHistory: followUpHistory,
-      clientId: clientData.id, // Ensure clientId is passed correctly
-    },
-  });
-};
+  
 
   if (executiveLoading) return <p>Loading executive data...</p>;
 
