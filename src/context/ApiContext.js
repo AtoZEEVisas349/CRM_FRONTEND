@@ -1269,6 +1269,15 @@ const fetchConvertedByExecutive = async (execName) => {
     return [];
   }
 };
+const getAllConverted = async () => {
+  try {
+    const response = await apiService.getAllConvertedClientsApi(); 
+    return response;
+  } catch (error) {
+    console.error("❌ Error creating close lead:", error);
+    throw error;
+  }
+};
 // Closed by executive
 const fetchClosedByExecutive = async (execName) => {
   if (!execName) return [];
@@ -1429,7 +1438,7 @@ const updateHrProfileById = async (hrId, updateData) => {
         allTeamLeads,
 allTeamLeadsLoading,
 fetchAllTeamLeadsAPI,
-
+getAllConverted,
         updateFreshLeadFollowUp,
         executiveDashboardData,
         executiveDashboardLoading,

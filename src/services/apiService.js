@@ -37,7 +37,15 @@ export const updateUserLoginStatus = async (userId, canLogin) => {
     throw error;
   }
 };
-
+export const getAllConvertedClientsApi = async () => {
+  try {
+    const response = await apiService.get("/converted"); // 👉 No params
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching all converted leads:", error.response?.data || error.message);
+    throw error;
+  }
+};
 // Toggle Manager Login Access
 export const toggleManagerLoginAccess = async (managerId, can_login) => {
   return await apiService.post("/manager/toggle-login", { managerId, can_login });

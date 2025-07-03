@@ -1,6 +1,4 @@
 
-
-
 import React, { useEffect, useState, useContext } from "react";
 import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
@@ -8,9 +6,11 @@ import SidebarToggle from "../admin/SidebarToggle";
 import "../../styles/leadassign.css";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
+import { useProcessService } from "../../context/ProcessServiceContext";
 
 const TaskManagement = () => {
   const [leads, setLeads] = useState([]);
+    const { getAllProcessPersons,createProcesstoConverted } = useProcessService();
   const [executives, setExecutives] = useState([]);
   const [selectedExecutive, setSelectedExecutive] = useState("");
   const [selectedLeads, setSelectedLeads] = useState([]);
@@ -20,6 +20,9 @@ const TaskManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
   const [filterType, setFilterType] = useState("all"); 
+  const [viewMode, setViewMode] = useState("executive");
+  const [selectedProcess, setSelectedProcess] = useState("");
+const [processPersons, setProcessPersons] = useState([]);
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
   const paginatedLeads = leads;
   const [showPagination, setShowPagination] = useState(false);
@@ -34,6 +37,7 @@ const TaskManagement = () => {
     createLeadAPI,
     updateClientLead,
     deleteClientLead,
+    getAllConverted
   } = useApi();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -78,14 +82,55 @@ const TaskManagement = () => {
 
   useEffect(() => {
     fetchExecutives();
+   
   }, []);
 
-  useEffect(() => {
+  const getAllConvertedClients = async () => {
+  setLoading(true);
+  try {
+    showLoader("Loading task management...", "admin");
+    const data = await getAllConverted();
+
+    const normalizedLeads = Array.isArray(data)
+      ? data
+      : (data.data || []).map((lead) => ({
+          id: lead.id,
+          name: lead.name,
+          email: lead.email,
+          phone: lead.phone,
+          education: lead.education || "",
+          experience: lead.experience || "",
+          state: lead.state || "",
+          country: lead.country || "",
+          dob: lead.dob || "",
+          leadAssignDate: lead.leadAssignDate || "",
+          countryPreference: lead.countryPreference || "",
+          assignedToExecutive: lead.assignedTo|| "", // or maybe `lead.processPersonName` if available
+          status: "Converted", // You can hardcode this to enable filtering
+        }));
+
+    setLeads(normalizedLeads);
+    setAllClients(normalizedLeads);
+    setTotalLeads(normalizedLeads.length);
+  } catch (error) {
+    console.error("Error fetching converted clients:", error);
+    setLeads([]);
+    setAllClients([]);
+    setTotalLeads(0);
+  } finally {
+    hideLoader();
+  }
+};
+
+  
+   
+  // useEffect(() => {
     const getAllLeads = async () => {
       setLoading(true);
       try {
         showLoader("Loading task management...", "admin");
-        const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
+        // const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
+        const data = await fetchAllClients();
         const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
         setLeads(normalizedLeads);
         setAllClients(normalizedLeads); 
@@ -100,8 +145,8 @@ const TaskManagement = () => {
       }
     };
   
-    getAllLeads(); // Call the async function
-  }, []); 
+  //   getAllLeads(); // Call the async function
+  // }, []); 
 
   const fetchExecutives = async () => {
     try {
@@ -168,77 +213,74 @@ const TaskManagement = () => {
     setSelectedLeads(selectedIds);
   }, [leads, selectedRange, currentPage]);
 
-  const assignLeads = async () => {
-    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
-    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
 
-    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-    if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
 
-    let successCount = 0;
-    let failCount = 0;
-    const updatedLeads = [...leads];
+const assignLeads = async () => {
+  const isExecutiveView = viewMode === "executive";
+  const selectedTargetId = isExecutiveView ? selectedExecutive : selectedProcess;
 
-    for (const leadId of selectedLeads) {
-      const lead = leads.find((l) => String(l.id) === leadId);
-      if (!lead) {
-        failCount++;
-        continue;
-      }
+  if (!selectedTargetId) {
+    return alert(`⚠️ Please select a ${isExecutiveView ? "executive" : "process person"}.`);
+  }
 
-      const clientLeadId = lead.id; // since this is the actual ID from your API
-      if (!clientLeadId) {
-        console.warn("❌ Missing clientLeadId or lead.id:", lead);
-        failCount++;
-        continue;
-      }
+  if (selectedLeads.length === 0) {
+    return alert("⚠️ Please select at least one lead.");
+  }
 
-      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
+  const targetList = isExecutiveView ? executives : processPersons;
+  const target = targetList.find((item) => String(item.id) === selectedTargetId);
 
-      const leadPayload = {
-        name: lead.name,
-        email: lead.email || "default@example.com",
-        phone,
-        source: lead.source || "Unknown",
-        clientLeadId: Number(clientLeadId),
-        assignedToExecutive: executive.username,
-      };
-        
-      try {
-     
+  if (!target || (!target.username && !target.fullName)) {
+    return alert(`⚠️ Invalid ${isExecutiveView ? "executive" : "process"} selected.`);
+  }
+
+  const targetName = target.username || target.fullName;
+
+  let successCount = 0;
+  let failCount = 0;
+
+  for (const leadId of selectedLeads) {
+    const lead = allClients.find((l) => String(l.id) === leadId);
+    if (!lead) {
+      failCount++;
+      continue;
+    }
+
+    const clientLeadId = lead.id;
+    const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
+
+    const leadPayload = {
+      name: lead.name,
+      email: lead.email || "default@example.com",
+      phone,
+      source: lead.source || "Unknown",
+      clientLeadId: Number(clientLeadId),
+      assignedToExecutive: targetName,
+    };
+
+    try {
       let finalLeadId = leadId;
 
-      // Assign or Reassign based on whether lead was already assigned
       if (!lead.assignedToExecutive) {
-        // Always create the lead first
         const createdLead = await createLeadAPI(leadPayload);
         if (!createdLead?.id) throw new Error("Lead creation failed");
 
         finalLeadId = createdLead.clientLeadId;
-        await assignLeadAPI(Number(finalLeadId), executive.username);
+        await assignLeadAPI(Number(finalLeadId), targetName);
+
         const freshLeadPayload = {
           leadId: createdLead.id,
           name: createdLead.name,
           email: createdLead.email,
           phone: String(createdLead.phone),
-          assignedTo: executive.username,
-          assignedToId: executive.id,
+          assignedTo: targetName,
+          assignedToId: target.id,
           assignDate: new Date().toISOString(),
         };
-      
-        await createFreshLeadAPI(freshLeadPayload);
-      
-      } else {
-        await reassignLead(lead.id, executive.username);
-        alert("Lead resassigned successfully!!");
-      }
 
-      const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
-      if (index !== -1) {
-        updatedLeads[index] = {
-          ...updatedLeads[index],
-          assignedToExecutive: executive.username,
-        };
+        await createFreshLeadAPI(freshLeadPayload);
+      } else {
+        await reassignLead(lead.id, targetName);
       }
 
       successCount++;
@@ -248,58 +290,63 @@ const TaskManagement = () => {
     }
   }
 
-  setLeads(updatedLeads);
-  setAllClients(updatedLeads); // ✅ update the full list
+  // ✅ Refresh full dataset from the backend
+  try {
+    showLoader("Refreshing leads...", "admin");
+    const refreshedData = await fetchAllClients();
+    const refreshedLeads = Array.isArray(refreshedData)
+      ? refreshedData
+      : refreshedData.leads || [];
+
+    setAllClients(refreshedLeads);
+    setCurrentPage(1);
+    setFilterType((prev) => prev); // Trigger re-filter and pagination
+  } catch (fetchErr) {
+    console.error("❌ Failed to refresh data after assignment:", fetchErr);
+  } finally {
+    hideLoader();
+  }
+
+  // ✅ Reset selections
   setSelectedLeads([]);
   setSelectedExecutive("");
+  setSelectedProcess("");
 
+  // ✅ Final status alert
   if (successCount > 0 && failCount === 0) {
     alert("✅ Leads assigned successfully.");
   } else if (successCount > 0 && failCount > 0) {
-    alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console`);
+    alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console.`);
   } else {
     alert("❌ All lead assignments failed.");
   }
 };
 
+
+
 useEffect(() => {
-  // Start with the full dataset
   let filtered = [...allClients];
 
-  // Apply filter type
   switch (filterType) {
-    case "converted":
-      filtered = filtered.filter((lead) => lead.status === "Converted");
-      break;
-    case "followup":
-      filtered = filtered.filter((lead) => lead.status === "Follow-Up");
-      break;
-    case "fresh":
-      filtered = filtered.filter((lead) => lead.status === "New");
-      break;
-    case "meeting":
-      filtered = filtered.filter((lead) => lead.status === "Meeting");
-      break;
-    case "closed":
-      filtered = filtered.filter((lead) => lead.status === "Closed");
-      break;
-    default:
-      break;
+    case "converted": filtered = filtered.filter((lead) => lead.status === "Converted"); break;
+    case "followup": filtered = filtered.filter((lead) => lead.status === "Follow-Up"); break;
+    case "fresh": filtered = filtered.filter((lead) => lead.status === "New"); break;
+    case "meeting": filtered = filtered.filter((lead) => lead.status === "Meeting"); break;
+    case "closed": filtered = filtered.filter((lead) => lead.status === "Closed"); break;
+    default: break;
   }
 
   const total = filtered.length;
   const totalPages = Math.ceil(total / leadsPerPage);
-
-  // Ensure current page is within valid bounds after filtering
   const newPage = currentPage > totalPages ? 1 : currentPage;
-
   const offset = (newPage - 1) * leadsPerPage;
   const paginated = filtered.slice(offset, offset + leadsPerPage);
 
   setLeads(paginated);
   setTotalLeads(total);
-  setCurrentPage(newPage); // Ensures pagination is stable
+  setCurrentPage(newPage);
 }, [filterType, allClients, currentPage, leadsPerPage]);
+
 
   const handleEditClick = (lead) => {
     setEditingLead({ ...lead });
@@ -352,7 +399,80 @@ useEffect(() => {
     }
   };
 
+
+  
+const handleProcessChange = (e) => setSelectedProcess(e.target.value);
+
+  useEffect(() => {
+    const fetchProcessPersons = async () => {
+      try {
+        const persons = await getAllProcessPersons();
+        setProcessPersons(persons.processPersons);
+      } catch (err) {
+        console.error("Failed to load process persons", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProcessPersons();
+  }, []);
+  const [previousFilterType, setPreviousFilterType] = useState("all");
+  useEffect(() => {
+  const loadDataByView = async () => {
+    if (viewMode === "process") {
+      setPreviousFilterType(filterType); // Save current executive filter
+      await getAllConvertedClients();
+      handleFilterChange("converted"); // Only Converted clients should be visible in process mode
+    } else {
+      await getAllLeads();
+      handleFilterChange(previousFilterType); // Restore the previous filter for executive mode
+    }
+  };
+
+  loadDataByView();
+}, [viewMode]);
+
+// useEffect(() => {
+//   if (viewMode === "process") {
+//     handleFilterChange("converted");
+//   } else {
+//     handleFilterChange(previousFilterType);
+//   }
+// }, [viewMode]);
+const handleImportToProcess = async () => {
+  if (!selectedProcess) return alert("Select a process person first.");
+  if (selectedLeads.length === 0) return alert("Select at least one client.");
+
+  try {
+    showLoader("Importing clients...", "admin");
+
+    const resp = await createProcesstoConverted({
+      processPersonId: selectedProcess,
+      selectedClientIds: selectedLeads,
+    });
+
+    hideLoader();
+    alert(resp.message || "Clients imported successfully.");
+    setSelectedLeads([]);
+
+    // ✅ Refresh the converted client list instead of all clients
+    await getAllConvertedClients(); 
+    handleFilterChange("converted");
+    setCurrentPage(1);
+
+  } catch (err) {
+    hideLoader();
+    console.error(err);
+    alert("Import failed, check console.");
+  }
+};
+
+
+
   return (
+    
+
     <div className={`f-lead-content ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <SidebarToggle />
     
@@ -360,50 +480,127 @@ useEffect(() => {
       {isLoading && variant === "admin" && (
         <AdminSpinner text="Loading Lead Assign..." />
       )}
-        <div className="Logo">Lead Assign</div>
-        <div className="taskmanage-header">
-          <div className="header-actions">
-            <select value={selectedExecutive} onChange={handleExecutiveChange}>
-              <option value="">-- Select Executive --</option>
-              {executives.map((exec) => (
-                <option key={exec.id} value={String(exec.id)}>
-                  {exec.username}
-                </option>
-              ))}
-            </select>
+      <div style={{display:"flex"}}> <div className="Logo">Lead Assign</div>
+       <div className="toggle-slider-wrapper" style={{marginLeft:"20px"}}>
+      <label className="toggle-switch">
+      <input
+  type="checkbox"
+  checked={viewMode === "process"}
+ onChange={() => {
+    setViewMode((prev) => {
+      const newMode = prev === "executive" ? "process" : "executive";
 
-            <select value={selectedRange} onChange={handleRangeChange}>
-              <option value="">Default Sorting</option>
-              <option value="1-10">1 - 10</option>
-              <option value="11-20">11 - 20</option>
-              <option value="21-50">21 - 50</option>
-              <option value="51-100">51 - 100</option>
-            </select>
+      if (newMode === "process") {
+        // Save current executive filter and switch to "converted"
+        setPreviousFilterType(filterType);
+        handleFilterChange("converted");
+      } else {
+        // Restore previous executive filter
+        handleFilterChange(previousFilterType);
+        getAllLeads();
+      }
 
-            <div className="header-sort-filter">
-              <button className="Selection-btn" onClick={toggleSelectAll}>
-                Select/Unselect All Leads
-              </button>
-              <button className="assign-btn" onClick={assignLeads}>
-                Assign
-              </button>
-              <button className="reset" onClick={() => setSelectedLeads([])}>
-                Reset
-              </button>
-            </div>
-            <div className="lead-filter-buttons">
-              {["all", "fresh", "followup", "converted", "closed","meeting"].map(type => (
-                <button
-                  key={type}
-                  className={`lead-filter-btn ${filterType === type ? "active" : ""}`}
-                  onClick={() => handleFilterChange(type)}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)} 
-                </button>
-              ))}
-            </div>        
-          </div>
-        </div>
+      return newMode;
+    });
+  }}
+ 
+/>
+
+        <span className="toggle-slider" />
+      </label>
+      <span className="toggle-label">
+        {viewMode === "executive" ? "Executive" : "Process"}
+      </span>
+    </div>
+      </div>
+       
+    <div className="taskmanage-header">
+  <div className="header-actions">
+    {/* Toggle Slider */}
+      {/* Executive Select Dropdown */}
+    {viewMode === "executive" && (
+      <select value={selectedExecutive} onChange={handleExecutiveChange}>
+        <option value="">-- Select Executive --</option>
+        {executives.map((exec) => (
+          <option key={exec.id} value={String(exec.id)}>
+            {exec.username}
+          </option>
+        ))}
+      </select>
+    )}
+
+    {/* Process Select and Converted Button */}
+    {viewMode === "process" && (
+      <>
+        <select value={selectedProcess} onChange={handleProcessChange}>
+          <option value="">-- Select Process --</option>
+          {processPersons.map((proc) => (
+            <option key={proc.id} value={proc.id}>
+              {proc.fullName}
+            </option>
+          ))}
+        </select>
+       
+      </>
+    )}
+    {/* Range Select (common) */}
+    <select value={selectedRange} onChange={handleRangeChange}>
+      <option value="">Default Sorting</option>
+      <option value="1-10">1 - 10</option>
+      <option value="11-20">11 - 20</option>
+      <option value="21-50">21 - 50</option>
+      <option value="51-100">51 - 100</option>
+    </select>
+     <div className="header-sort-filter" >
+      <button className="gradient-button" onClick={toggleSelectAll}>
+        Select/Unselect All Leads
+      </button>
+     <button
+  className="gradient-button"
+  onClick={() => {
+    if (viewMode === "executive") {
+      assignLeads();
+    } else {
+      handleImportToProcess();
+    }
+  }}
+>
+  Assign
+</button>
+
+      <button className="gradient-button" onClick={() => setSelectedLeads([])}>
+        Reset
+      </button>
+    </div>
+
+ 
+
+   
+
+    {/* Other Buttons */}
+   
+
+    {/* Lead Filter Buttons */}
+    
+    <div className="lead-filter-buttons">
+      {["all", "fresh", "followup","converted", "closed", "meeting"].map(
+        (type) =>
+          viewMode === "executive"|| type==="converted" ?(
+            <button
+              key={type}
+              className={`lead-filter-btn ${
+                filterType === type ? "active" : ""
+              }`}
+              onClick={() => handleFilterChange(type)}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ) : null
+      )}
+    </div>
+  </div>
+</div>
+
 
         <div className="scrollable-container">
           <div className="leads-table">
@@ -422,7 +619,12 @@ useEffect(() => {
                       className="lead-checkbox"
                       checked={selectedLeads.includes(String(lead.id))}
                       onChange={() => handleLeadSelection(lead.id)}
+                        disabled={viewMode === "process" && lead.assignedToExecutive}
+                        
                     />
+                    {/* {viewMode === "process" && lead.assignedToExecutive && (
+  <span className="disabled-icon" title="Already Assigned">🚫</span>
+)} */}
                     <span className="container-icon">👤</span>
                     <div className="lead-info">
                       <span>Name: {lead.name}</span>

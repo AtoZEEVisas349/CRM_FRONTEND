@@ -29,7 +29,11 @@ import {
   moveToRejectedApi,
   getProcessHistoryApi,
   addStageCommentAndNotify,
-  getProcessPersonMeetingsApi
+  getProcessPersonMeetingsApi,
+  getAllNotificationsByUser,
+  getAllProcessPersonsApi,
+  createProcessforConvertedApi,
+  getAllProcessCustomerIdApi
 } from "../services/processService";
 
 // 1. Create Context
@@ -236,7 +240,7 @@ const [convertedError, setConvertedError] = useState(null);
   const fetchCustomers = async () => {
       setLoading(true);
       try {
-        const data = await getAllCustomers();
+        const data = await getAllProcessCustomerIdApi();
         setCustomers(data);
       } catch (err) {
         setError(err.message);
@@ -294,9 +298,9 @@ const [convertedError, setConvertedError] = useState(null);
     }
   };
    
- const createFinalStage = async (freshLeadId) => {
+ const createFinalStage = async (payload) => {
     try {
-      const response= await createFinalStageApi(freshLeadId);
+      const response= await createFinalStageApi(payload);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
@@ -454,7 +458,55 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
-  
+  const fetchNotifications = async (userRole, page = 1) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getAllNotificationsByUser(userRole, page);
+    
+      return response; // returns just the array of notifications
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setError(error.message || "Failed to fetch notifications");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+    const getAllProcessPersons = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllProcessPersonsApi();
+       return data;
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+   
+  const createProcesstoConverted = async (payload) => {
+    try {
+      const data = await createProcessforConvertedApi(payload);
+      return data;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getProcessCustomerById = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllCustomers();
+       return data;
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
   // -----------------------
   // Provider Return
   // -----------------------
@@ -505,7 +557,11 @@ processProfile,
     getComments,
     createRejected,
     getProcessHistory,
-    createReminder
+    createReminder,
+    fetchNotifications,
+    getAllProcessPersons,
+    createProcesstoConverted,
+    getProcessCustomerById
       }}
     >
       {children}

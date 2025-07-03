@@ -277,12 +277,12 @@ const data = await res.json();
 if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
 return data;
 };
-export const createFinalStageApi = async (freshLeadId) => {
+export const createFinalStageApi = async (payload) => {
   const res = await fetch(`${API_BASE_URL}/processed/create`, {
     method: "POST",
     headers: getHeaders(),
     credentials: "include",
-    body:JSON.stringify({ fresh_lead_id: freshLeadId })
+    body:JSON.stringify(payload)
   });
 
   const data = await res.json();
@@ -486,4 +486,58 @@ export const getProcessPersonMeetingsApi = async () => {
   if (!res.ok) throw new Error(data.error || "Failed to fetch process meetings");
 
   return data; // expected format: { meetings: [...] }
+};
+export const getAllNotificationsByUser = async (userRole, page = 1) => {
+  const response = await fetch(`${API_BASE_URL}/notification/user?page=${page}`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify({ userRole }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch notifications");
+  }
+
+  return data; // Contains { notifications, pagination }
+};
+export const getAllProcessPersonsApi = async () => {
+  const res = await fetch(`${API_BASE_URL}/processperson/`, {
+    method: "GET",
+    headers: getHeaders(),
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+  return data;
+};
+export const createProcessforConvertedApi = async (payload) => {
+  const response = await fetch(`${API_BASE_URL}/processperson/assign-process-person`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to fetch notifications");
+  }
+
+  return data; // Contains { notifications, pagination }
+};
+export const getAllProcessCustomerIdApi = async () => {
+const res = await fetch(`${API_BASE_URL}/processperson/get-customers`, {
+method: "GET",
+headers: getHeaders(),
+credentials: "include",
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.error || "Failed to fetch");
+return data.customers;
 };
