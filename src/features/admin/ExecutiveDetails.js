@@ -658,7 +658,8 @@ const ExecutiveDetails = () => {
                 className={`box1 ${selectedMembers.includes(person.id) || selectedManagers.includes(person.id)
                   ? "selected-card"
                   : ""
-                } ${Number(recentlyAssigned) === Number(person.id) ? "success-border" : ""} ${filter === "All" && !person.teamId ? "draggable-executive" : ""}`}
+                } ${Number(recentlyAssigned) === Number(person.id) ? "success-border" : ""} 
+                ${filter === "All" && !person.teamId ? "draggable-executive unassigned-card" : ""}`}
                 style={{ display: "flex", alignItems: "flex-start" }}
                 draggable={filter === "All" && !person.teamId}
                 onDragStart={(e) => handleDragStart(e, person)}
