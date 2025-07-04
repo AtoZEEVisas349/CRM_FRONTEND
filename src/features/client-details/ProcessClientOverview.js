@@ -3,11 +3,12 @@ import { useProcessService } from "../../context/ProcessServiceContext";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { getEmailTemplates } from "../../static/emailTemplates";
+import { processgetEmailTemplates } from "../../static/processgetEmailTemplates";
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
+import SendEmailProcess from "../process-client/SendEmailProcess";
 import ProcessSendEmailtoClients from "../process-client/ProcessSentEmailtoClient";
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -309,7 +310,7 @@ const[historyFollowup,setHistoryFollowup]=useState();
   };
 
   const { handleSendEmail } = useExecutiveActivity();
-  // const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
+  const emailTemplates = processgetEmailTemplates(clientInfo, userData);
 
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);

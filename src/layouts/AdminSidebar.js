@@ -96,31 +96,31 @@ const AdminSidebar = () => {
           <p className="sidebar-section sidebar-label">General</p>
           <ul>
             <li className="active">
-              <Link to="/admin" className="admin-aside-link">
+              <Link to="/admin" className="admin-aside-link" data-tooltip="Overview">
                 <Gauge className="admin-aside-icon" />
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/assign-task" className="admin-aside-link">
+              <Link to="/admin/assign-task" className="admin-aside-link" data-tooltip="Overview">
                 <ClipboardList className="admin-aside-icon" />
                 <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/leadassign" className="admin-aside-link">
+              <Link to="/admin/leadassign" className="admin-aside-link" data-tooltip="Overview">
                 <UserCheck className="admin-aside-icon" />
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/executiveform" className="admin-aside-link">
+              <Link to="/admin/executiveform" className="admin-aside-link" data-tooltip="Overview">
                 <UserPlus className="admin-aside-icon" />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/monitoring" className="admin-aside-link">
+              <Link to="/admin/monitoring" className="admin-aside-link" data-tooltip="Overview">
                 <ActivitySquare className="admin-aside-icon" />
                 <span className="sidebar-label">Monitoring</span>
               </Link>
@@ -130,39 +130,39 @@ const AdminSidebar = () => {
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
             <li>
-              <Link to="/admin/eod-report" className="admin-aside-link">
+              <Link to="/admin/eod-report" className="admin-aside-link" data-tooltip="Overview">
                 <FileText className="admin-aside-icon" />
                 <span className="sidebar-label">EOD Report</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/full-report" className="admin-aside-link">
+              <Link to="/admin/full-report" className="admin-aside-link" data-tooltip="Overview">
                 <BarChart className="admin-aside-icon" />
                 <span className="sidebar-label">Full Report</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/executive-details" className="admin-aside-link">
+              <Link to="/admin/executive-details" className="admin-aside-link" data-tooltip="Overview">
                 <UserCircle className="admin-aside-icon" />
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
          
             <li>
-              <Link to="/admin/executive-attendance" className="admin-aside-link">
+              <Link to="/admin/executive-attendance" className="admin-aside-link" data-tooltip="Overview">
                 <CalendarDays className="admin-aside-icon" />
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
          
             <li>
-              <Link to="/admin/help-support" className="admin-aside-link">
+              <Link to="/admin/help-support" className="admin-aside-link" data-tooltip="Overview">
                 <LifeBuoy className="admin-aside-icon" />
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/settings" className="admin-aside-link">
+              <Link to="/admin/settings" className="admin-aside-link" data-tooltip="Overview">
                 <Settings className="admin-aside-icon" />
                 <span className="sidebar-label">Settings</span>
               </Link>

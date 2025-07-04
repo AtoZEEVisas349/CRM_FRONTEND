@@ -3,7 +3,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { getEmailTemplates } from "../../static/emailTemplates"; 
+import { processgetEmailTemplates } from "../../static/processgetEmailTemplates"; 
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
@@ -529,7 +529,7 @@ useEffect(() => {
   };
 
   const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
-//   const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
+  const emailTemplates = processgetEmailTemplates(clientInfo, userData);
 
   //State for selecting email template
   const [selectedTemplateId, setSelectedTemplateId] = useState("");

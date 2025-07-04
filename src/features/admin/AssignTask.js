@@ -6,12 +6,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faSpinner, faUser, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
+import { Alert, soundManager } from "../modal/alert";
 
 const AssignTask = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [alerts, setAlerts] = useState([]); // Replaced error and success with alerts
   const [isFormMode, setIsFormMode] = useState(false); // Toggle between file and form
   const { isLoading, variant, showLoader, hideLoader } = useLoading();
   // Helper function to get current date in YYYY-MM-DD format
@@ -57,9 +57,19 @@ const AssignTask = () => {
 
     if (selectedFile && validTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
-      setError("");
+      setAlerts([]); // Clear alerts
     } else {
-      setError("Please upload a valid CSV or Excel file");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Invalid File",
+          message: "Please upload a valid CSV or Excel file",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
       setFile(null);
     }
   };
@@ -77,21 +87,50 @@ const AssignTask = () => {
   // Handle file upload
   const handleFileUpload = async () => {
     if (!file) {
-      setError("Please select a file first");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "No File Selected",
+          message: "Please select a file first",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
       return;
     }
 
     try {
       setUploading(true);
-      setError("");
-      setSuccess("");
+      setAlerts([]);
       const response = await uploadFileAPI(file);
-      setSuccess("File uploaded successfully!");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "success",
+          title: "Upload Successful",
+          message: "File uploaded successfully!",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("success");
       setFile(null);
       document.getElementById("file-upload").value = "";
     } catch (err) {
       console.error("Upload failed:", err);
-      setError(err.message || "Failed to upload file");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Upload Failed",
+          message: err.message || "Failed to upload file",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
     } finally {
       setUploading(false);
     }
@@ -101,16 +140,35 @@ const AssignTask = () => {
   const handleFormSubmit = async () => {
     console.log("Submitting leadData:", leadData); // Debug log
     if (!leadData.name) {
-      setError("Name is required");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Missing Name",
+          message: "Name is required",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
       return;
     }
 
     try {
       setUploading(true);
-      setError("");
-      setSuccess("");
+      setAlerts([]);
       const response = await createSingleLeadAPI(leadData);
-      setSuccess("Lead created successfully!");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "success",
+          title: "Lead Created",
+          message: "Lead created successfully!",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("success");
       // Reset form with current date
       setLeadData({
         name: "",
@@ -125,11 +183,27 @@ const AssignTask = () => {
       });
     } catch (err) {
       console.error("Lead creation failed:", err);
-      setError(err.message || "Failed to create lead. Please check all fields.");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Lead Creation Failed",
+          message: err.message || "Failed to create lead. Please check all fields.",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
     } finally {
       setUploading(false);
     }
   };
+
+  // Handle alert close
+  const handleAlertClose = (id) => {
+    setAlerts(alerts.filter((alert) => alert.id !== id));
+  };
+
   useEffect(() => {
     showLoader("Loading assign task...", "admin");
   
@@ -247,12 +321,11 @@ const neutralTextStyle = {
           boxSizing: "border-box",
         }}
       >
-                {isLoading && variant === "admin" && (
-  <AdminSpinner text="Loading assign task..." />
-)}
+        {isLoading && variant === "admin" && (
+          <AdminSpinner text="Loading assign task..." />
+        )}
         <SidebarToggle />
         <div className="assign-task-content" style={{ width: "100%", maxWidth: "900px" }}>
-
 
           <div
             className="background-text"
@@ -343,34 +416,6 @@ const neutralTextStyle = {
                 {isFormMode ? "Switch to File Upload" : "Switch to Form Input"}
               </button>
             </div>
-
-            {error && (
-              <div style={{
-                background: "linear-gradient(135deg, #ff4757, #ff6b81)",
-                color: "white",
-                padding: "12px 20px",
-                borderRadius: "12px",
-                marginBottom: "20px",
-                textAlign: "center",
-                fontWeight: "500",
-              }}>
-                {error}
-              </div>
-            )}
-            
-            {success && (
-              <div style={{
-                background: "linear-gradient(135deg, #2ed573, #7bed9f)",
-                color: "white",
-                padding: "12px 20px",
-                borderRadius: "12px",
-                marginBottom: "20px",
-                textAlign: "center",
-                fontWeight: "500",
-              }}>
-                {success}
-              </div>
-            )}
 
             {isFormMode ? (
               <div>
@@ -636,9 +681,13 @@ const neutralTextStyle = {
             </button>
           </div>
         </div>
+        <Alert alerts={alerts} onClose={handleAlertClose} />
       </div>
     </>
   );
 };
 
 export default AssignTask;
+
+
+

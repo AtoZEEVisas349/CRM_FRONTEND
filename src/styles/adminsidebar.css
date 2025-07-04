@@ -12,11 +12,33 @@
   border-radius: 0 20px 10px 0;
 }
 
-.admin-sidebar.collapsed {
-  width: 76px;
-  overflow: hidden !important;
+
+.admin-sidebar.collapsed .admin-aside-link {
+  position: relative;
 }
 
+.admin-sidebar.collapsed .admin-aside-link::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #222;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 4000;
+}
+
+.admin-sidebar.collapsed .admin-aside-link:hover::after {
+  opacity: 1;
+  z-index: 9999 !important;
+}
 .admin-header-wrapper {
   height: 60px;
   display: flex;
@@ -46,7 +68,37 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
+.admin-sidebar.collapsed .admin-aside-link {
+  position: relative;
+}
 
+.admin-sidebar.collapsed .admin-aside-link::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #222;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 4000;
+}
+
+.admin-sidebar.collapsed .admin-aside-link:hover::after {
+  opacity: 1;
+  z-index: 9999 !important;
+}
+.admin-sidebar.collapsed {
+  width: 76px;
+  overflow: visible !important;  
+  z-index: 100;
+}
 .admin-sidebar ul {
   list-style: none;
   padding: 0;
