@@ -32,11 +32,11 @@ const HrRoutes = () => {
             </RequirePermission>} />
         <Route path="settings" element={
             <RequirePermission requiredKey="settings">
-            <AdminSettings />
+            <HrSettings />
             </RequirePermission>} />
        <Route path="notification" element={
           <RequirePermission requiredKey="push_notifications">
-          <AdminNotification />
+          <HrNotification />
           </RequirePermission>} />
         <Route path="monitoring" element={
           <RequirePermission requiredKey="monitoring">
@@ -57,9 +57,7 @@ const HrRoutes = () => {
             <Eod />
             </RequirePermission>} /> {/* ✅ EOD route added here */}
         <Route path="executive-attendance" element={<AttendanceTable />} />
-        <Route path="hr/notification" element={<HrNotification />} />
-        <Route path="hr/settings" element={<HrSettings />} />
-
+        
       </Route>
     </Routes>
   );

@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AssignTask from "../features/admin/AssignTask";
 import ExecutiveDetails from "../features/admin/ExecutiveDetails";
-import AdminSettings from "../features/admin-settings/AdminSettings";
+import ManagerSettings from "../features/manager/ManagerSettings";
 import ContactUs from "../features/admin/ContactUs";
 import AdminNotification from "../features/admin/AdminNotification"
 import Eod from "../features/admin/Eod";
@@ -27,7 +27,7 @@ const ManagerRoutes = () => {
             </RequirePermission>} />
         <Route path="settings" element={
             <RequirePermission requiredKey="settings">
-            <AdminSettings />
+            <ManagerSettings />
             </RequirePermission>} />
         <Route path="notification" element={
           <RequirePermission requiredKey="push_notifications">

@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
-import SendEmailToClients from "./SendEmailToClients";
+import ProcessSendEmailtoClients from "../process-client/ProcessSentEmailtoClient";
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
@@ -24,7 +24,9 @@ const ProcessClientOverview = () => {
   const navigate = useNavigate();
   const client = useMemo(() => location.state?.client || {}, []);
   const createFollowUpFlag = location.state?.createFollowUp || false;
-
+const userData = JSON.parse(localStorage.getItem("user"));
+const name = userData?.fullName || "";
+const email = userData?.email || "";
   const {
     followUpLoading,
     fetchNotifications,
@@ -58,7 +60,13 @@ const ProcessClientOverview = () => {
   const [followUpHistory, setFollowUpHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [showStageCompleted, setShowStageCompleted] = useState(false);
-  
+  const [showEmailModal, setShowEmailModal] = useState(false);
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
+    const [emailBody, setEmailBody] = useState("");
+    const [emailSubject, setEmailSubject] = useState("");
+    const [clientEmail, setClientEmail] = useState("");
+    const [isSaving, setIsSaving] = useState(false); // Added
+        const [showToast, setShowToast] = useState(false);
 const[followupHistory,setFollowupHistory]=useState();
    useEffect(() => {
    const fetchFollowups = async () => {
@@ -477,12 +485,62 @@ const handleSubmit = async () => {
     }
 
     setNewComment("");
-
+setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   } catch (err) {
     console.error("Failed to add reminder:", err.message);
   }
 };
 console.log(clientInfo,"id");
+
+
+  const handleTemplateSelect = (template, clientEmail) => {
+    if (template) {
+      setSelectedTemplate(template);
+      setEmailBody(template.body);
+      setEmailSubject(template.subject);
+      setClientEmail(clientEmail);
+      setShowEmailModal(true);
+    } else {
+      setShowEmailModal(false);
+      setSelectedTemplate(null);
+      setEmailBody("");
+      setEmailSubject("");
+      setClientEmail("");
+    }
+  };
+  useEffect(() => {
+    console.log("Template selected:", selectedTemplate);
+    console.log("Show Email Modal?", showEmailModal);
+  }, [selectedTemplate, showEmailModal]);
+  
+  const handleEmailSubmit = async () => {
+    setSendingEmail(true);
+
+    try {
+      const emailPayload = {
+        templateId: selectedTemplate.id,
+        executiveName: name,
+        executiveEmail: email,
+        clientEmail: clientInfo.email,
+        emailBody: emailBody,
+        emailSubject: emailSubject,
+      };
+
+      await handleSendEmail(emailPayload);
+      alert("Email sent successfully!");
+      setShowEmailModal(false);
+      setSelectedTemplate(null);
+      setEmailBody("");
+      setEmailSubject("");
+      setClientEmail("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send email.");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
   return (
     <div className="client-overview-wrapper">
       <div className="c-container">
@@ -542,6 +600,121 @@ console.log(clientInfo,"id");
       </div>
       <div className="client-interaction-container">
         <div className="interaction-form">
+           <div style={{ position: "relative" }}>
+                      <ProcessSendEmailtoClients clientInfo={clientInfo} onTemplateSelect={handleTemplateSelect} />
+                      {showEmailModal && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: 800,
+                            width: "400px",
+                            backgroundColor: "#f5f7fa",
+                            border: "1px solid #e0e0e0",
+                            borderRadius: "5px",
+                            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                            zIndex: 6,
+                            padding: "15px",
+                            height: "auto",
+                            marginTop: "-60px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              borderBottom: "1px solid #e0e0e0",
+                              paddingBottom: "5px",
+                              marginBottom: "10px",
+                            }}
+                          >
+                            <h4 style={{ margin: 0, fontSize: "16px" }}>New Message</h4>
+                            <div>
+                              <button
+                                onClick={() => setShowEmailModal(false)}
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  fontSize: "16px",
+                                  marginLeft: "10px",
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label style={{ display: "block", fontSize: "14px", marginBottom: "5px" }}>
+                              To
+                            </label>
+                            <input
+                              type="email"
+                              value={clientEmail}
+                              readOnly
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                borderRadius: "4px",
+                                border: "1px solid #e0e0e0",
+                                fontSize: "14px",
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label style={{ display: "block", fontSize: "14px", marginBottom: "5px" }}>
+                              Subject
+                            </label>
+                            <input
+                              type="text"
+                              value={emailSubject}
+                              onChange={(e) => setEmailSubject(e.target.value)}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                borderRadius: "4px",
+                                border: "1px solid #e0e0e0",
+                                fontSize: "14px",
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <textarea
+                              value={emailBody}
+                              onChange={(e) => setEmailBody(e.target.value)}
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                padding: "8px",
+                                borderRadius: "4px",
+                                border: "1px solid #e0e0e0",
+                                fontSize: "14px",
+                                resize: "vertical",
+                              }}
+                              placeholder="Email body"
+                            />
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                            <button
+                              onClick={handleEmailSubmit}
+                              disabled={sendingEmail}
+                              style={{
+                                backgroundColor: "#28a745",
+                                color: "white",
+                                padding: "8px 16px",
+                                borderRadius: "5px",
+                                border: "none",
+                                cursor: sendingEmail ? "not-allowed" : "pointer",
+                                opacity: sendingEmail ? 0.6 : 1,
+                              }}
+                            >
+                              {sendingEmail ? "Sending..." : "Send"}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+          
+                    </div>
          <div className="connected-via">
             <h4>Connected Via</h4>
             <div className="radio-group">
@@ -614,7 +787,9 @@ console.log(clientInfo,"id");
   <button onClick={handleSubmit} className="reminder-button">⏰</button>
   <span className="reminder-tooltip">Send the latest comment as a reminder</span>
 </div>
-
+ {showToast && (
+    <span className="reminder-toast-inline"> Reminder sent successfully!</span>
+  )}
       </div>
 
       {selectedStage && (
