@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "../../styles/adminexedetails.css";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
-
+import { MdDeleteOutline } from "react-icons/md";
 const ExecutiveDetails = () => {
   const {
     fetchExecutivesAPI,
@@ -24,6 +24,7 @@ const ExecutiveDetails = () => {
     toggleHrLoginAccess,
     toggleProcessPersonLoginAccess,
     toggleTlLoginAccess,
+    deleteTeamById
   } = useApi();
   const { user } = useAuth();
   const isAdmin = user?.role?.toLowerCase() === "admin";
@@ -45,7 +46,8 @@ const ExecutiveDetails = () => {
   const [focusedTeamId, setFocusedTeamId] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [teamToDelete, setTeamToDelete] = useState(null);
   // Drag and Drop States
   const [draggedExecutive, setDraggedExecutive] = useState(null);
   const [dragOverTeam, setDragOverTeam] = useState(null);
@@ -520,6 +522,7 @@ const ExecutiveDetails = () => {
   const unassignedExecutives = people.filter(person => !person.teamId);
 
   return (
+    <>
     <div style={{ display: "flex" }}>
       <SidebarToggle />
       {isLoading && variant === "admin" && <AdminSpinner text="Loading Executives..." />}
@@ -624,7 +627,22 @@ const ExecutiveDetails = () => {
                         <div className="team-header">
                           <strong>{team.name}</strong>
                           <div className="team-subtitle">
-                            Manager: {team.managerName || `ID: ${team.managerId || "Unknown"}`}
+                          Manager: {team.managerName || `ID: ${team.managerId || "Unknown"}`}
+                          <MdDeleteOutline
+  title="Delete this team"
+  style={{
+    marginLeft: "10px",
+    color: "#dc3545",
+    cursor: "pointer",
+    fontSize: "18px",
+    verticalAlign: "middle"
+  }}
+  onClick={() => {
+    setTeamToDelete(team);
+    setShowDeleteConfirm(true);
+  }}
+/>
+
                           </div>
                         </div>
                         <div className="team-members">
@@ -909,6 +927,52 @@ const ExecutiveDetails = () => {
         </div>
       )}
     </div>
+    {showDeleteConfirm && teamToDelete && (
+  <div className="admin-modal-overlay">
+    <div className="admin-modal delete-confirm-modal">
+      <div className="modal-header">
+        <h3>Confirm Team Deletion</h3>
+        <button className="modal-close-btn" onClick={() => setShowDeleteConfirm(false)}>
+          &times;
+        </button>
+      </div>
+      <div className="modal-body">
+        <p>
+          Are you sure you want to delete <strong>{teamToDelete.name}</strong>?<br />
+          <span className="warning-text">This action cannot be undone.</span>
+        </p>
+      </div>
+      <div className="modal-footer">
+        <button className="btn btn-cancel" onClick={() => setShowDeleteConfirm(false)}>
+          Cancel
+        </button>
+        <button
+          className="btn btn-danger"
+          onClick={async () => {
+            try {
+              showLoader("Deleting team...");
+              await deleteTeamById(teamToDelete.id);
+              toast.success(`Team "${teamToDelete.name}" deleted successfully!`);
+              await fetchAllTeamsAPI();
+              setFocusedTeamId("");
+              setShowDeleteConfirm(false);
+              setTeamToDelete(null);
+            } catch (err) {
+              toast.error("Error deleting team");
+              console.error(err);
+            } finally {
+              hideLoader();
+            }
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+    </>
   );
 };
 

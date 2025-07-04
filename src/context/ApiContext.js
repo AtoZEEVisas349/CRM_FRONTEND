@@ -1250,6 +1250,16 @@ const fetchAllTeamMembersAPI = useCallback(async (team_id) => {
     setTeamMembersLoading(false);
   }
 }, []);
+const deleteTeamById = async (teamId) => {
+  try {
+    const response = await apiService.deleteTeamAPI(teamId);
+    return response;
+  } catch (error) {
+    console.error("❌ Error deleting team in context:", error);
+    throw error;
+  }
+};
+
 const fetchMeetingsByExecutive = async (executiveName) => {
   try {
     const response = await apiService.fetchMeetingsByExecutive(executiveName);
@@ -1490,6 +1500,7 @@ getAllConverted,
         revenueChartLoading,
         fetchRevenueChartDataAPI,
         fetchManagerTeams,
+        deleteTeamById,
         // ✅ User state
         user,
         setUser,

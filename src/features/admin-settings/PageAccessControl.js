@@ -349,7 +349,7 @@ const PageAccessControl = () => {
                 "Settings",
                 "Billing",
                 "Invoice",
-                "create_user",
+                "Create_user",
                 "Page Access"
               ],
               state: pageAccess,

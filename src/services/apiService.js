@@ -868,6 +868,15 @@ export const createTeam = async (teamData) => {
   }
 };
 
+export const deleteTeamAPI = async (teamId) => {
+  try {
+    const response = await apiService.delete(`/manager/${teamId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    throw error;
+  }
+};
 
 export const getManagerTeamsById = async (managerId) => {
   try {
