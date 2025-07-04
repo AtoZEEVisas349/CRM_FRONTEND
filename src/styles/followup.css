@@ -552,14 +552,13 @@ h6 {
 
 .client-table {
   min-width: 700px;
-  /* forces horizontal scroll if screen is smaller */
 }
 
 /* Optional: fix sticky headers */
 .client-table thead th {
   position: sticky;
   top: 0;
-  background-color: #2c2c2c;
+  background-color: #e3e3e3;
   /* match your new header background */
   z-index: 10;
 }
@@ -642,13 +641,6 @@ h6 {
   border-collapse: collapse;
 }
 
-.client-table thead tr {
-  position: sticky;
-  top: 0;
-  background-color: #c8c8f4;
-  z-index: 10;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
 
 .client-table th {
   color: rgb(0, 0, 0);

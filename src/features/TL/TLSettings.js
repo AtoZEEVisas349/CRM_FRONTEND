@@ -18,7 +18,10 @@ const HrSettings = () => {
     email: "",
     username: "",
     role: "",
+    website: "",
     jobTitle: "",
+    alternateEmail: "",
+    bio: "",
   });
 
   useEffect(() => {
@@ -47,7 +50,10 @@ const HrSettings = () => {
           email: hrData.email || "",
           username: hrData.username || "",
           role: hrData.role || "",
+          website: hrData.website || "",
           jobTitle: hrData.jobTitle || "",
+          alternateEmail: hrData.alternateEmail || "",
+          bio: hrData.bio || "",
         });
       } catch (err) {
         console.error("Failed to load HR profile:", err);
@@ -70,8 +76,10 @@ const HrSettings = () => {
         name: hrProfile.name,
         email: hrProfile.email,
         username: hrProfile.username,
+        website: hrProfile.website,
         jobTitle: hrProfile.jobTitle,
-
+        alternateEmail: hrProfile.alternateEmail,
+        bio: hrProfile.bio,
       });
       alert("HR profile updated successfully!");
     } catch (err) {
@@ -222,6 +230,14 @@ const HrSettings = () => {
                   <input type="text" value={hrProfile.role} readOnly />
                 </div>
                 <div className="form-group">
+                  <label>Website</label>
+                  <input
+                    type="url"
+                    value={hrProfile.website}
+                    onChange={(e) => setHrProfile({ ...hrProfile, website: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
                   <label>Job Title</label>
                   <input
                     type="text"
@@ -229,6 +245,24 @@ const HrSettings = () => {
                     onChange={(e) => setHrProfile({ ...hrProfile, jobTitle: e.target.value })}
                   />
                 </div>
+                <div className="form-group">
+                  <label>Alternate Email</label>
+                  <input
+                    type="email"
+                    value={hrProfile.alternateEmail}
+                    onChange={(e) => setHrProfile({ ...hrProfile, alternateEmail: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-group full">
+                <label>Your Bio</label>
+                <textarea
+                  rows="4"
+                  maxLength={275}
+                  value={hrProfile.bio}
+                  onChange={(e) => setHrProfile({ ...hrProfile, bio: e.target.value })}
+                  placeholder="Write a short bio..."
+                />
               </div>
               <div className="form-group full save-btn-wrapper">
                 <button className="save-btn" type="submit">Save Changes</button>

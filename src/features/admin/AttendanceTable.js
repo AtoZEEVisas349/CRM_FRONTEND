@@ -96,7 +96,7 @@ const AttendanceTable = () => {
                         {dayjs(date).format("ddd")}
                       </span>{" "}
                       {/* Day name (Mon, Tue...) */}
-                      <span>{dayjs(date).format("DD/MM/YYYY")}</span>{" "}
+                      {/* <span>{dayjs(date).format("DD/MM/YYYY")}</span>{" "} */}
                       {/* Date */}
                     </div>
                   </th>
@@ -115,16 +115,16 @@ const AttendanceTable = () => {
                       : exec.attendance[date];
                     return (
                       <td key={date}>
-                        {status && (
-                          <span
-                            className={`status-badge ${
-                              status === "Present" ? "present" : "absent"
-                            }`}
-                          >
-                            {status}
-                          </span>
-                        )}
-                      </td>
+                      {status && (
+                        <span
+                          className={`status-badge ${
+                            status === "Present" ? "present" : "absent"
+                          }`}
+                        >
+                          {status === "Present" ? "P" : "A"}
+                        </span>
+                      )}
+                    </td>                    
                     );
                   })}
                 </tr>
