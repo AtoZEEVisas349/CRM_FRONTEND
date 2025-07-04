@@ -342,30 +342,28 @@ const ExecutiveDetails = () => {
   const handleDrop = async (e, teamId) => {
     e.preventDefault();
     setDragOverTeam(null);
-
+  
     if (!draggedExecutive) return;
-
-    if (draggedExecutive.teamId === teamId) {
-      toast.info(`${draggedExecutive.name} is already in this team.`);
-      return;
-    }
-
+  
     try {
       setTeamAssigning(true);
-
+  
       const assignedTeam = managerTeams.find(team => team.id === teamId);
-
+  
       await assignExecutiveToTeam({
         teamId: Number(teamId),
         executiveId: Number(draggedExecutive.id),
         managerId: Number(assignedTeam?.managerId),
       });
-
-      toast.success(`Successfully assigned ${draggedExecutive.name} to the team!`);
-
+  
+      toast.success(
+        `Successfully moved ${draggedExecutive.name} to ${assignedTeam?.name || `Team ${teamId}`}!`
+      );
+  
       setRecentlyAssigned(draggedExecutive.id);
       setTimeout(() => setRecentlyAssigned(null), 5000);
-
+  
+      // Update person's team in main people list
       setPeople(prevPeople =>
         prevPeople.map(person => {
           if (person.id === draggedExecutive.id) {
@@ -378,27 +376,29 @@ const ExecutiveDetails = () => {
           return person;
         })
       );
-
+  
+      // Update the teamMembers map
       setTeamMembers(prev => {
         const updated = { ...prev };
-
-        if (draggedExecutive.teamId) {
-          updated[draggedExecutive.teamId] =
-            updated[draggedExecutive.teamId]?.filter(
-              member => member.id !== draggedExecutive.id
-            ) || [];
+  
+        // Remove from previous team if exists
+        if (draggedExecutive.teamId && updated[draggedExecutive.teamId]) {
+          updated[draggedExecutive.teamId] = updated[draggedExecutive.teamId].filter(
+            member => member.id !== draggedExecutive.id
+          );
         }
-
+  
+        // Add to new team
         if (!updated[teamId]) updated[teamId] = [];
         updated[teamId].push({
           ...draggedExecutive,
           teamName: assignedTeam ? assignedTeam.name : `Team ${teamId}`,
           teamId: teamId,
         });
-
+  
         return updated;
       });
-
+  
       const dropZone = e.currentTarget;
       dropZone.classList.add("drop-success");
       setTimeout(() => dropZone.classList.remove("drop-success"), 500);
@@ -410,6 +410,7 @@ const ExecutiveDetails = () => {
       setDraggedExecutive(null);
     }
   };
+  
 
   const handleMemberSelect = (id) => {
     setSelectedMembers((prev) =>
@@ -661,7 +662,7 @@ const ExecutiveDetails = () => {
                 } ${Number(recentlyAssigned) === Number(person.id) ? "success-border" : ""} 
                 ${filter === "All" && !person.teamId ? "draggable-executive unassigned-card" : ""}`}
                 style={{ display: "flex", alignItems: "flex-start" }}
-                draggable={filter === "All" && !person.teamId}
+                draggable={filter === "All"}
                 onDragStart={(e) => handleDragStart(e, person)}
                 onDragEnd={handleDragEnd}
               >
@@ -775,6 +776,7 @@ const ExecutiveDetails = () => {
                   <th>Email ID</th>
                   <th>City</th>
                   {filter === "All" && <th>Team</th>}
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>

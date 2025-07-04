@@ -515,7 +515,7 @@ const FullReport = () => {
                   </div>
                 </div>
 
-                <div className="fullreport-table-wrapper">
+                <div className="fullreport-table-wrappers">
                   <table>
                     <thead>
                       <tr>

@@ -710,7 +710,7 @@ const EmployeeLeave = () => {
                       </td>
                       <td className="el-table-cell">{application.appliedDate}</td>
                       <td className="el-table-cell">{application.reason}</td>
-                      <td className="el-table-cell">{application.hrResponse}</td>
+                      <td className="el-table-cell">{application.hrComment}</td>
                     </tr>
                   ))}
                 </tbody>
