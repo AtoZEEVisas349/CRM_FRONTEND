@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -6,22 +7,25 @@ import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
 
-const HrSettings = () => {
+const TLSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
-  const { fetchHrUserData, updateHrProfileById } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
+  const { fetchTlProfile, updateTlProfileData, tlProfile: apiTlProfile, tlProfileLoading } = useApi();
   const hasLoaded = useRef(false);
 
-  const [hrProfile, setHrProfile] = useState({
+  const [tlProfile, setTlProfile] = useState({
     id: "",
-    name: "", 
-    email: "",
     username: "",
+    email: "",
+    profile_picture: "",
+    firstname: "",
+    lastname: "",
+    country: "",
+    city: "",
+    state: "",
+    postal_code: "",
     role: "",
-    website: "",
-    jobTitle: "",
-    alternateEmail: "",
-    bio: "",
+    tax_id: "",
   });
 
   useEffect(() => {
@@ -39,24 +43,28 @@ const HrSettings = () => {
       hasLoaded.current = true;
 
       try {
-        showLoader("Loading HR profile...", "admin");
+        showLoader("Loading TL profile...", "admin");
         const currentUser = JSON.parse(localStorage.getItem("user"));
-        if (!currentUser?.id) throw new Error("No HR ID found");
+        if (!currentUser?.id) throw new Error("No TL ID found");
 
-        const hrData = await fetchHrUserData(currentUser.id);
-        setHrProfile({
-          id: hrData.id,
-          name: hrData.name || "",
-          email: hrData.email || "",
-          username: hrData.username || "",
-          role: hrData.role || "",
-          website: hrData.website || "",
-          jobTitle: hrData.jobTitle || "",
-          alternateEmail: hrData.alternateEmail || "",
-          bio: hrData.bio || "",
+        const tlData = await fetchTlProfile(currentUser.id);
+        setTlProfile({
+          id: tlData.id || "",
+          username: tlData.username || "",
+          email: tlData.email || "",
+          profile_picture: tlData.profile_picture || "",
+          firstname: tlData.firstname || "",
+          lastname: tlData.lastname || "",
+          country: tlData.country || "",
+          city: tlData.city || "",
+          state: tlData.state || "",
+          postal_code: tlData.postal_code || "",
+          role: tlData.role || "",
+          tax_id: tlData.tax_id || "",
         });
       } catch (err) {
-        console.error("Failed to load HR profile:", err);
+        console.error("Failed to load TL profile:", err);
+        alert("Failed to load TL profile. Please try again.");
       } finally {
         hideLoader();
       }
@@ -67,24 +75,41 @@ const HrSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [fetchHrUserData]);
+  }, [fetchTlProfile, showLoader, hideLoader]);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateHrProfileById(hrProfile.id, {
-        name: hrProfile.name,
-        email: hrProfile.email,
-        username: hrProfile.username,
-        website: hrProfile.website,
-        jobTitle: hrProfile.jobTitle,
-        alternateEmail: hrProfile.alternateEmail,
-        bio: hrProfile.bio,
-      });
-      alert("HR profile updated successfully!");
+      showLoader("Updating profile...", "admin");
+
+      const updateData = {
+        username: tlProfile.username,
+        email: tlProfile.email,
+        profile_picture: tlProfile.profile_picture,
+        firstname: tlProfile.firstname,
+        lastname: tlProfile.lastname,
+        country: tlProfile.country,
+        city: tlProfile.city,
+        state: tlProfile.state,
+        postal_code: tlProfile.postal_code,
+        tax_id: tlProfile.tax_id,
+      };
+
+      const result = await updateTlProfileData(tlProfile.id, updateData);
+      alert("TL profile updated successfully!");
+
+      // Update local state with the returned data
+      if (result.tl) {
+        setTlProfile(prevProfile => ({
+          ...prevProfile,
+          ...result.tl
+        }));
+      }
     } catch (err) {
       console.error("Update failed:", err);
-      alert("Failed to update HR profile");
+      alert("Failed to update TL profile. Please try again.");
+    } finally {
+      hideLoader();
     }
   };
 
@@ -197,7 +222,10 @@ const HrSettings = () => {
               <div className="form-group full profile-pic">
                 <label>Your Photo</label>
                 <div className="pic-wrapper">
-                  <img src="https://via.placeholder.com/80" alt="Profile" />
+                  <img 
+                    src={tlProfile.profile_picture || "https://via.placeholder.com/80"} 
+                    alt="Profile" 
+                  />
                   <div className="pic-actions">
                     <button type="button">Delete</button>
                     <button type="button">Update</button>
@@ -206,66 +234,104 @@ const HrSettings = () => {
               </div>
               <div className="form-grid">
                 <div className="form-group">
-                  <label>Full Name</label>
+                  <label>First Name</label>
                   <input
                     type="text"
-                    value={hrProfile.name}
-                    onChange={(e) => setHrProfile({ ...hrProfile, name: e.target.value })}
+                    value={tlProfile.firstname}
+                    onChange={(e) => setTlProfile({ ...tlProfile, firstname: e.target.value })}
+                    placeholder="Enter first name"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    value={tlProfile.lastname}
+                    onChange={(e) => setTlProfile({ ...tlProfile, lastname: e.target.value })}
+                    placeholder="Enter last name"
                   />
                 </div>
                 <div className="form-group">
                   <label>Email Address</label>
                   <input
                     type="email"
-                    value={hrProfile.email}
-                    onChange={(e) => setHrProfile({ ...hrProfile, email: e.target.value })}
+                    value={tlProfile.email}
+                    onChange={(e) => setTlProfile({ ...tlProfile, email: e.target.value })}
+                    placeholder="Enter email address"
                   />
                 </div>
                 <div className="form-group">
                   <label>Username</label>
-                  <input type="text" value={hrProfile.username} readOnly />
+                  <input
+                    type="text"
+                    value={tlProfile.username}
+                    onChange={(e) => setTlProfile({ ...tlProfile, username: e.target.value })}
+                    placeholder="Enter username"
+                  />
                 </div>
                 <div className="form-group">
                   <label>Role</label>
-                  <input type="text" value={hrProfile.role} readOnly />
+                  <input type="text" value={tlProfile.role} readOnly />
                 </div>
                 <div className="form-group">
-                  <label>Website</label>
-                  <input
-                    type="url"
-                    value={hrProfile.website}
-                    onChange={(e) => setHrProfile({ ...hrProfile, website: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Job Title</label>
+                  <label>Country</label>
                   <input
                     type="text"
-                    value={hrProfile.jobTitle}
-                    onChange={(e) => setHrProfile({ ...hrProfile, jobTitle: e.target.value })}
+                    value={tlProfile.country}
+                    onChange={(e) => setTlProfile({ ...tlProfile, country: e.target.value })}
+                    placeholder="Enter country"
                   />
                 </div>
                 <div className="form-group">
-                  <label>Alternate Email</label>
+                  <label>City</label>
                   <input
-                    type="email"
-                    value={hrProfile.alternateEmail}
-                    onChange={(e) => setHrProfile({ ...hrProfile, alternateEmail: e.target.value })}
+                    type="text"
+                    value={tlProfile.city}
+                    onChange={(e) => setTlProfile({ ...tlProfile, city: e.target.value })}
+                    placeholder="Enter city"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>State</label>
+                  <input
+                    type="text"
+                    value={tlProfile.state}
+                    onChange={(e) => setTlProfile({ ...tlProfile, state: e.target.value })}
+                    placeholder="Enter state"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Postal Code</label>
+                  <input
+                    type="text"
+                    value={tlProfile.postal_code}
+                    onChange={(e) => setTlProfile({ ...tlProfile, postal_code: e.target.value })}
+                    placeholder="Enter postal code"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Tax ID</label>
+                  <input
+                    type="text"
+                    value={tlProfile.tax_id}
+                    onChange={(e) => setTlProfile({ ...tlProfile, tax_id: e.target.value })}
+                    placeholder="Enter tax ID"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Profile Picture URL</label>
+                  <input
+                    type="url"
+                    value={tlProfile.profile_picture}
+                    onChange={(e) => setTlProfile({ ...tlProfile, profile_picture: e.target.value })}
+                    placeholder="Enter profile picture URL"
                   />
                 </div>
               </div>
-              <div className="form-group full">
-                <label>Your Bio</label>
-                <textarea
-                  rows="4"
-                  maxLength={275}
-                  value={hrProfile.bio}
-                  onChange={(e) => setHrProfile({ ...hrProfile, bio: e.target.value })}
-                  placeholder="Write a short bio..."
-                />
-              </div>
               <div className="form-group full save-btn-wrapper">
-                <button className="save-btn" type="submit">Save Changes</button>
+                <button className="save-btn" type="submit" disabled={isLoading || tlProfileLoading}>
+                  {isLoading || tlProfileLoading ? "Saving..." : "Save Changes"}
+                </button>
               </div>
             </form>
           </>
@@ -276,11 +342,11 @@ const HrSettings = () => {
   return (
     <div className="admin-settings">
       <SidebarToggle />
-      {isLoading && variant === "admin" && (
+      {(isLoading || tlProfileLoading) && variant === "admin" && (
         <AdminSpinner text="Loading Settings..." />
       )}
       <div className="settings-header">
-        <h2>Settings</h2>
+        <h2>TL Settings</h2>
       </div>
       <div className="settings-tabs">
         {tabs.map((tab) => (
@@ -298,4 +364,5 @@ const HrSettings = () => {
   );
 };
 
-export default HrSettings;
+export default TLSettings;
+

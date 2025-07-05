@@ -22,46 +22,46 @@ const HrSettings = () => {
   });
 
   useEffect(() => {
-    const handleSidebarToggle = () => {
-      const expanded = localStorage.getItem("adminSidebarExpanded") !== "false";
-      document.body.classList.toggle("sidebar-collapsed", !expanded);
-      document.body.classList.toggle("sidebar-expanded", expanded);
-    };
+  const handleSidebarToggle = () => {
+    const expanded = localStorage.getItem("adminSidebarExpanded") !== "false";
+    document.body.classList.toggle("sidebar-collapsed", !expanded);
+    document.body.classList.toggle("sidebar-expanded", expanded);
+  };
 
-    handleSidebarToggle();
-    window.addEventListener("sidebarToggle", handleSidebarToggle);
+  handleSidebarToggle();
+  window.addEventListener("sidebarToggle", handleSidebarToggle);
 
-    const init = async () => {
-      if (hasLoaded.current) return;
-      hasLoaded.current = true;
+  const init = async () => {
+    if (hasLoaded.current) return;
+    hasLoaded.current = true;
 
-      try {
-        showLoader("Loading HR profile...", "admin");
-        const currentUser = JSON.parse(localStorage.getItem("user"));
-        if (!currentUser?.id) throw new Error("No HR ID found");
+    try {
+      showLoader("Loading HR profile...", "admin");
+      const currentUser = JSON.parse(localStorage.getItem("user"));
+      if (!currentUser?.id) throw new Error("No HR ID found");
 
-        const hrData = await fetchHrUserData(currentUser.id);
-        setHrProfile({
-          id: hrData.id,
-          name: hrData.name || "",
-          email: hrData.email || "",
-          username: hrData.username || "",
-          role: hrData.role || "",
-          jobTitle: hrData.jobTitle || "",
-        });
-      } catch (err) {
-        console.error("Failed to load HR profile:", err);
-      } finally {
-        hideLoader();
-      }
-    };
+      const hrData = await fetchHrUserData(currentUser.id);
+      setHrProfile({
+        id: hrData.id || "",
+        name: hrData.name || "",
+        email: hrData.email || "",
+        username: hrData.username || "", // Handle null
+        role: hrData.role || "",
+        jobTitle: hrData.jobTitle || "", // Handle null
+      });
+    } catch (err) {
+      console.error("Failed to load HR profile:", err);
+    } finally {
+      hideLoader();
+    }
+  };
 
-    init();
+  init();
 
-    return () => {
-      window.removeEventListener("sidebarToggle", handleSidebarToggle);
-    };
-  }, [fetchHrUserData]);
+  return () => {
+    window.removeEventListener("sidebarToggle", handleSidebarToggle);
+  };
+}, [fetchHrUserData]);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -181,61 +181,65 @@ const HrSettings = () => {
           </>
         );
       case "profile":
-      default:
-        return (
-          <>
-            <h3>Profile</h3>
-            <form className="profile-form" onSubmit={handleProfileSubmit}>
-              <div className="form-group full profile-pic">
-                <label>Your Photo</label>
-                <div className="pic-wrapper">
-                  <img src="https://via.placeholder.com/80" alt="Profile" />
-                  <div className="pic-actions">
-                    <button type="button">Delete</button>
-                    <button type="button">Update</button>
-                  </div>
-                </div>
-              </div>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    value={hrProfile.name}
-                    onChange={(e) => setHrProfile({ ...hrProfile, name: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email Address</label>
-                  <input
-                    type="email"
-                    value={hrProfile.email}
-                    onChange={(e) => setHrProfile({ ...hrProfile, email: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Username</label>
-                  <input type="text" value={hrProfile.username} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Role</label>
-                  <input type="text" value={hrProfile.role} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Job Title</label>
-                  <input
-                    type="text"
-                    value={hrProfile.jobTitle}
-                    onChange={(e) => setHrProfile({ ...hrProfile, jobTitle: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="form-group full save-btn-wrapper">
-                <button className="save-btn" type="submit">Save Changes</button>
-              </div>
-            </form>
-          </>
-        );
+default:
+  return (
+    <>
+      <h3>Profile</h3>
+      <form className="profile-form" onSubmit={handleProfileSubmit}>
+        <div className="form-group full profile-pic">
+          <label>Your Photo</label>
+          <div className="pic-wrapper">
+            <img src="https://via.placeholder.com/80" alt="Profile" />
+            <div className="pic-actions">
+              <button type="button">Delete</button>
+              <button type="button">Update</button>
+            </div>
+          </div>
+        </div>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              value={hrProfile.name}
+              onChange={(e) => setHrProfile({ ...hrProfile, name: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              value={hrProfile.email}
+              onChange={(e) => setHrProfile({ ...hrProfile, email: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              value={hrProfile.username || ""} // Ensure null is handled
+              onChange={(e) => setHrProfile({ ...hrProfile, username: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label>Role</label>
+            <input type="text" value={hrProfile.role} readOnly />
+          </div>
+          <div className="form-group">
+            <label>Job Title</label>
+            <input
+              type="text"
+              value={hrProfile.jobTitle || ""} // Ensure null is handled
+              onChange={(e) => setHrProfile({ ...hrProfile, jobTitle: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="form-group full save-btn-wrapper">
+          <button className="save-btn" type="submit">Save Changes</button>
+        </div>
+      </form>
+    </>
+  );
     }
   };
 
@@ -265,3 +269,4 @@ const HrSettings = () => {
 };
 
 export default HrSettings;
+

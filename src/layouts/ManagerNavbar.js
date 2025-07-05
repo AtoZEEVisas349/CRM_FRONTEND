@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext"; // using logoutManager from here
+import { useAuth } from "../context/AuthContext";
 import { useApi } from "../context/ApiContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -10,18 +10,17 @@ import {
   FaUser,
   FaComment,
   FaSpinner,
-  FaSignOutAlt
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 function ManagerNavbar() {
   const [showPopover, setShowPopover] = useState(false);
-  const { handleLogoutManager } = useAuth(); // ✅ Use the manager-specific logout
+  const { handleLogoutManager } = useAuth();
   const { changeTheme, theme } = useContext(ThemeContext);
   const {
-    getManagerProfile,
-    adminProfile,
-    loading,
-    fetchAdmin,
+    getManager, // Use getManager from ApiContext
+    managerProfile, // Use managerProfile from ApiContext
+    managerLoading, // Use managerLoading from ApiContext
     fetchNotifications,
     notifications,
     unreadCount,
@@ -46,7 +45,7 @@ function ManagerNavbar() {
         userRole: localStorageUser.role,
       });
     }
-  }, []);
+  }, [fetchNotifications, localStorageUser, notifications.length]);
 
   useEffect(() => {
     if (unreadCount > 0 && badgeRef.current) {
@@ -56,15 +55,15 @@ function ManagerNavbar() {
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [location.pathname]);
+  }, [location.pathname, unreadCount]);
 
   const handleMouseEnter = async () => {
     clearTimeout(hoverTimeout.current);
     isHovering.current = true;
     setShowPopover(true);
 
-    if (!managerProfile && !loading) {
-      await fetchProfile();
+    if (!managerProfile && !managerLoading) {
+      await getManager(); // Fetch manager profile using getManager from ApiContext
     }
   };
 
@@ -76,34 +75,17 @@ function ManagerNavbar() {
       }
     }, 200);
   };
-  const[managerProfile,setManagerProfile]=useState()
- const fetchProfile = async () => {
-      try {
-        const profile = await getManagerProfile();
-          console.log(profile,"p");
-        setManagerProfile(profile);
-      
-      } catch (err) {
-        // setError(err.response?.data?.error || "Failed to load profile");
-      } 
-    };
-  useEffect(() => {
 
-
-    fetchProfile();
-    
-  }, []);
   const handleLogout = async () => {
     try {
-      setIsLoggingOut(true); // Show spinner
-      await handleLogoutManager(); // Custom logout logic
+      setIsLoggingOut(true);
+      await handleLogoutManager();
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      setIsLoggingOut(false); // Hide spinner
+      setIsLoggingOut(false);
     }
   };
-  
 
   const isLight = theme === "light";
   const handleToggle = () => {
@@ -159,35 +141,39 @@ function ManagerNavbar() {
               onMouseLeave={handleMouseLeave}
               style={{ position: "absolute", top: "100%", right: 0 }}
             >
-              {loading ? (
+              {managerLoading ? (
                 <div>Loading...</div>
-              ) : (
-                managerProfile && (
-                  <div className="admin_user_details">
-                    <div className="admin_user_avatar">
-                      {managerProfile.name?.charAt(0).toUpperCase() || "U"}
-                    </div>
-                    <div>
-                      <p className="admin_user_name">{managerProfile.name}</p>
-                      <p className="admin_user_email">{managerProfile.email}</p>
-                      <p className="admin_user_role">{managerProfile.role}</p>
-                    </div>
+              ) : managerProfile ? (
+                <div className="admin_user_details">
+                  <div className="admin_user_avatar">
+                    {managerProfile.name?.charAt(0).toUpperCase() || "U"}
                   </div>
-                )
-              )}
-             <button className="logout_btn" onClick={handleLogout} disabled={isLoggingOut}>
-              {isLoggingOut ? (
-                <>
-                  <FaSpinner className="logout-spinner" />
-                  <span className="logout-text">Logging out</span>
-                </>
+                  <div>
+                    <p className="admin_user_name">{managerProfile.name}</p>
+                    <p className="admin_user_email">{managerProfile.email}</p>
+                    <p className="admin_user_role">{managerProfile.role}</p>
+                  </div>
+                </div>
               ) : (
-                <>
-                  <FaSignOutAlt />
-                  <span className="logout-text">Logout</span>
-                </>
+                <div>Error loading profile</div>
               )}
-            </button>
+              <button
+                className="logout_btn"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <>
+                    <FaSpinner className="logout-spinner" />
+                    <span className="logout-text">Logging out</span>
+                  </>
+                ) : (
+                  <>
+                    <FaSignOutAlt />
+                    <span className="logout-text">Logout</span>
+                  </>
+                )}
+              </button>
             </div>
           )}
         </div>

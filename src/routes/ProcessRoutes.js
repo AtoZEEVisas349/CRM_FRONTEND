@@ -29,6 +29,7 @@ import ProcessFollowUpRoutes from "./ProcessFollowupRoutes";
 import ProcessFinalRoutes from "./ProcessFinalRoutes";
 import RejectedLeadRoutes from "./RejectedLeadRoutes";
 import ProcessMeetingRoutes from "./ProcessMeetingRoutes";
+import ProcessCreateTemplate from "../features/process-client/ProcessCreateTemplate";
 import ProcessNotification from "../features/process-client/ProcessNotification";
 
 const ProcessRoutes = () => {
@@ -65,7 +66,7 @@ const ProcessRoutes = () => {
              <Route path="client/dashboard/:id" element={<ClientDash />} />
             <Route path="client/create-client" element={<CreateClient />} />
             <Route path="client/all-clients" element={<AllClient />} />
-      
+         <Route path="client/create-template" element={<ProcessCreateTemplate />} />
           </>
         )}
          </Route>

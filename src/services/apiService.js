@@ -716,11 +716,25 @@ export const getManager = async () => {
   try {
     const response = await apiService.get("/manager/profile");
     return response.data; // Assuming you're using only the leads array
+    return response.data.manager; // Return only the manager object
   } catch (error) {
     console.error("❌ Error fetching follow-up leads:", error);
+    console.error("❌ Error fetching manager profile:", error.response?.data || error.message);
     throw error;
   }
 };
+
+export const updateManagerProfile = async (managerId, profileData) => {
+  try {
+    const response = await apiService.put(`/manager/${managerId}`, profileData);
+    return response.data.manager; // Return the updated manager object
+  } catch (error) {
+    console.error("❌ Error updating manager profile:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
 export const fetchAllExecutiveActivitiesByDate = async () => {
   try {
     const response = await apiService.get("/executive-activities/daily-activity");

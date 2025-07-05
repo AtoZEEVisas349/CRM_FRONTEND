@@ -902,13 +902,33 @@ const getHrProfile = async () => {
     throw error;
   }
 };
- const getManagerProfile = async () => {
+
+const [managerProfile, setManagerProfile] = useState(null);
+  const [managerLoading, setManagerLoading] = useState(false);
+  const getManager = async () => {
+    setManagerLoading(true);
+    try {
+      const data = await apiService.getManager();
+      setManagerProfile(data.manager);  // ✅ This is the fix
+    } catch (error) {
+      console.error("❌ Error fetching manager profile:", error);
+    } finally {
+      setManagerLoading(false);
+    }
+  };
+  
+
+const updateManagerProfile = async (managerId, profileData) => {
+  setManagerLoading(true);
   try {
-    const response = await apiService.getManager(); 
-    return response.manager;
+    const data = await apiService.updateManagerProfile(managerId, profileData);
+    setManagerProfile(data);
+    return data;
   } catch (error) {
-    console.error("❌ Error creating close lead:", error);
+    console.error("❌ Error updating manager profile:", error);
     throw error;
+  } finally {
+    setManagerLoading(false);
   }
 };
 const fetchAllExecutiveActivitiesByDateAPI = async () => {
@@ -1309,24 +1329,22 @@ const fetchFollowUpsByExecutive = async (execName) => {
   }
 };
 
-
 const fetchHrUserData = async () => {
   setUserLoading(true);
   try {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     const hr = await apiService.getHrById(currentUser.id);
-    const { name, email, role, username } = hr;
-    setUser({ username: name || username, email, role });
+    const { name, email, role, username, jobTitle } = hr;
+    setUser({ username: name || username || "", email, role });
+    return { id: hr.id, name, email, username, role, jobTitle }; // Ensure all fields are returned
   } catch (error) {
     console.error("❌ Error fetching HR user data:", error);
+    throw error;
   } finally {
     setUserLoading(false);
   }
 };
 
-
-
-// ✅ Update HR profile
 const updateHrProfileById = async (hrId, updateData) => {
   try {
     const response = await apiService.updateHrProfile(hrId, updateData);
@@ -1460,6 +1478,9 @@ getAllConverted,
     updateClientLeadsadmin,
     deleteClientLead,
     getAllProfile,
+    managerProfile,
+        managerLoading,
+        setManagerProfile,
         // ✅ Follow-ups
         followUps,
         followUpLoading,
@@ -1495,7 +1516,6 @@ getAllConverted,
         createCopyNotification,
       markNotificationReadAPI,
         deleteNotificationAPI,
-        getManagerProfile,
         revenueChartData,
         revenueChartLoading,
         fetchRevenueChartDataAPI,
@@ -1583,7 +1603,8 @@ getAllConverted,
               allManagers,
               allManagersLoading,
               fetchAllManagersAPI,
-
+                getManager,
+                updateManagerProfile,
               allProcessPersons,
               allProcessPersonsLoading,
               fetchAllProcessPersonsAPI,
