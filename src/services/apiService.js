@@ -723,6 +723,15 @@ export const getManager = async () => {
     throw error;
   }
 };
+export const updateUserProfile = async (userId, profileData) => {
+  try {
+    const response = await apiService.put(`/user/profile/${userId}`, profileData);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error updating user profile for user ${userId}:`, error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export const updateManagerProfile = async (managerId, profileData) => {
   try {

@@ -4,7 +4,7 @@ import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
 import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
   getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId,createTeam,getManagerTeamsById,
-  addExecutiveToTeam
+  addExecutiveToTeam,updateUserProfile
 } from "../services/apiService"
 import { format } from "date-fns";
 const ApiContext = createContext();
@@ -1355,6 +1355,47 @@ const updateHrProfileById = async (hrId, updateData) => {
   }
 };
 
+
+const [isUserProfileUpdating, setUserProfileUpdating] = useState(false);
+
+  const handleUpdateUserProfile = async (userId, profileData) => {
+    setUserProfileUpdating(true);
+    try {
+      const updatedData = await updateUserProfile(userId, profileData);
+      
+      // Update user state if the updated user is the current user
+      const currentUser = JSON.parse(localStorage.getItem("user"));
+      if (currentUser?.id === parseInt(userId)) {
+        const updatedUser = {
+          ...currentUser,
+          username: updatedData.user?.username || currentUser.username,
+          email: updatedData.user?.email || currentUser.email,
+          firstname: updatedData.user?.firstname || currentUser.firstname,
+          lastname: updatedData.user?.lastname || currentUser.lastname,
+          country: updatedData.user?.country || currentUser.country,
+          city: updatedData.user?.city || currentUser.city,
+          state: updatedData.user?.state || currentUser.state,
+          postal_code: updatedData.user?.postal_code || currentUser.postal_code,
+          tax_id: updatedData.user?.tax_id || currentUser.tax_id,
+          profile_picture: updatedData.user?.profile_picture || currentUser.profile_picture,
+        };
+        
+        // Update localStorage
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        
+        // Update context state
+        setUser(updatedUser);
+      }
+      
+      return updatedData;
+    } catch (error) {
+      console.error("❌ Error updating user profile:", error);
+      throw error;
+    } finally {
+      setUserProfileUpdating(false);
+    }
+  };
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -1498,7 +1539,8 @@ getAllConverted,
         closeLeads, // Add the state for Close Leads
         closeLeadsLoading,
         closeLeadsError,
-        
+        handleUpdateUserProfile,
+        isUserProfileUpdating,
         // ✅ Dashboard Counts
         convertedClients,        
         convertedClientsLoading,

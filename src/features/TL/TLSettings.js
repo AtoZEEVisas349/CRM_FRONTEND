@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -10,7 +11,7 @@ import AdminSpinner from "../spinner/AdminSpinner";
 const TLSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
-  const { fetchTlProfile, updateTlProfileData, tlProfile: apiTlProfile, tlProfileLoading } = useApi();
+  const { getAllProfile, handleUpdateUserProfile, isUserProfileUpdating } = useApi();
   const hasLoaded = useRef(false);
 
   const [tlProfile, setTlProfile] = useState({
@@ -47,7 +48,16 @@ const TLSettings = () => {
         const currentUser = JSON.parse(localStorage.getItem("user"));
         if (!currentUser?.id) throw new Error("No TL ID found");
 
-        const tlData = await fetchTlProfile(currentUser.id);
+        // Fetch all profiles using getAllProfile
+        const profiles = await getAllProfile();
+        
+        // Filter for the user with role "TL" and matching ID
+        const tlData = profiles.find(
+          (profile) => profile.role === "TL" && profile.id === currentUser.id
+        );
+
+        if (!tlData) throw new Error("No TL profile found");
+
         setTlProfile({
           id: tlData.id || "",
           username: tlData.username || "",
@@ -75,10 +85,17 @@ const TLSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [fetchTlProfile, showLoader, hideLoader]);
+  }, [getAllProfile, showLoader, hideLoader]);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!tlProfile.username || !tlProfile.email || !tlProfile.firstname || !tlProfile.lastname) {
+      alert("Please fill in all required fields (Username, Email, First Name, Last Name)");
+      return;
+    }
+
     try {
       showLoader("Updating profile...", "admin");
 
@@ -95,19 +112,26 @@ const TLSettings = () => {
         tax_id: tlProfile.tax_id,
       };
 
-      const result = await updateTlProfileData(tlProfile.id, updateData);
+      console.log("Updating profile with data:", updateData);
+      console.log("User ID:", tlProfile.id);
+
+      // Use handleUpdateUserProfile from ApiContext
+      const result = await handleUpdateUserProfile(tlProfile.id, updateData);
+      
+      console.log("Update result:", result);
       alert("TL profile updated successfully!");
 
       // Update local state with the returned data
-      if (result.tl) {
-        setTlProfile(prevProfile => ({
+      if (result.user) {
+        setTlProfile((prevProfile) => ({
           ...prevProfile,
-          ...result.tl
+          ...result.user,
         }));
       }
     } catch (err) {
       console.error("Update failed:", err);
-      alert("Failed to update TL profile. Please try again.");
+      const errorMessage = err.response?.data?.message || err.message || "Failed to update TL profile";
+      alert(`Update failed: ${errorMessage}`);
     } finally {
       hideLoader();
     }
@@ -234,39 +258,43 @@ const TLSettings = () => {
               </div>
               <div className="form-grid">
                 <div className="form-group">
-                  <label>First Name</label>
+                  <label>First Name *</label>
                   <input
                     type="text"
                     value={tlProfile.firstname}
                     onChange={(e) => setTlProfile({ ...tlProfile, firstname: e.target.value })}
                     placeholder="Enter first name"
+                    required
                   />
                 </div>
                 <div className="form-group">
-                  <label>Last Name</label>
+                  <label>Last Name *</label>
                   <input
                     type="text"
                     value={tlProfile.lastname}
                     onChange={(e) => setTlProfile({ ...tlProfile, lastname: e.target.value })}
                     placeholder="Enter last name"
+                    required
                   />
                 </div>
                 <div className="form-group">
-                  <label>Email Address</label>
+                  <label>Email Address *</label>
                   <input
                     type="email"
                     value={tlProfile.email}
                     onChange={(e) => setTlProfile({ ...tlProfile, email: e.target.value })}
                     placeholder="Enter email address"
+                    required
                   />
                 </div>
                 <div className="form-group">
-                  <label>Username</label>
+                  <label>Username *</label>
                   <input
                     type="text"
                     value={tlProfile.username}
                     onChange={(e) => setTlProfile({ ...tlProfile, username: e.target.value })}
                     placeholder="Enter username"
+                    required
                   />
                 </div>
                 <div className="form-group">
@@ -329,8 +357,8 @@ const TLSettings = () => {
                 </div>
               </div>
               <div className="form-group full save-btn-wrapper">
-                <button className="save-btn" type="submit" disabled={isLoading || tlProfileLoading}>
-                  {isLoading || tlProfileLoading ? "Saving..." : "Save Changes"}
+                <button className="save-btn" type="submit" disabled={isLoading || isUserProfileUpdating}>
+                  {isLoading || isUserProfileUpdating ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </form>
@@ -342,7 +370,7 @@ const TLSettings = () => {
   return (
     <div className="admin-settings">
       <SidebarToggle />
-      {(isLoading || tlProfileLoading) && variant === "admin" && (
+      {(isLoading || isUserProfileUpdating) && variant === "admin" && (
         <AdminSpinner text="Loading Settings..." />
       )}
       <div className="settings-header">
@@ -365,4 +393,3 @@ const TLSettings = () => {
 };
 
 export default TLSettings;
-

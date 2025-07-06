@@ -100,32 +100,32 @@ const ManagerSidebar = () => {
           <p className="sidebar-section sidebar-label">General</p>
           <ul>
             <li className="active">
-              <Link to="/manager" className="admin-aside-link">
+              <Link to="/manager" className="admin-aside-link" data-tooltip="Overview">
                 <Gauge className="admin-aside-icon" />
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
-              <Link to="/manager/assign-task" className="admin-aside-link">
+              <Link to="/manager/assign-task" className="admin-aside-link" data-tooltip="Upload Leads">
                 <ClipboardList className="admin-aside-icon" />
                 <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
-              <Link to="/manager/leadassign" className="admin-aside-link">
+              <Link to="/manager/leadassign" className="admin-aside-link" data-tooltip="Lead Assign">
                 <UserCheck className="admin-aside-icon" />
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
-              <Link to="/manager/executiveform" className="admin-aside-link">
+              <Link to="/manager/executiveform" className="admin-aside-link" data-tooltip="Create Executive">
                 <UserPlus className="admin-aside-icon" />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
 
             <li>
-              <Link to="/manager/monitoring" className="admin-aside-link">
+              <Link to="/manager/monitoring" className="admin-aside-link"data-tooltip="Monitoring">
                 <ActivitySquare className="admin-aside-icon" />
                 <span className="sidebar-label">Monitoring</span>
               </Link>
@@ -135,44 +135,38 @@ const ManagerSidebar = () => {
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
             <li>
-              <Link to="/manager/eod-report" className="admin-aside-link">
+              <Link to="/manager/eod-report" className="admin-aside-link"data-tooltip="EOD">
                 <FileText className="admin-aside-icon" />
                 <span className="sidebar-label">EOD Report</span>
               </Link>
             </li>
             <li>
-              <Link
-                to="/manager/executive-details"
-                className="admin-aside-link"
-              >
+              <Link to="/manager/executive-details" className="admin-aside-link" data-tooltip="Executive Details">
                 <UserCircle className="admin-aside-icon" />
                 <span className="sidebar-label">Executive Details</span>
               </Link>
             </li>
             <li>
-              <Link to="/manager/teams" className="admin-aside-link">
+              <Link to="/manager/teams" className="admin-aside-link" data-tooltip="Team Management">
                 <Users className="admin-aside-icon" />
                 <span className="sidebar-label">Team Management</span>
               </Link>
             </li>
             <li>
-              <Link
-                to="/manager/executive-attendance"
-                className="admin-aside-link"
-              >
+              <Link to="/manager/executive-attendance" className="admin-aside-link"data-tooltip="Attendance">
                 <CalendarDays className="admin-aside-icon" />
                 <span className="sidebar-label">Attendance</span>
               </Link>
             </li>
 
             <li>
-              <Link to="/manager/help-support" className="admin-aside-link">
+              <Link to="/manager/help-support" className="admin-aside-link" data-tooltip="Help & Support">
                 <LifeBuoy className="admin-aside-icon" />
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>
             <li>
-              <Link to="/manager/settings" className="admin-aside-link">
+              <Link to="/manager/settings" className="admin-aside-link" data-tooltip="Settings">
                 <Settings className="admin-aside-icon" />
                 <span className="sidebar-label">Settings</span>
               </Link>

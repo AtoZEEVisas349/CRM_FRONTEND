@@ -161,7 +161,7 @@ const ClientDash = ({ initialStages = 6 }) => {
 
   // Calculate SVG viewBox width based on stage count with minimum width
   const getSVGWidth = () => {
-    const minWidth = 1000; // Minimum width for proper appearance
+    const minWidth = 1000;
     const calculatedWidth = 280 + Math.max(3, Math.ceil(stageCount / 2)) * 260;
     return Math.max(minWidth, calculatedWidth);
   };
@@ -365,8 +365,10 @@ const handleOpenFollowupModal = async (stageIndex) => {
   setActiveStageIndex(stageIndex);
 
   try {
-    const result = await getComments(id, stageIndex + 1);
-    console.log("Fetched followup comments:", result);
+    const result = await getComments(
+      user.type === "processperson" ? id : user.id,
+      stageIndex + 1
+    );
 
     // Transform result to match followupHistory entry format
     const formattedHistory = (result.comments || []).map(c => ({
@@ -386,23 +388,6 @@ const handleOpenFollowupModal = async (stageIndex) => {
     }));
   }
 };
-
-
-// const handleOpenFollowupModal = (stageIndex) => {
-//   setActiveStageIndex(stageIndex);
-//   // Fetch or assign follow-up history for the stage
-//   if (!followupHistory[stageIndex]) {
-//     // Example: You can fetch from API or assign dummy data
-//     setFollowupHistory(prev => ({
-//       ...prev,
-//       [stageIndex]: [
-//         { date: '2025-06-21', details: 'Follow-up done via email' },
-//         { date: '2025-06-22', details: 'Phone call follow-up' }
-//       ]
-//     }));
-//   }
-// };
-
 const handleCloseFollowupModal = () => {
   setActiveStageIndex(null);
 };
@@ -429,12 +414,6 @@ useEffect(() => {
     }
   };
 fetchComments()
-  // if (id) {
-  //   // Load comments for all stages
-  //   for (let i = 1; i <= stageCount; i++) {
-  //     fetchComments(id, i);
-  //   }
-  // }
 
 }, []);
 
@@ -572,17 +551,7 @@ fetchComments()
               <div className="stage-description-card">
                 <div className="card-c-header">
                   <span className="stage-title">Stage {hex.num}</span>
-                  {/* {user?.type === "processperson" && (
-                    <button
-                      className="edit-btn-fixed"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleIconClick(hex.num - 1);
-                      }}
-                    >
-                      Edit
-                    </button>
-                  )} */}
+                
                 </div>
 
                 <div className="card-content">
@@ -692,7 +661,6 @@ onClick={() =>
         .filter(c => c.length > 0)
     )
   }
-            // onClick={() => handleSubmit(user.id, activeIcon + 1, inputValue)}
               style={{
                 padding: '10px 20px',
                 backgroundColor: '#3b82f6',
@@ -771,7 +739,6 @@ onClick={() =>
   >
     {Array.isArray(comment.text) && comment.text.length > 0 ? (
       <>
-        {/* 🟣 Show latest comment */}
         <p style={{ margin: 0 }}>
           {comment.text[comment.text.length - 1]?.comment || '-'}
         </p>

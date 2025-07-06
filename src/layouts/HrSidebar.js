@@ -99,31 +99,31 @@ const HrSidebar = () => {
           <p className="sidebar-section sidebar-label">General</p>
           <ul>
             <li className="active">
-              <Link to="/hr" className="admin-aside-link">
+              <Link to="/hr" className="admin-aside-link" data-tooltip="Overview">
                 <PieChart className="admin-aside-icon" />
                 <span className="sidebar-label">Overview</span>
               </Link>
             </li>
             <li>
-              <Link to="/hr/assign-task" className="admin-aside-link">
+              <Link to="/hr/assign-task" className="admin-aside-link" data-tooltip="Upload Leads">
                 <FolderOpen className="admin-aside-icon" />
-                <span className="sidebar-label">Assign Task</span>
+                <span className="sidebar-label">Upload Leads</span>
               </Link>
             </li>
             <li>
-              <Link to="/hr/leadassign" className="admin-aside-link">
+              <Link to="/hr/leadassign" className="admin-aside-link" data-tooltip="Lead Assign">
                 <ClipboardList className="admin-aside-icon" />
                 <span className="sidebar-label">Lead Assign</span>
               </Link>
             </li>
             <li>
-              <Link to="/hr/executiveform" className="admin-aside-link">
+              <Link to="/hr/executiveform" className="admin-aside-link" data-tooltip="Create Executive">
                 <UserPlus className="admin-aside-icon" />
                 <span className="sidebar-label">Create Executive</span>
               </Link>
             </li>
             <li>
-              <Link to="/hr/monitoring" className="admin-aside-link">
+              <Link to="/hr/monitoring" className="admin-aside-link" data-tooltip="Monitoring">
                 <UserCog className="admin-aside-icon" />
                 <span className="sidebar-label">Monitoring</span>
               </Link>
@@ -133,7 +133,7 @@ const HrSidebar = () => {
           <p className="sidebar-section sidebar-label">Reports</p>
           <ul>
             <li>
-              <Link to="/hr/eod-report" className="admin-aside-link">
+              <Link to="/hr/eod-report" className="admin-aside-link" data-tooltip="EOD">
                 <FileText className="admin-aside-icon" />
                 <span className="sidebar-label">EOD Report</span>
               </Link>
@@ -141,7 +141,7 @@ const HrSidebar = () => {
           </ul>
           <ul>
             <li>
-              <Link to="/hr/executive-details" className="admin-aside-link">
+              <Link to="/hr/executive-details" className="admin-aside-link" data-tooltip="Executive Details">
                 <Users className="admin-aside-icon" />
                 <span className="sidebar-label">Executive Details</span>
               </Link>
@@ -149,7 +149,7 @@ const HrSidebar = () => {
           </ul>
           <ul>
             <li>
-              <Link to="/hr/leave-management" className="admin-aside-link">
+              <Link to="/hr/leave-management" className="admin-aside-link" data-tooltip="Leave Management">
                 <Users className="admin-aside-icon" />
                 <span className="sidebar-label">Leave Management</span>
               </Link>
@@ -157,7 +157,7 @@ const HrSidebar = () => {
           </ul>
           <ul>
             <li>
-              <Link to="/hr/executive-attendance" className="admin-aside-link">
+              <Link to="/hr/executive-attendance" className="admin-aside-link" data-tooltip="Attendance">
                 <CalendarCheck className="admin-aside-icon" />
                 <span className="sidebar-label">Attendance</span>
               </Link>
@@ -165,13 +165,13 @@ const HrSidebar = () => {
           </ul>
           <ul>
             <li>
-              <Link to="/hr/help-support" className="admin-aside-link">
+              <Link to="/hr/help-support" className="admin-aside-link" data-tooltip="Help & Support">
                 <HelpCircle className="admin-aside-icon" />
                 <span className="sidebar-label">Help & Supports</span>
               </Link>
             </li>
             <li>
-              <Link to="/hr/settings" className="admin-aside-link">
+              <Link to="/hr/settings" className="admin-aside-link" data-tooltip="Settings">
                 <Settings className="admin-aside-icon" />
                 <span className="sidebar-label">Settings</span>
               </Link>
