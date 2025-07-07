@@ -92,7 +92,7 @@ useEffect(() => {
           {/* <li><Link to="/process/client/settings">Settings</Link></li> */}
            {user?.type === 'processperson' && (
             <div className="role-switch-wrapper1">
-  <div className="switch-label1">Process pages</div>
+  <div className="switch-label1">Process Dashboard</div>
   <div className="role-switch-container" onClick={onToggleClick}>
     <div
       className={`switch-slider ${

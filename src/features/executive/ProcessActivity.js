@@ -136,6 +136,7 @@ const ProcessActivity = () => {
           <div className="exec-info">
             <div className="exec-avatar">
               <span className="initial">
+              {storedUser.fullName.charAt(0).toUpperCase()}
               </span>
             </div>
             <div className="exec-details">

@@ -1008,7 +1008,7 @@ console.log(clientInfo,"id");
               <td>{latestComment[selectedStage]?.comment || "-"}</td>
               <td>
                 <button
-                  className="action-btn"
+                  className="p-action-btn"
                   onClick={handleViewHistory}
                   disabled={!history.length}
                 >
@@ -1017,7 +1017,7 @@ console.log(clientInfo,"id");
               </td>
               <td>
                 <button
-                  className="action-btn"
+                  className="p-action-btn"
                   onClick={() => setShowAddModal(true)}
                 >
                   Add Comment

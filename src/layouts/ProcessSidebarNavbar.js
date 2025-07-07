@@ -326,7 +326,6 @@ const handleDismissBeepNotification = () => {
         <>
           <div className="user_details">
             <div className="user_avatar">
-              {/* {fullName.charAt(0)} */}
             </div>
             <div>
               <p className="user_name"  style={{ textTransform: "none" }}>{fullName?.toLowerCase()}</p>

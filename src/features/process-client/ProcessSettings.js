@@ -212,17 +212,13 @@ useEffect(() => {
           <div className="process-tab-bar">
             <span className="active">General</span>
               <span onClick={() => navigate("/process/client/create-template")}>Create Template</span>
-            <span>Notifications</span>
           
-            {/* <span>Members</span> */}
-            <span>Billings</span>
             {localStorage.getItem("userType") === "processperson" ? (
               <span onClick={() => navigate("/process/client/create-client")}>Create Client</span>
             ) : (
               <span>Billings</span>
 
             )}
-            <span>Security</span>
           </div>
 
           <form className="process-settings-form" onSubmit={handleSubmit}>
