@@ -9,62 +9,25 @@ import { useLoading } from "../../context/LoadingContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 import { useProcessService } from "../../context/ProcessServiceContext";
 
-const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
-  const { followUps, getAllFollowUps } = useApi();
-
+const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [tableHeight, setTableHeight] = useState("500px");
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [lastFollowups, setLastFollowups] = useState([]);
+
   const navigate = useNavigate();
-  const { searchQuery, setActivePage } = useContext(SearchContext);
   const location = useLocation();
+  const { searchQuery, setActivePage } = useContext(SearchContext);
   const { showLoader, hideLoader, isLoading, loadingText } = useLoading();
- 
-  const {getProcessAllFollowup, fetchCustomers, customers, setCustomers}=useProcessService();
+  const {
+    getProcessAllFollowup,
+    fetchCustomers,
+    customers,
+    setCustomers,
+    getProcessFollowup,
+  } = useProcessService();
 
-  const[processFollowup,setProcessFollowup]=useState()
-
-   useEffect(() => {
- 
-    const fetchFollowups = async () => {
-     
-      try {
-        const result = await getProcessAllFollowup();
-        setProcessFollowup(result)
-     
-      } catch (err) {
-        console.error("❌ Failed to load follow-ups:", err.message);
-        // setError(err.message);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
-    fetchFollowups();
-    console.log("processFollowup:", processFollowup);
-  }, []);
-   useEffect(() => {
-      fetchCustomers()
-        .then((data) => {
-          if (data && Array.isArray(data)) {
-           const mappedClients = data
-    .filter((client) => client.status === "under_review")
-  
-            setCustomers(mappedClients);
-          }
-        })
-        .catch((err) => console.error("❌ Error fetching clients:", err));
-        console.log(customers)
-    }, []);
-    const clients=customers.filter((client) => client.status === "under_review")
-  console.log(clients);
-// const clients = Array.isArray(processFollowup?.data)
-//   ? processFollowup.data.filter(
-//       (client) =>
-//         (client?.freshLead?.lead?.clientLead?.status || "").toLowerCase() === "follow-up"
-//     )
-//   : [];
-
-
+  const [processFollowup, setProcessFollowup] = useState();
 
   const isFollowUpOld = (followUpDate) => {
     if (!followUpDate) return false;
@@ -75,18 +38,31 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
     return diffDays >= 3;
   };
 
-//   useEffect(() => {
-//     const loadFollowUps = async () => {
-//       try {
-//         showLoader("Loading Follow-Ups...");
-//  const result = await getProcessAllFollowup();
-//         setProcessFollowup(result)
-//       } finally {
-//         hideLoader();
-//       }
-//     };
-//     loadFollowUps();
-//   }, []);
+  useEffect(() => {
+    const fetchFollowups = async () => {
+      try {
+        const result = await getProcessAllFollowup();
+        setProcessFollowup(result);
+      } catch (err) {
+        console.error("❌ Failed to load follow-ups:", err.message);
+      }
+    };
+
+    fetchFollowups();
+  }, []);
+
+  useEffect(() => {
+    fetchCustomers()
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          const mappedClients = data.filter((client) => client.status === "under_review");
+          setCustomers(mappedClients);
+        }
+      })
+      .catch((err) => console.error("❌ Error fetching clients:", err));
+  }, []);
+
+  const clients = customers.filter((client) => client.status === "under_review");
 
   useEffect(() => {
     setActivePage("follow-up");
@@ -95,9 +71,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   useEffect(() => {
     const updateTableHeight = () => {
       const windowHeight = window.innerHeight;
-      const tablePosition = document
-        .querySelector(".table-container")
-        ?.getBoundingClientRect().top || 0;
+      const tablePosition = document.querySelector(".table-container")?.getBoundingClientRect().top || 0;
       const footerHeight = 40;
       const newHeight = Math.max(300, windowHeight - tablePosition - footerHeight);
       setTableHeight(`${newHeight}px`);
@@ -110,14 +84,10 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
 
   const filteredClients = clients.filter((client) => {
     const type = (client.processfollowuphistories?.[0]?.follow_up_type || "").toLowerCase().trim();
-    // const status = (client.clientLeadStatus || "").toLowerCase().trim();
-    // if (status !== "follow-up") return false;
-  
+
     if (filter === "Document collection" && type !== "document collection") return false;
-     if (filter === "Payment follow-up" && type !== "payment follow-up") return false; 
-     if (filter === "Visa filing" && type !== "visa filing") return false; 
-    
-    
+    if (filter === "Payment follow-up" && type !== "payment follow-up") return false;
+    if (filter === "Visa filing" && type !== "visa filing") return false;
 
     if (location.pathname.includes("process-follow-up") && searchQuery.trim()) {
       const search = searchQuery.toLowerCase();
@@ -129,6 +99,28 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
 
     return true;
   });
+
+ const handleSelectClient = async (client) => {
+  setSelectedClient(client);
+  const freshLeadId = client.freshLead?.id || client.fresh_lead_id;
+  if (!freshLeadId) return;
+
+  try {
+    const response = await getProcessFollowup(freshLeadId);
+    const data = Array.isArray(response) ? response : response?.data || [];
+
+    // ✅ Sort by latest first and take top 2
+    const sorted = [...data]
+      .filter((item) => Number(item.fresh_lead_id) === Number(freshLeadId))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // latest first
+
+    setLastFollowups(sorted.slice(0, 2)); // ✅ latest 2 follow-ups only
+  } catch (err) {
+    console.error("Error fetching follow-up history:", err);
+    setLastFollowups([]);
+  }
+};
+
 
   const handleEdit = (client) => {
     const freshLeadId = client.freshLead?.id || client.fresh_lead_id;
@@ -176,12 +168,135 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
     <>
       <div className="client-table-wrapper" style={{ position: "relative" }}>
         {isLoading && <LoadingSpinner text={loadingText} />}
+{selectedClient && (
+  <div
+    className="client-info"
+    style={{
+      width: "95%",
+      margin: "10px auto",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      padding: "12px",
+      borderRadius: "8px",
+      background: "#fff",
+      position: "relative", // <-- add this
+    }}
+  >
+    {/* ❌ CLOSE BUTTON - TOP RIGHT */}
+    <div
+      style={{
+        position: "absolute",
+        top: "10px",
+        right: "10px",
+        cursor: "pointer",
+        fontSize: "20px",
+        color: "#555",
+        backgroundColor: "#f0f0f0",
+        width: "28px",
+        height: "28px",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transition: "background 0.3s",
+      }}
+      onClick={() => {
+        setSelectedClient(null);
+        setLastFollowups([]);
+      }}
+      title="Close"
+    >
+      ✖
+    </div>
+
+    {/* Main content */}
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            background: "#eee",
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: "10px",
+          }}
+        >
+          👤
+        </div>
+        <div>
+          <div style={{ fontWeight: "600" }}>
+            Name: {selectedClient.fullName}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Last Follow-Ups Section */}
+    {lastFollowups.length > 0 && (
+      <div
+        style={{
+          marginTop: "16px",
+          background: "#f9f9f9",
+          borderRadius: "8px",
+          padding: "16px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        }}
+      >
+        <h3
+          style={{
+            marginBottom: "16px",
+            fontSize: "18px",
+            fontWeight: "600",
+            borderBottom: "2px solid #2196f3",
+            paddingBottom: "6px",
+            color: "#1e3a8a",
+          }}
+        >
+          Last Follow-Ups
+        </h3>
 
         <div
-          className="table-container responsive-table-wrapper"
-          style={{ maxHeight: tableHeight }}
+          style={{
+            display: "flex",
+            gap: "16px",
+            flexWrap: "wrap",
+          }}
         >
-            
+          {lastFollowups.map((followup, index) => (
+            <div
+              key={followup.id}
+              style={{
+                flex: "1",
+                minWidth: "250px",
+                backgroundColor: "#e3f2fd",
+                padding: "12px 16px",
+                borderRadius: "6px",
+                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+              }}
+            >
+              <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#0d47a1" }}>
+                {index === 0 ? "Latest" : ""}
+              </div>
+
+              <div style={{ marginBottom: "6px" }}>
+                {followup.comments || "No comment"}
+              </div>
+
+              <div style={{ fontSize: "13px", color: "#333" }}>
+                {new Date(followup.createdAt).toLocaleString()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
+
+        <div className="table-container responsive-table-wrapper" style={{ maxHeight: tableHeight }}>
           <table className="client-table">
             <thead>
               <tr className="sticky-header">
@@ -196,7 +311,9 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
             <tbody>
               {filteredClients.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="no-data-text">No follow-up clients found.</td>
+                  <td colSpan="6" className="no-data-text">
+                    No follow-up clients found.
+                  </td>
                 </tr>
               ) : (
                 filteredClients.map((client, index) => {
@@ -206,16 +323,20 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                     <tr
                       key={index}
                       className={isOld ? "old-followup-row" : ""}
-                      style={
-                        isOld
-                          ? {
-                              backgroundColor: "#ffebee",
-                              borderLeft: "4px solid #f44336",
-                            }
-                          : {}
-                      }
+                      style={{
+                        cursor: "pointer",
+                        ...(isOld && {
+                          backgroundColor: "#ffebee",
+                          borderLeft: "4px solid #f44336",
+                        }),
+                      }}
+                      onClick={() => handleSelectClient(client)}
                     >
-                      <td onClick={() => onSelectClient?.(client)}>
+                      <td 
+                      // onClick={() => onSelectClient?.(client)
+                        
+                      // }
+                      >
                         <div className="client-name">
                           <div className="client-info">
                             <strong
@@ -238,9 +359,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                       </td>
                       <td>
                         <button
-                          className={`followup-badge full-click ${
-                            isOld ? "old-followup-button" : ""
-                          }`}
+                          className={`followup-badge full-click ${isOld ? "old-followup-button" : ""}`}
                           onClick={() => handleEdit(client)}
                           style={
                             isOld
@@ -254,16 +373,14 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                         >
                           {filter === "All Follow Ups"
                             ? "Create"
-                            : (client.processfollowuphistories?.[0]?.follow_up_type  || "").toLowerCase()}
+                            : (client.processfollowuphistories?.[0]?.follow_up_type || "").toLowerCase()}
                           <FontAwesomeIcon icon={faPenToSquare} className="icon" />
                         </button>
                       </td>
                       <td>
                         {client.interaction_rating ? (
                           <span
-                            className={`rating-badge ${getRatingColorClass(
-                              client.interaction_rating
-                            )} ${isOld ? "old-followup-badge" : ""}`}
+                            className={`rating-badge ${getRatingColorClass(client.interaction_rating)} ${isOld ? "old-followup-badge" : ""}`}
                             style={
                               isOld
                                 ? {
@@ -279,9 +396,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                           </span>
                         ) : (
                           <span
-                            className={`status-badge ${getStatusColorClass(
-                              client.status
-                            )} ${isOld ? "old-followup-badge" : ""}`}
+                            className={`status-badge ${getStatusColorClass(client.status)} ${isOld ? "old-followup-badge" : ""}`}
                             style={
                               isOld
                                 ? {
@@ -298,9 +413,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                       </td>
                       <td className="call-cell">
                         <button
-                          className={`call-button ${
-                            isOld ? "old-followup-call" : ""
-                          }`}
+                          className={`call-button ${isOld ? "old-followup-call" : ""}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             setActivePopoverIndex(
@@ -324,9 +437,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                             <button
                               className="popover-option"
                               onClick={() => {
-                                const cleaned = (
-                                  client.phone || ""
-                                ).replace(/[^\d]/g, "");
+                                const cleaned = (client.phone || "").replace(/[^\d]/g, "");
                                 window.location.href = `whatsapp://send?phone=91${cleaned}`;
                                 setActivePopoverIndex(null);
                               }}
@@ -344,9 +455,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
                             <button
                               className="popover-option"
                               onClick={() => {
-                                const cleaned = (
-                                  client.phone || ""
-                                ).replace(/[^\d]/g, "");
+                                const cleaned = (client.phone || "").replace(/[^\d]/g, "");
                                 window.open(`tel:${cleaned}`);
                                 setActivePopoverIndex(null);
                               }}
