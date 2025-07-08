@@ -13,7 +13,7 @@ import {
   CalendarDays,
   LifeBuoy,
   BarChart,
-  Settings
+  Settings,Network
 } from "lucide-react";
 
 const AdminSidebar = () => {
@@ -133,6 +133,12 @@ const AdminSidebar = () => {
               <Link to="/admin/eod-report" className="admin-aside-link" data-tooltip="EOD Report">
                 <FileText className="admin-aside-icon" />
                 <span className="sidebar-label">EOD Report</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/admin/heirarchy" className="admin-aside-link">
+                <Network className="admin-aside-icon" /> 
+                <span className="sidebar-label">Hierarchy</span>
               </Link>
             </li>
             <li>

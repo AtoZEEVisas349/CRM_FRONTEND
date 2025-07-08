@@ -68,7 +68,9 @@ background: linear-gradient(135deg, #0d1e9c, #275dbb);
 .toggle-switch input:checked + .toggle-slider::before {
   transform: translateX(24px);
 }
-
+[data-theme="dark"] .toggle-label{
+  color: var(--text-color);
+}
 .toggle-label {
   font-weight: 500;
   font-size: 14px;

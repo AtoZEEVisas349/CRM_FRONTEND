@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/report.css";
 import logo from "../../assets/logo.png";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Alert, soundManager } from "../modal/alert";
 import { useApi } from "../../context/ApiContext";
 import SidebarToggle from "./SidebarToggle";
 import { DateRange } from "react-date-range";
@@ -25,9 +24,25 @@ const Eod = () => {
   const [executives, setExecutives] = useState([]);
   const [cards, setCards] = useState([]);
   const [openCalendarIndex, setOpenCalendarIndex] = useState(null);
+  const [alerts, setAlerts] = useState([]); // State for managing alerts
   const [sidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
+
+  // Function to add a new alert
+  const showAlert = (message, type, duration = 3000, title = type.charAt(0).toUpperCase() + type.slice(1)) => {
+    const id = Date.now();
+    setAlerts(prev => [
+      ...prev,
+      { id, message, type, title, duration }
+    ]);
+    soundManager.playSound(type);
+  };
+
+  // Function to close an alert
+  const closeAlert = (id) => {
+    setAlerts(prev => prev.filter(alert => alert.id !== id));
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -42,12 +57,11 @@ const Eod = () => {
   useEffect(() => {
     const fetchExecutives = async () => {
       try {
-        const data = await fetchExecutivesAPI(); // [{ id, username }]
+        const data = await fetchExecutivesAPI();
         setExecutives(data);
 
         const initialCards = data.map(() => ({
           email: "",
-            
           selected: [],
           startDate: getCurrentDate(),
           endDate: getCurrentDate(),
@@ -57,7 +71,7 @@ const Eod = () => {
         setCards(initialCards);
       } catch (error) {
         console.error("Error fetching executives:", error);
-        toast.error("Failed to load executives.");
+        showAlert("Failed to load executives.", "error");
       }
     };
 
@@ -120,12 +134,12 @@ const Eod = () => {
     const exec = executives[index];
 
     if (!card.email) {
-      toast.error("Please enter an email.");
+      showAlert("Please enter an email.", "error");
       return;
     }
 
     if (card.selected.length === 0) {
-      toast.error("Select at least one report option.");
+      showAlert("Select at least one report option.", "error");
       return;
     }
 
@@ -143,10 +157,10 @@ const Eod = () => {
 
     try {
       await sendEodReport(payload);
-      toast.success("Report scheduled successfully!");
+      showAlert("Report scheduled successfully!", "success");
     } catch (err) {
       console.error("❌ Failed to schedule:", err);
-      toast.error("Failed to schedule report.");
+      showAlert("Failed to schedule report.", "error");
     }
   };
 
@@ -156,111 +170,132 @@ const Eod = () => {
         <SidebarToggle />
       </aside>
       <div className="eod-container">
-        <ToastContainer />
         <h1 className="eod-main-title">Send Reports</h1>
-        <div className="eod-cards-wrapper">
-          {executives.map((exec, index) => (
-            <form key={exec.id} className="eod-cards" onSubmit={(e) => handleSubmit(e, index)}>
-              <div className="eod-card-header">
-                <input type="checkbox" className="eod-checkbox" />
-                <img src={logo} alt="logo" className="eod-logo" />
-                <h3 className="eod-user-name">{exec.username}</h3>
-              </div>
+        <div className="eod-table-wrapper">
+          <table className="eod-table">
+            <thead>
+              <tr>
+                <th>Executive</th>
+                <th>Email</th>
+                <th>Report Type</th>
+                <th>Date & Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {executives.map((exec, index) => (
+                <tr key={exec.id}>
+                  {/* Executive Info Column */}
+                  <td>
+                    <div className="eod-executive-info">
+                      <img src={logo} alt="logo" className="eod-logo" />
+                      <div className="eod-executive-details">
+                        <h4>{exec.username}</h4>
+                        <span>ID: {exec.id}</span>
+                      </div>
+                    </div>
+                  </td>
 
-              <div className="eod-email-container">
-                <label className="eod-label">Email:</label>
-                <input
-                  type="email"
-                  className="eod-email-input"
-                  value={cards[index]?.email || ""}
-                  onChange={(e) => handleEmailChange(index, e.target.value)}
-                  required
-                  placeholder="example@example.com"
-                />
-              </div>
+                  {/* Email Column */}
+                  <td>
+                    <input
+                      className="eod-email-input"
+                      type="email"
+                      value={cards[index]?.email || ""}
+                      onChange={(e) => handleEmailChange(index, e.target.value)}
+                      placeholder="example@domain.com"
+                      required
+                    />
+                  </td>
 
-              <div className="eod-dropdown">
-                <label className="eod-label">Select Report Type:</label>
-                <button
-                  type="button"
-                  onClick={() => toggleDropdown(index)}
-                  className="eod-dropdown-button"
-                >
-                  {cards[index].selected.length > 0
-                    ? cards[index].selected.map((k) => options.find((o) => o.key === k)?.label).join(", ")
-                    : "Choose Report"}
-                </button>
-                {cards[index].dropdownOpen && (
-                  <ul className="eod-dropdown-list">
-                    {options.map(({ key, label }) => (
-                      <li key={key} className="eod-dropdown-item">
-                        <label className="eod-dropdown-label">
-                          <input
-                            type="checkbox"
-                            className="eod-dropdown-checkbox"
-                            checked={cards[index].selected.includes(key)}
-                            onChange={() => handleCheckboxChange(index, key)}
+                  {/* Report Type Column */}
+                  <td>
+                    <div className="eod-dropdown">
+                      <button
+                        type="button"
+                        onClick={() => toggleDropdown(index)}
+                        className="eod-dropdown-button"
+                      >
+                        {cards[index]?.selected.length > 0
+                          ? cards[index].selected.map((k) => options.find((o) => o.key === k)?.label).join(", ")
+                          : "Choose EOD Report"}
+                      </button>
+                      {cards[index]?.dropdownOpen && (
+                        <ul className="eod-dropdown-list">
+                          {options.map(({ key, label }) => (
+                            <li key={key} className="eod-dropdown-item">
+                              <label className="eod-dropdown-label">
+                                <input
+                                  type="checkbox"
+                                  checked={cards[index]?.selected.includes(key) || false}
+                                  onChange={() => handleCheckboxChange(index, key)}
+                                  className="eod-dropdown-checkbox"
+                                />
+                                {label}
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Date Time Column */}
+                  <td>
+                    <div className="eod-datetime-wrapper">
+                      <button
+                        type="button"
+                        className="eod-date-input"
+                        onClick={() =>
+                          setOpenCalendarIndex(openCalendarIndex === index ? null : index)
+                        }
+      >
+                        {cards[index].startDate} to {cards[index].endDate}
+                      </button>
+                      {openCalendarIndex === index && (
+                        <div ref={calendarRef} style={{ position: "absolute", zIndex: 10 }}>
+                          <DateRange
+                            editableDateInputs={true}
+                            onChange={(item) => handleDateRangeChange(index, item)}
+                            moveRangeOnFirstSelection={false}
+                            ranges={[
+                              {
+                                startDate: new Date(cards[index].startDate),
+                                endDate: new Date(cards[index].endDate),
+                                key: "selection",
+                              },
+                            ]}
                           />
-                          {label}
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              <div className="eod-datetime-wrapper">
-                <div className="eod-datetime">
-                  <label className="eod-label">Date Range:</label>
-                  <button
-                    type="button"
-                    className="eod-date-input"
-                    onClick={() =>
-                      setOpenCalendarIndex(openCalendarIndex === index ? null : index)
-                    }
-                  >
-                    {cards[index].startDate} to {cards[index].endDate}
-                  </button>
-                  {openCalendarIndex === index && (
-                    <div ref={calendarRef} style={{ position: "absolute", zIndex: 10 }}>
-                      <DateRange
-                        editableDateInputs={true}
-                        onChange={(item) => handleDateRangeChange(index, item)}
-                        moveRangeOnFirstSelection={false}
-                        ranges={[
-                          {
-                            startDate: new Date(cards[index].startDate),
-                            endDate: new Date(cards[index].endDate),
-                            key: "selection",
-                          },
-                        ]}
+                        </div>
+                      )}
+                      <input
+                        type="time"
+                        value={cards[index]?.time || ""}
+                        onChange={(e) => handleTimeChange(index, e.target.value)}
+                        className="eod-time-input"
                       />
                     </div>
-                  )}
-                </div>
+                  </td>
 
-                <div className="eod-time">
-                  <label className="eod-label" htmlFor={`time-${index}`}>Time:</label>
-                  <input
-                    type="time"
-                    id={`time-${index}`}
-                    value={cards[index].time}
-                    onChange={(e) => handleTimeChange(index, e.target.value)}
-                    className="eod-time-input"
-                  />
-                </div>
-              </div>
-
-              <div className="eod-submit">
-                <button type="submit" className="eod-submit-button">Schedule Email</button>
-              </div>
-            </form>
-          ))}
+                  {/* Action Column */}
+                  <td>
+                    <button
+                      type="button"
+                      onClick={(e) => handleSubmit(e, index)}
+                      className="eod-submit-button"
+                    >
+                      Schedule Email
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        <Alert alerts={alerts} onClose={closeAlert} />
       </div>
     </div>
   );
 };
 
 export default Eod;
-

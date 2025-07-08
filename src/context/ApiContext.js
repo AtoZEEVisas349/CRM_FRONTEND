@@ -4,7 +4,7 @@ import * as upload from "../services/fileUpload";
 import { useCallback } from "react";
 import {updateAdminProfile,changeAdminPassword,createEmailTemplate,getAllEmailTemplates,
   getEmailTemplateById,markMultipleNotificationsAsRead,fetchFollowUpHistoryByLeadId,createTeam,getManagerTeamsById,
-  addExecutiveToTeam,updateUserProfile
+  addExecutiveToTeam,updateUserProfile,changeManagerPassword
 } from "../services/apiService"
 import { format } from "date-fns";
 const ApiContext = createContext();
@@ -1229,6 +1229,55 @@ const assignExecutiveToTeam = async ({ teamId, executiveId, managerId }) => {
     throw error;
   }
 };
+const [organizationHierarchy, setOrganizationHierarchy] = useState([]);
+  const [hierarchyLoading, setHierarchyLoading] = useState(false);
+  // ✅ New: Fetch Organization Hierarchy
+  const fetchOrganizationHierarchyAPI = async () => {
+    setHierarchyLoading(true);
+    try {
+      const data = await apiService.fetchOrganizationHierarchy();
+      setOrganizationHierarchy(data || []);
+      return data || [];
+    } catch (error) {
+      console.error("❌ Error fetching organization hierarchy:", error);
+      return [];
+    } finally {
+      setHierarchyLoading(false);
+    }
+  };
+
+ 
+  const [isHrPasswordUpdating, setHrPasswordUpdating] = useState(false);
+
+const handleChangeHrPassword = async (currentPassword, newPassword) => {
+  setHrPasswordUpdating(true);
+  try {
+    const result = await apiService.changeHrPassword(currentPassword, newPassword);
+    return result;
+  } catch (error) {
+    console.error("❌ Error changing HR password:", error);
+    throw error;
+  } finally {
+    setHrPasswordUpdating(false);
+  }
+}
+
+  const [isManagerPasswordUpdating, setManagerPasswordUpdating] = useState(false);
+
+  // Function to change manager password
+  const handleChangeManagerPassword = async (currentPassword, newPassword) => {
+    setManagerPasswordUpdating(true);
+    try {
+      const result = await changeManagerPassword(currentPassword, newPassword);
+      return result;
+    } catch (error) {
+      console.error("❌ Error changing manager password:", error);
+      throw error;
+    } finally {
+      setManagerPasswordUpdating(false);
+    }
+  };
+
 const [allTeams, setAllTeams] = useState([]);
 const [allTeamsLoading, setAllTeamsLoading] = useState(false);
 const [allTeamsError, setAllTeamsError] = useState(null);
@@ -1354,7 +1403,37 @@ const updateHrProfileById = async (hrId, updateData) => {
     throw error;
   }
 };
+const fetchCallTimeByRangeAPI = async (executiveIds, startDate, endDate) => {
+  if (!executiveIds || !startDate || !endDate) return [];
+  try {
+    return await apiService.fetchCallTimeByRange(executiveIds, startDate, endDate);
+  } catch (err) {
+    console.error("❌ Error in call time range context API:", err);
+    return [];
+  }
+};
+const [summaryLoading, setSummaryLoading] = useState(false);
 
+const fetchExecutiveSummaryByRangeAPI = async (
+  executiveId,
+  startDate,
+  endDate
+) => {
+  if (!executiveId || !startDate || !endDate) return [];
+  setSummaryLoading(true);
+  try {
+    return await apiService.fetchExecutiveSummaryByRange(
+      executiveId,
+      startDate,
+      endDate
+    );
+  } catch (err) {
+    console.error("❌ Error in context summary API:", err);
+    return [];
+  } finally {
+    setSummaryLoading(false);
+  }
+};
 
 const [isUserProfileUpdating, setUserProfileUpdating] = useState(false);
 
@@ -1453,6 +1532,7 @@ const [isUserProfileUpdating, setUserProfileUpdating] = useState(false);
     fetchClosedByExecutive,
     fetchFollowUpsByExecutive,
     // Follow-ups
+    fetchCallTimeByRangeAPI,
     createFollowUp,
     fetchFreshLeadsAPI,
     updateMeetingAPI,
@@ -1466,6 +1546,7 @@ const [isUserProfileUpdating, setUserProfileUpdating] = useState(false);
     // Follow-up Histories
     createFollowUpHistoryAPI,
     fetchFollowUpHistoriesAPI,
+    fetchExecutiveSummaryByRangeAPI,
     // Meetings
  createMeetingAPI: apiService.createMeetingAPI, 
  fetchMeetings:    apiService.fetchMeetings,
@@ -1491,6 +1572,7 @@ const [isUserProfileUpdating, setUserProfileUpdating] = useState(false);
         userSettings,
         fetchSettings,
         updateSettings,
+        fetchExecutiveSummaryByRangeAPI,
         // ✅ Executive Info State
         executiveInfo,
         executiveLoading,
@@ -1579,6 +1661,13 @@ getAllConverted,
         createManagerTeam,
         assignExecutiveToTeam,
         fetchMeetingsByExecutive,
+        handleChangeHrPassword,
+        handleChangeManagerPassword,
+        organizationHierarchy,
+        hierarchyLoading,
+        isManagerPasswordUpdating,
+        isHrPasswordUpdating,
+        fetchOrganizationHierarchyAPI,
         // ✅ Admin Profile
         adminProfile,
         loading,
@@ -1641,7 +1730,7 @@ getAllConverted,
               allHRs,
               allHRsLoading,
               fetchAllHRsAPI,
-
+              fetchCallTimeByRangeAPI,
               allManagers,
               allManagersLoading,
               fetchAllManagersAPI,

@@ -943,12 +943,21 @@ export const addExecutiveToTeam = async ({ teamId, executiveId, managerId }) => 
       user_id: executiveId,
       managerId: managerId,
     });
-    return response.data;
+
+    // Check status manually (only throw if necessary)
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      console.error("❌ Non-success status:", response.status, response.data);
+      throw new Error("Failed to add executive to team.");
+    }
+
   } catch (error) {
     console.error("❌ Error adding executive to team:", error.response?.data || error.message);
-    throw error;
+    throw error; // This should now only happen when it’s truly an error
   }
 };
+
 
 
 export const getAllTeamMembers = async (team_id) => {
@@ -1006,5 +1015,74 @@ export const fetchFollowUpsByExecutive = async (execName) => {
   const res = await apiService.get(`/followup/by-executive/${encodeURIComponent(execName)}`);
   return res.data.data;
 };
+export const fetchCallTimeByRange = async (executiveIds, startDate, endDate) => {
+  try {
+    const results = [];
 
+    for (const id of executiveIds) {
+      const response = await apiService.get(
+        `/calldetails/call-time/${id}?startDate=${startDate}&endDate=${endDate}`
+      );
+      results.push({
+        executiveId: id,
+        totalCallTimeHours: response.data.totalCallTimeHours || 0,
+      });
+    }
+
+    return results;
+  } catch (error) {
+    console.error("❌ Error fetching call time by range (GET):", error);
+    throw error;
+  }
+};
+export const fetchExecutiveSummaryByRange = async (
+  executiveId,
+  startDate,
+  endDate
+) => {
+  try {
+    const url = `/executive-activities/summary/${executiveId}?startDate=${startDate}&endDate=${endDate}`;
+    const res = await apiService.get(url);
+    return res.data; // [{ activityDate, workTime, breakTime, ... }]
+  } catch (err) {
+    console.error("❌ Error fetching summary by range:", err);
+    throw err;
+  }
+};
+// ✅ Fetch organization hierarchy
+export const fetchOrganizationHierarchy = async () => {
+  try {
+    const response = await apiService.get("/organization/graph");
+    return response.data.hierarchy; // Return only the hierarchy array
+  } catch (error) {
+    console.error("❌ Error fetching organization hierarchy:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const changeHrPassword = async (currentPassword, newPassword) => {
+  try {
+    const response = await apiService.post("/hr/change-password", {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error changing HR password:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const changeManagerPassword = async (currentPassword, newPassword) => {
+  try {
+    const response = await apiService.post("/manager/change-password", {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error changing manager password:", error.response?.data || error.message);
+    throw error;
+  }
+};
 export default apiService;

@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -8,23 +5,29 @@ import PageAccessControl from "../admin-settings/PageAccessControl";
 import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
-import { Alert, soundManager } from "../modal/alert";
 
 const HrSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
-  const { fetchHrUserData, updateHrProfileById } = useApi();
+  const { fetchHrUserData, updateHrProfileById, handleChangeHrPassword, isHrPasswordUpdating } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const hasLoaded = useRef(false);
-  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
 
   const [hrProfile, setHrProfile] = useState({
     id: "",
-    name: "", 
+    name: "",
     email: "",
     username: "",
     role: "",
     jobTitle: "",
   });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
 
   useEffect(() => {
     const handleSidebarToggle = () => {
@@ -43,32 +46,19 @@ const HrSettings = () => {
       try {
         showLoader("Loading HR profile...", "admin");
         const currentUser = JSON.parse(localStorage.getItem("user"));
-        if (!currentUser?.id) {
-          throw new Error("No HR ID found");
-        }
+        if (!currentUser?.id) throw new Error("No HR ID found");
 
         const hrData = await fetchHrUserData(currentUser.id);
         setHrProfile({
           id: hrData.id || "",
           name: hrData.name || "",
           email: hrData.email || "",
-          username: hrData.username || "", // Handle null
+          username: hrData.username || "",
           role: hrData.role || "",
-          jobTitle: hrData.jobTitle || "", // Handle null
+          jobTitle: hrData.jobTitle || "",
         });
       } catch (err) {
         console.error("Failed to load HR profile:", err);
-        setAlerts([
-          ...alerts,
-          {
-            id: Date.now(),
-            type: "error",
-            title: "Load Failed",
-            message: "Failed to load HR profile: " + (err.message || "Unknown error"),
-            duration: 5000,
-          },
-        ]);
-        soundManager.playSound("error");
       } finally {
         hideLoader();
       }
@@ -79,7 +69,7 @@ const HrSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [fetchHrUserData]);
+  }, [fetchHrUserData, showLoader, hideLoader]);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -90,36 +80,38 @@ const HrSettings = () => {
         username: hrProfile.username,
         jobTitle: hrProfile.jobTitle,
       });
-      setAlerts([
-        ...alerts,
-        {
-          id: Date.now(),
-          type: "success",
-          title: "Profile Updated",
-          message: "HR profile updated successfully!",
-          duration: 5000,
-        },
-      ]);
-      soundManager.playSound("success");
+      alert("HR profile updated successfully!");
     } catch (err) {
       console.error("Update failed:", err);
-      setAlerts([
-        ...alerts,
-        {
-          id: Date.now(),
-          type: "error",
-          title: "Update Failed",
-          message: "Failed to update HR profile",
-          duration: 5000,
-        },
-      ]);
-      soundManager.playSound("error");
+      alert("Failed to update HR profile");
     }
   };
 
-  // Handle alert close
-  const handleAlertClose = (id) => {
-    setAlerts(alerts.filter((alert) => alert.id !== id));
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData({ ...passwordData, [name]: value });
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("New password and confirm password do not match.");
+      return;
+    }
+
+    try {
+      showLoader("Updating password...", "admin");
+      await handleChangeHrPassword(passwordData.currentPassword, passwordData.newPassword);
+      setPasswordSuccess("Password updated successfully!");
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      setPasswordError(err.response?.data?.message || "Failed to update password.");
+    } finally {
+      hideLoader();
+    }
   };
 
   const tabs = [
@@ -219,7 +211,54 @@ const HrSettings = () => {
         return (
           <>
             <h3>Change Password</h3>
-            <p>This section is under development.</p>
+            <form className="profile-form" onSubmit={handlePasswordSubmit}>
+              <div className="form-group full">
+                <label>Current Password</label>
+                <input
+                  name="currentPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                  required
+                />
+              </div>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input
+                    name="newPassword"
+                    type="password"
+                    placeholder="New password"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Confirm Password</label>
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm password"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                </div>
+              </div>
+              {passwordError && <p className="error-text">{passwordError}</p>}
+              {passwordSuccess && <p className="success-text">{passwordSuccess}</p>}
+              <div className="form-group full save-btn-wrapper">
+                <button
+                  className="save-btn"
+                  type="submit"
+                  disabled={isHrPasswordUpdating}
+                >
+                  {isHrPasswordUpdating ? "Updating..." : "Update Password"}
+                </button>
+              </div>
+            </form>
           </>
         );
       case "profile":
@@ -259,7 +298,7 @@ const HrSettings = () => {
                   <label>Username</label>
                   <input
                     type="text"
-                    value={hrProfile.username || ""} // Ensure null is handled
+                    value={hrProfile.username || ""}
                     onChange={(e) => setHrProfile({ ...hrProfile, username: e.target.value })}
                   />
                 </div>
@@ -271,7 +310,7 @@ const HrSettings = () => {
                   <label>Job Title</label>
                   <input
                     type="text"
-                    value={hrProfile.jobTitle || ""} // Ensure null is handled
+                    value={hrProfile.jobTitle || ""}
                     onChange={(e) => setHrProfile({ ...hrProfile, jobTitle: e.target.value })}
                   />
                 </div>
@@ -306,7 +345,6 @@ const HrSettings = () => {
         ))}
       </div>
       <div className="settings-card">{renderTabContent()}</div>
-      <Alert alerts={alerts} onClose={handleAlertClose} />
     </div>
   );
 };

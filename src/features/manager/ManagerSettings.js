@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -7,14 +5,12 @@ import PageAccessControl from "../admin-settings/PageAccessControl";
 import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
-import { Alert, soundManager } from "../modal/alert";
 
 const ManagerSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
-  const { getManager, updateManagerProfile, managerProfile, managerLoading, setManagerProfile } = useApi();
+  const { getManager, updateManagerProfile, managerProfile, managerLoading, setManagerProfile, handleChangeManagerPassword, isManagerPasswordUpdating } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const hasLoaded = useRef(false);
-  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
 
   useEffect(() => {
     const init = async () => {
@@ -26,17 +22,6 @@ const ManagerSettings = () => {
         await getManager();
       } catch (err) {
         console.error("Failed to load Manager profile:", err);
-        setAlerts([
-          ...alerts,
-          {
-            id: Date.now(),
-            type: "error",
-            title: "Load Failed",
-            message: "Failed to load Manager profile: " + (err.message || "Unknown error"),
-            duration: 5000,
-          },
-        ]);
-        soundManager.playSound("error");
       } finally {
         hideLoader();
       }
@@ -55,36 +40,11 @@ const ManagerSettings = () => {
         username: managerProfile.username,
         jobTitle: managerProfile.jobTitle,
       });
-      setAlerts([
-        ...alerts,
-        {
-          id: Date.now(),
-          type: "success",
-          title: "Profile Updated",
-          message: "Manager profile updated successfully!",
-          duration: 5000,
-        },
-      ]);
-      soundManager.playSound("success");
+      alert("Manager profile updated successfully!");
     } catch (err) {
       console.error("Update failed:", err);
-      setAlerts([
-        ...alerts,
-        {
-          id: Date.now(),
-          type: "error",
-          title: "Update Failed",
-          message: "Failed to update Manager profile",
-          duration: 5000,
-        },
-      ]);
-      soundManager.playSound("error");
+      alert("Failed to update Manager profile");
     }
-  };
-
-  // Handle alert close
-  const handleAlertClose = (id) => {
-    setAlerts(alerts.filter((alert) => alert.id !== id));
   };
 
   const tabs = [
@@ -152,9 +112,24 @@ const ManagerSettings = () => {
               <h3>Team Members</h3>
               <ul className="team-list">
                 {[
-                  { id: 1, name: "Sakshi Verma", email: "sakshi@example.com", role: "Executive" },
-                  { id: 2, name: "Rohan Malhotra", email: "rohan@example.com", role: "Manager" },
-                  { id: 3, name: "Neha Sinha", email: "neha@example.com", role: "Admin" },
+                  {
+                    id: 1,
+                    name: "Sakshi Verma",
+                    email: "sakshi@example.com",
+                    role: "Executive",
+                  },
+                  {
+                    id: 2,
+                    name: "Rohan Malhotra",
+                    email: "rohan@example.com",
+                    role: "Manager",
+                  },
+                  {
+                    id: 3,
+                    name: "Neha Sinha",
+                    email: "neha@example.com",
+                    role: "Admin",
+                  },
                 ].map((member) => (
                   <li key={member.id}>
                     <span><strong>ID:</strong> {member.id}</span>
@@ -184,7 +159,47 @@ const ManagerSettings = () => {
         return (
           <>
             <h3>Change Password</h3>
-            <p>This section is under development.</p>
+            <form
+              className="profile-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const currentPassword = e.target.currentPassword.value;
+                const newPassword = e.target.newPassword.value;
+                const confirmPassword = e.target.confirmPassword.value;
+
+                if (newPassword !== confirmPassword) {
+                  alert("New password and confirm password do not match.");
+                  return;
+                }
+
+                try {
+                  await handleChangeManagerPassword(currentPassword, newPassword);
+                  alert("Password updated successfully!");
+                } catch (err) {
+                  alert(err.message || "Something went wrong.");
+                }
+              }}
+            >
+              <div className="form-group full">
+                <label>Current Password</label>
+                <input name="currentPassword" type="password" placeholder="••••••••" required />
+              </div>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input name="newPassword" type="password" placeholder="New password" required />
+                </div>
+                <div className="form-group">
+                  <label>Confirm Password</label>
+                  <input name="confirmPassword" type="password" placeholder="Confirm password" required />
+                </div>
+              </div>
+              <div className="form-group full save-btn-wrapper">
+                <button className="save-btn" type="submit" disabled={isManagerPasswordUpdating}>
+                  {isManagerPasswordUpdating ? "Updating..." : "Update Password"}
+                </button>
+              </div>
+            </form>
           </>
         );
       case "profile":
@@ -267,7 +282,6 @@ const ManagerSettings = () => {
         ))}
       </div>
       <div className="settings-card">{renderTabContent()}</div>
-      <Alert alerts={alerts} onClose={handleAlertClose} />
     </div>
   );
 };

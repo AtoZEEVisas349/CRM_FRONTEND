@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -11,7 +9,7 @@ import AdminSpinner from "../spinner/AdminSpinner";
 const TLSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
-  const { getAllProfile, handleUpdateUserProfile, isUserProfileUpdating } = useApi();
+  const { getAllProfile, handleUpdateUserProfile, isUserProfileUpdating ,isPasswordUpdating , handleChangePassword} = useApi();
   const hasLoaded = useRef(false);
 
   const [tlProfile, setTlProfile] = useState({
@@ -231,12 +229,52 @@ const TLSettings = () => {
           </div>
         );
       case "password":
-        return (
-          <>
-            <h3>Change Password</h3>
-            <p>This section is under development.</p>
-          </>
-        );
+  return (
+    <>
+      <h3>Change Password</h3>
+      <form
+        className="profile-form"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const currentPassword = e.target.currentPassword.value;
+          const newPassword = e.target.newPassword.value;
+          const confirmPassword = e.target.confirmPassword.value;
+
+          if (newPassword !== confirmPassword) {
+            alert("New password and confirm password do not match.");
+            return;
+          }
+
+          try {
+            await handleChangePassword(currentPassword, newPassword); // Use the generic function
+            alert("Password updated successfully!");
+          } catch (err) {
+            alert(err.message || "Something went wrong.");
+          }
+        }}
+      >
+        <div className="form-group full">
+          <label>Current Password</label>
+          <input name="currentPassword" type="password" placeholder="••••••••" required />
+        </div>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>New Password</label>
+            <input name="newPassword" type="password" placeholder="New password" required />
+          </div>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input name="confirmPassword" type="password" placeholder="Confirm password" required />
+          </div>
+        </div>
+        <div className="form-group full save-btn-wrapper">
+          <button className="save-btn" type="submit" disabled={isPasswordUpdating}>
+            {isPasswordUpdating ? "Updating..." : "Update Password"}
+          </button>
+        </div>
+      </form>
+    </>
+  );
       case "profile":
       default:
         return (
