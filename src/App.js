@@ -22,6 +22,7 @@ import ClientLogin from "./features/process-client/ClientLogin";
 import ClientSignup from "./features/process-client/ClientSignup";
 import ExecutiveFormRoutes from "./routes/ExecutiveFormRoutes";
 import CustomerLogin from "./features/process-client/CustomerLogin";
+import { CustomerPrivateRoute } from "./services/processAuth";
 import { ProcessPrivateRoute } from "./services/processAuth";
 import ManagerRoutes from "./routes/ManagerRoutes";
 import LoginManager from "./features/authentication/LoginManager";
@@ -119,7 +120,9 @@ useEffect(() => {
 />
 <Route path="/process/*" element={<ProcessPrivateRoute><ProcessRoutes /></ProcessPrivateRoute>} /> 
 <Route path="/processperson/*" element={<ProcessDashboardRoutes />} />      
-<Route path="/customer/*" element={<ClientCustomerRoutes />} />  
+<Route path="/customer/*" element={ <CustomerPrivateRoute>
+            <ClientCustomerRoutes />
+          </CustomerPrivateRoute>} />
 <Route 
   path="/manager/*" 
   element={

@@ -1,29 +1,30 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ import useNavigate
+import { Link, useNavigate,useLocation } from "react-router-dom"; // ✅ import useNavigate
 import { useProcess } from "../../context/ProcessAuthContext";
 
 const CustomerLogin = () => {
   const { login } = useProcess();
   const navigate = useNavigate(); // ✅ initialize navigate hook
-
+  const location=useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("customer");
-const handleLogin = async () => {
-  try {
-    await login(email, password);
-    alert("Login successful!");
-
-    localStorage.setItem("userType", "customer");
-
-    // ✅ Conditional navigation
- 
-      navigate("/customer/client/dashboard");
-    
-  } catch (error) {
-    alert(error.message);
-  }
-};
+  const from = location.state?.from?.pathname || "/customer/client/dashboard";
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+      alert("Login successful!");
+  
+      localStorage.setItem("userType", "customer");
+  
+      // ✅ Conditional navigation
+    navigate(from, { replace: true });
+        // navigate("/customer/client/dashboard");
+      
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
 
   return (

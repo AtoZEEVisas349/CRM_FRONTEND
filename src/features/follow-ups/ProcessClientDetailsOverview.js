@@ -9,7 +9,6 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailProcess from '../process-client/SendEmailProcess';
-
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
@@ -32,10 +31,7 @@ const ProcessClientDetailsOverview = () => {
     getProcessHistory,
     createReminder}=useProcessService();
   const {
-    createConvertedClientAPI,
-    createCloseLeadAPI,
     followUpLoading,
-    createFollowUpHistoryAPI,
     fetchNotifications,
     createCopyNotification,
   } = useApi();
@@ -436,20 +432,7 @@ useEffect(() => {
     }
 
     try {
-      if (followUpType === "converted") {
-        await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
-        await createFollowUpHistoryAPI({ 
-        follow_up_id: clientInfo.followUpId || clientInfo.id, 
-        connect_via: capitalize(contactMethod), 
-        follow_up_type: followUpType, 
-        interaction_rating: capitalize(interactionRating), 
-        reason_for_follow_up: reasonDesc, 
-        follow_up_date: interactionDate, 
-        follow_up_time: convertTo24HrFormat(interactionTime), 
-        fresh_lead_id: freshLeadId, 
-      });
-        Swal.fire({ icon: "success", title: "Client Converted" });
-      } else if (followUpType === "final") {
+       if (followUpType === "final") {
         const payload={
       //  follow_up_id: clientInfo.followUpId || clientInfo.id, 
         connect_via: capitalize(contactMethod), 
@@ -983,13 +966,19 @@ console.log(clientInfo,"id");
             </option>
           ))}
         </select>
-       <div className="reminder-tooltip-wrapper">
-  <button onClick={handleSubmit} className="reminder-button">⏰</button>
-  <span className="reminder-tooltip">Send the latest comment as a reminder</span>
-</div>
- {showToast && (
-    <span className="reminder-toast-inline"> Reminder sent successfully!</span>
+      
+  <div className="reminder-action-wrapper">
+  <div className="reminder-tooltip-wrapper">
+     <span className="reminder-inline-label">Send the latest comment as a reminder</span>
+    <button onClick={handleSubmit} className="reminder-button">⏰</button>
+  </div>
+ 
+
+  {showToast && (
+    <span className="reminder-toast-inline">Reminder sent successfully!</span>
   )}
+</div>
+
       </div>
 
       {selectedStage && (

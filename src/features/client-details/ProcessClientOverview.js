@@ -784,13 +784,17 @@ console.log(clientInfo,"id");
             </option>
           ))}
         </select>
-       <div className="reminder-tooltip-wrapper">
-  <button onClick={handleSubmit} className="reminder-button">⏰</button>
-  <span className="reminder-tooltip">Send the latest comment as a reminder</span>
-</div>
- {showToast && (
-    <span className="reminder-toast-inline"> Reminder sent successfully!</span>
+      <div className="reminder-action-wrapper">
+  <div className="reminder-tooltip-wrapper">
+     <span className="reminder-inline-label">Send the latest comment as a reminder</span>
+    <button onClick={handleSubmit} className="reminder-button">⏰</button>
+  </div>
+ 
+
+  {showToast && (
+    <span className="reminder-toast-inline">Reminder sent successfully!</span>
   )}
+  </div>
       </div>
 
       {selectedStage && (

@@ -136,7 +136,7 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/admin/heirarchy" className="admin-aside-link">
+              <Link to="/admin/heirarchy" className="admin-aside-link" data-tooltip="Hierarchy">
                 <Network className="admin-aside-icon" /> 
                 <span className="sidebar-label">Hierarchy</span>
               </Link>

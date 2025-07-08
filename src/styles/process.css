@@ -2402,3 +2402,89 @@ body {
   color: #777;
   font-size: 14px;
 }
+.reminder-action-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.reminder-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.reminder-button {
+  font-size: 18px;
+  background-color: #efeeeb;
+  border: none;
+  border-radius: 35%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  padding-left: 1px;
+  margin-right: 5px;
+}
+
+.reminder-button:hover {
+  background-color: #fdf4d6;
+}
+
+.reminder-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: 220px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  transition: opacity 0.3s ease;
+}
+
+.reminder-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.reminder-tooltip-wrapper:hover .reminder-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.reminder-inline-label {
+  font-size: 14px;
+  color: #555;
+  margin-right: 5px;
+}
+
+.reminder-toast-inline {
+  margin-left: 12px;
+  background-color: #d1e7dd;
+  color: #0f5132;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-5px); }
+}

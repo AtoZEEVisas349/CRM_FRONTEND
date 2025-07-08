@@ -337,29 +337,32 @@ const TaskManagement = () => {
     }
   };
 
-  useEffect(() => {
-    let filtered = [...allClients];
+useEffect(() => {
+  let filtered = [...allClients];
 
-    switch (filterType) {
-      case "converted": filtered = filtered.filter((lead) => lead.status === "Converted"); break;
-      case "new": filtered = filtered.filter((lead) => lead.status === "New"); break;
-      case "followup": filtered = filtered.filter((lead) => lead.status === "Follow-Up"); break;
-      case "fresh": filtered = filtered.filter((lead) => lead.status === "Assigned"); break;
-      case "meeting": filtered = filtered.filter((lead) => lead.status === "Meeting"); break;
-      case "closed": filtered = filtered.filter((lead) => lead.status === "Closed"); break;
-      default: break;
-    }
+  switch (filterType) {
+    case "unassigned":
+    filtered = filtered.filter((lead) => !lead.assignedToExecutive);
+    break;
+    case "converted": filtered = filtered.filter((lead) => lead.status === "Converted"); break;
+    case "new": filtered = filtered.filter((lead) => lead.status === "New"); break;
+    case "followup": filtered = filtered.filter((lead) => lead.status === "Follow-Up"); break;
+    case "fresh": filtered = filtered.filter((lead) => lead.status === "Assigned"); break;
+    case "meeting": filtered = filtered.filter((lead) => lead.status === "Meeting"); break;
+    case "closed": filtered = filtered.filter((lead) => lead.status === "Closed"); break;
+    default: break;
+  }
 
-    const total = filtered.length;
-    const totalPages = Math.ceil(total / leadsPerPage);
-    const newPage = currentPage > totalPages ? 1 : currentPage;
-    const offset = (newPage - 1) * leadsPerPage;
-    const paginated = filtered.slice(offset, offset + leadsPerPage);
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / leadsPerPage);
+  const newPage = currentPage > totalPages ? 1 : currentPage;
+  const offset = (newPage - 1) * leadsPerPage;
+  const paginated = filtered.slice(offset, offset + leadsPerPage);
 
-    setLeads(paginated);
-    setTotalLeads(total);
-    setCurrentPage(newPage);
-  }, [filterType, allClients, currentPage, leadsPerPage]);
+  setLeads(paginated);
+  setTotalLeads(total);
+  setCurrentPage(newPage);
+}, [filterType, allClients, currentPage, leadsPerPage]);
 
   const handleEditClick = (lead) => {
     setEditingLead({ ...lead });
@@ -579,20 +582,20 @@ const TaskManagement = () => {
                 Reset
               </button>
             </div>
-            <div className="lead-filter-buttons">
-              {["all", "new", "fresh", "followup", "converted", "closed", "meeting"].map(
-                (type) =>
-                  viewMode === "executive" || type === "converted" ? (
-                    <button
-                      key={type}
-                      className={`lead-filter-btn ${filterType === type ? "active" : ""}`}
-                      onClick={() => handleFilterChange(type)}
-                    >
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </button>
-                  ) : null
-              )}
-            </div>
+               <div className="lead-filter-buttons">
+   {(viewMode === "executive"
+    ? ["all", "new", "fresh", "followup", "converted", "closed", "meeting"]
+    : ["converted", "unassigned"]
+  ).map((type) => (
+    <button
+      key={type}
+      className={`lead-filter-btn ${filterType === type ? "active" : ""}`}
+      onClick={() => handleFilterChange(type)}
+    >
+      {type.charAt(0).toUpperCase() + type.slice(1)}
+    </button>
+  ))}
+    </div>
           </div>
         </div>
         <div className="scrollable-container">

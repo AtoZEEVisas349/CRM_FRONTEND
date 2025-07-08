@@ -93,55 +93,40 @@ export const ProcessPrivateRoute = ({ children }) => {
     : <Navigate to="/process/client/login" replace />;
 };
 
+export const CustomerPrivateRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+  const location = useLocation();
+
+  if (!token) {
+    // Save the full location (even nested) so it can be used post-login
+    return <Navigate to="/customer/client/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
 export const ProcessPublicRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   const userType = localStorage.getItem("userType");
+  const location = useLocation();
 
-  if (!token) return children;
+  if (!token) return children; // allow login if not authenticated
 
-  if (userType === "customer") return <Navigate to="/process/client/dashboard" replace />;
-  if (userType === "processperson") return <Navigate to="/process/client/all-clients" replace />;
+  // If coming from a protected route (i.e. via Navigate with state), go back to it
+  const redirectTo = location.state?.from?.pathname;
 
-  return <Navigate to="/process/client/dashboard" replace />;
+  if (redirectTo) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  // Otherwise, go to default dashboard based on userType
+  if (userType === "customer") {
+    return <Navigate to="/customer/client/dashboard" replace />;
+  }
+
+  if (userType === "processperson") {
+    return <Navigate to="/process/client/all-clients" replace />;
+  }
+
+  return <Navigate to="/customer/client/dashboard" replace />;
 };
-
-// ------------------------------LEGACY PUBLIC ROUTE EXAMPLE--------------------------- //
-// Uncomment and update if needed
-// export const PublicRoute = ({ children }) => {
-//   const user = JSON.parse(localStorage.getItem("user"));
-//   const token = localStorage.getItem("token");
-//   const path = window.location.pathname;
-
-//   if (!token || !user?.role) return children;
-
-//   const role = user.role.toLowerCase();
-//   const expectedPrefix = getRoutePrefix(role);
-
-//   if (!path.startsWith(expectedPrefix)) {
-//     return <Navigate to={getFallbackPath(role)} replace />;
-//   }
-
-//   return <Navigate to={path} replace />;
-// };
-
-// const getFallbackPath = (role) => {
-//   switch (role) {
-//     case "admin": return "/admin";
-//     case "executive": return "/executive";
-//     case "hr": return "/hr";
-//     case "manager": return "/manager";
-//     case "tl": return "/tl";
-//     default: return "/dashboard";
-//   }
-// };
-
-// const getRoutePrefix = (role) => {
-//   switch (role) {
-//     case "admin": return "/admin";
-//     case "executive": return "/executive";
-//     case "hr": return "/hr";
-//     case "manager": return "/manager";
-//     case "tl": return "/tl";
-//     default: return "/";
-//   }
-// };
