@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { FaTimes, FaBell, FaCheck } from 'react-icons/fa';
 import { BeepSettingsContext } from './context/BeepSettingsContext';
@@ -13,6 +12,8 @@ const BeepNotification = ({
   const { settings } = useContext(BeepSettingsContext);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const [reminderMessage, setReminderMessage] = useState('');
+  const [notificationType, setNotificationType] = useState('');
   const [isFirstMessage, setIsFirstMessage] = useState(true);
   const timeoutRef = useRef(null);
   const dismissTimeoutRef = useRef(null);
@@ -43,6 +44,69 @@ const BeepNotification = ({
     }
   };
 
+  // Function to determine notification type and generate appropriate messages
+  const getNotificationMessages = (notifications) => {
+    if (!notifications || notifications.length === 0) {
+      return { 
+        initialMessage: 'New notification', 
+        reminderMessage: "Haven't you checked the notification yet?",
+        type: 'general'
+      };
+    }
+
+    // Get the latest unread notification to determine type
+    const latestUnread = notifications.find(n => !n.is_read);
+    
+    if (!latestUnread) {
+      return { 
+        initialMessage: 'New notification', 
+        reminderMessage: "Haven't you checked the notification yet?",
+        type: 'general'
+      };
+    }
+
+    const message = latestUnread.message?.toLowerCase() || '';
+
+    // Check for lead assignment notifications
+    if (message.includes('you have been assigned a new lead')) {
+      return {
+        initialMessage: 'New leads assigned',
+        reminderMessage: "Haven't you checked the new leads yet?",
+        type: 'lead'
+      };
+    }
+    
+    // Check for reminder notifications (follow-up or meeting)
+    if (message.includes('reminder:') || message.includes('⏰ reminder:')) {
+      if (message.includes('follow up')) {
+        return {
+          initialMessage: 'Follow-up reminder',
+          reminderMessage: "Don't forget your follow-up task!",
+          type: 'followup'
+        };
+      } else if (message.includes('meeting')) {
+        return {
+          initialMessage: 'Meeting reminder',
+          reminderMessage: "You have an upcoming meeting!",
+          type: 'meeting'
+        };
+      } else {
+        return {
+          initialMessage: 'Reminder notification',
+          reminderMessage: "Don't forget your scheduled task!",
+          type: 'reminder'
+        };
+      }
+    }
+    
+    // Default for other notification types
+    return {
+      initialMessage: 'New notification',
+      reminderMessage: "Haven't you checked the notification yet?",
+      type: 'general'
+    };
+  };
+
   const showNotificationPopup = (message) => {
     setPopupMessage(message);
     setShowPopup(true);
@@ -59,7 +123,7 @@ const BeepNotification = ({
     // Set timeout for reminder message
     dismissTimeoutRef.current = setTimeout(() => {
       if (unreadCount > 0) {
-        showNotificationPopup("Haven't you checked the New leads yet?");
+        showNotificationPopup(reminderMessage);
         setIsFirstMessage(false);
       }
     }, (settings.reminderDelay || 30) * 1000);
@@ -92,16 +156,21 @@ const BeepNotification = ({
   // Effect to handle notification logic
   useEffect(() => {
     if (unreadCount > 0) {
+      const { initialMessage, reminderMessage: remMessage, type } = getNotificationMessages(notifications);
+      
+      setReminderMessage(remMessage);
+      setNotificationType(type);
+      
       if (isFirstMessage) {
-        showNotificationPopup('New leads assigned');
+        showNotificationPopup(initialMessage);
         timeoutRef.current = setTimeout(() => {
           if (showPopup) {
-            setPopupMessage("Haven't you checked the New leads yet?");
+            setPopupMessage(remMessage);
             setIsFirstMessage(false);
           }
         }, 30000);
       } else {
-        showNotificationPopup("Haven't you checked the New leads yet?");
+        showNotificationPopup(remMessage);
       }
     } else {
       setShowPopup(false);
@@ -112,14 +181,14 @@ const BeepNotification = ({
       if (dismissTimeoutRef.current) clearTimeout(dismissTimeoutRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
     }
-  }, [unreadCount]);
+  }, [unreadCount, notifications]);
 
   // Update first message state when popup message changes
   useEffect(() => {
-    if (popupMessage.includes("Haven't you checked")) {
+    if (popupMessage === reminderMessage) {
       setIsFirstMessage(false);
     }
-  }, [popupMessage]);
+  }, [popupMessage, reminderMessage]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -132,6 +201,41 @@ const BeepNotification = ({
 
   if (!showPopup) return null;
 
+  // Get appropriate title based on notification type
+  const getNotificationTitle = () => {
+    switch (notificationType) {
+      case 'lead':
+        return 'New Lead Assignment';
+      case 'followup':
+        return 'Follow-up Reminder';
+      case 'meeting':
+        return 'Meeting Reminder';
+      case 'reminder':
+        return 'Task Reminder';
+      default:
+        return 'Notification Alert';
+    }
+  };
+
+  // Get appropriate button text based on message type
+  const getButtonText = () => {
+    if (popupMessage === reminderMessage) {
+      switch (notificationType) {
+        case 'lead':
+          return "Yes, I'll check leads";
+        case 'followup':
+          return "Yes, I'll follow up";
+        case 'meeting':
+          return "Yes, I'll check meeting";
+        case 'reminder':
+          return "Yes, I'll check task";
+        default:
+          return "Yes, I'll check";
+      }
+    }
+    return 'Dismiss';
+  };
+
   return (
     <>
       <div className="beep-notification-overlay">
@@ -141,7 +245,7 @@ const BeepNotification = ({
               <FaBell size={24} />
             </div>
             <div className="beep-notification-content">
-              <h3 className="beep-notification-title">Notification Alert</h3>
+              <h3 className="beep-notification-title">{getNotificationTitle()}</h3>
               <p className="beep-notification-message">{popupMessage}</p>
               {unreadCount > 0 && (
                 <p className="beep-notification-count">
@@ -159,22 +263,17 @@ const BeepNotification = ({
           </div>
           
           <div className="beep-notification-actions">
-            {popupMessage.includes("Haven't you checked") ? (
-              <button
-                className="beep-notification-btn beep-notification-btn-primary"
-                onClick={handleDismissPopup}
-              >
-                <FaCheck size={16} />
-                Yes, I'll check
-              </button>
-            ) : (
-              <button
-                className="beep-notification-btn beep-notification-btn-secondary"
-                onClick={handleDismissPopup}
-              >
-                Dismiss
-              </button>
-            )}
+            <button
+              className={`beep-notification-btn ${
+                popupMessage === reminderMessage 
+                  ? 'beep-notification-btn-primary' 
+                  : 'beep-notification-btn-secondary'
+              }`}
+              onClick={handleDismissPopup}
+            >
+              {popupMessage === reminderMessage && <FaCheck size={16} />}
+              {getButtonText()}
+            </button>
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef,useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { getEmailTemplates } from "../../static/emailTemplates"; 
+import { getEmailTemplates } from "../../static/emailTemplates";
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
@@ -35,55 +35,55 @@ const ClientDetailsOverview = () => {
     executiveInfo,
     fetchNotifications,
     createCopyNotification,
+    scheduleFollowUpNotificationAPI,
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
   const client = useMemo(() => location.state?.client || {}, []);
+
+
+  const getCurrentTime24Hour = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    return `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+  };
+
   
   // Initialize current time properly
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  const ampmValue = currentHour >= 12 ? "PM" : "AM";
-  const hour12 = currentHour % 12 || 12;
-  const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
   const [interactionRating, setInteractionRating] = useState("");
   const [reasonDesc, setReasonDesc] = useState("");
   const [isListening, setIsListening] = useState(false);
+   const [reminderTime, setReminderTime] = useState(getCurrentTime24Hour());
   const [interactionDate, setInteractionDate] = useState(todayStr);
-  const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
-  const [ampm, setAmPm] = useState(ampmValue);
+  const [timeOnly, setTimeOnly] = useState(() => {
+    const now = new Date();
+    return `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+  });
+  
   const [isTimeEditable, setIsTimeEditable] = useState(false);
 
-  // Add time conversion functions
-  const convertTo24Hour = (time12h, amPm) => {
-    let [hours, minutes] = time12h.split(':').map(Number);
-    if (amPm === 'PM' && hours !== 12) hours += 12;
-    if (amPm === 'AM' && hours === 12) hours = 0;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  };
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    if (interactionDate === today) {
+      setTimeOnly(getCurrentTime24Hour());
+    }
+  }, [interactionDate]);
 
-  const convertTo12Hour = (time24h) => {
-    let [hours, minutes] = time24h.split(':').map(Number);
-    const amPm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-    return {
-      time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
-      amPm: amPm
-    };
+  const handleUseCurrentTime = () => {
+    setTimeOnly(getCurrentTime24Hour());
   };
 
   const interactionTime = useMemo(() => {
-    let [hr, min] = timeOnly.split(":").map(Number);
-    if (ampm === "PM" && hr !== 12) hr += 12;
-    if (ampm === "AM" && hr === 12) hr = 0;
-    return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
-  }, [timeOnly, ampm]);
+    return `${timeOnly}:00`;
+  }, [timeOnly]);
 
   // Add date constraints
   const minDate = useMemo(() => todayStr, []);
@@ -96,48 +96,48 @@ const ClientDetailsOverview = () => {
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const timeSelectRef = useRef(null);
-  const ampmSelectRef = useRef(null);  
+  const ampmSelectRef = useRef(null);
   const [speechError, setSpeechError] = useState(null);
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
 
-useEffect(() => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true; // ENABLE continuous listening
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true; // ENABLE continuous listening
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
 
-    recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-      setReasonDesc((prev) => `${prev} ${transcript}`);
-    };
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        setReasonDesc((prev) => `${prev} ${transcript}`);
+      };
 
-    recognition.onerror = (event) => {
-      Swal.fire({
-        icon: "error",
-        title: "Speech Error",
-        text: `Speech recognition error: ${event.error}`,
-      });
-      setIsListening(false);
-    };
+      recognition.onerror = (event) => {
+        Swal.fire({
+          icon: "error",
+          title: "Speech Error",
+          text: `Speech recognition error: ${event.error}`,
+        });
+        setIsListening(false);
+      };
 
-    recognition.onend = () => {
-      // Don’t reset isListening here if we're actively listening
-      if (isListeningRef.current) {
-        recognition.start(); // restart automatically
-      } else {
-        setIsListening(false); // only stop if we actually intended to
-      }
-    };
+      recognition.onend = () => {
+        // Don’t reset isListening here if we're actively listening
+        if (isListeningRef.current) {
+          recognition.start(); // restart automatically
+        } else {
+          setIsListening(false); // only stop if we actually intended to
+        }
+      };
 
-    recognitionRef.current = recognition;
-  } else {
-    recognitionRef.current = null;
-  }
-}, []);
-  
+      recognitionRef.current = recognition;
+    } else {
+      recognitionRef.current = null;
+    }
+  }, []);
+
   const capitalize = (text) => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
@@ -164,13 +164,13 @@ useEffect(() => {
     if (client) {
       const freshLeadId =
         client.freshLead?.id || client.fresh_lead_id || client.id;
-        const normalizedClient = {
-          ...client,
-          ...(client.freshLead || {}), // ✅ inject education, experience, dob, state, etc.
-          fresh_lead_id: freshLeadId,
-          followUpId: client.followUpId || client.id,
-        };
-        
+      const normalizedClient = {
+        ...client,
+        ...(client.freshLead || {}), // ✅ inject education, experience, dob, state, etc.
+        fresh_lead_id: freshLeadId,
+        followUpId: client.followUpId || client.id,
+      };
+
       setClientInfo(normalizedClient);
       loadFollowUpHistories(freshLeadId);
     }
@@ -211,15 +211,10 @@ useEffect(() => {
     setInteractionRating(history.interaction_rating?.toLowerCase() || "");
     setReasonDesc(history.reason_for_follow_up || "");
     setInteractionDate(history.follow_up_date || "");
-    const [hour, minute] = (history.follow_up_time || "12:00").split(":");
-    let hr = parseInt(hour, 10);
-    const ampmValue = hr >= 12 ? "PM" : "AM";
-    if (hr === 0) hr = 12;
-    if (hr > 12) hr -= 12;
-  
-    setTimeOnly(`${hr.toString().padStart(2, "0")}:${minute}`);
-    setAmPm(ampmValue);
-    };
+    const time24 = history.follow_up_time || "12:00:00";
+    const [hour, minute] = time24.split(":");
+    setTimeOnly(`${hour}:${minute}`);
+  };
 
   const handleChange = (field, value) => {
     setClientInfo((prev) => ({ ...prev, [field]: value }));
@@ -249,6 +244,49 @@ useEffect(() => {
       follow_up_time: convertTo24HrFormat(interactionTime),
       fresh_lead_id: freshLeadId,
     });
+  };
+
+  const handleScheduleReminder = async () => {
+    const freshLeadId =
+      clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
+
+    if (!freshLeadId || !clientInfo.name || !interactionDate || !reminderTime) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Information",
+        text: "Please ensure all required fields (client name, date, and time) are filled.",
+      });
+    }
+
+    try {
+      const userId = executiveInfo?.id;
+      if (!userId) {
+        throw new Error("User ID not found.");
+      }
+
+      await scheduleFollowUpNotificationAPI({
+        userId,
+        clientName: clientInfo.name,
+        date: interactionDate,
+        time: convertTo24HrFormat(reminderTime),
+        targetRole: "executive",
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Reminder Scheduled",
+        text: `Follow-up reminder for ${clientInfo.name} has been scheduled.`,
+      });
+
+      await fetchNotifications({ userId, userRole: "executive" });
+    } catch (error) {
+      console.error("Error scheduling reminder:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to Schedule Reminder",
+        text: error.message || "Something went wrong. Please try again.",
+      });
+    }
   };
 
   const handleUpdateFollowUp = async () => {
@@ -360,29 +398,29 @@ useEffect(() => {
     try {
       if (followUpType === "converted") {
         await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
-        await createFollowUpHistoryAPI({ 
-        follow_up_id: clientInfo.followUpId || clientInfo.id, 
-        connect_via: capitalize(contactMethod), 
-        follow_up_type: followUpType, 
-        interaction_rating: capitalize(interactionRating), 
-        reason_for_follow_up: reasonDesc, 
-        follow_up_date: interactionDate, 
-        follow_up_time: convertTo24HrFormat(interactionTime), 
-        fresh_lead_id: freshLeadId, 
-      });
+        await createFollowUpHistoryAPI({
+          follow_up_id: clientInfo.followUpId || clientInfo.id,
+          connect_via: capitalize(contactMethod),
+          follow_up_type: followUpType,
+          interaction_rating: capitalize(interactionRating),
+          reason_for_follow_up: reasonDesc,
+          follow_up_date: interactionDate,
+          follow_up_time: convertTo24HrFormat(interactionTime),
+          fresh_lead_id: freshLeadId,
+        });
         Swal.fire({ icon: "success", title: "Client Converted" });
       } else if (followUpType === "close") {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
         await createFollowUpHistoryAPI({
-       follow_up_id: clientInfo.followUpId || clientInfo.id, 
-        connect_via: capitalize(contactMethod), 
-        follow_up_type: followUpType, 
-        interaction_rating: capitalize(interactionRating), 
-        reason_for_follow_up: reasonDesc, 
-        follow_up_date: interactionDate, 
-        follow_up_time: convertTo24HrFormat(interactionTime), 
-        fresh_lead_id: freshLeadId, 
-      });
+          follow_up_id: clientInfo.followUpId || clientInfo.id,
+          connect_via: capitalize(contactMethod),
+          follow_up_type: followUpType,
+          interaction_rating: capitalize(interactionRating),
+          reason_for_follow_up: reasonDesc,
+          follow_up_date: interactionDate,
+          follow_up_time: convertTo24HrFormat(interactionTime),
+          fresh_lead_id: freshLeadId,
+        });
         Swal.fire({ icon: "success", title: "Lead Closed" });
       } else {
         return; // Do nothing for other types; handled by specific buttons
@@ -438,383 +476,376 @@ useEffect(() => {
     setSelectedTemplateId(e.target.value);
   };
 
-  
+
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
     const now = new Date();
     return selectedDateTime < now;
   }, [followUpType, interactionDate, interactionTime]);
-  
+
 
   return (
     <>
-    <div className="client-overview-wrapper">
-      {/* Client Details */}
-      <div className="c-container">
-        <div className="c-header">
-          <h2>Client Details</h2>
+      <div className="client-overview-wrapper">
+        {/* Client Details */}
+        <div className="c-container">
+          <div className="c-header">
+            <h2>Client Details</h2>
+          </div>
+          <div className="c-content">
+            <div className="c-layout">
+              <div className="client-info-column">
+                <div className="c-profile">
+                  <div className="c-info">
+                    {clientFields.map(({ key, label }) => (
+                      <div className="info-item" key={key}>
+                        <span className="label">{label}:</span>
+                        <input
+                          type="text"
+                          className="client-input"
+                          value={clientInfo[key] || ""}
+                          onChange={(e) => handleChange(key, e.target.value)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="follow-up-column">
+                <div className="follow-up-box">
+                  <div className="last-follow-up">
+                    <h3>Last Follow-up</h3>
+                    {isLoading ? (
+                      <p>Loading follow-up history...</p>
+                    ) : histories.length > 0 ? (
+                      <div className="followup-entry-horizontal">
+                        <p className="followup-reason">
+                          {histories[0].reason_for_follow_up || "No description available."}
+                        </p>
+                        <strong>
+                          <p className="followup-time">
+                            {new Date(histories[0].follow_up_date).toLocaleDateString()} - {histories[0].follow_up_time}
+                          </p>
+                        </strong>
+                      </div>
+
+                    ) : (
+                      <p>No follow-up history available.</p>
+                    )}
+                  </div>
+
+                  {histories.length > 0 && (
+                    <div className="follow-up-history-summary">
+                      <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                        {histories.slice(1).map((history, index) => (
+                          <div key={index} className="followup-entry-plain">
+                            <p className="followup-reason">{history.reason_for_follow_up}</p>
+                            <p className="followup-time">
+                              {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
+                            </p>
+                          </div>
+                        ))}
+
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="c-content">
-          <div className="c-layout">
-            <div className="client-info-column">
-              <div className="c-profile">
-                <div className="c-info">
-                  {clientFields.map(({ key, label }) => (
-                    <div className="info-item" key={key}>
-                      <span className="label">{label}:</span>
+
+        {/* Client Interaction */}
+        <div className="client-interaction-container">
+          <div className="interaction-form">
+            <SendEmailToClients clientInfo={clientInfo} />
+
+            <div className="connected-via">
+              <h4>Connected Via</h4>
+              <div className="radio-group">
+                {["Call", "Email", "Call/Email"].map((method) => (
+                  <label key={method} className="radio-container">
+                    <input
+                      type="radio"
+                      name="contactMethod"
+                      checked={contactMethod === method}
+                      onChange={() => setContactMethod(method)}
+                    />
+                    <span className="radio-label">
+                      {method.charAt(0).toUpperCase() + method.slice(1)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="follow-up-type">
+              <h4>Follow-Up Type</h4>
+              <div className="radio-group">
+                {[
+                  "interested",
+                  "appointment",
+                  "no response",
+                  "converted",
+                  "not interested",
+                  "close",
+                ].map((type) => (
+                  <label key={type} className="radio-container">
+                    <input
+                      type="radio"
+                      name="followUpType"
+                      checked={followUpType === type}
+                      onChange={() => setFollowUpType(type)}
+                    />
+                    <span className="radio-label">{type.replace("-", " ")}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="interaction-rating">
+              <h4>Interaction Rating</h4>
+              <div className="radio-group">
+                {["hot", "warm", "cold"].map((rating) => (
+                  <label key={rating} className="radio-container">
+                    <input
+                      type="radio"
+                      name="interactionRating"
+                      checked={interactionRating === rating}
+                      onChange={() => setInteractionRating(rating)}
+                    />
+                    <span className="radio-label">
+                      {rating.charAt(0).toUpperCase() + rating.slice(1)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Follow-Up Detail */}
+        <div className="followup-detail-theme">
+          <div className="followup-detail-container">
+            <div className="follow-up-reason">
+              <h3>Reason for Follow-Up</h3>
+              <div className="interaction-field">
+                <div className="textarea-with-speech">
+                  <textarea
+                    value={reasonDesc}
+                    onChange={(e) => setReasonDesc(e.target.value)}
+                    className="interaction-textarea"
+                    placeholder="Type or speak your follow-up reason using the mic"
+                  />
+                  <button
+                    type="button"
+                    className={`speech-btn ${isListening ? "listening" : ""}`}
+                    onClick={toggleListening}
+                    aria-label={isListening ? "Stop recording" : "Start recording"}
+                  >
+                    {isListening ? "⏹" : "🎤"}
+                  </button>
+                </div>
+
+                <div className="interaction-datetime" style={{ marginTop: "20px" }}>
+                  <h4>Interaction Schedule and Time</h4>
+                  <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                    <div>
+                      <label style={{ display: "block" }}>Date:</label>
                       <input
-                        type="text"
-                        className="client-input"
-                        value={clientInfo[key] || ""}
-                        onChange={(e) => handleChange(key, e.target.value)}
+                        type="date"
+                        value={interactionDate}
+                        min={minDate}
+                        max={maxDate}
+                        onChange={(e) => setInteractionDate(e.target.value)}
+                        style={{ padding: "8px", borderRadius: "4px" }}
                       />
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="follow-up-column">
-  <div className="follow-up-box">
-    <div className="last-follow-up">
-      <h3>Last Follow-up</h3>
-      {isLoading ? (
-        <p>Loading follow-up history...</p>
-      ) : histories.length > 0 ? (
-        <div className="followup-entry-horizontal">
-        <p className="followup-reason">
-          {histories[0].reason_for_follow_up || "No description available."}
-        </p>
-        <strong>
-        <p className="followup-time">
-          {new Date(histories[0].follow_up_date).toLocaleDateString()} - {histories[0].follow_up_time}
-        </p>
-        </strong>
-      </div>
-      
-      ) : (
-        <p>No follow-up history available.</p>
-      )}
-    </div>
-
-    {histories.length > 0 && (
-      <div className="follow-up-history-summary">
-        <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
-        {histories.slice(1).map((history, index) => (
-  <div key={index} className="followup-entry-plain">
-    <p className="followup-reason">{history.reason_for_follow_up}</p>
-    <p className="followup-time">
-      {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
-    </p>
-  </div>
-))}
-
-        </div>
-      </div>
-    )}
-    </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Client Interaction */}
-      <div className="client-interaction-container">
-        <div className="interaction-form">
-          <SendEmailToClients clientInfo={clientInfo} />
-
-          <div className="connected-via">
-            <h4>Connected Via</h4>
-            <div className="radio-group">
-              {["Call", "Email", "Call/Email"].map((method) => (
-                <label key={method} className="radio-container">
-                  <input
-                    type="radio"
-                    name="contactMethod"
-                    checked={contactMethod === method}
-                    onChange={() => setContactMethod(method)}
-                  />
-                  <span className="radio-label">
-                    {method.charAt(0).toUpperCase() + method.slice(1)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="follow-up-type">
-            <h4>Follow-Up Type</h4>
-            <div className="radio-group">
-              {[
-                "interested",
-                "appointment",
-                "no response",
-                "converted",
-                "not interested",
-                "close",
-              ].map((type) => (
-                <label key={type} className="radio-container">
-                  <input
-                    type="radio"
-                    name="followUpType"
-                    checked={followUpType === type}
-                    onChange={() => setFollowUpType(type)}
-                  />
-                  <span className="radio-label">{type.replace("-", " ")}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="interaction-rating">
-            <h4>Interaction Rating</h4>
-            <div className="radio-group">
-              {["hot", "warm", "cold"].map((rating) => (
-                <label key={rating} className="radio-container">
-                  <input
-                    type="radio"
-                    name="interactionRating"
-                    checked={interactionRating === rating}
-                    onChange={() => setInteractionRating(rating)}
-                  />
-                  <span className="radio-label">
-                    {rating.charAt(0).toUpperCase() + rating.slice(1)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Follow-Up Detail */}
-      <div className="followup-detail-theme">
-        <div className="followup-detail-container">
-          <div className="follow-up-reason">
-            <h3>Reason for Follow-Up</h3>
-            <div className="interaction-field">
-              <div className="textarea-with-speech">
-                <textarea
-                  value={reasonDesc}
-                  onChange={(e) => setReasonDesc(e.target.value)}
-                  className="interaction-textarea"
-                  placeholder="Type or speak your follow-up reason using the mic"
-                />
-                <button
-                  type="button"
-                  className={`speech-btn ${isListening ? "listening" : ""}`}
-                  onClick={toggleListening}
-                  aria-label={isListening ? "Stop recording" : "Start recording"}
-                >
-                  {isListening ? "⏹" : "🎤"}
-                </button>
-              </div>
-
-              <div className="interaction-datetime" style={{ marginTop: "20px" }}>
-                <h4>Interaction Schedule and Time</h4>
-                <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                  <div>
-                    <label style={{ display: "block" }}>Date:</label>
-                    <input
-                      type="date"
-                      value={interactionDate}
-                      min={minDate}
-                      max={maxDate}
-                      onChange={(e) => setInteractionDate(e.target.value)}
-                      style={{ padding: "8px", borderRadius: "4px" }}
-                    />
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
-{/* TIME FIELD */}
-<div>
-  <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      border: "1px solid #ccc",
-      borderRadius: "6px",
-      padding: "0 10px",
-      backgroundColor: "#fff",
-      height: "38px"
-    }}
-  >
-    {/* HH:MM SELECT */}
-    <select
-      value={timeOnly}
-      onChange={(e) => setTimeOnly(e.target.value)}
-      style={{
-        border: "none",
-        padding: "8px 6px",
-        fontSize: "14px",
-        height: "100%",
-        outline: "none",
-        backgroundColor: "transparent",
-        appearance: "none"
-      }}
-    >
-      {Array.from({ length: 12 }, (_, i) =>
-        [0, 15, 30, 45].map((min) => {
-          const hour = i + 1;
-          const hStr = hour.toString().padStart(2, "0");
-          const mStr = min.toString().padStart(2, "0");
-          return (
-            <option key={`${hStr}:${mStr}`} value={`${hStr}:${mStr}`}>
-              {`${hStr}:${mStr}`}
-            </option>
-          );
-        })
-      ).flat()}
-    </select>
-
-    {/* AM/PM SELECT */}
-    <select
-      value={ampm}
-      onChange={(e) => setAmPm(e.target.value)}
-      style={{
-        border: "none",
-        padding: "8px 6px",
-        fontSize: "14px",
-        height: "100%",
-        outline: "none",
-        backgroundColor: "transparent",
-        appearance: "none"
-      }}
-    >
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select>
-  </div>
-</div>
-
-
-    </div>
-  </div>
-  <button
-    type="button"
-    onClick={() => {
-      const now = new Date();
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      const ampmValue = hour >= 12 ? "PM" : "AM";
-      const hour12 = hour % 12 || 12;
-      const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-      setTimeOnly(currentTime12Hour);
-      setAmPm(ampmValue);
-    }}
-    style={{
-      fontSize: "11px",
-      color: "#007bff",
-      background: "none",
-      border: "none",
-      cursor: "pointer",
-      textDecoration: "underline",
-      paddingLeft: "15%"
-
-    }}
-  >
-    Use Current Time
-  </button>
-</div>
-
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+                      {/* TIME FIELD */}
+                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}>
+                        <div>
+                          <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              border: "1px solid #ccc",
+                              borderRadius: "6px",
+                              padding: "0 10px",
+                              backgroundColor: "#fff",
+                              height: "38px"
+                            }}
+                          >
+                            <input
+                              type="time"
+                              value={timeOnly}
+                              onChange={(e) => setTimeOnly(e.target.value)}
+                              style={{ border: "none", outline: "none", width: "100px" }}
+                            />
+                            {/* Optional: Add a "now" button */}
+                            <button
+                              type="button"
+                              onClick={handleUseCurrentTime}
+                              style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                fontSize: "12px",
+                                color: "#007bff",
+                                padding: "2px 4px",
+                                borderRadius: "3px",
+                                marginLeft: "4px"
+                              }}
+                              title="Use current time"
+                            >
+                              Now
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
+                        <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            border: "1px solid #ccc",
+                            borderRadius: "6px",
+                            padding: "0 10px",
+                            backgroundColor: "#fff",
+                            height: "38px",
+                            width: "150px"
+                          }}
+                        >
+                          <input
+                            type="time"
+                            value={reminderTime}
+                            onChange={(e) => setReminderTime(e.target.value)}
+                            style={{ border: "none", outline: "none", width: "100px" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleScheduleReminder}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              fontSize: "12px",
+                              color: "#007bff",
+                              padding: "2px 4px",
+                              borderRadius: "3px",
+                              marginLeft: "4px"
+                            }}
+                            title="Schedule Reminder"
+                          >
+                            Set
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              {followUpType === "appointment" && isMeetingInPast && (
-                <div style={{
-                  marginTop: "12px",
-                  color: "#b71c1c",
-                  background: "#fff4f4",
-                  borderLeft: "4px solid #e57373",
-                  padding: "10px 15px",
-                  borderRadius: "6px",
-                  fontSize: "14px"
-                }}>
-                  ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
-                </div>
-              )}
-
-              <div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {/* Update Follow-Up button */}
-                <button
-                  onClick={handleUpdateFollowUp}
-                  className="crm-button update-follow-btn"
-                  disabled={followUpLoading}
-                  style={{
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    padding: "10px 20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    cursor: followUpLoading ? "not-allowed" : "pointer",
-                    opacity: followUpLoading ? 0.6 : 1,
-                  }}
-                >
-                  {followUpLoading ? "Processing..." : "Update Follow-Up"}
-                </button>
-
-                {/* Show these based on follow-up type */}
-                {followUpType === "converted" && (
-                  <button
-                    onClick={handleFollowUpAction}
-                    className="crm-button converted-btn"
-                    disabled={followUpLoading}
-                    style={{
-                      backgroundColor: "#28a745",
-                      color: "white",
-                      padding: "10px 20px",
-                      marginLeft: "10px",
-                      borderRadius: "5px",
-                      border: "none",
-                    }}
-                  >
-                    Create Converted
-                  </button>
-                )}
-
-                {followUpType === "close" && (
-                  <button
-                    onClick={handleFollowUpAction}
-                    className="crm-button flw-close-btn"
-                    disabled={followUpLoading}
-                    style={{
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      padding: "10px 20px",
-                      marginLeft: "10px",
-                      borderRadius: "5px",
-                      border: "none",
-                    }}
-                  >
-                    Create Close
-                  </button>
-                )}
-
-                {followUpType === "appointment" && (
-                  <button
-                    onClick={handleCreateMeeting}
-                    className="crm-button meeting-btn"
-                    disabled={followUpLoading}
-                    style={{
-                      backgroundColor: "#17a2b8",
-                      color: "white",
-                      padding: "10px 20px",
-                      marginLeft: "10px",
-                      borderRadius: "5px",
-                      border: "none",
-                    }}
-                  >
-                    Create Meeting
-                  </button>
-                )}
-              </div>
             </div>
           </div>
-          
+
+          {followUpType === "appointment" && isMeetingInPast && (
+            <div style={{
+              marginTop: "12px",
+              color: "#b71c1c",
+              background: "#fff4f4",
+              borderLeft: "4px solid #e57373",
+              padding: "10px 15px",
+              borderRadius: "6px",
+              fontSize: "14px"
+            }}>
+              ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+            </div>
+          )}
+
+          <div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {/* Update Follow-Up button */}
+            <button
+              onClick={handleUpdateFollowUp}
+              className="crm-button update-follow-btn"
+              disabled={followUpLoading}
+              style={{
+                backgroundColor: "#007bff",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                border: "none",
+                cursor: followUpLoading ? "not-allowed" : "pointer",
+                opacity: followUpLoading ? 0.6 : 1,
+              }}
+            >
+              {followUpLoading ? "Processing..." : "Update Follow-Up"}
+            </button>
+
+            {/* Show these based on follow-up type */}
+            {followUpType === "converted" && (
+              <button
+                onClick={handleFollowUpAction}
+                className="crm-button converted-btn"
+                disabled={followUpLoading}
+                style={{
+                  backgroundColor: "#28a745",
+                  color: "white",
+                  padding: "10px 20px",
+                  marginLeft: "10px",
+                  borderRadius: "5px",
+                  border: "none",
+                }}
+              >
+                Create Converted
+              </button>
+            )}
+
+            {followUpType === "close" && (
+              <button
+                onClick={handleFollowUpAction}
+                className="crm-button flw-close-btn"
+                disabled={followUpLoading}
+                style={{
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  padding: "10px 20px",
+                  marginLeft: "10px",
+                  borderRadius: "5px",
+                  border: "none",
+                }}
+              >
+                Create Close
+              </button>
+            )}
+
+            {followUpType === "appointment" && (
+              <button
+                onClick={handleCreateMeeting}
+                className="crm-button meeting-btn"
+                disabled={followUpLoading}
+                style={{
+                  backgroundColor: "#17a2b8",
+                  color: "white",
+                  padding: "10px 20px",
+                  marginLeft: "10px",
+                  borderRadius: "5px",
+                  border: "none",
+                }}
+              >
+                Create Meeting
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
     </>
   );
 };

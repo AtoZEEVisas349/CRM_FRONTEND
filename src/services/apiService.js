@@ -1059,7 +1059,22 @@ export const fetchOrganizationHierarchy = async () => {
     throw error;
   }
 };
-
+// ✅ Schedule a follow-up notification
+export const scheduleFollowUpNotification = async ({ userId, clientName, date, time, targetRole = "executive" }) => {
+  try {
+    const response = await apiService.post("/schedule/notification", {
+      userId,
+      clientName,
+      date,
+      time,
+      targetRole,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error scheduling follow-up notification:", error.response?.data || error.message);
+    throw error;
+  }
+};
 export const changeHrPassword = async (currentPassword, newPassword) => {
   try {
     const response = await apiService.post("/hr/change-password", {

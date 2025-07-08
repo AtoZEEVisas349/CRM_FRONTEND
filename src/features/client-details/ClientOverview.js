@@ -38,9 +38,17 @@ const ClientOverview = () => {
     createConvertedClientAPI,
     createCloseLeadAPI,
     updateClientLead,
+    scheduleFollowUpNotificationAPI,
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
+
+    const getCurrentTime24Hour = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    return `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+  };
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
   const currentHour = now.getHours();
@@ -48,7 +56,6 @@ const ClientOverview = () => {
   const ampmValue = currentHour >= 12 ? "PM" : "AM";
   const hour12 = currentHour % 12 || 12;
   const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -66,6 +73,7 @@ const ClientOverview = () => {
   const [clientEmail, setClientEmail] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
   const [isSaving, setIsSaving] = useState(false); // Added
+  const [reminderTime, setReminderTime] = useState(getCurrentTime24Hour());
   const convertTo24Hour = (time12h, amPm) => {
     let [hours, minutes] = time12h.split(':').map(Number);
     if (amPm === 'PM' && hours !== 12) hours += 12;
@@ -85,15 +93,24 @@ const ClientOverview = () => {
 
   const timeSelectRef = useRef(null);
   const ampmSelectRef = useRef(null);
-
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    if (interactionDate === today) {
+      setTimeOnly(getCurrentTime24Hour());
+    }
+  }, [interactionDate]);
+
+  const handleUseCurrentTime = () => {
+    setTimeOnly(getCurrentTime24Hour());
+  };
+
   const interactionTime = useMemo(() => {
-    let [hr, min] = timeOnly.split(":").map(Number);
-    if (ampm === "PM" && hr !== 12) hr += 12;
-    if (ampm === "AM" && hr === 12) hr = 0;
-    return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
-  }, [timeOnly, ampm]);
+    return `${timeOnly}:00`;
+  }, [timeOnly]);
+   
 
   const minDate = useMemo(() => todayStr, []);
   const maxDate = useMemo(() => {
@@ -102,6 +119,7 @@ const ClientOverview = () => {
     return d.toISOString().split("T")[0];
   }, []);
 
+  
   const minTime = interactionDate === minDate ? `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}` : "00:00";
 
   const clientFields = [
@@ -359,6 +377,50 @@ const ClientOverview = () => {
       });
     }
   };
+
+  const handleScheduleReminder = async () => {
+      const freshLeadId =
+        clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
+  
+      if (!freshLeadId || !clientInfo.name || !interactionDate || !reminderTime) {
+        return Swal.fire({
+          icon: "error",
+          title: "Missing Information",
+          text: "Please ensure all required fields (client name, date, and time) are filled.",
+        });
+      }
+  
+      try {
+        const userId = executiveInfo?.id;
+        if (!userId) {
+          throw new Error("User ID not found.");
+        }
+  
+        await scheduleFollowUpNotificationAPI({
+          userId,
+          clientName: clientInfo.name,
+          date: interactionDate,
+          time: convertTo24HrFormat(reminderTime),
+          targetRole: "executive",
+        });
+  
+        Swal.fire({
+          icon: "success",
+          title: "Reminder Scheduled",
+          text: `Follow-up reminder for ${clientInfo.name} has been scheduled.`,
+        });
+  
+        await fetchNotifications({ userId, userRole: "executive" });
+      } catch (error) {
+        console.error("Error scheduling reminder:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Failed to Schedule Reminder",
+          text: error.message || "Something went wrong. Please try again.",
+        });
+      }
+    };
+  
 
   const handleCreateFollowUp = async () => {
     if (
@@ -818,145 +880,91 @@ const ClientOverview = () => {
                     />
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label style={{ marginBottom: "4px" }}>Time:</label>
-                    <div
-                      style={{
-                        display: "flex",
-                        border: "1px solid #ccc",
-                        borderRadius: "6px",
-                        overflow: "hidden",
-                        width: "150px",
-                        backgroundColor: "white"
-                      }}
-                    >
-                      <div style={{ position: "relative", flex: 1 }}>
-                        {!isTimeEditable ? (
-                          <>
-                            <select
-                              ref={timeSelectRef}
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+                      {/* TIME FIELD */}
+                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}>
+                        <div>
+                          <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              border: "1px solid #ccc",
+                              borderRadius: "6px",
+                              padding: "0 10px",
+                              backgroundColor: "#fff",
+                              height: "38px"
+                            }}
+                          >
+                            <input
+                              type="time"
                               value={timeOnly}
-                              onChange={(e) => {
-                                setTimeOnly(e.target.value);
-                                setIsTimeEditable(true);
-                              }}
+                              onChange={(e) => setTimeOnly(e.target.value)}
+                              style={{ border: "none", outline: "none", width: "100px" }}
+                            />
+                            {/* Optional: Add a "now" button */}
+                            <button
+                              type="button"
+                              onClick={handleUseCurrentTime}
                               style={{
+                                background: "none",
                                 border: "none",
-                                padding: "8px 4px",
-                                width: "100%",
-                                appearance: "none",
-                                backgroundColor: "transparent",
                                 cursor: "pointer",
-                              }}
-                            >
-                              <option value={timeOnly}>{timeOnly}</option>
-                              {[
-                                "12:00", "12:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30",
-                                "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
-                                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
-                              ].filter(opt => opt !== timeOnly).map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                            <span
-                              onClick={() => timeSelectRef.current?.focus()}
-                              style={{
-                                position: "absolute",
-                                right: "9px",
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                pointerEvents: "none",
                                 fontSize: "12px",
-                                color: "#888"
+                                color: "#007bff",
+                                padding: "2px 4px",
+                                borderRadius: "3px",
+                                marginLeft: "4px"
                               }}
+                              title="Use current time"
                             >
-                              ▼
-                            </span>
-                          </>
-                        ) : (
-                          <div>
-                            <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                                border: "1px solid #ccc",
-                                borderRadius: "6px",
-                                padding: "0 10px",
-                                backgroundColor: "#fff",
-                                height: "38px"
-                              }}
-                            >
-                              {/* HH:MM SELECT */}
-                              <select
-                                value={timeOnly}
-                                onChange={(e) => setTimeOnly(e.target.value)}
-                                style={{
-                                  border: "none",
-                                  padding: "8px 6px",
-                                  fontSize: "14px",
-                                  height: "100%",
-                                  outline: "none",
-                                  backgroundColor: "transparent",
-                                  appearance: "none"
-                                }}
-                              >
-                                {Array.from({ length: 12 }, (_, i) =>
-                                  [0, 15, 30, 45].map((min) => {
-                                    const hour = i + 1;
-                                    const hStr = hour.toString().padStart(2, "0");
-                                    const mStr = min.toString().padStart(2, "0");
-                                    return (
-                                      <option key={`${hStr}:${mStr}`} value={`${hStr}:${mStr}`}>
-                                        {`${hStr}:${mStr}`}
-                                      </option>
-                                    );
-                                  })
-                                ).flat()}
-                              </select>
-
-                              {/* AM/PM SELECT */}
-                              <select
-                                value={ampm}
-                                onChange={(e) => setAmPm(e.target.value)}
-                                style={{
-                                  border: "none",
-                                  padding: "8px 6px",
-                                  fontSize: "14px",
-                                  height: "100%",
-                                  outline: "none",
-                                  backgroundColor: "transparent",
-                                  appearance: "none"
-                                }}
-                              >
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                              </select>
-                            </div>
+                              Now
+                            </button>
                           </div>
-                        )}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
+                        <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            border: "1px solid #ccc",
+                            borderRadius: "6px",
+                            padding: "0 10px",
+                            backgroundColor: "#fff",
+                            height: "38px",
+                            width: "150px"
+                          }}
+                        >
+                          <input
+                            type="time"
+                            value={reminderTime}
+                            onChange={(e) => setReminderTime(e.target.value)}
+                            style={{ border: "none", outline: "none", width: "100px" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleScheduleReminder}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              fontSize: "12px",
+                              color: "#007bff",
+                              padding: "2px 4px",
+                              borderRadius: "3px",
+                              marginLeft: "4px"
+                            }}
+                            title="Schedule Reminder"
+                          >
+                            Set
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    {isTimeEditable && (
-                      <button
-                        type="button"
-                        onClick={() => setIsTimeEditable(false)}
-                        style={{
-                          fontSize: "11px",
-                          color: "#666",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                          marginTop: "4px",
-                          alignSelf: "flex-start"
-                        }}
-                      >
-                        Use preset times
-                      </button>
-                    )}
-                  </div>
                 </div>
               </div>
 
