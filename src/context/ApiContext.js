@@ -1474,7 +1474,22 @@ const [isUserProfileUpdating, setUserProfileUpdating] = useState(false);
       setUserProfileUpdating(false);
     }
   };
-
+// ✅ Schedule Follow-Up Notification
+const scheduleFollowUpNotificationAPI = async ({ userId, clientName, date, time, targetRole = "executive" }) => {
+  try {
+    const response = await apiService.scheduleFollowUpNotification({
+      userId,
+      clientName,
+      date,
+      time,
+      targetRole,
+    });
+    return response;
+  } catch (error) {
+    console.error("❌ Error scheduling follow-up notification in context:", error);
+    throw error;
+  }
+};
   // ✅ Effect to fetch initial data
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -1693,6 +1708,7 @@ getAllConverted,
         setProfileUpdating,
         isPasswordUpdating,
         setPasswordUpdating,
+        scheduleFollowUpNotificationAPI,
         // ✅ Top Executive
         teamMembers,
         teamMembersLoading,
