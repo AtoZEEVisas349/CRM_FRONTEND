@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -5,29 +7,14 @@ import PageAccessControl from "../admin-settings/PageAccessControl";
 import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
+import { Alert, soundManager } from "../modal/alert";
 
 const HrSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { fetchHrUserData, updateHrProfileById, handleChangeHrPassword, isHrPasswordUpdating } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const hasLoaded = useRef(false);
-
-  const [hrProfile, setHrProfile] = useState({
-    id: "",
-    name: "",
-    email: "",
-    username: "",
-    role: "",
-    jobTitle: "",
-  });
-
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
 
   useEffect(() => {
     const handleSidebarToggle = () => {
@@ -59,6 +46,17 @@ const HrSettings = () => {
         });
       } catch (err) {
         console.error("Failed to load HR profile:", err);
+        setAlerts([
+          ...alerts,
+          {
+            id: Date.now(),
+            type: "error",
+            title: "Load Failed",
+            message: "Failed to load HR profile.",
+            duration: 5000,
+          },
+        ]);
+        soundManager.playSound("error");
       } finally {
         hideLoader();
       }
@@ -71,6 +69,11 @@ const HrSettings = () => {
     };
   }, [fetchHrUserData, showLoader, hideLoader]);
 
+  // Handle alert close
+  const handleAlertClose = (id) => {
+    setAlerts(alerts.filter((alert) => alert.id !== id));
+  };
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -80,10 +83,30 @@ const HrSettings = () => {
         username: hrProfile.username,
         jobTitle: hrProfile.jobTitle,
       });
-      alert("HR profile updated successfully!");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "success",
+          title: "Profile Updated",
+          message: "HR profile updated successfully!",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("success");
     } catch (err) {
       console.error("Update failed:", err);
-      alert("Failed to update HR profile");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Update Failed",
+          message: "Failed to update HR profile",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
     }
   };
 
@@ -98,17 +121,47 @@ const HrSettings = () => {
     setPasswordSuccess("");
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError("New password and confirm password do not match.");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "warning",
+          title: "Password Mismatch",
+          message: "New password and confirm password do not match.",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("warning");
       return;
     }
 
     try {
       showLoader("Updating password...", "admin");
       await handleChangeHrPassword(passwordData.currentPassword, passwordData.newPassword);
-      setPasswordSuccess("Password updated successfully!");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "success",
+          title: "Password Updated",
+          message: "Password updated successfully!",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("success");
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      setPasswordError(err.response?.data?.message || "Failed to update password.");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Password Update Failed",
+          message: err.response?.data?.message || "Failed to update password.",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
     } finally {
       hideLoader();
     }
@@ -324,6 +377,23 @@ const HrSettings = () => {
     }
   };
 
+  const [hrProfile, setHrProfile] = useState({
+    id: "",
+    name: "",
+    email: "",
+    username: "",
+    role: "",
+    jobTitle: "",
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+
   return (
     <div className="admin-settings">
       <SidebarToggle />
@@ -345,6 +415,7 @@ const HrSettings = () => {
         ))}
       </div>
       <div className="settings-card">{renderTabContent()}</div>
+      <Alert alerts={alerts} onClose={handleAlertClose} />
     </div>
   );
 };

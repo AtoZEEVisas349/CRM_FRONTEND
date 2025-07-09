@@ -5,9 +5,11 @@ import { FaBars, FaTimes,FaBell } from 'react-icons/fa';
 import { useProcess } from '../context/ProcessAuthContext';
 import { useProcessService } from '../context/ProcessServiceContext';
 
-const ProcessNavbar = () => {
+const ProcessNavbar = ({count}) => {
   const{fetchNotifications}=useProcessService();
   const [isMobile, setIsMobile] = useState(false);
+
+
   const navigate = useNavigate();
   const { logout, user } = useProcess(); // ✅ Get `user` from context
 const userRole = localStorage.getItem("userType");
@@ -66,6 +68,7 @@ useEffect(() => {
   const handleBellClick = () => {
     navigate('/process/client/notifications');
   };
+  console.log("🔔 Unread Count:", count); 
   return (
     <nav className="process-navbar">
       <h2 className="process-navbar-logo">{dashboardTitle}</h2>
@@ -103,7 +106,27 @@ useEffect(() => {
 </div>
     )}
      {user?.type === 'customer' && (
-    <li><Link to="/customer/client/notifications"><FaBell style={{ color: 'white', fontSize: '20px' }} /></Link></li>    )}
+    <li><Link to="/customer/client/notifications"><li style={{ position: "relative" }}>
+  <FaBell style={{ color: 'white', fontSize: '20px', cursor: "pointer" }} />
+  {count > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-5px",
+        right: "-5px",
+        backgroundColor: "red",
+        color: "white",
+        borderRadius: "50%",
+        padding: "0px 4px",
+        fontSize: "12px",
+        fontWeight: "bold",
+      }}
+    >
+      {count}
+    </span>
+  )}
+</li>
+</Link></li>    )}
         <li><button className="process-logout-btn" onClick={handleLogout}>Logout</button></li>
       </ul>
 

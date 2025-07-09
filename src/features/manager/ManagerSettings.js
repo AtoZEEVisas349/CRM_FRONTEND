@@ -1,3 +1,7 @@
+
+
+
+
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -5,12 +9,14 @@ import PageAccessControl from "../admin-settings/PageAccessControl";
 import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
+import { Alert, soundManager } from "../modal/alert";
 
 const ManagerSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { getManager, updateManagerProfile, managerProfile, managerLoading, setManagerProfile, handleChangeManagerPassword, isManagerPasswordUpdating } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const hasLoaded = useRef(false);
+  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
 
   useEffect(() => {
     const init = async () => {
@@ -22,6 +28,17 @@ const ManagerSettings = () => {
         await getManager();
       } catch (err) {
         console.error("Failed to load Manager profile:", err);
+        setAlerts([
+          ...alerts,
+          {
+            id: Date.now(),
+            type: "error",
+            title: "Load Failed",
+            message: "Failed to load Manager profile.",
+            duration: 5000,
+          },
+        ]);
+        soundManager.playSound("error");
       } finally {
         hideLoader();
       }
@@ -29,6 +46,11 @@ const ManagerSettings = () => {
 
     init();
   }, [getManager]);
+
+  // Handle alert close
+  const handleAlertClose = (id) => {
+    setAlerts(alerts.filter((alert) => alert.id !== id));
+  };
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -40,10 +62,30 @@ const ManagerSettings = () => {
         username: managerProfile.username,
         jobTitle: managerProfile.jobTitle,
       });
-      alert("Manager profile updated successfully!");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "success",
+          title: "Profile Updated",
+          message: "Manager profile updated successfully!",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("success");
     } catch (err) {
       console.error("Update failed:", err);
-      alert("Failed to update Manager profile");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Update Failed",
+          message: "Failed to update Manager profile",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
     }
   };
 
@@ -168,15 +210,45 @@ const ManagerSettings = () => {
                 const confirmPassword = e.target.confirmPassword.value;
 
                 if (newPassword !== confirmPassword) {
-                  alert("New password and confirm password do not match.");
+                  setAlerts([
+                    ...alerts,
+                    {
+                      id: Date.now(),
+                      type: "warning",
+                      title: "Password Mismatch",
+                      message: "New password and confirm password do not match.",
+                      duration: 5000,
+                    },
+                  ]);
+                  soundManager.playSound("warning");
                   return;
                 }
 
                 try {
                   await handleChangeManagerPassword(currentPassword, newPassword);
-                  alert("Password updated successfully!");
+                  setAlerts([
+                    ...alerts,
+                    {
+                      id: Date.now(),
+                      type: "success",
+                      title: "Password Updated",
+                      message: "Password updated successfully!",
+                      duration: 5000,
+                    },
+                  ]);
+                  soundManager.playSound("success");
                 } catch (err) {
-                  alert(err.message || "Something went wrong.");
+                  setAlerts([
+                    ...alerts,
+                    {
+                      id: Date.now(),
+                      type: "error",
+                      title: "Password Update Failed",
+                      message: err.message || "Something went wrong.",
+                      duration: 5000,
+                    },
+                  ]);
+                  soundManager.playSound("error");
                 }
               }}
             >
@@ -282,6 +354,7 @@ const ManagerSettings = () => {
         ))}
       </div>
       <div className="settings-card">{renderTabContent()}</div>
+      <Alert alerts={alerts} onClose={handleAlertClose} />
     </div>
   );
 };

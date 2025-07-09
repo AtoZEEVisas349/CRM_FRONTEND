@@ -5,12 +5,14 @@ import PageAccessControl from "../admin-settings/PageAccessControl";
 import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
+import { Alert, soundManager } from "../modal/alert";
 
 const TLSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const { getAllProfile, handleUpdateUserProfile, isUserProfileUpdating ,isPasswordUpdating , handleChangePassword} = useApi();
   const hasLoaded = useRef(false);
+  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
 
   const [tlProfile, setTlProfile] = useState({
     id: "",
@@ -72,7 +74,17 @@ const TLSettings = () => {
         });
       } catch (err) {
         console.error("Failed to load TL profile:", err);
-        alert("Failed to load TL profile. Please try again.");
+        setAlerts([
+          ...alerts,
+          {
+            id: Date.now(),
+            type: "error",
+            title: "Load Failed",
+            message: "Failed to load TL profile.",
+            duration: 5000,
+          },
+        ]);
+        soundManager.playSound("error");
       } finally {
         hideLoader();
       }
@@ -85,12 +97,27 @@ const TLSettings = () => {
     };
   }, [getAllProfile, showLoader, hideLoader]);
 
+  // Handle alert close
+  const handleAlertClose = (id) => {
+    setAlerts(alerts.filter((alert) => alert.id !== id));
+  };
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     
     // Validate required fields
     if (!tlProfile.username || !tlProfile.email || !tlProfile.firstname || !tlProfile.lastname) {
-      alert("Please fill in all required fields (Username, Email, First Name, Last Name)");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "warning",
+          title: "Missing Required Fields",
+          message: "Please fill in all required fields (Username, Email, First Name, Last Name)",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("warning");
       return;
     }
 
@@ -117,7 +144,17 @@ const TLSettings = () => {
       const result = await handleUpdateUserProfile(tlProfile.id, updateData);
       
       console.log("Update result:", result);
-      alert("TL profile updated successfully!");
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "success",
+          title: "Profile Updated",
+          message: "TL profile updated successfully!",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("success");
 
       // Update local state with the returned data
       if (result.user) {
@@ -129,7 +166,17 @@ const TLSettings = () => {
     } catch (err) {
       console.error("Update failed:", err);
       const errorMessage = err.response?.data?.message || err.message || "Failed to update TL profile";
-      alert(`Update failed: ${errorMessage}`);
+      setAlerts([
+        ...alerts,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Update Failed",
+          message: `Update failed: ${errorMessage}`,
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
     } finally {
       hideLoader();
     }
@@ -229,52 +276,82 @@ const TLSettings = () => {
           </div>
         );
       case "password":
-  return (
-    <>
-      <h3>Change Password</h3>
-      <form
-        className="profile-form"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          const currentPassword = e.target.currentPassword.value;
-          const newPassword = e.target.newPassword.value;
-          const confirmPassword = e.target.confirmPassword.value;
+        return (
+          <>
+            <h3>Change Password</h3>
+            <form
+              className="profile-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const currentPassword = e.target.currentPassword.value;
+                const newPassword = e.target.newPassword.value;
+                const confirmPassword = e.target.confirmPassword.value;
 
-          if (newPassword !== confirmPassword) {
-            alert("New password and confirm password do not match.");
-            return;
-          }
+                if (newPassword !== confirmPassword) {
+                  setAlerts([
+                    ...alerts,
+                    {
+                      id: Date.now(),
+                      type: "warning",
+                      title: "Password Mismatch",
+                      message: "New password and confirm password do not match.",
+                      duration: 5000,
+                    },
+                  ]);
+                  soundManager.playSound("warning");
+                  return;
+                }
 
-          try {
-            await handleChangePassword(currentPassword, newPassword); // Use the generic function
-            alert("Password updated successfully!");
-          } catch (err) {
-            alert(err.message || "Something went wrong.");
-          }
-        }}
-      >
-        <div className="form-group full">
-          <label>Current Password</label>
-          <input name="currentPassword" type="password" placeholder="••••••••" required />
-        </div>
-        <div className="form-grid">
-          <div className="form-group">
-            <label>New Password</label>
-            <input name="newPassword" type="password" placeholder="New password" required />
-          </div>
-          <div className="form-group">
-            <label>Confirm Password</label>
-            <input name="confirmPassword" type="password" placeholder="Confirm password" required />
-          </div>
-        </div>
-        <div className="form-group full save-btn-wrapper">
-          <button className="save-btn" type="submit" disabled={isPasswordUpdating}>
-            {isPasswordUpdating ? "Updating..." : "Update Password"}
-          </button>
-        </div>
-      </form>
-    </>
-  );
+                try {
+                  await handleChangePassword(currentPassword, newPassword); // Use the generic function
+                  setAlerts([
+                    ...alerts,
+                    {
+                      id: Date.now(),
+                      type: "success",
+                      title: "Password Updated",
+                      message: "Password updated successfully!",
+                      duration: 5000,
+                    },
+                  ]);
+                  soundManager.playSound("success");
+                } catch (err) {
+                  setAlerts([
+                    ...alerts,
+                    {
+                      id: Date.now(),
+                      type: "error",
+                      title: "Password Update Failed",
+                      message: err.message || "Something went wrong.",
+                      duration: 5000,
+                    },
+                  ]);
+                  soundManager.playSound("error");
+                }
+              }}
+            >
+              <div className="form-group full">
+                <label>Current Password</label>
+                <input name="currentPassword" type="password" placeholder="••••••••" required />
+              </div>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input name="newPassword" type="password" placeholder="New password" required />
+                </div>
+                <div className="form-group">
+                  <label>Confirm Password</label>
+                  <input name="confirmPassword" type="password" placeholder="Confirm password" required />
+                </div>
+              </div>
+              <div className="form-group full save-btn-wrapper">
+                <button className="save-btn" type="submit" disabled={isPasswordUpdating}>
+                  {isPasswordUpdating ? "Updating..." : "Update Password"}
+                </button>
+              </div>
+            </form>
+          </>
+        );
       case "profile":
       default:
         return (
@@ -426,6 +503,7 @@ const TLSettings = () => {
         ))}
       </div>
       <div className="settings-card">{renderTabContent()}</div>
+      <Alert alerts={alerts} onClose={handleAlertClose} />
     </div>
   );
 };

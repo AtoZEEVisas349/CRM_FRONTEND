@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ import useNavigate
+import { Link, useNavigate } from "react-router-dom"; 
 import { useProcess } from "../../context/ProcessAuthContext";
 import { useProcessService } from "../../context/ProcessServiceContext";
-
+import {ToastContainer} from "react-toastify";
 const ClientLogin = () => {
   const { login } = useProcess();
   const {startWork}=useProcessService();
-  const navigate = useNavigate(); // ✅ initialize navigate hook
+  const navigate = useNavigate(); 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,10 +14,11 @@ const ClientLogin = () => {
   const handleLogin = async () => {
     try {
       await login(email, password);
-      alert("Login successful!");
-  
+    
+
       localStorage.setItem("userType", "processperson");
-   const storedUser = localStorage.getItem("user");
+     
+      const storedUser = localStorage.getItem("user");
     const parsedUser = storedUser ? JSON.parse(storedUser) : null;
 
     if (parsedUser?.id) {
@@ -31,15 +32,19 @@ const ClientLogin = () => {
       console.warn("⚠ No user ID found to start work");
     }
 
-        navigate("/process");
-  
+    setTimeout(() => {
+      navigate("/process"); // or your desired path
+    }, 2000);  
+      
     } catch (error) {
       alert(error.message);
     }
   };
 
   return (
+    
     <div className="process-auth-wrapper">
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar closeButton />
       <div className="process-auth-card">
         <h2>Welcome back!</h2>
         <p>Log in to your account to continue exchanging books and discovering new editions.</p>

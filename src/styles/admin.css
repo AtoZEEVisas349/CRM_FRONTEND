@@ -772,6 +772,11 @@ h1 {
 [data-theme="dark"] .executive-title {
   color: #fff;
 }
+[data-theme="dark"] .admin_user_name,
+[data-theme="dark"] .admin_user_email,
+[data-theme="dark"] .admin_user_role {
+  color: #cbe1ff;
+}
 .lead-graph-container{
    width: 650px;
 }
@@ -1383,14 +1388,13 @@ h1 {
   z-index: 10000;
   width: 240px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #ffffff; /* no blur */
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   animation: popoverSlide 0.35s ease-out forwards;
   opacity: 0;
 }
+
 
 @keyframes popoverSlide {
   to {
@@ -1398,7 +1402,9 @@ h1 {
     opacity: 1;
   }
 }
-
+[data-theme="dark"] .admin_user_popover{
+  background-color: #0f172a;
+}
 .admin_user_popover::before {
   content: "";
   position: absolute;

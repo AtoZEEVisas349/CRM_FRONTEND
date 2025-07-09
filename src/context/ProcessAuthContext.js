@@ -6,6 +6,7 @@ import {
   logoutUser,
 } from "../services/processAuth";
 import { useProcessService } from "./ProcessServiceContext";
+import { toast } from "react-toastify";
 //Create Context
 const ProcessContext = createContext();
 
@@ -45,10 +46,24 @@ export const ProcessProvider = ({ children }) => {
       }
 
       localStorage.setItem("user", JSON.stringify(userPayload));
-      
+      toast.success(
+        <div className="toast-content">
+          <div className="textToast">Login Successful</div>
+        </div>,
+        {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+        }
+      );
 
       return data;
     } catch (error) {
+      toast.error(
+        <div className="textToast">{error.message || "Login Failed"}</div>,
+        {
+          className: "custom-toast-error",
+        }
+      );
       throw error;
     } finally {
       setLoading(false);
@@ -62,8 +77,24 @@ const signup = async (fullName, email, password, userType) => {
   setLoading(true);
   try {
     const data = await signupUser(fullName, email, password, userType);
+    toast.success(
+      <div className="toast-content">
+        <div className="textToast">Signup Successful</div>
+      </div>,
+      {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+      }
+    );
+
     return data;
   } catch (error) {
+    toast.error(
+      <div className="textToast">{error.message || "Signup Failed"}</div>,
+      {
+        className: "custom-toast-error",
+      }
+    );
     throw error;
   } finally {
     setLoading(false);

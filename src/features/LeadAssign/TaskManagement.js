@@ -40,7 +40,7 @@ const TaskManagement = () => {
     createLeadAPI,
     updateClientLead,
     deleteClientLead,
-    getAllConverted
+    getAllConverted,triggerDashboardRefresh
   } = useApi();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
@@ -283,7 +283,6 @@ const TaskManagement = () => {
 
           finalLeadId = createdLead.clientLeadId;
           await assignLeadAPI(Number(finalLeadId), targetName);
-
           const freshLeadPayload = {
             leadId: createdLead.id,
             name: createdLead.name,
@@ -298,7 +297,7 @@ const TaskManagement = () => {
         } else {
           await reassignLead(lead.id, targetName);
         }
-
+        triggerDashboardRefresh(); 
         successCount++;
       } catch (err) {
         console.error(`❌ Error processing lead ID ${leadId}:`, err);

@@ -1490,6 +1490,17 @@ const scheduleFollowUpNotificationAPI = async ({ userId, clientName, date, time,
     throw error;
   }
 };
+
+
+const [refreshDashboard, setRefreshDashboard] = useState(false);
+
+const triggerDashboardRefresh = () => {
+  setRefreshDashboard((prev) => !prev); ;
+};
+
+
+
+
   // ✅ Effect to fetch initial data
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -1633,6 +1644,8 @@ getAllConverted,
       fetchFollowUpClientsAPI,
       createAdmin,
         createTeamLead,
+        refreshDashboard,
+      triggerDashboardRefresh,
         closeLeads, // Add the state for Close Leads
         closeLeadsLoading,
         closeLeadsError,

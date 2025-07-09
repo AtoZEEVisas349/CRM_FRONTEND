@@ -10,6 +10,7 @@ const ClientSetting = () => {
   const [detailsExist, setDetailsExist] = useState(false);
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const[showMessage,setShowMessage]=useState("");
  const [formData, setFormData] = useState({
   customerId: '',
   dob: '',
@@ -114,21 +115,22 @@ useEffect(() => {
    const handleSubmit = async (e) => {
     e.preventDefault();
     const userType = localStorage.getItem("userType");
+    const capitalizedUserType = userType.charAt(0).toUpperCase() + userType.slice(1).toLowerCase();
     try {
       if (detailsExist) {
         // Always PUT if detailsExist is true
         await handleProfileSettings(formData);
-        alert(`${userType} details updated successfully`);
+        setShowMessage(`${capitalizedUserType} details updated successfully`);
       } else {
         try {
           await profile(formData);
-          alert(`${userType} details created successfully`);
+          setShowMessage(`${capitalizedUserType} details created successfully`);
           setDetailsExist(true); // Now mark as exist
         } catch (err) {
           // Check if error is 'Customer details already exist', then switch to PUT
           if (err.error === 'Customer details already exist') {
             await handleProfileSettings(formData);
-            alert(`${userType} details updated successfully`);
+            setShowMessage(`${capitalizedUserType} details updated successfully`);
             setDetailsExist(true);
           } else {
             throw err;
@@ -162,9 +164,35 @@ useEffect(() => {
     navigator.clipboard.writeText(link);
     alert("Profile link copied!");
   };
+useEffect(() => {
+  if (showMessage) {
+    const timer = setTimeout(() => {
+      setShowMessage("");
+    }, 2000); // 3 seconds
+    return () => clearTimeout(timer);
+  }
+}, [showMessage]);
 
   return (
     <div className="process-settings-container">
+      {showMessage && (
+  <div className="p-success-message">
+    <div className="p-message-box">
+      <div className="p-checkmark">
+        <svg className="p-circle-animation" viewBox="0 0 52 52">
+          <circle className="p-circle" cx="26" cy="26" r="24" fill="none" />
+          <polyline className="p-tick" points="14,27 22,35 38,18" />
+        </svg>
+      </div>
+      <h2>Success!</h2>
+      <p>{showMessage}</p>
+      {/* <button className="p-ok-button" onClick={() => setShowMessage("")}>
+        OK
+      </button> */}
+    </div>
+  </div>
+)}
+
       <div className="process-breadcrumb">Home / Settings</div>
       <div className="process-settings-wrapper">
         {/* Sidebar */}

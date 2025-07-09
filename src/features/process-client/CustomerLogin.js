@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate,useLocation } from "react-router-dom"; // ✅ import useNavigate
 import { useProcess } from "../../context/ProcessAuthContext";
+import { ToastContainer } from "react-toastify";
 
 const CustomerLogin = () => {
   const { login } = useProcess();
@@ -12,14 +13,13 @@ const CustomerLogin = () => {
   const from = location.state?.from?.pathname || "/customer/client/dashboard";
   const handleLogin = async () => {
     try {
-      await login(email, password);
-      alert("Login successful!");
-  
+      await login(email, password);  
       localStorage.setItem("userType", "customer");
   
-      // ✅ Conditional navigation
-    navigate(from, { replace: true });
-        // navigate("/customer/client/dashboard");
+    setTimeout(() => {
+      navigate(from, { replace: true });
+    }, 2000);   
+     // navigate("/customer/client/dashboard");
       
     } catch (error) {
       alert(error.message);
@@ -29,6 +29,7 @@ const CustomerLogin = () => {
 
   return (
     <div className="process-auth-wrapper">
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar closeButton />
       <div className="process-auth-card">
         <h2>Welcome back!</h2>
         <p>Log in to your account to continue exchanging books and discovering new editions.</p>

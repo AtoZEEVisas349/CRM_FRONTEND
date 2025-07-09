@@ -4,7 +4,7 @@ import { useProcess } from "../../context/ProcessAuthContext";
 import {useApi} from "../../context/ApiContext"
 const NOTIF_STORAGE_KEY = "readNotificationIds";
 
-const ProcessNotification = () => {
+const ProcessNotification = ({setUnreadCount}) => {
   const {
     fetchNotifications,
     notifications,
@@ -75,12 +75,16 @@ const ProcessNotification = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-//    useEffect(() => {
-//   const count = notificationData.filter(
-//     (notif) => !markedAsRead.includes(notif.id)
-//   ).length;
-//   localStorage.setItem("unreadCount", count); // ✅ Save to localStorage
-// }, [notificationData, markedAsRead]);
+  useEffect(() => {
+    const count = notificationData.filter(
+      (notif) => !markedAsRead.includes(notif.id)
+    ).length;
+
+    if (setUnreadCount) {
+      setUnreadCount(count); // ✅ Update parent
+    }
+  }, [notificationData, markedAsRead]);
+
 
   return (
     <div>
