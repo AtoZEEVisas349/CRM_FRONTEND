@@ -8,7 +8,7 @@ import { SearchContext } from "../../context/SearchContext";
 import { useLoading } from "../../context/LoadingContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 
-const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
+const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating = "All" }) => {
   const { followUps, getAllFollowUps } = useApi();
   const clients = Array.isArray(followUps?.data) ? followUps.data : [];
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
@@ -62,9 +62,16 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
   const filteredClients = clients.filter((client) => {
     const type = (client.follow_up_type || "").toLowerCase().trim();
     const status = (client.clientLeadStatus || "").toLowerCase().trim();
-    if (status !== "follow-up") return false;
+    const rating = (client.interaction_rating || "").toLowerCase().trim();
+
+    if (status !== "follow-up") return false; 
     if (filter === "Interested" && type !== "interested") return false;
     if (filter === "Not Interested" && type !== "not interested") return false;
+
+     // New: Filter by selected rating from dropdown
+  if (selectedRating !== "All" && rating !== selectedRating.toLowerCase()) {
+    return false;
+  }
 
     if (location.pathname.includes("follow-up") && searchQuery.trim()) {
       const search = searchQuery.toLowerCase();
@@ -132,6 +139,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient }) => {
           className="table-container responsive-table-wrapper"
           style={{ maxHeight: tableHeight }}
         >
+
           <table className="client-table">
             <thead>
               <tr className="sticky-header">

@@ -7,6 +7,19 @@ import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
+import CallRoundedIcon from '@mui/icons-material/CallRounded';
+import EmailIcon from '@mui/icons-material/Email';
+import CallMadeIcon from '@mui/icons-material/CallMade';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+
 import SendEmailToClients from "./SendEmailToClients";
 
 function convertTo24HrFormat(timeStr) {
@@ -81,6 +94,28 @@ const ClientOverview = () => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   };
 
+  const contactIcons = {
+    Call: <CallRoundedIcon fontSize="small"/>,
+    Email: <EmailIcon fontSize="small"/>,
+    "Call/Email": <CallMadeIcon fontSize="small"/>,
+  };
+  
+  const followUpIcons = {
+    interested: <ThumbUpAltIcon fontSize="small"/>,
+    appointment: <EventAvailableIcon fontSize="small"/>,
+    "no response": <PersonOffIcon fontSize="small"/>,
+    converted: <CheckCircleIcon fontSize="small"  />,
+    "not interested": <ThumbDownIcon fontSize="small" style={{ marginTop: 4 }}  />,
+    close: <LockPersonIcon fontSize="small"  />,
+  };
+  
+  const ratingIcons = {
+    hot: <LocalFireDepartmentIcon fontSize="small" />,
+    warm: <WbSunnyIcon fontSize="small" />,
+    cold: <AcUnitIcon fontSize="small"  />,
+  };
+
+  
   const convertTo12Hour = (time24h) => {
     let [hours, minutes] = time24h.split(':').map(Number);
     const amPm = hours >= 12 ? 'PM' : 'AM';
@@ -800,7 +835,9 @@ const ClientOverview = () => {
                     checked={contactMethod === method}
                     onChange={() => setContactMethod(method)}
                   />
-                  <span className="radio-label">{method}</span>
+                  <span className="radio-label">
+                  {contactIcons[method]}
+                  {method}</span>
                 </label>
               ))}
             </div>
@@ -816,7 +853,9 @@ const ClientOverview = () => {
                     checked={followUpType === type}
                     onChange={() => setFollowUpType(type)}
                   />
-                  <span className="radio-label">{type.replace("-", " ")}</span>
+                  <span className="radio-label">
+                  {followUpIcons[type]}
+                    {type.replace("-", " ")}</span>
                 </label>
               ))}
             </div>
@@ -834,6 +873,7 @@ const ClientOverview = () => {
                     onChange={() => setInteractionRating(rating)}
                   />
                   <span className="radio-label">
+                  {ratingIcons[rating]}
                     {rating.charAt(0).toUpperCase() + rating.slice(1)}
                   </span>
                 </label>

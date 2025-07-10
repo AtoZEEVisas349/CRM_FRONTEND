@@ -5,6 +5,7 @@ import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
 import { useLocation } from "react-router-dom";
 import ProcessClientTable from "../features/follow-ups/ProcessClientTable";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const FollowUpRoutes = () => {
   const location = useLocation();
@@ -12,6 +13,7 @@ const FollowUpRoutes = () => {
     location.state?.activeTab || "All Follow Ups"
   );
   const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedRating, setSelectedRating] = useState("All");
 
   useEffect(() => {
     if (location.state?.activeTab) {
@@ -35,8 +37,59 @@ const FollowUpRoutes = () => {
               {tab}
             </button>
           ))}
+           {/* 🔽 Rating Filter Dropdown */}
+           <FormControl
+  size="small"
+  sx={{
+    minWidth: "80px",
+    height: "36px",
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '6px',
+      padding: '8px 0',
+      height: '36px',
+      backgroundColor: '#fff',
+      fontSize: '14px',
+      '& fieldset': {
+        borderColor: '#ccc', // normal border
+      },
+      '&:hover fieldset': {
+        borderColor: '#aaa', // on hover
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#ccc', // remove blue border on focus
+      },
+    },
+  }}
+>
+  <Select
+    value={selectedRating}
+    onChange={(e) => {
+      setSelectedClient(null);
+      setSelectedRating(e.target.value);
+    }}
+    displayEmpty
+    notched={false}
+    MenuProps={{
+      PaperProps: {
+        sx: {
+          fontSize: "12px",
+        },
+      },
+    }}
+  >
+    <MenuItem value="All">All</MenuItem>
+    <MenuItem value="hot">Hot</MenuItem>
+    <MenuItem value="warm">Warm</MenuItem>
+    <MenuItem value="cold">Cold</MenuItem>
+  </Select>
+</FormControl>
+
+
+
+
         </div>
-        <ClientTable filter={activeTab} onSelectClient={setSelectedClient} />
+        <ClientTable filter={activeTab} onSelectClient={setSelectedClient}  
+          selectedRating={selectedRating}/>
       </div>
  
     </div>

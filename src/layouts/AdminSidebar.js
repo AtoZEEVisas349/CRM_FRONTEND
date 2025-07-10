@@ -114,7 +114,7 @@ const AdminSidebar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/admin/executiveform" className="admin-aside-link" data-tooltip="Create Executiv">
+              <Link to="/admin/executiveform" className="admin-aside-link" data-tooltip="Create Executive">
                 <UserPlus className="admin-aside-icon" />
                 <span className="sidebar-label">Create Executive</span>
               </Link>

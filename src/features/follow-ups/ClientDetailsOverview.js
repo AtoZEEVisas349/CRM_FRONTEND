@@ -8,6 +8,18 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailToClients from "../client-details/SendEmailToClients";
+import CallRoundedIcon from '@mui/icons-material/CallRounded';
+import EmailIcon from '@mui/icons-material/Email';
+import CallMadeIcon from '@mui/icons-material/CallMade';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -49,7 +61,27 @@ const ClientDetailsOverview = () => {
     return `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
   };
 
+  const contactIcons = {
+    Call: <CallRoundedIcon fontSize="small"/>,
+    Email: <EmailIcon fontSize="small"/>,
+    "Call/Email": <CallMadeIcon fontSize="small"/>,
+  };
   
+  const followUpIcons = {
+    interested: <ThumbUpAltIcon fontSize="small"/>,
+    appointment: <EventAvailableIcon fontSize="small"/>,
+    "no response": <PersonOffIcon fontSize="small"/>,
+    converted: <CheckCircleIcon fontSize="small"  />,
+    "not interested": <ThumbDownIcon fontSize="small"style={{ marginTop: 4 }}  />,
+    close: <LockPersonIcon fontSize="small"  />,
+  };
+  
+  const ratingIcons = {
+    hot: <LocalFireDepartmentIcon fontSize="small" />,
+    warm: <WbSunnyIcon fontSize="small" />,
+    cold: <AcUnitIcon fontSize="small"  />,
+  };
+
   // Initialize current time properly
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
@@ -575,6 +607,7 @@ const ClientDetailsOverview = () => {
                       onChange={() => setContactMethod(method)}
                     />
                     <span className="radio-label">
+                    {contactIcons[method]}
                       {method.charAt(0).toUpperCase() + method.slice(1)}
                     </span>
                   </label>
@@ -600,7 +633,9 @@ const ClientDetailsOverview = () => {
                       checked={followUpType === type}
                       onChange={() => setFollowUpType(type)}
                     />
-                    <span className="radio-label">{type.replace("-", " ")}</span>
+                    <span className="radio-label">
+                    {followUpIcons[type]}
+                      {type.replace("-", " ")}</span>
                   </label>
                 ))}
               </div>
@@ -618,6 +653,7 @@ const ClientDetailsOverview = () => {
                       onChange={() => setInteractionRating(rating)}
                     />
                     <span className="radio-label">
+                    {ratingIcons[rating]}
                       {rating.charAt(0).toUpperCase() + rating.slice(1)}
                     </span>
                   </label>

@@ -825,3 +825,9 @@ background: #af8b7c;
   visibility: visible;
   opacity: 1;
 }
+.radio-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  gap: 2px;
+}
