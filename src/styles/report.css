@@ -579,7 +579,12 @@
   border: 2px solid #555;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-
+[data-theme="dark"] .eod-email-input::placeholder{
+  color: #fff;
+}
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); 
+}
 [data-theme="dark"] .eod-dropdown-button:after {
   color: #667eea;
 }

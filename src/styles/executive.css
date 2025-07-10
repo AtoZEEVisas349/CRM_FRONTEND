@@ -639,12 +639,11 @@ body {
 .user_email,
 .user_role {
   font-size: 13px;
-  color: var(--subtle-text-color, #6b7280);
   /* fallback gray */
 }
 
 /* Logout Button */
-.logout_btn {
+.logout_btns {
   width: 100%;
   background-color: #ef4444;
   color: white;
@@ -740,13 +739,7 @@ body {
   color: white;
 }
 
-[data-theme="red"] .logout_btn {
-  background: linear-gradient(135deg, #a3446a, #7e387d);
-}
 
-[data-theme="red"] .user_avatar {
-  background: rgb(216, 137, 173);
-}
 /*-------------------------------Blue----------------------------------*/
 
 [data-theme="blue"] .executive-app-container {
@@ -776,13 +769,10 @@ body {
   background: rgb(190, 156, 131);
 }
 
-[data-theme="blue"] .logout_btn {
+[data-theme="blue"] .logout_btns {
   background: linear-gradient(135deg, rgb(31, 31, 109), rgb(87, 87, 164), rgb(141, 105, 80));
 }
 
-[data-theme="blue"] .user_avatar {
-  background: rgb(141, 105, 80);
-}
 
 [data-theme="blue"] .news {
   background: linear-gradient(135deg, rgb(31, 31, 109), rgb(87, 87, 176), rgb(141, 105, 80));
@@ -848,13 +838,6 @@ body {
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
 }
 
-[data-theme="brown"] .logout_btn {
-  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
-}
-
-[data-theme="brown"] .user_avatar {
-  background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
-}
 
 /*-------------------------------Green----------------------------------*/
 [data-theme="green"] .executive-app-container,
@@ -1097,15 +1080,6 @@ body {
   color: #ffffff;
 }
 
-[data-theme="lavender"] .logout_btn {
-  background: #42124a;
-  color: #f2b6c2;
-}
-
-[data-theme="lavender"] .user_avatar {
-  background: #b289b8;
-  color: white;
-}
 /*-------------------------------Peach Blossom Theme - Executive----------------------------------*/
 [data-theme="peach"] .executive-app-container {
   --bg-color: #fff5f3; /* very soft blush background */
@@ -1189,22 +1163,6 @@ body {
   background: linear-gradient(135deg, #ff7043, #f06292);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(255, 105, 135, 0.3);
-}
-
-[data-theme="peach"] .logout_btn {
-  background: linear-gradient(135deg, #ff8a80, #ff5252);
-  color: white;
-}
-
-[data-theme="peach"] .logout_btn:hover {
-  background: linear-gradient(135deg, #ff5252, #ff7043);
-  transform: translateY(-2px);
-}
-
-[data-theme="peach"] .user_avatar {
-  background: linear-gradient(135deg, #ffe5d9, #ffc1cc);
-  color: #d81b60;
-  border: 2px solid #f48fb1;
 }
 
 
@@ -1346,22 +1304,313 @@ body {
   color: #e8f6fc;
 }
 
-[data-theme="ocean"] .logout_btn {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  color: white;
-  border: none;
-  transition: all 0.3s ease;
+/* ===== User Popover Theme-Specific Styles ===== */
+
+/* ===== User Popover Theme-Specific Styles ===== */
+
+/* Light Theme - Clean white with subtle shadows */
+[data-theme="light"] .user_popover {
+  background-color: #ffffff;
+  color: #2c3e50;
+  border: 1px solid #e0e7ff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="ocean"] .logout_btn:hover {
-  background: linear-gradient(135deg, #ff5252, #ff7575);
+[data-theme="light"] .user_name {
+  color: #2c3e50;
+}
+
+[data-theme="light"] .user_email,
+[data-theme="light"] .user_role {
+  color: #6b7280;
+}
+
+[data-theme="light"] .user_avatar {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+[data-theme="light"] .logout_btns {
+  background-color: #2a0048; /* Darker purple, complementing the theme */
+  color: white;
+}
+
+[data-theme="light"] .logout_btns:hover {
+  background-color: #1f0036; /* Even darker purple on hover */
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* Dark Theme - Deep dark with purple accents */
+[data-theme="dark"] .user_popover {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .user_name {
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .user_email,
+[data-theme="dark"] .user_role {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .user_avatar {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .logout_btns {
+  background: linear-gradient(135deg, #4a0b8f, #9f2350); /* Darker purple-red gradient */
+  color: white;
+}
+
+[data-theme="dark"] .logout_btns:hover {
+  background: linear-gradient(135deg, #3a0a7a, #8c1e46); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Red/Pink Theme - Vibrant pink gradients */
+[data-theme="red"] .user_popover {
+  background: linear-gradient(135deg, #fce7f3, #f3e8ff);
+  color: #7c2d92;
+  border: 1px solid #e879f9;
+  box-shadow: 0 12px 30px rgba(236, 72, 153, 0.2);
+}
+
+[data-theme="red"] .user_name {
+  color: #7c2d92;
+  font-weight: 600;
+}
+
+[data-theme="red"] .user_email,
+[data-theme="red"] .user_role {
+  color: #a855f7;
+}
+
+[data-theme="red"] .user_avatar {
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  color: #ffffff;
+}
+
+[data-theme="red"] .logout_btns {
+  background: linear-gradient(135deg, #be185d, #8e174e); /* Darker pink gradient */
+  color: white;
+}
+
+[data-theme="red"] .logout_btns:hover {
+  background: linear-gradient(135deg, #a01452, #791340); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Blue Theme - Professional blue tones */
+[data-theme="blue"] .user_popover {
+  background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+  color: #1e3a8a;
+  border: 1px solid #60a5fa;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="blue"] .user_name {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+[data-theme="blue"] .user_email,
+[data-theme="blue"] .user_role {
+  color: #3730a3;
+}
+
+[data-theme="blue"] .user_avatar {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #ffffff;
+}
+
+[data-theme="blue"] .logout_btns {
+  background: linear-gradient(135deg, #1f316d, #5737a4); /* Darker blue gradient */
+  color: white;
+}
+
+[data-theme="blue"] .logout_btns:hover {
+  background: linear-gradient(135deg, #1a2a5c, #4a2f8e); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Green Theme - Fresh nature-inspired */
+[data-theme="green"] .user_popover {
+  background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+  color: #14532d;
+  border: 1px solid #4ade80;
+  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.2);
+}
+
+[data-theme="green"] .user_name {
+  color: #14532d;
+  font-weight: 600;
+}
+
+[data-theme="green"] .user_email,
+[data-theme="green"] .user_role {
+  color: #16a34a;
+}
+
+[data-theme="green"] .user_avatar {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+}
+
+[data-theme="green"] .logout_btns {
+  background: linear-gradient(135deg, #2b7b29, #1e5e1e); /* Darker green gradient */
+  color: white;
+}
+
+[data-theme="green"] .logout_btns:hover {
+  background: linear-gradient(135deg, #246b23, #184f18); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Brown Theme - Warm earth tones */
+[data-theme="brown"] .user_popover {
+  background: linear-gradient(135deg, #fef7ed, #fffbeb);
+  color: #431407;
+  border: 1px solid #fdba74;
+  box-shadow: 0 12px 30px rgba(194, 65, 12, 0.2);
+}
+
+[data-theme="brown"] .user_name {
+  color: #431407;
+  font-weight: 600;
+}
+
+[data-theme="brown"] .user_email,
+[data-theme="brown"] .user_role {
+  color: #9a3412;
+}
+
+[data-theme="brown"] .user_avatar {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  color: #ffffff;
+}
+
+[data-theme="brown"] .logout_btns {
+  background: linear-gradient(135deg, #754632, #573524); /* Darker brown gradient */
+  color: white;
+}
+
+[data-theme="brown"] .logout_btns:hover {
+  background: linear-gradient(135deg, #643c2a, #4a2e1f); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Lavender Theme - Soft purple elegance */
+[data-theme="lavender"] .user_popover {
+  background: linear-gradient(135deg, #f3e8ff, #faf5ff);
+  color: #581c87;
+  border: 1px solid #c084fc;
+  box-shadow: 0 12px 30px rgba(147, 51, 234, 0.2);
+}
+
+[data-theme="lavender"] .user_name {
+  color: #581c87;
+  font-weight: 600;
+}
+
+[data-theme="lavender"] .user_email,
+[data-theme="lavender"] .user_role {
+  color: #7c3aed;
+}
+
+[data-theme="lavender"] .user_avatar {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #ffffff;
+}
+
+[data-theme="lavender"] .logout_btns {
+  background: linear-gradient(135deg, #6b2b8e, #4e1e6b); /* Darker lavender gradient */
+  color: white;
+}
+
+[data-theme="lavender"] .logout_btns:hover {
+  background: linear-gradient(135deg, #5c247a, #42195a); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Ocean Theme - Refreshing blue waters */
+[data-theme="ocean"] .user_popover {
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  color: #0c4a6e;
+  border: 1px solid #38bdf8;
+  box-shadow: 0 12px 30px rgba(14, 165, 233, 0.2);
+}
+
+[data-theme="ocean"] .user_name {
+  color: #0c4a6e;
+  font-weight: 600;
+}
+
+[data-theme="ocean"] .user_email,
+[data-theme="ocean"] .user_role {
+  color: #0369a1;
 }
 
 [data-theme="ocean"] .user_avatar {
-  background: linear-gradient(135deg, #0f2027, #203a43);
-  color: #64b5f6;
-  border: 2px solid #64b5f6;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: #ffffff;
+}
+
+[data-theme="ocean"] .logout_btns {
+  background: linear-gradient(135deg, #075985, #0c4a6e); /* Darker ocean blue gradient */
+  color: white;
+}
+
+[data-theme="ocean"] .logout_btns:hover {
+  background: linear-gradient(135deg, #064c73, #083d59); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Peach Theme - Warm and inviting */
+[data-theme="peach"] .user_popover {
+  background: linear-gradient(135deg, #fff5f5, #fef7f0);
+  color: #7c2d12;
+  border: 1px solid #fdba74;
+  box-shadow: 0 12px 30px rgba(194, 65, 12, 0.2);
+}
+
+[data-theme="peach"] .user_name {
+  color: #7c2d12;
+  font-weight: 600;
+}
+
+[data-theme="peach"] .user_email,
+[data-theme="peach"] .user_role {
+  color: #c2410c;
+}
+
+[data-theme="peach"] .user_avatar {
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+  color: #ffffff;
+}
+
+[data-theme="peach"] .logout_btns {
+  background: linear-gradient(135deg, #d76b4a, #b7543a); /* Darker peach gradient */
+  color: white;
+}
+
+[data-theme="peach"] .logout_btns:hover {
+  background: linear-gradient(135deg, #bf5e41, #a14933); /* Further darkened */
+  transform: translateY(-2px);
+}
+
+/* Enhanced hover effects for all themes */
+[data-theme] .user_popover:hover {
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+[data-theme] .logout_btns:hover {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
 }
 

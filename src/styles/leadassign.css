@@ -319,7 +319,7 @@ background: linear-gradient(135deg, #0d1e9c, #275dbb);
   margin-bottom: -10px;
 }
 
-.lead-info span {
+.admin-lead-info span {
   font-size: 16px;
   color: #28282B;
   margin: 3px 0;
@@ -454,7 +454,7 @@ background: linear-gradient(135deg, #0d1e9c, #275dbb);
   background-color: var(--card-bg);
 }
 
-[data-theme="dark"] .lead-info span,
+[data-theme="dark"] .admin-lead-info span,
 [data-theme="dark"] .lead-source,
 [data-theme="dark"] .lead-assign,
 [data-theme="dark"] .leads-header span {

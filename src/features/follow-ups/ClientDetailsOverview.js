@@ -8,18 +8,6 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailToClients from "../client-details/SendEmailToClients";
-import CallRoundedIcon from '@mui/icons-material/CallRounded';
-import EmailIcon from '@mui/icons-material/Email';
-import CallMadeIcon from '@mui/icons-material/CallMade';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import PersonOffIcon from '@mui/icons-material/PersonOff';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LockPersonIcon from '@mui/icons-material/LockPerson';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -61,26 +49,6 @@ const ClientDetailsOverview = () => {
     return `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
   };
 
-  const contactIcons = {
-    Call: <CallRoundedIcon fontSize="small"/>,
-    Email: <EmailIcon fontSize="small"/>,
-    "Call/Email": <CallMadeIcon fontSize="small"/>,
-  };
-  
-  const followUpIcons = {
-    interested: <ThumbUpAltIcon fontSize="small"/>,
-    appointment: <EventAvailableIcon fontSize="small"/>,
-    "no response": <PersonOffIcon fontSize="small"/>,
-    converted: <CheckCircleIcon fontSize="small"  />,
-    "not interested": <ThumbDownIcon fontSize="small"style={{ marginTop: 4 }}  />,
-    close: <LockPersonIcon fontSize="small"  />,
-  };
-  
-  const ratingIcons = {
-    hot: <LocalFireDepartmentIcon fontSize="small" />,
-    warm: <WbSunnyIcon fontSize="small" />,
-    cold: <AcUnitIcon fontSize="small"  />,
-  };
 
   // Initialize current time properly
   const now = new Date();
@@ -93,13 +61,13 @@ const ClientDetailsOverview = () => {
   const [interactionRating, setInteractionRating] = useState("");
   const [reasonDesc, setReasonDesc] = useState("");
   const [isListening, setIsListening] = useState(false);
-   const [reminderTime, setReminderTime] = useState(getCurrentTime24Hour());
+  const [reminderTime, setReminderTime] = useState(getCurrentTime24Hour());
   const [interactionDate, setInteractionDate] = useState(todayStr);
   const [timeOnly, setTimeOnly] = useState(() => {
     const now = new Date();
     return `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
   });
-  
+
   const [isTimeEditable, setIsTimeEditable] = useState(false);
 
   useEffect(() => {
@@ -517,7 +485,7 @@ const ClientDetailsOverview = () => {
   }, [followUpType, interactionDate, interactionTime]);
 
 
-  return (
+ return (
     <>
       <div className="client-overview-wrapper">
         {/* Client Details */}
@@ -544,52 +512,70 @@ const ClientDetailsOverview = () => {
                   </div>
                 </div>
               </div>
-
               <div className="follow-up-column">
                 <div className="follow-up-box">
-                  <div className="last-follow-up">
-                    <h3>Last Follow-up</h3>
-                    {isLoading ? (
-                      <p>Loading follow-up history...</p>
-                    ) : histories.length > 0 ? (
-                      <div className="followup-entry-horizontal">
-                        <p className="followup-reason">
-                          {histories[0].reason_for_follow_up || "No description available."}
-                        </p>
-                        <strong>
-                          <p className="followup-time">
-                            {new Date(histories[0].follow_up_date).toLocaleDateString()} - {histories[0].follow_up_time}
-                          </p>
-                        </strong>
-                      </div>
-
-                    ) : (
-                      <p>No follow-up history available.</p>
-                    )}
+                  <div className="follow-up-header">
+                    <h3>Follow-up History</h3>
                   </div>
-
-                  {histories.length > 0 && (
-                    <div className="follow-up-history-summary">
-                      <div className="history-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
-                        {histories.slice(1).map((history, index) => (
-                          <div key={index} className="followup-entry-plain">
-                            <p className="followup-reason">{history.reason_for_follow_up}</p>
-                            <p className="followup-time">
-                              {new Date(history.follow_up_date).toLocaleDateString()} - {history.follow_up_time}
+                  {isLoading ? (
+                    <div className="loading-state">
+                      <p>Loading follow-up history...</p>
+                    </div>
+                  ) : histories.length > 0 ? (
+                    <div className="followup-history-list">
+                      {histories.map((history, index) => (
+                        <div
+                          key={index}
+                          className={`followup-entry ${index === 0 ? "latest-followup" : "previous-followup"}`}
+                          style={{
+                            backgroundColor: index === 0 ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
+                            marginBottom: '5px',
+                            padding: '10px',
+                            borderRadius: '5px'
+                          }}
+                        >
+                          <div className="followup-header-info">
+                            <div className="interaction-badges">
+                              <span className="connect-badge">
+                                {history.connect_via || "N/A"}
+                              </span>
+                              <span className="rating-badge">
+                                {history.interaction_rating || "N/A"}
+                              </span>
+                            </div>
+                            <div className="followup-datetime">
+                              <span className="date">
+                                {new Date(history.follow_up_date).toLocaleDateString()}
+                              </span>
+                              <span className="time">{history.follow_up_time}</span>
+                            </div>
+                          </div>
+                          <div className="followup-content">
+                            {index === 0 && (
+                              <span
+                                className="latest-badge"
+                                style={{ marginLeft: "-10px", marginBottom: "5px" }}
+                              >
+                                Latest
+                              </span>
+                            )}
+                            <p className="followup-reason">
+                              {history.reason_for_follow_up || "No description available."}
                             </p>
                           </div>
-                        ))}
-
-                      </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <p>No follow-up history available.</p>
                     </div>
                   )}
                 </div>
-
               </div>
             </div>
           </div>
         </div>
-
         {/* Client Interaction */}
         <div className="client-interaction-container">
           <div className="interaction-form">
@@ -607,7 +593,6 @@ const ClientDetailsOverview = () => {
                       onChange={() => setContactMethod(method)}
                     />
                     <span className="radio-label">
-                    {contactIcons[method]}
                       {method.charAt(0).toUpperCase() + method.slice(1)}
                     </span>
                   </label>
@@ -633,9 +618,7 @@ const ClientDetailsOverview = () => {
                       checked={followUpType === type}
                       onChange={() => setFollowUpType(type)}
                     />
-                    <span className="radio-label">
-                    {followUpIcons[type]}
-                      {type.replace("-", " ")}</span>
+                    <span className="radio-label">{type.replace("-", " ")}</span>
                   </label>
                 ))}
               </div>
@@ -653,7 +636,6 @@ const ClientDetailsOverview = () => {
                       onChange={() => setInteractionRating(rating)}
                     />
                     <span className="radio-label">
-                    {ratingIcons[rating]}
                       {rating.charAt(0).toUpperCase() + rating.slice(1)}
                     </span>
                   </label>

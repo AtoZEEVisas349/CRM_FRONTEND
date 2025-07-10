@@ -25,6 +25,7 @@ const CustomerTable = () => {
 
   useCopyNotification(createCopyNotification, fetchNotifications);
 
+
   useEffect(() => {
     const fetchAndSetCustomers = async () => {
       try {
@@ -128,6 +129,13 @@ const CustomerTable = () => {
   }, [filteredCustomers]);
 
   const customerCount = filteredCustomers.length;
+  const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 10;
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentCustomers = filteredCustomers.slice(indexOfFirstItem, indexOfLastItem);
+
+const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
 
   return (
     <>
@@ -141,47 +149,66 @@ const CustomerTable = () => {
         {convertedClientsLoading ? (
           <p>Loading customers...</p>
         ) : filteredCustomers.length > 0 ? (
-          <div className="scrollable-leads-container">
-            <div className="country_container">
-              {filteredCustomers.map((customer, index) => (
-                <div key={index} className="country_cards">
-                  <div className="country_name customer-card">
-                    <div className="customer-header">
-                      <div className="customer-name-section">
-                        <div className="col checkbox-col">
-                          <input type="checkbox" className="checkbox" />
-                        </div>
-                        <div className="col name-col">
-                          <h3>{customer.name || "N/A"}</h3>
-                        </div>
-                        <div className="col phone-col">
-                          <p>Phone: {customer.phone || "N/A"}</p>
-                        </div>
-                        <div className="col email-col">
-                          <p>Email: {customer.email || "N/A"}</p>
-                        </div>
-                        <div className="col last-contacted-col">
-                          <p>Last contacted: {customer.last_contacted || "N/A"}</p>
-                        </div>
-                      </div>
-                      <div className="customer-actions">
-                        <button
-                          className="follow-history-btn"
-                          onClick={() => handleViewHistory(customer)}
-                          title="View Follow-up History"
-                        >
-                          <span className="history-icon">
-                            <FaPlus />
-                          </span>
-                          Follow History
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="scrollable-leads-container">
+ <table className="customer-table">
+  <thead>
+    <tr>
+      <th>Select</th>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Last Contacted</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {currentCustomers.map((customer, index) => (
+      <tr key={index}>
+        <td><input type="checkbox" /></td>
+        <td>{customer.name || "N/A"}</td>
+        <td>{customer.phone || "N/A"}</td>
+        <td>{customer.email || "N/A"}</td>
+        <td>{customer.last_contacted || "N/A"}</td>
+        <td>
+          <button
+            className="follow-history-btn"
+            onClick={() => handleViewHistory(customer)}
+            title="View Follow-up History"
+          >
+            <FaPlus /> Follow History
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+
+  {/* ✅ Add pagination row */}
+  <tfoot>
+    <tr>
+      <td colSpan="6" style={{ textAlign: "center", padding: "12px" }}>
+        <div className="c-pagination">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <span style={{ margin: "0 10px" }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+
         ) : (
           <p>No customers available.</p>
         )}

@@ -447,7 +447,7 @@ const chatbotHeaderRef = useRef(null);
                         </div>
                       </div>
                       <button
-                        className="logout_btn"
+                        className="logout_btns"
                         onClick={handleLogout}
                         disabled={isLoggingOut}
                         aria-label={

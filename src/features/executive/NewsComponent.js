@@ -23,6 +23,22 @@ const NewsComponent = () => {
         // Modify links to open in a new tab
         html = html.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ');
   
+// Inject CSS to hide scrollbars but allow scrolling
+html = html.replace(
+  /<head>/,
+  `<head><style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: auto;
+      scrollbar-width: none; /* Firefox */
+    }
+    ::-webkit-scrollbar {
+      display: none; /* Chrome, Safari */
+    }
+  </style>`
+);
         setNewsContent(html);
         setIsLoading(false);
       } catch (error) {
@@ -48,6 +64,7 @@ const NewsComponent = () => {
             srcDoc={newsContent}
             width="100%"
             height="800px"
+            style={{ border: "none" }} // optional: to clean up edges
           />
         )}
       </div>

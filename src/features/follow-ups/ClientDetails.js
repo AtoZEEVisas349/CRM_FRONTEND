@@ -6,9 +6,14 @@ const ClientDetails = ({ selectedClient, onClose }) => {
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hour, setHour] = useState("12");
-const [minute, setMinute] = useState("00");
-const [ampm, setAmPm] = useState("AM");
+  const [minute, setMinute] = useState("00");
+  const [ampm, setAmPm] = useState("AM");
 
+  // Helper function to count words in a string
+  const countWords = (text) => {
+    if (!text) return 0;
+    return text.trim().split(/\s+/).length;
+  };
 
   useEffect(() => {
     if (selectedClient) {
@@ -71,41 +76,88 @@ const [ampm, setAmPm] = useState("AM");
     <div className="client-details-container">
       <h3 className="client-details-title">Client Details</h3>
       <div className="client-details">
-        <div className="client-info">
+        <div className="client-info-container">
           <div className="user-icon-bg">
             <div className="user-icon">👤</div>
           </div>
           <div className="client-text">
             <h4>{selectedClient.freshLead?.name || "No Name"}</h4>
-            <div className="lead-info">
-              <span className="lead-badge">Lead</span>
-            </div>
+          </div>
+          <div className="client-other-details">
+           <div>DOB:<span></span></div>
+           <div>Country:<span></span></div>
+           <div>State:<span></span></div>
           </div>
         </div>
 
-        <div className="last-followup">
+        <div className="client-detail-last-followup">
           <h4>Last Follow-ups</h4>
-          {loading ? (
-            <p>Loading...</p>
-          ) : recentFollowUps.length > 0 ? (
-            recentFollowUps.map((followUp, index) => (
-              <div key={followUp.id || index} className="followup-entry-horizontal">
-              <p className="followup-reason">{followUp.reason_for_follow_up || "No description available."}</p>
-              <strong>
-              <p className="followup-time">
-                {new Date(followUp.follow_up_date).toLocaleDateString()} - {followUp.follow_up_time}
-              </p>
-              </strong>
-            </div>
-            
-            ))
-            
-          ) : (
-            <p>No previous follow-ups available.</p>
-          )}
-        </div>
+          <div className="client-detail-last-followup-list">
+            {loading ? (
+              <p>Loading...</p>
+            ) : recentFollowUps.length > 0 ? (
+              recentFollowUps.map((followUp, index) => (
+                <div
+                  key={followUp.id || index}
+                  className={`followup-entry-card ${
+                    index === 0 ? "latest-followup" : ""
+                  }`}
+                >
+                  <div className="followup-content-wrapper">
+                    {/* Header with Date/Time - Fixed height container */}
+                    <div className="followup-header">
+                      <div className="followup-date-time">
+                        <span className="follow-up-date">
+                          {new Date(followUp.follow_up_date).toLocaleDateString()}
+                        </span>
+                        <span className="followup-time">
+                          {followUp.follow_up_time}
+                        </span>
+                      </div>
+                      {/* Latest badge positioned absolutely to not affect layout */}
+                      <div className="latest-badge-container">
+                        {index === 0 && (
+                          <span className="status-badge latest-badge">Latest</span>
+                        )}
+                      </div>
+                    </div>
 
-        <div className="close-btn" onClick={onClose}>✖</div>
+                    {/* Rating and Connect Via badges - moved below header */}
+                    <div className="followup-tags">
+                      <span
+                        className={`rating-badge rating-${
+                          followUp.interaction_rating?.toLowerCase() || "default"
+                        }`}
+                      >
+                        Rating: {followUp.interaction_rating || "N/A"}
+                      </span>
+                      <span className="connect-via-badge">
+                        Connected Via: {followUp.connect_via || "N/A"}
+                      </span>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="followup-main-content">
+                      <div className="followup-reason-container">
+                        <p
+                          className={`followup-reason ${
+                            countWords(followUp.reason_for_follow_up) > 40 ? "scrollable" : ""
+                          }`}
+                        >
+                          {followUp.reason_for_follow_up || "No description available."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No previous follow-ups available.</p>
+            )}
+          </div>
+
+          <div className="close-btn" onClick={onClose}>✖</div>
+        </div>
       </div>
     </div>
   );

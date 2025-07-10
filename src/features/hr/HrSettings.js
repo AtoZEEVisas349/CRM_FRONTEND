@@ -8,6 +8,7 @@ import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
 import { Alert, soundManager } from "../modal/alert";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const HrSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -323,7 +324,7 @@ const HrSettings = () => {
               <div className="form-group full profile-pic">
                 <label>Your Photo</label>
                 <div className="pic-wrapper">
-                  <img src="https://via.placeholder.com/80" alt="Profile" />
+                <AccountCircleIcon style={{width:"80px", height:"80px"}} />
                   <div className="pic-actions">
                     <button type="button">Delete</button>
                     <button type="button">Update</button>

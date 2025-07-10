@@ -712,7 +712,7 @@ input:checked + .slider {
 
 /* Make form input text black inside settings in dark mode */
 [data-theme="dark"] .admin-settings .form-group input {
-  color: black !important;
+  color: #fff !important;
 }
 [data-theme="dark"] .admin-settings input::placeholder,
 [data-theme="dark"] .admin-settings textarea::placeholder {

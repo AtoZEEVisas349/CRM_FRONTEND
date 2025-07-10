@@ -1,9 +1,7 @@
-
-
 /* customer.css */
 
 /* Reset and Base Styles */
-* {
+•⁠  ⁠{
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -13,8 +11,8 @@
   margin-left: 0; /* Respect sidebar width */
   width: calc(100%); /* Full width minus sidebar */
   min-height: 100vh;
-  padding: 20px;
-  background-color: var(--bg-color, #ffffff);
+  padding: 10px;
+  background-color: var(--bg-color, #f9fafb);
   color: var(--text-color, #333);
   transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
   overflow-y: auto;
@@ -24,6 +22,7 @@
 .customer-leads-page {
   width: 100%;
   max-width: 100%;
+  
 }
 
 .scrollable-leads-container {
@@ -151,7 +150,6 @@
 
 .Total_leads {
   font-size: 18px;
-  margin-bottom: 15px;
   color: var(--text-color, #333);
 }
 
@@ -160,10 +158,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  padding: 10px;
-  background: #f0f0f0;
+  padding-top: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px var(--shadow-light, rgba(0, 0, 0, 0.1));
 }
 
 .button {
@@ -801,4 +797,77 @@
 [data-theme="ocean"] .h-followup-entry-card {
   background: white;
 }
+[data-theme="dark"] .customer-table {
+  background-color: black;
+  color:white;
+}
+[data-theme="dark"] .customer-table th {
+  background-color: black;
+  color:black;
+}
+[data-theme="green"] .customer-table th {
+ background: #2e7d32;
+ color:white;
+}
+[data-theme="blue"] .customer-table th {
+ background: rgb(114, 114, 214);
+ color:white;
+}
+[data-theme="red"] .customer-table th {
+ background: #c8c8f4;
+ color:black;
+}
+[data-theme="brown"] .customer-table th {
+ background: rgb(151, 103, 74);
+ color:white;
+}
+[data-theme="lavender"] .customer-table th {
+ background: #9d8ae3;
+ color:black;
+}
+[data-theme="ocean"] .customer-table th {
+ background: #4b6cb7;
+ color:black;
+}
+.customer-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 16px;
+  background-color: #ffffff;
+}
+[data-theme="light"] .customer-table th{
+  background: #e3e2e2  ;
+}
+.customer-table th,
+.customer-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
 
+.customer-table th {
+  background-color: #f7f7f7;
+}
+
+.c-pagination {
+  display: flex;
+  justify-content: right;
+  gap: 12px;
+}
+
+.c-pagination button {
+  padding: 6px 14px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.c-pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

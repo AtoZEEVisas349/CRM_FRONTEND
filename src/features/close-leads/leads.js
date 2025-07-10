@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
@@ -112,6 +111,15 @@ const Leads = ({searchQuery}) => {
   const handleCloseModal = () => {
     setSelectedLead(null);
   };
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 10;
+
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentLeads = filteredLeads.slice(indexOfFirstItem, indexOfLastItem);
+
+const totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
+
 
   return (
     <>
@@ -126,36 +134,62 @@ const Leads = ({searchQuery}) => {
           <h4 className="Total_leads">Total close leads: {filteredLeads.length}</h4>
           {closeLeadsLoading ? (
             <p>Loading close leads...</p>
-          ) : filteredLeads.length > 0 ? (
+          ) : currentLeads.length > 0 ? (
             <div className="scrollable-leads-container">
-            <div className="country_container">
-              {filteredLeads.map((lead, index) => (
-                <div key={index} className="country_cards">
-                  <div className="country_name">
-                    <h3>{lead.name || "Unnamed Lead"}</h3>
-                    <p>Phone: {lead.phone}</p>
-                    <p>Email: {lead.email || "No Email"}</p>
-                    <p>Created At: {new Date(lead.createdAt).toLocaleDateString()}</p>
-                    {/* {lead.freshLead && (
-                      <div className="fresh_lead_details">
-                        <h4>Fresh Lead Details:</h4>
-                        <p>Name: {lead.freshLead.name}</p>
-                        <p>Phone: {lead.freshLead.phone}</p>
-                        <p>Email: {lead.freshLead.email || "No Email"}</p>
-                      </div>
-                    )} */}
-                    <button
-                      className="follow-history-btn"
-                      onClick={() => handleViewHistory(lead)}
-                      title="View Follow-up History"
-                    >
-                      <span className="history-icon"><FaPlus /></span>
-                      Follow History
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+         <table className="c-lead-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Created At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {currentLeads.map((lead, index) => (
+      <tr key={index}>
+        <td>{lead.name || "Unnamed Lead"}</td>
+        <td>{lead.phone || "N/A"}</td>
+        <td>{lead.email || "No Email"}</td>
+        <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button
+            className="follow-history-btn"
+            onClick={() => handleViewHistory(lead)}
+            title="View Follow-up History"
+          >
+            <FaPlus /> Follow History
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colSpan="5" style={{ textAlign: "right", padding: "10px" }}>
+        <div className="close-pagination">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <span style={{ margin: "0 10px" }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
           </div>
           ) : (
             <p>No close leads found.</p>

@@ -1,5 +1,4 @@
 
-
 /* Sidebar.css */
 
 .sidebar_nav {
@@ -105,17 +104,14 @@
     left: 100%;
   }
 }
-
-/* Loading Text Animation */
 .logout-text {
   position: relative;
   display: inline-block;
+  margin-left: 20px;
 }
-
 .logout_btn:disabled .logout-text {
   animation: fadeInOut 2s ease-in-out infinite;
 }
-
 @keyframes fadeInOut {
 
   0%,

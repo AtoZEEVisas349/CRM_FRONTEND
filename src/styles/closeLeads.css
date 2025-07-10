@@ -2,8 +2,12 @@
 
 /* closeLeads */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+.close-leads-container{
+  background-color: var(--bg-color);
+   min-height: 100vh;
+     overflow-y: auto;
+}
 .close-leads-page {
-  padding:0;
   background-color: var(--bg-color);
   color: var(--text-color);
   width: calc(100% - 40px);
@@ -11,6 +15,7 @@
   height:100vh;
   margin-top: 10px;
   margin-left: 20px;
+   overflow-y: auto;
 }
 html, body, #root {
   height: 100%;
@@ -229,7 +234,7 @@ select:hover {
 
 /*-------------------------------------Pink-----------------------------*/
 [data-theme="red"] .close-leads-page{
-  --bg-color: #f3daf3;
+ 
  --text-color: #3c6ba9;
  height:100vh;
 }[data-theme="red"] .country_name{
@@ -251,7 +256,7 @@ select:hover {
 }
 /*-------------------------------------Blue-----------------------------*/
 [data-theme="blue"] .close-leads-page {
-  background-color: rgb(186, 186, 232);
+
   height:100vh;
 }[data-theme="blue"] .country_name{
   color: black;
@@ -273,7 +278,7 @@ select:hover {
 }
 /*-------------------------------------Brown-----------------------------*/
 [data-theme="brown"] .close-leads-page{
-  --bg-color: #d9cac4;
+
   height:100vh;
 }
 
@@ -282,7 +287,7 @@ select:hover {
 }
 /*-------------------------------------Green-----------------------------*/
 [data-theme="green"] .close-leads-page {
-  background-color: #e8f5e9 !important; /* Light green background */
+ /* Light green background */
   min-height: 100vh; /* Ensure it covers full viewport height */
 }
 [data-theme="green"] .leads_page_wrapper {
@@ -332,7 +337,7 @@ select:hover {
 
 /*----------------------------------Lavender--------------------------*/
 [data-theme="lavender"] .close-leads-page {
-  --bg-color: #f5f4fa;
+
   --text-color: #2c2f4c;
   height: 100vh;
 }
@@ -382,7 +387,7 @@ select:hover {
 
 /*----------------------------------Ocean Blue Mist--------------------------*/
 [data-theme="ocean"] .close-leads-page {
-  --bg-color: #e8f6fc;
+
   --text-color: #1a3d5d;
   height: 100vh;
 }
@@ -425,4 +430,127 @@ select:hover {
 
 [data-theme="ocean"] .Total_leads {
   color: #1a3d5d !important;
+}
+.rejected-leads-table {
+ width: 100%;
+  border-collapse: separate; /* important to allow border radius */
+  border-spacing: 0; /* removes spacing between cells */
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.rejected-leads-table th{
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+
+}
+
+.rejected-leads-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.rejected-leads-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.r-follow-history-btn {
+  background: #1e2176;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.r-follow-history-btn:hover {
+  background-color: #218838;
+}
+
+.c-lead-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 16px;
+  background-color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.c-lead-table th,
+.c-lead-table td {
+  padding: 12px 16px;
+
+  text-align: left;
+}
+
+.c-lead-table th {
+  background-color: #dedbdb;
+  font-weight: 600;
+}
+
+.c-lead-table tr:hover {
+  background-color: #f9f9f9;
+}
+.close-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.close-pagination button {
+  padding: 6px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.close-pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+[data-theme="dark"] .c-lead-table {
+  background-color: black;
+  color:white;
+}
+[data-theme="dark"] .c-lead-table th {
+  background-color: black;
+  color:white;
+}
+[data-theme="dark"] .c-lead-table tr:hover {
+  background-color: black;
+  color:white;
+}
+[data-theme="green"] .c-lead-table th {
+ background: #2e7d32;
+ color:white;
+}
+[data-theme="blue"] .c-lead-table th {
+ background: rgb(114, 114, 214);
+ color:white;
+}
+[data-theme="red"] .c-lead-table th {
+ background: #c8c8f4;
+ color:black;
+}
+[data-theme="brown"] .c-lead-table th {
+ background: rgb(151, 103, 74);
+ color:white;
+}
+[data-theme="lavender"] .c-lead-table th {
+ background: #9d8ae3;
+ color:black;
+}
+[data-theme="ocean"] .c-lead-table th {
+ background: #4b6cb7;
+ color:black;
 }

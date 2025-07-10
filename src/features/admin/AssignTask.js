@@ -302,10 +302,21 @@ const neutralTextStyle = {
             white-space: nowrap;
           }
 
-          .today-btn:hover {
+        .today-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
           }
+            [data-theme="dark"] .form-input::placeholder {
+             color: rgba(240, 240, 240, 0.7);
+           }
+
+          [data-theme="light"] .form-input::placeholder {
+               color: rgba(0, 0, 0, 0.6);
+          }
+
+          .form-input::placeholder {
+           transition: color 0.3s ease;
+           }
         `}
       </style>
       

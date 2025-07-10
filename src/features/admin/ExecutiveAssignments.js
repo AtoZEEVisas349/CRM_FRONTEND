@@ -407,7 +407,7 @@ const ExecutiveAssignments = () => {
                       onChange={() => handleLeadSelection(lead.id)}
                     />
                     <span className="container-icon">👤</span>
-                    <div className="lead-info">
+                    <div className="admin-lead-info">
                       <span>Name: {lead.name}</span>
                       <span>Email: {lead.email}
                         {!expandedLeads[lead.id] && (
