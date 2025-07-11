@@ -884,124 +884,126 @@ const ClientOverview = () => {
       </div>
 
       <div className="followup-detail-theme">
-        <div className="followup-detail-container">
-          <div className="follow-up-reason">
-            <h3>Reason for Follow-Up</h3>
-            <div className="interaction-field">
-              <div className="textarea-with-speech">
-                <textarea
-                  value={reasonDesc}
-                  onChange={(e) => setReasonDesc(e.target.value)}
-                  className="interaction-textarea"
-                  placeholder="Type or speak your follow-up reason using the mic"
-                />
-                <button
-                  type="button"
-                  className={`speech-btn ${isListening ? "listening" : ""}`}
-                  onClick={toggleListening}
-                  aria-label={isListening ? "Stop recording" : "Start recording"}
-                >
-                  {isListening ? "⏹" : "🎤"}
-                </button>
-              </div>
+        <>
+          <div className="followup-detail-container">
+            <div className="follow-up-reason">
+              <h3>Reason for Follow-Up</h3>
+              <div className="interaction-field">
+                <div className="textarea-with-speech">
+                  <textarea
+                    value={reasonDesc}
+                    onChange={(e) => setReasonDesc(e.target.value)}
+                    className="interaction-textarea"
+                    placeholder="Type or speak your follow-up reason using the mic"
+                  />
+                  <button
+                    type="button"
+                    className={`speech-btn ${isListening ? "listening" : ""}`}
+                    onClick={toggleListening}
+                    aria-label={isListening ? "Stop recording" : "Start recording"}
+                  >
+                    {isListening ? "⏹" : "🎤"}
+                  </button>
+                </div>
 
-              <div className="interaction-datetime" style={{ marginTop: "20px" }}>
-                <h4>Set Follow-up Reminder:</h4>
-                <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                  {/* <div>
-                    <label style={{ display: "block" }}>Date:</label>
-                    <input
-                      type="date"
-                      value={interactionDate}
-                      min={minDate}
-                      max={maxDate}
-                      onChange={(e) => setInteractionDate(e.target.value)}
-                      style={{ padding: "8px", borderRadius: "4px" }}
-                    />
-                  </div> */}
-
-                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" , marginTop: "5px"}}>
-                    {/* TIME FIELD */}
-                    {/* <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}> */}
-                      {/* <div>
-                        <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            border: "1px solid #ccc",
-                            borderRadius: "6px",
-                            padding: "0 10px",
-                            backgroundColor: "#fff",
-                            height: "38px"
-                          }}
-                        >
+                <div className="interaction-datetime" style={{ marginTop: "20px" }}>
+                  {followUpType === "appointment" && (
+                    <>
+                      <h4>Interaction Schedule and Time</h4>
+                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                        <div>
+                          <label style={{ display: "block" }}>Date:</label>
                           <input
-                            type="time"
-                            value={timeOnly}
-                            onChange={(e) => setTimeOnly(e.target.value)}
-                            style={{ border: "none", outline: "none", width: "100px" }}
+                            type="date"
+                            value={interactionDate}
+                            min={minDate}
+                            max={maxDate}
+                            onChange={(e) => setInteractionDate(e.target.value)}
+                            style={{ padding: "8px", borderRadius: "4px" }}
                           />
-                          {/* Optional: Add a "now" button */}
-                          {/* <button
-                            type="button"
-                            onClick={handleUseCurrentTime}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              fontSize: "12px",
-                              color: "#007bff",
-                              padding: "2px 4px",
-                              borderRadius: "3px",
-                              marginLeft: "4px"
-                            }}
-                            title="Use current time"
-                          >
-                            Now
-                          </button> */}
-                        {/* </div> 
-                      </div> */}
-                    {/* </div> */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
-                      <div
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+                          <div>
+                            <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                border: "1px solid #ccc",
+                                borderRadius: "6px",
+                                padding: "0 10px",
+                                backgroundColor: "#fff",
+                                height: "38px"
+                              }}
+                            >
+                              <input
+                                type="time"
+                                value={timeOnly}
+                                onChange={(e) => setTimeOnly(e.target.value)}
+                                style={{ border: "none", outline: "none", width: "100px" }}
+                              />
+                              <button
+                                type="button"
+                                onClick={handleUseCurrentTime}
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  fontSize: "12px",
+                                  color: "#007bff",
+                                  padding: "2px 4px",
+                                  borderRadius: "3px",
+                                  marginLeft: "4px"
+                                }}
+                                title="Use current time"
+                              >
+                                Now
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
+                    <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        padding: "0 10px",
+                        backgroundColor: "#fff",
+                        height: "38px",
+                        width: "150px"
+                      }}
+                    >
+                      <input
+                        type="time"
+                        value={reminderTime}
+                        onChange={(e) => setReminderTime(e.target.value)}
+                        style={{ border: "none", outline: "none", width: "100px" }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleScheduleReminder}
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          border: "1px solid #ccc",
-                          borderRadius: "6px",
-                          padding: "0 10px",
-                          backgroundColor: "#fff",
-                          height: "38px",
-                          width: "150px"
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "12px",
+                          color: "#007bff",
+                          padding: "2px 4px",
+                          borderRadius: "3px",
+                          marginLeft: "4px"
                         }}
-                      > 
-                        <input
-                          type="time"
-                          value={reminderTime}
-                          onChange={(e) => setReminderTime(e.target.value)}
-                          style={{ border: "none", outline: "none", width: "100px" }}
-                        /> 
-                         <button
-                          type="button"
-                          onClick={handleScheduleReminder}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            fontSize: "12px",
-                            color: "#007bff",
-                            padding: "2px 4px",
-                            borderRadius: "3px",
-                            marginLeft: "4px"
-                          }}
-                          title="Schedule Reminder"
-                        >
-                          Set
-                        </button>
-                       </div>
+                        title="Schedule Reminder"
+                      >
+                        Set
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1032,7 +1034,7 @@ const ClientOverview = () => {
                           ? "#28a745"
                           : followUpType === "close"
                             ? "#dc3545"
-                            : "#17a2b8", // for "appointment"
+                            : "#17a2b8",
                       color: "white",
                       padding: "10px 20px",
                       borderRadius: "5px",
@@ -1056,7 +1058,7 @@ const ClientOverview = () => {
               </div>
             </div>
           </div>
-        </div>
+        </>
       </div>
     </div>
   );
