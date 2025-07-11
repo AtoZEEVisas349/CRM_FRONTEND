@@ -570,7 +570,7 @@ const ClientDetailsOverview = () => {
                               <span className="connect-badge">
                                 {history.connect_via || "N/A"}
                               </span>
-                              <span className="rating-badge">
+                              <span className="c-rating-badge">
                                 {history.interaction_rating || "N/A"}
                               </span>
                             </div>
