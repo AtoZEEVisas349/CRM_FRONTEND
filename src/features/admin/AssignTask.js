@@ -317,6 +317,9 @@ const neutralTextStyle = {
           .form-input::placeholder {
            transition: color 0.3s ease;
            }
+            [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1); 
+            }
         `}
       </style>
       

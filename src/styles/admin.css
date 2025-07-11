@@ -2993,7 +2993,9 @@ body.sidebar-collapsed .admin-main-content {
   box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
   transition: all 0.3s ease;
 }
-
+[data-theme="dark"] .no-meet{
+  color: #fff;
+}
 .logout_btn:hover {
   transform: translateY(-2px) !important;
   background: linear-gradient(135deg, #7b1fa2, #1976d2) !important;

@@ -146,6 +146,7 @@ body {
   color: var(--text-color);
   padding: 20px;
   border-radius: 12px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -284,7 +285,7 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   /* Vibrant dark gradient */
   color: #e0e0ff;
-  /* Soft lavender text */
+  cursor: pointer;
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -704,7 +705,7 @@ body {
   flex: 1;
   background: linear-gradient(135deg, #e7c5cf, #f78fd6, rgb(147, 11, 177));
   color: white;
-  /* Light text for contrast */
+  cursor: pointer;
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -754,7 +755,7 @@ body {
   flex: 1;
   background: linear-gradient(135deg, rgb(31, 31, 109), rgb(87, 87, 164), rgb(141, 105, 80));
   color: #f0f0f0;
-  /* Light text for contrast */
+  cursor: pointer;
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -819,7 +820,7 @@ body {
   flex: 1;
   background: linear-gradient(135deg, #754632, rgb(125, 188, 187));
   color: #f0f0f0;
-  /* Light text for contrast */
+  cursor: pointer;
   padding: 20px;
   border-radius: 12px;
   display: flex;
@@ -853,16 +854,14 @@ body {
   transition: all 0.4s ease;
   box-shadow: 0 4px 16px rgba(0, 255, 128, 0.08);
   color: #ffffff;
-  /* Changed from var() for better contrast */
+  cursor: pointer;
   display: flex;
   width: 100%;
   flex-direction: column;
   justify-content: space-between;
   min-height: 180px;
   position: relative;
-  /* Added for icon positioning */
   overflow: hidden;
-  /* Ensures rounded corners clip content */
 }
 
 
@@ -1062,6 +1061,7 @@ body {
   background: linear-gradient(135deg, #8577a2, #b289b8); /* muted lavender to soft purple */
   color: #ffffff;
   padding: 20px;
+  cursor: pointer;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -1097,6 +1097,7 @@ body {
   padding: 20px;
   border-radius: 12px;
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   position: relative;
   transition: transform 0.3s ease-in-out;
@@ -1188,6 +1189,7 @@ body {
   padding: 20px;
   border-radius: 12px;
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   position: relative;
   transition: transform 0.3s ease-in-out;

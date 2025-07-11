@@ -109,7 +109,7 @@ const Meetings = ({ selectedExecutiveId }) => {
     <div className="meetings-container">
       <h3 className="chart-title">{getTitle()}</h3>
       {meetingsCount === 0 ? (
-        <div>No meetings scheduled.</div>
+        <div className="no-meet">No meetings scheduled.</div>
       ) : (
         meetings.map((meeting, index) => (
           <div

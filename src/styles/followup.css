@@ -354,13 +354,6 @@ label {
   word-break: break-word;
 }
 
-.followup-time {
-  font-size: 13px;
-  color: #333333;
-  text-align: right;
-  font-style: italic;
-}
-
 .last-review {
   padding: 12px;
   background: var(--card-bg);
@@ -1159,8 +1152,8 @@ h6 {
 .followup-time {
   font-size: 12px;
   color: #64748b;
-  background: #f1f5f9;
   padding: 0px 0px;
+  text-align: right;
   border-radius: 4px;
 }
 
@@ -1570,14 +1563,6 @@ h6 {
   font-size: 14px;
   font-weight: 600;
   color: #1e293b;
-}
-
-.followup-time {
-  font-size: 12px;
-  color: #64748b;
-  background: #f1f5f9;
-  padding: 0px 0px;
-  border-radius: 4px;
 }
 
 .latest-badge {

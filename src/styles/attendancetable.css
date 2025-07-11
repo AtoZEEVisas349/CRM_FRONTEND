@@ -487,7 +487,9 @@
   background: #2a2a40 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
-
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); 
+}
 /* Table wrapper dark background */
 [data-theme="dark"] .table-wrapper,
 .dark-mode .table-wrapper {
