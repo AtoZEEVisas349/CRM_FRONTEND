@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import TimePicker from "react-time-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -214,32 +213,6 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
             </div>
             {errors.interactionRating && <span className="error-text">{errors.interactionRating}</span>}
           </div>
-          
-          <div className="form-group-horizontal">
-            <div className="form-subgroup">
-              <label>Interaction Date</label>
-              <input
-                type="date"
-                value={interactionDate}
-                onChange={(e) => setInteractionDate(e.target.value)}
-                className="form-input"
-                required
-              />
-              {errors.interactionDate && <span className="error-text">{errors.interactionDate}</span>}
-            </div>
-            <div className="form-subgroup">
-              <label>Interaction Time</label>
-              <TimePicker
-                onChange={setInteractionTime}
-                value={interactionTime}
-                format="hh:mm a"
-                disableClock={false}
-                clearIcon={null}
-                className="form-time-picker"
-              />
-            </div>
-          </div>
-
           <div className="form-actions">
             <button type="submit" className="submit-btn">
               {followUpType === "converted" ? "Convert Lead" :

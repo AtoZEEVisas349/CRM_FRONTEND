@@ -653,10 +653,31 @@ export const sendEodReport = async ({  executiveId,executiveName,email,fields,st
   }
 };
 export const createExecutiveAPI = async (executiveData) => {
-  const response = await apiService.post("/create-exec", executiveData, {
-  
-  });
+  const response = await apiService.post("/create-executive", executiveData);
   return response.data;
+};
+
+
+// Add verifyExecutiveOTP function
+export const verifyExecutiveOTP = async (email, otp) => {
+  try {
+    const response = await apiService.post("/verify-otp", { email, otp });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error verifying OTP:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// ✅ Resend OTP for Executive
+export const resendExecutiveOtp = async (email) => {
+  try {
+    const response = await apiService.post("/resend-otp", { email });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error resending OTP:", error.response?.data || error.message);
+    throw error;
+  }
 };
 export const fetchAllClientLeads = async () => {
   try {

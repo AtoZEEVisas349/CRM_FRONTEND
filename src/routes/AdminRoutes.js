@@ -15,6 +15,7 @@ import ExecutiveAssignments from "../features/admin/ExecutiveAssignments";
 import Messages from "../features/Messaging/Messages";
 import FullReport from "../features/admin/FullReport";
 import Hierarchy from "../features/admin/Hierarchy";
+import Verify from "../features/verification/Verify";
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -33,6 +34,8 @@ const AdminRoutes = () => {
         <Route path="executive-attendance" element={<AttendanceTable />} />
         <Route path="full-report" element={<FullReport />} />
         <Route path="heirarchy" element={<Hierarchy/>}/>
+        <Route path="verify" element={<Verify/>}/>
+
       </Route>
     </Routes>
   );

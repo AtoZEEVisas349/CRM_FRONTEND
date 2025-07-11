@@ -31,7 +31,7 @@ function convertTo24HrFormat(timeStr) {
 }
 
 const ClientOverview = () => {
-  
+
   const { clientId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const ClientOverview = () => {
 
   useCopyNotification(createCopyNotification, fetchNotifications);
 
-    const getCurrentTime24Hour = () => {
+  const getCurrentTime24Hour = () => {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
@@ -95,27 +95,27 @@ const ClientOverview = () => {
   };
 
   const contactIcons = {
-    Call: <CallRoundedIcon fontSize="small"/>,
-    Email: <EmailIcon fontSize="small"/>,
-    "Call/Email": <CallMadeIcon fontSize="small"/>,
+    Call: <CallRoundedIcon fontSize="small" />,
+    Email: <EmailIcon fontSize="small" />,
+    "Call/Email": <CallMadeIcon fontSize="small" />,
   };
-  
+
   const followUpIcons = {
-    interested: <ThumbUpAltIcon fontSize="small"/>,
-    appointment: <EventAvailableIcon fontSize="small"/>,
-    "no response": <PersonOffIcon fontSize="small"/>,
-    converted: <CheckCircleIcon fontSize="small"  />,
-    "not interested": <ThumbDownIcon fontSize="small" style={{ marginTop: 4 }}  />,
-    close: <LockPersonIcon fontSize="small"  />,
+    interested: <ThumbUpAltIcon fontSize="small" />,
+    appointment: <EventAvailableIcon fontSize="small" />,
+    "no response": <PersonOffIcon fontSize="small" />,
+    converted: <CheckCircleIcon fontSize="small" />,
+    "not interested": <ThumbDownIcon fontSize="small" style={{ marginTop: 4 }} />,
+    close: <LockPersonIcon fontSize="small" />,
   };
-  
+
   const ratingIcons = {
     hot: <LocalFireDepartmentIcon fontSize="small" />,
     warm: <WbSunnyIcon fontSize="small" />,
-    cold: <AcUnitIcon fontSize="small"  />,
+    cold: <AcUnitIcon fontSize="small" />,
   };
 
-  
+
   const convertTo12Hour = (time24h) => {
     let [hours, minutes] = time24h.split(':').map(Number);
     const amPm = hours >= 12 ? 'PM' : 'AM';
@@ -145,7 +145,7 @@ const ClientOverview = () => {
   const interactionTime = useMemo(() => {
     return `${timeOnly}:00`;
   }, [timeOnly]);
-   
+
 
   const minDate = useMemo(() => todayStr, []);
   const maxDate = useMemo(() => {
@@ -154,7 +154,7 @@ const ClientOverview = () => {
     return d.toISOString().split("T")[0];
   }, []);
 
-  
+
   const minTime = interactionDate === minDate ? `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}` : "00:00";
 
   const clientFields = [
@@ -414,48 +414,48 @@ const ClientOverview = () => {
   };
 
   const handleScheduleReminder = async () => {
-      const freshLeadId =
-        clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
-  
-      if (!freshLeadId || !clientInfo.name || !interactionDate || !reminderTime) {
-        return Swal.fire({
-          icon: "error",
-          title: "Missing Information",
-          text: "Please ensure all required fields (client name, date, and time) are filled.",
-        });
+    const freshLeadId =
+      clientInfo.fresh_lead_id || clientInfo.freshLeadId || clientInfo.id;
+
+    if (!freshLeadId || !clientInfo.name || !interactionDate || !reminderTime) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Information",
+        text: "Please ensure all required fields (client name, date, and time) are filled.",
+      });
+    }
+
+    try {
+      const userId = executiveInfo?.id;
+      if (!userId) {
+        throw new Error("User ID not found.");
       }
-  
-      try {
-        const userId = executiveInfo?.id;
-        if (!userId) {
-          throw new Error("User ID not found.");
-        }
-  
-        await scheduleFollowUpNotificationAPI({
-          userId,
-          clientName: clientInfo.name,
-          date: interactionDate,
-          time: convertTo24HrFormat(reminderTime),
-          targetRole: "executive",
-        });
-  
-        Swal.fire({
-          icon: "success",
-          title: "Reminder Scheduled",
-          text: `Follow-up reminder for ${clientInfo.name} has been scheduled.`,
-        });
-  
-        await fetchNotifications({ userId, userRole: "executive" });
-      } catch (error) {
-        console.error("Error scheduling reminder:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Failed to Schedule Reminder",
-          text: error.message || "Something went wrong. Please try again.",
-        });
-      }
-    };
-  
+
+      await scheduleFollowUpNotificationAPI({
+        userId,
+        clientName: clientInfo.name,
+        date: interactionDate,
+        time: convertTo24HrFormat(reminderTime),
+        targetRole: "executive",
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Reminder Scheduled",
+        text: `Follow-up reminder for ${clientInfo.name} has been scheduled.`,
+      });
+
+      await fetchNotifications({ userId, userRole: "executive" });
+    } catch (error) {
+      console.error("Error scheduling reminder:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to Schedule Reminder",
+        text: error.message || "Something went wrong. Please try again.",
+      });
+    }
+  };
+
 
   const handleCreateFollowUp = async () => {
     if (
@@ -587,7 +587,7 @@ const ClientOverview = () => {
     console.log("Template selected:", selectedTemplate);
     console.log("Show Email Modal?", showEmailModal);
   }, [selectedTemplate, showEmailModal]);
-  
+
   const handleEmailSubmit = async () => {
     setSendingEmail(true);
 
@@ -836,8 +836,8 @@ const ClientOverview = () => {
                     onChange={() => setContactMethod(method)}
                   />
                   <span className="radio-label">
-                  {contactIcons[method]}
-                  {method}</span>
+                    {contactIcons[method]}
+                    {method}</span>
                 </label>
               ))}
             </div>
@@ -854,7 +854,7 @@ const ClientOverview = () => {
                     onChange={() => setFollowUpType(type)}
                   />
                   <span className="radio-label">
-                  {followUpIcons[type]}
+                    {followUpIcons[type]}
                     {type.replace("-", " ")}</span>
                 </label>
               ))}
@@ -873,7 +873,7 @@ const ClientOverview = () => {
                     onChange={() => setInteractionRating(rating)}
                   />
                   <span className="radio-label">
-                  {ratingIcons[rating]}
+                    {ratingIcons[rating]}
                     {rating.charAt(0).toUpperCase() + rating.slice(1)}
                   </span>
                 </label>
@@ -906,9 +906,9 @@ const ClientOverview = () => {
               </div>
 
               <div className="interaction-datetime" style={{ marginTop: "20px" }}>
-                <h4>Interaction Schedule and Time</h4>
+                <h4>Set Follow-up Reminder:</h4>
                 <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                  <div>
+                  {/* <div>
                     <label style={{ display: "block" }}>Date:</label>
                     <input
                       type="date"
@@ -918,54 +918,13 @@ const ClientOverview = () => {
                       onChange={(e) => setInteractionDate(e.target.value)}
                       style={{ padding: "8px", borderRadius: "4px" }}
                     />
-                  </div>
+                  </div> */}
 
-                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
-                      {/* TIME FIELD */}
-                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}>
-                        <div>
-                          <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              border: "1px solid #ccc",
-                              borderRadius: "6px",
-                              padding: "0 10px",
-                              backgroundColor: "#fff",
-                              height: "38px"
-                            }}
-                          >
-                            <input
-                              type="time"
-                              value={timeOnly}
-                              onChange={(e) => setTimeOnly(e.target.value)}
-                              style={{ border: "none", outline: "none", width: "100px" }}
-                            />
-                            {/* Optional: Add a "now" button */}
-                            <button
-                              type="button"
-                              onClick={handleUseCurrentTime}
-                              style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                fontSize: "12px",
-                                color: "#007bff",
-                                padding: "2px 4px",
-                                borderRadius: "3px",
-                                marginLeft: "4px"
-                              }}
-                              title="Use current time"
-                            >
-                              Now
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
-                        <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" , marginTop: "5px"}}>
+                    {/* TIME FIELD */}
+                    {/* <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}> */}
+                      {/* <div>
+                        <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
                         <div
                           style={{
                             display: "flex",
@@ -975,19 +934,19 @@ const ClientOverview = () => {
                             borderRadius: "6px",
                             padding: "0 10px",
                             backgroundColor: "#fff",
-                            height: "38px",
-                            width: "150px"
+                            height: "38px"
                           }}
                         >
                           <input
                             type="time"
-                            value={reminderTime}
-                            onChange={(e) => setReminderTime(e.target.value)}
+                            value={timeOnly}
+                            onChange={(e) => setTimeOnly(e.target.value)}
                             style={{ border: "none", outline: "none", width: "100px" }}
                           />
-                          <button
+                          {/* Optional: Add a "now" button */}
+                          {/* <button
                             type="button"
-                            onClick={handleScheduleReminder}
+                            onClick={handleUseCurrentTime}
                             style={{
                               background: "none",
                               border: "none",
@@ -998,16 +957,55 @@ const ClientOverview = () => {
                               borderRadius: "3px",
                               marginLeft: "4px"
                             }}
-                            title="Schedule Reminder"
+                            title="Use current time"
                           >
-                            Set
-                          </button>
-                        </div>
-                      </div>
+                            Now
+                          </button> */}
+                        {/* </div> 
+                      </div> */}
+                    {/* </div> */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          border: "1px solid #ccc",
+                          borderRadius: "6px",
+                          padding: "0 10px",
+                          backgroundColor: "#fff",
+                          height: "38px",
+                          width: "150px"
+                        }}
+                      > 
+                        <input
+                          type="time"
+                          value={reminderTime}
+                          onChange={(e) => setReminderTime(e.target.value)}
+                          style={{ border: "none", outline: "none", width: "100px" }}
+                        /> 
+                         <button
+                          type="button"
+                          onClick={handleScheduleReminder}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            color: "#007bff",
+                            padding: "2px 4px",
+                            borderRadius: "3px",
+                            marginLeft: "4px"
+                          }}
+                          title="Schedule Reminder"
+                        >
+                          Set
+                        </button>
+                       </div>
                     </div>
+                  </div>
                 </div>
               </div>
-
               {followUpType === "appointment" && isMeetingInPast && (
                 <div style={{
                   marginTop: "12px",
@@ -1023,34 +1021,33 @@ const ClientOverview = () => {
               )}
 
               <div className="client-btn">
-              {["appointment", "converted", "close"].includes(followUpType) && (
-  <button
-    className="update-btn"
-    onClick={handleTextUpdate}
-    disabled={followUpLoading}
-    style={{
-      backgroundColor:
-        followUpType === "converted"
-          ? "#28a745"
-          : followUpType === "close"
-          ? "#dc3545"
-          : "#17a2b8", // for "appointment"
-      color: "white",
-      padding: "10px 20px",
-      borderRadius: "5px",
-      border: "none",
-      cursor: followUpLoading ? "not-allowed" : "pointer",
-      opacity: followUpLoading ? 0.6 : 1,
-    }}
-  >
-    {followUpType === "appointment"
-      ? "Create Meeting"
-      : followUpType === "converted"
-      ? "Convert"
-      : "Close"}
-  </button>
-)}
-
+                {["appointment", "converted", "close"].includes(followUpType) && (
+                  <button
+                    className="update-btn"
+                    onClick={handleTextUpdate}
+                    disabled={followUpLoading}
+                    style={{
+                      backgroundColor:
+                        followUpType === "converted"
+                          ? "#28a745"
+                          : followUpType === "close"
+                            ? "#dc3545"
+                            : "#17a2b8", // for "appointment"
+                      color: "white",
+                      padding: "10px 20px",
+                      borderRadius: "5px",
+                      border: "none",
+                      cursor: followUpLoading ? "not-allowed" : "pointer",
+                      opacity: followUpLoading ? 0.6 : 1,
+                    }}
+                  >
+                    {followUpType === "appointment"
+                      ? "Create Meeting"
+                      : followUpType === "converted"
+                        ? "Convert"
+                        : "Close"}
+                  </button>
+                )}
                 {createFollowUpFlag && (
                   <button className="create-btn" onClick={handleCreateFollowUp} disabled={followUpLoading}>
                     Create Follow-Up

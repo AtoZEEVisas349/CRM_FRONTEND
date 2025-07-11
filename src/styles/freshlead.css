@@ -1,5 +1,6 @@
 
 
+
 .fresh-leads-table thead {
   background-color: #e5e7eb;
   text-transform: uppercase;
@@ -123,7 +124,6 @@ gap: 10px;
   font-size: 12px;
   color: gray;
 }
-
 .fresh-pagination-btn {
   padding: 8px 10px;
   background-color: #2563eb;
@@ -654,7 +654,6 @@ gap: 10px;
 }
 
 /* Table rows and cells */
-[data-theme="green"] .fresh-leads-table th,
 [data-theme="green"] .fresh-leads-table td {
   color: #000000;
   border-bottom: 1px solid #c8e6c9;
@@ -842,7 +841,6 @@ gap: 10px;
 }
 
 /* Table rows and cells */
-[data-theme="ocean"] .fresh-leads-table th,
 [data-theme="ocean"] .fresh-leads-table td {
   color: #1a3d5d;
   border-bottom: 1px solid #d9e8f2;
@@ -888,4 +886,71 @@ gap: 10px;
 /* Profession text */
 [data-theme="ocean"] .fresh-leads-profession {
   color: #2c516c !important;
+}
+/*----------------------------------Peach--------------------------*/
+[data-theme="peach"] .fresh-leads-main-content,
+[data-theme="peach"] .lead-assign-container,
+[data-theme="peach"] .lead-content {
+  background: #ffdede; /* Light peach background */
+}
+
+/* Table styling */
+[data-theme="peach"] .fresh-leads-table {
+  background: #ffffff;
+  border: 1px solid #ffb3b3;
+  color: #5a3e36;
+}
+
+/* Table header */
+[data-theme="peach"] .fresh-leads-table thead {
+  background-color: #815b5b;
+  color: #ffffff !important;
+}
+
+/* Table rows and cells */
+[data-theme="peach"] .fresh-leads-table th,
+[data-theme="peach"] .fresh-leads-table td {
+  border-bottom: 1px solid #ffb3b3;
+}
+
+[data-theme="peach"] .fresh-leads-table tbody tr:hover {
+  background-color: #ffede9 !important;
+}
+
+/* Pagination */
+[data-theme="peach"] .fresh-pagination {
+  background: #ffdede;
+  border-top: 1px solid #ffb3b3;
+}
+
+[data-theme="peach"] .fresh-pagination-btn {
+  background-color: #c09393;
+  color: #ffffff;
+}
+
+[data-theme="peach"] .fresh-pagination-btn:hover:not(:disabled) {
+  background-color: #b07a7a; /* Darker shade of #c09393 for hover */
+}
+
+[data-theme="peach"] .fresh-pagination span {
+  color: #5a3e36;
+}
+
+/* Popover menu */
+[data-theme="peach"] .popover {
+  background-color: #ffffff;
+  border: 1px solid #ffb3b3;
+}
+
+[data-theme="peach"] .popover-option {
+  color: #5a3e36;
+}
+
+[data-theme="peach"] .popover-option:hover {
+  background-color: #ffede9;
+}
+
+/* Profession text */
+[data-theme="peach"] .fresh-leads-profession {
+  color: #6d4c41 !important; /* Slightly darker peach tone for contrast */
 }

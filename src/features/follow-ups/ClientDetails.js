@@ -84,9 +84,9 @@ const ClientDetails = ({ selectedClient, onClose }) => {
             <h4>{selectedClient.freshLead?.name || "No Name"}</h4>
           </div>
           <div className="client-other-details">
-           <div>DOB:<span></span></div>
-           <div>Country:<span></span></div>
-           <div>State:<span></span></div>
+            <div>DOB:<span></span></div>
+            <div>Country:<span></span></div>
+            <div>State:<span></span></div>
           </div>
         </div>
 
@@ -99,19 +99,22 @@ const ClientDetails = ({ selectedClient, onClose }) => {
               recentFollowUps.map((followUp, index) => (
                 <div
                   key={followUp.id || index}
-                  className={`followup-entry-card ${
-                    index === 0 ? "latest-followup" : ""
-                  }`}
+                  className={`followup-entry-card ${index === 0 ? "latest-followup" : ""
+                    }`}
                 >
                   <div className="followup-content-wrapper">
                     {/* Header with Date/Time - Fixed height container */}
                     <div className="followup-header">
                       <div className="followup-date-time">
                         <span className="follow-up-date">
-                          {new Date(followUp.follow_up_date).toLocaleDateString()}
+                          {new Date(followUp.createdAt).toLocaleDateString()}
                         </span>
                         <span className="followup-time">
-                          {followUp.follow_up_time}
+                          {new Date(followUp.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
                         </span>
                       </div>
                       {/* Latest badge positioned absolutely to not affect layout */}
@@ -125,9 +128,8 @@ const ClientDetails = ({ selectedClient, onClose }) => {
                     {/* Rating and Connect Via badges - moved below header */}
                     <div className="followup-tags">
                       <span
-                        className={`rating-badge rating-${
-                          followUp.interaction_rating?.toLowerCase() || "default"
-                        }`}
+                        className={`rating-badge rating-${followUp.interaction_rating?.toLowerCase() || "default"
+                          }`}
                       >
                         Rating: {followUp.interaction_rating || "N/A"}
                       </span>
@@ -140,9 +142,8 @@ const ClientDetails = ({ selectedClient, onClose }) => {
                     <div className="followup-main-content">
                       <div className="followup-reason-container">
                         <p
-                          className={`followup-reason ${
-                            countWords(followUp.reason_for_follow_up) > 40 ? "scrollable" : ""
-                          }`}
+                          className={`followup-reason ${countWords(followUp.reason_for_follow_up) > 40 ? "scrollable" : ""
+                            }`}
                         >
                           {followUp.reason_for_follow_up || "No description available."}
                         </p>

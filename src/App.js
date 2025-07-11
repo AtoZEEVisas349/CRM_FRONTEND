@@ -93,7 +93,7 @@ useEffect(() => {
   }
 />
  <Route path="/executiveform/*" element={<PrivateRoute><ExecutiveFormRoutes/></PrivateRoute>} />
-       
+
         <Route path="/master/*" element={
           <PrivateMasterRoute>
             <MasterRoutes />

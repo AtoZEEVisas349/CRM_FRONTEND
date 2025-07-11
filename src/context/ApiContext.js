@@ -750,17 +750,53 @@ const updateMeetingAPI = async (meetingId, updatedData) => {
 
 const createExecutive = async (executiveData) => {
   setLoading(true);
-  
   try {
     const result = await apiService.createExecutiveAPI(executiveData);
     return result;
   } catch (err) {
-
     throw err;
   } finally {
     setLoading(false);
   }
 };
+
+
+
+
+// Add verifyExecutiveOTP function
+const verifyExecutiveOTP = async (email, otp) => {
+  try {
+    const response = await apiService.verifyExecutiveOTP(email, otp);
+    return response;
+  } catch (error) {
+    console.error("❌ Error verifying OTP:", error);
+    throw error;
+  }
+};
+
+
+
+
+const [otpResendLoading, setOtpResendLoading] = useState(false);
+const [otpResendSuccess, setOtpResendSuccess] = useState(false);
+const [otpResendError, setOtpResendError] = useState(null);
+
+// ✅ Resend OTP for Executive
+const handleResendExecutiveOtp = useCallback(async (email) => {
+  setOtpResendLoading(true);
+  setOtpResendSuccess(false);
+  setOtpResendError(null);
+  try {
+    const result = await apiService.resendExecutiveOtp(email);
+    setOtpResendSuccess(true);
+    return result;
+  } catch (error) {
+    setOtpResendError(error.response?.data?.error || error.message);
+    throw error;
+  } finally {
+    setOtpResendLoading(false);
+  }
+}, []);
 const [followUpClients, setFollowUpClients] = useState([]);
 const [followUpClientsLoading, setFollowUpClientsLoading] = useState(false);
 const fetchFollowUpClientsAPI = async () => {
@@ -1659,6 +1695,11 @@ getAllConverted,
         freshLeadsLoading,
         fetchFreshLeadsAPI,
         createExecutive,
+        verifyExecutiveOTP,
+        handleResendExecutiveOtp,
+        otpResendLoading,
+        otpResendSuccess,
+        otpResendError,
         // ✅ Notifications
         notifications,
         notificationsLoading,

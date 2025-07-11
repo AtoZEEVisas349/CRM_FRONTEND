@@ -19,6 +19,7 @@ import { useApi } from "../../context/ApiContext";
 import { useLoading } from "../../context/LoadingContext";
 import AdminSpinner from "../spinner/AdminSpinner";
 import { Alert, soundManager } from "../modal/alert";
+import { useNavigate } from "react-router-dom";
 
 const ExecutiveCredentialsForm = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -26,10 +27,11 @@ const ExecutiveCredentialsForm = () => {
   );
   const { createExecutive, createAdmin, createTeamLead, createManager, createHr } = useApi();
   const [showPassword, setShowPassword] = useState(false);
-  const [alerts, setAlerts] = useState([]); // Replaced formSubmitted and added alerts
+  const [alerts, setAlerts] = useState([]);
   const [errors, setErrors] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
   const { isLoading, variant, showLoader, hideLoader } = useLoading();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -91,7 +93,7 @@ const ExecutiveCredentialsForm = () => {
   
     const timeout = setTimeout(() => {
       hideLoader();
-    }, 400); // Show for at least 600ms
+    }, 400);
   
     return () => clearTimeout(timeout);
   }, []); 
@@ -155,7 +157,12 @@ const ExecutiveCredentialsForm = () => {
         },
       ]);
       soundManager.playSound("success");
-    } catch (err) {
+      localStorage.setItem("executiveData", JSON.stringify({ email: formData.email }));
+
+      setTimeout(() => {
+        navigate("/admin/verify");
+      }, 100); // 100ms gives browser enough time to store it
+      } catch (err) {
       console.error(`Failed to create ${formData.role}:`, err.message || err);
       setAlerts([
         ...alerts,
@@ -173,7 +180,6 @@ const ExecutiveCredentialsForm = () => {
     }
   };
 
-  // Handle alert close
   const handleAlertClose = (id) => {
     setAlerts(alerts.filter((alert) => alert.id !== id));
   };

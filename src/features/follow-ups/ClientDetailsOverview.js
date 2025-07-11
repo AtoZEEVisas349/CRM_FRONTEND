@@ -8,6 +8,18 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailToClients from "../client-details/SendEmailToClients";
+import CallRoundedIcon from '@mui/icons-material/CallRounded';
+import EmailIcon from '@mui/icons-material/Email';
+import CallMadeIcon from '@mui/icons-material/CallMade';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -49,7 +61,26 @@ const ClientDetailsOverview = () => {
     return `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
   };
 
+  const contactIcons = {
+    Call: <CallRoundedIcon fontSize="small" />,
+    Email: <EmailIcon fontSize="small" />,
+    "Call/Email": <CallMadeIcon fontSize="small" />,
+  };
 
+  const followUpIcons = {
+    interested: <ThumbUpAltIcon fontSize="small" />,
+    appointment: <EventAvailableIcon fontSize="small" />,
+    "no response": <PersonOffIcon fontSize="small" />,
+    converted: <CheckCircleIcon fontSize="small" />,
+    "not interested": <ThumbDownIcon fontSize="small" style={{ marginTop: 4 }} />,
+    close: <LockPersonIcon fontSize="small" />,
+  };
+
+  const ratingIcons = {
+    hot: <LocalFireDepartmentIcon fontSize="small" />,
+    warm: <WbSunnyIcon fontSize="small" />,
+    cold: <AcUnitIcon fontSize="small" />,
+  };
   // Initialize current time properly
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
@@ -485,7 +516,7 @@ const ClientDetailsOverview = () => {
   }, [followUpType, interactionDate, interactionTime]);
 
 
- return (
+  return (
     <>
       <div className="client-overview-wrapper">
         {/* Client Details */}
@@ -545,9 +576,15 @@ const ClientDetailsOverview = () => {
                             </div>
                             <div className="followup-datetime">
                               <span className="date">
-                                {new Date(history.follow_up_date).toLocaleDateString()}
+                                {new Date(history.createdAt).toLocaleDateString()}
                               </span>
-                              <span className="time">{history.follow_up_time}</span>
+                              <span className="time">
+                                {new Date(history.createdAt).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}
+                              </span>
                             </div>
                           </div>
                           <div className="followup-content">
@@ -593,6 +630,7 @@ const ClientDetailsOverview = () => {
                       onChange={() => setContactMethod(method)}
                     />
                     <span className="radio-label">
+                    {contactIcons[method]}
                       {method.charAt(0).toUpperCase() + method.slice(1)}
                     </span>
                   </label>
@@ -618,7 +656,9 @@ const ClientDetailsOverview = () => {
                       checked={followUpType === type}
                       onChange={() => setFollowUpType(type)}
                     />
-                    <span className="radio-label">{type.replace("-", " ")}</span>
+                    <span className="radio-label">
+                    {followUpIcons[type]}
+                    {type.replace("-", " ")}</span>
                   </label>
                 ))}
               </div>
@@ -636,6 +676,7 @@ const ClientDetailsOverview = () => {
                       onChange={() => setInteractionRating(rating)}
                     />
                     <span className="radio-label">
+                    {ratingIcons[rating]}
                       {rating.charAt(0).toUpperCase() + rating.slice(1)}
                     </span>
                   </label>
@@ -669,200 +710,207 @@ const ClientDetailsOverview = () => {
                 </div>
 
                 <div className="interaction-datetime" style={{ marginTop: "20px" }}>
-                  <h4>Interaction Schedule and Time</h4>
-                  <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                    <div>
-                      <label style={{ display: "block" }}>Date:</label>
-                      <input
-                        type="date"
-                        value={interactionDate}
-                        min={minDate}
-                        max={maxDate}
-                        onChange={(e) => setInteractionDate(e.target.value)}
-                        style={{ padding: "8px", borderRadius: "4px" }}
-                      />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
-                      {/* TIME FIELD */}
-                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}>
+                  {/* Show Date and Time inputs only when appointment is selected */}
+                  {followUpType === "appointment" && (
+                    <>
+                      <h4>Interaction Schedule and Time</h4>
+                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
                         <div>
-                          <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              border: "1px solid #ccc",
-                              borderRadius: "6px",
-                              padding: "0 10px",
-                              backgroundColor: "#fff",
-                              height: "38px"
-                            }}
-                          >
-                            <input
-                              type="time"
-                              value={timeOnly}
-                              onChange={(e) => setTimeOnly(e.target.value)}
-                              style={{ border: "none", outline: "none", width: "100px" }}
-                            />
-                            {/* Optional: Add a "now" button */}
-                            <button
-                              type="button"
-                              onClick={handleUseCurrentTime}
-                              style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                fontSize: "12px",
-                                color: "#007bff",
-                                padding: "2px 4px",
-                                borderRadius: "3px",
-                                marginLeft: "4px"
-                              }}
-                              title="Use current time"
-                            >
-                              Now
-                            </button>
+                          <label style={{ display: "block" }}>Date:</label>
+                          <input
+                            type="date"
+                            value={interactionDate}
+                            min={minDate}
+                            max={maxDate}
+                            onChange={(e) => setInteractionDate(e.target.value)}
+                            style={{ padding: "8px", borderRadius: "4px" }}
+                          />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+                          {/* TIME FIELD */}
+                          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}>
+                            <div>
+                              <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                  border: "1px solid #ccc",
+                                  borderRadius: "6px",
+                                  padding: "0 10px",
+                                  backgroundColor: "#fff",
+                                  height: "38px"
+                                }}
+                              >
+                                <input
+                                  type="time"
+                                  value={timeOnly}
+                                  onChange={(e) => setTimeOnly(e.target.value)}
+                                  style={{ border: "none", outline: "none", width: "100px" }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleUseCurrentTime}
+                                  style={{
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    fontSize: "12px",
+                                    color: "#007bff",
+                                    padding: "2px 4px",
+                                    borderRadius: "3px",
+                                    marginLeft: "4px"
+                                  }}
+                                  title="Use current time"
+                                >
+                                  Now
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
-                        <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            border: "1px solid #ccc",
-                            borderRadius: "6px",
-                            padding: "0 10px",
-                            backgroundColor: "#fff",
-                            height: "38px",
-                            width: "150px"
-                          }}
-                        >
-                          <input
-                            type="time"
-                            value={reminderTime}
-                            onChange={(e) => setReminderTime(e.target.value)}
-                            style={{ border: "none", outline: "none", width: "100px" }}
-                          />
-                          <button
-                            type="button"
-                            onClick={handleScheduleReminder}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              fontSize: "12px",
-                              color: "#007bff",
-                              padding: "2px 4px",
-                              borderRadius: "3px",
-                              marginLeft: "4px"
-                            }}
-                            title="Schedule Reminder"
-                          >
-                            Set
-                          </button>
-                        </div>
-                      </div>
+                    </>
+                  )}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
+                    <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        padding: "0 10px",
+                        backgroundColor: "#fff",
+                        height: "38px",
+                        width: "150px"
+                      }}
+                    >
+                      <input
+                        type="time"
+                        value={reminderTime}
+                        onChange={(e) => setReminderTime(e.target.value)}
+                        style={{ border: "none", outline: "none", width: "100px" }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleScheduleReminder}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "12px",
+                          color: "#007bff",
+                          padding: "2px 4px",
+                          borderRadius: "3px",
+                          marginLeft: "4px"
+                        }}
+                        title="Schedule Reminder"
+                      >
+                        Set
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {followUpType === "appointment" && isMeetingInPast && (
-            <div style={{
-              marginTop: "12px",
-              color: "#b71c1c",
-              background: "#fff4f4",
-              borderLeft: "4px solid #e57373",
-              padding: "10px 15px",
-              borderRadius: "6px",
-              fontSize: "14px"
-            }}>
-              ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
-            </div>
-          )}
 
-          <div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
-            {/* Update Follow-Up button */}
+        {followUpType === "appointment" && isMeetingInPast && (
+          <div style={{
+            marginTop: "12px",
+            color: "#b71c1c",
+            background: "#fff4f4",
+            borderLeft: "4px solid #e57373",
+            padding: "10px 15px",
+            borderRadius: "6px",
+            fontSize: "14px"
+          }}>
+            ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+          </div>
+        )
+        }
+
+        <div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          {/* Update Follow-Up button */}
+          <button
+            onClick={handleUpdateFollowUp}
+            className="crm-button update-follow-btn"
+            disabled={followUpLoading}
+            style={{
+              backgroundColor: "#007bff",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              border: "none",
+              cursor: followUpLoading ? "not-allowed" : "pointer",
+              opacity: followUpLoading ? 0.6 : 1,
+            }}
+          >
+            {followUpLoading ? "Processing..." : "Update Follow-Up"}
+          </button>
+
+          {/* Show these based on follow-up type */}
+          {followUpType === "converted" && (
             <button
-              onClick={handleUpdateFollowUp}
-              className="crm-button update-follow-btn"
+              onClick={handleFollowUpAction}
+              className="crm-button converted-btn"
               disabled={followUpLoading}
               style={{
-                backgroundColor: "#007bff",
+                backgroundColor: "#28a745",
                 color: "white",
                 padding: "10px 20px",
+                marginLeft: "10px",
                 borderRadius: "5px",
                 border: "none",
-                cursor: followUpLoading ? "not-allowed" : "pointer",
-                opacity: followUpLoading ? 0.6 : 1,
               }}
             >
-              {followUpLoading ? "Processing..." : "Update Follow-Up"}
+              Create Converted
             </button>
+          )}
 
-            {/* Show these based on follow-up type */}
-            {followUpType === "converted" && (
-              <button
-                onClick={handleFollowUpAction}
-                className="crm-button converted-btn"
-                disabled={followUpLoading}
-                style={{
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  padding: "10px 20px",
-                  marginLeft: "10px",
-                  borderRadius: "5px",
-                  border: "none",
-                }}
-              >
-                Create Converted
-              </button>
-            )}
+          {followUpType === "close" && (
+            <button
+              onClick={handleFollowUpAction}
+              className="crm-button flw-close-btn"
+              disabled={followUpLoading}
+              style={{
+                backgroundColor: "#dc3545",
+                color: "white",
+                padding: "10px 20px",
+                marginLeft: "10px",
+                borderRadius: "5px",
+                border: "none",
+              }}
+            >
+              Create Close
+            </button>
+          )}
 
-            {followUpType === "close" && (
-              <button
-                onClick={handleFollowUpAction}
-                className="crm-button flw-close-btn"
-                disabled={followUpLoading}
-                style={{
-                  backgroundColor: "#dc3545",
-                  color: "white",
-                  padding: "10px 20px",
-                  marginLeft: "10px",
-                  borderRadius: "5px",
-                  border: "none",
-                }}
-              >
-                Create Close
-              </button>
-            )}
-
-            {followUpType === "appointment" && (
-              <button
-                onClick={handleCreateMeeting}
-                className="crm-button meeting-btn"
-                disabled={followUpLoading}
-                style={{
-                  backgroundColor: "#17a2b8",
-                  color: "white",
-                  padding: "10px 20px",
-                  marginLeft: "10px",
-                  borderRadius: "5px",
-                  border: "none",
-                }}
-              >
-                Create Meeting
-              </button>
-            )}
-          </div>
+          {followUpType === "appointment" && (
+            <button
+              onClick={handleCreateMeeting}
+              className="crm-button meeting-btn"
+              disabled={followUpLoading}
+              style={{
+                backgroundColor: "#17a2b8",
+                color: "white",
+                padding: "10px 20px",
+                marginLeft: "10px",
+                borderRadius: "5px",
+                border: "none",
+              }}
+            >
+              Create Meeting
+            </button>
+          )}
         </div>
-      </div>
+      </div >
+
 
     </>
   );

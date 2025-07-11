@@ -614,7 +614,7 @@ background: linear-gradient(135deg, #0d1e9c, #275dbb);
 
 /* Add this right after it */
 [data-theme="dark"] .page-indicator {
-  color: var(--text-color);
+  color: white;
 }
 /* Modal Styles */
 .modal-overlay {

@@ -2,17 +2,28 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPhone,
+  faPenToSquare,
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { SearchContext } from "../../context/SearchContext";
 import { useLoading } from "../../context/LoadingContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 
-const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating = "All" }) => {
+const ClientTable = ({
+  filter = "All Follow Ups",
+  onSelectClient,
+  selectedRating = "All",
+}) => {
   const { followUps, getAllFollowUps } = useApi();
   const clients = Array.isArray(followUps?.data) ? followUps.data : [];
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
-  const [tableHeight, setTableHeight] = useState("500px");
+  const [tableHeight, setTableHeight] = useState("800px");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const navigate = useNavigate();
   const { searchQuery, setActivePage } = useContext(SearchContext);
   const location = useLocation();
@@ -43,46 +54,58 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
     setActivePage("follow-up");
   }, [setActivePage]);
 
-  useEffect(() => {
-    const updateTableHeight = () => {
-      const windowHeight = window.innerHeight;
-      const tablePosition = document
-        .querySelector(".table-container")
-        ?.getBoundingClientRect().top || 0;
-      const footerHeight = 40;
-      const newHeight = Math.max(300, windowHeight - tablePosition - footerHeight);
-      setTableHeight(`${newHeight}px`);
-    };
-
-    updateTableHeight();
-    window.addEventListener("resize", updateTableHeight);
-    return () => window.removeEventListener("resize", updateTableHeight);
-  }, []);
+  
 
   const filteredClients = clients.filter((client) => {
     const type = (client.follow_up_type || "").toLowerCase().trim();
     const status = (client.clientLeadStatus || "").toLowerCase().trim();
     const rating = (client.interaction_rating || "").toLowerCase().trim();
 
-    if (status !== "follow-up") return false; 
+    if (status !== "follow-up") return false;
     if (filter === "Interested" && type !== "interested") return false;
     if (filter === "Not Interested" && type !== "not interested") return false;
 
-     // New: Filter by selected rating from dropdown
-  if (selectedRating !== "All" && rating !== selectedRating.toLowerCase()) {
-    return false;
-  }
+    // New: Filter by selected rating from dropdown
+    if (selectedRating !== "All" && rating !== selectedRating.toLowerCase()) {
+      return false;
+    }
 
     if (location.pathname.includes("follow-up") && searchQuery.trim()) {
       const search = searchQuery.toLowerCase();
       const name = client.freshLead?.name?.toLowerCase() || "";
       const phone = client.freshLead?.phone?.toString() || "";
       const email = client.freshLead?.email?.toLowerCase() || "";
-      return name.includes(search) || phone.includes(search) || email.includes(search);
+      return (
+        name.includes(search) ||
+        phone.includes(search) ||
+        email.includes(search)
+      );
     }
 
     return true;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentClients = filteredClients.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   const handleEdit = (client) => {
     const freshLeadId = client.freshLead?.id || client.fresh_lead_id;
@@ -90,19 +113,18 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
       console.error("Fresh Lead ID is missing or incorrect");
       return;
     }
-  
+
     const leadData = {
       ...client,
       ...(client.freshLead || {}),
       fresh_lead_id: freshLeadId,
       followUpId: client.id,
     };
-  
+
     navigate(`/executive/clients/${encodeURIComponent(client.id)}/details`, {
       state: { client: leadData, createFollowUp: false, from: "followup" },
     });
   };
-  
 
   const getStatusColorClass = (status) => {
     switch ((status || "").toLowerCase()) {
@@ -137,38 +159,42 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
 
         <div
           className="table-container responsive-table-wrapper"
-          style={{ maxHeight: tableHeight }}
+          style={{ maxHeight: "none" }}
         >
-
           <table className="client-table">
             <thead>
               <tr className="sticky-header">
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Add follow up</th>
-                <th>Status</th>
-                <th>Call</th>
+                <th>NAME</th>
+                <th>PHONE</th>
+                <th>EMAIL</th>
+                <th>ADD FOLLOW-UPS</th>
+                <th>STATUS</th>
+                <th>CALL</th>
               </tr>
             </thead>
             <tbody>
-              {filteredClients.length === 0 ? (
+              {currentClients.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="no-data-text">No follow-up clients found.</td>
+                  <td colSpan="6" className="no-data-text">
+                    No follow-up clients found.
+                  </td>
                 </tr>
               ) : (
-                filteredClients.map((client, index) => {
+                currentClients.map((client, index) => {
                   const isOld = isFollowUpOld(client.follow_up_date);
+                  const ratingClass = getRatingColorClass(
+                    client.interaction_rating
+                  );
 
                   return (
                     <tr
                       key={index}
-                      className={isOld ? "old-followup-row" : ""}
+                      className={`$isOld ? "old-followup-row" : ""} ${ratingClass}`}
                       style={
                         isOld
                           ? {
-                              backgroundColor: "#ffebee",
-                              borderLeft: "4px solid #f44336",
+                              backgroundColor: "white",
+                              fontWeight:"900"
                             }
                           : {}
                       }
@@ -204,7 +230,6 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
                             isOld
                               ? {
                                   borderColor: "#d32f2f",
-                                  color: "#d32f2f",
                                 }
                               : {}
                           }
@@ -212,7 +237,10 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
                           {filter === "All Follow Ups"
                             ? "Create"
                             : (client.follow_up_type || "").toLowerCase()}
-                          <FontAwesomeIcon icon={faPenToSquare} className="icon" />
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="icon"
+                          />
                         </button>
                       </td>
                       <td>
@@ -224,7 +252,6 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
                             style={
                               isOld
                                 ? {
-                                    color: "#d32f2f",
                                     border: "1px solid #d32f2f",
                                   }
                                 : {}
@@ -266,7 +293,7 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
                             isOld
                               ? {
                                   color: "#d32f2f",
-                                  border: "1px solid #d32f2f",
+                                  border: "3px solid #d32f2f",
                                 }
                               : {}
                           }
@@ -325,6 +352,32 @@ const ClientTable = ({ filter = "All Follow Ups", onSelectClient, selectedRating
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {filteredClients.length > itemsPerPage && (
+          <div className="pagination-container">
+            <div className="pagination-controls">
+              <button
+                className="pagination-btn"
+                onClick={handlePrevious}
+                disabled={currentPage === 1}
+              >
+                Prev
+              </button>
+              <span className="page-indicator">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                className="pagination-btn"
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
