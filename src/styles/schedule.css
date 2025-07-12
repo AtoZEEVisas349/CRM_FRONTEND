@@ -2265,8 +2265,9 @@
 }
 
 .radio-container input[type="radio"]:checked {
-  border-color: #007bff;
   background-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255,0.3),
+  0 0 4px 2px rgba(0, 123, 255,0.5);
 }
 
 .radio-container input[type="radio"]:checked::after {
@@ -2277,7 +2278,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #fff;
+  background: #007bff;
 }
 
 .radio-label {

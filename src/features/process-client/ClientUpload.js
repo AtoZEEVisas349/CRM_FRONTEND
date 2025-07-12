@@ -1,12 +1,16 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEye,faXmark} from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from "react-router-dom";
 
 const ClientUpload = () => {
   const { uploadDocs, getDocumentsApi } = useProcessService();
+  const location = useLocation();
+const defaultFilename = location.state?.defaultFilename || "";
+const label = location.state?.label || "Upload Files";
+
   const [files, setFiles] = useState([]);
   const [progress, setProgress] = useState({});
   const [message, setMessage] = useState("");
@@ -18,24 +22,68 @@ const ClientUpload = () => {
   const [customerDocs, setCustomerDocs] = useState([]);
   const [processDocs, setProcessDocs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [documentNames, setDocumentNames] = useState({});
+  const [editMode, setEditMode] = useState({});
   const { id } = useParams();
 
   const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files);
-    const updatedFiles = [...files, ...newFiles];
-    setFiles(updatedFiles);
+  const newFiles = Array.from(e.target.files);
+  const updatedFiles = [...files, ...newFiles];
+  setFiles(updatedFiles);
 
-    newFiles.forEach((file) => {
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          const curr = prev[file.name] || 0;
-          const next = Math.min(curr + 5, 100);
-          if (next === 100) clearInterval(interval);
-          return { ...prev, [file.name]: next };
-        });
-      }, 300);
-    });
-  };
+  const newNames = {};
+  const newEditMode = {};
+  newFiles.forEach((file, index) => {
+    const isFirstFile = files.length === 0 && index === 0;
+    newNames[file.name] = isFirstFile && defaultFilename
+      ? defaultFilename
+      : file.name.split(".")[0];
+    newEditMode[file.name] = false;
+  });
+
+  setDocumentNames(prev => ({ ...prev, ...newNames }));
+  setEditMode(prev => ({ ...prev, ...newEditMode }));
+
+  newFiles.forEach((file) => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        const curr = prev[file.name] || 0;
+        const next = Math.min(curr + 5, 100);
+        if (next === 100) clearInterval(interval);
+        return { ...prev, [file.name]: next };
+      });
+    }, 300);
+  });
+};
+
+  // const handleFileChange = (e) => {
+  //   const newFiles = Array.from(e.target.files);
+  //   const updatedFiles = [...files, ...newFiles];
+  //   setFiles(updatedFiles);
+
+  //   const newNames = {};
+  //   const newEditMode = {};
+  //   newFiles.forEach(file => {
+  //     // newNames[file.name] = file.name.split(".")[0];
+  //     newNames[file.name] = defaultFilename || file.name.split(".")[0];
+
+  //     newEditMode[file.name] = false;
+  //   });
+
+  //   setDocumentNames(prev => ({ ...prev, ...newNames }));
+  //   setEditMode(prev => ({ ...prev, ...newEditMode }));
+
+  //   newFiles.forEach((file) => {
+  //     const interval = setInterval(() => {
+  //       setProgress((prev) => {
+  //         const curr = prev[file.name] || 0;
+  //         const next = Math.min(curr + 5, 100);
+  //         if (next === 100) clearInterval(interval);
+  //         return { ...prev, [file.name]: next };
+  //       });
+  //     }, 300);
+  //   });
+  // };
 
   const handleRemove = (name) => {
     setFiles(files.filter((file) => file.name !== name));
@@ -44,88 +92,74 @@ const ClientUpload = () => {
       delete newProgress[name];
       return newProgress;
     });
+    setDocumentNames((prev) => {
+      const updated = { ...prev };
+      delete updated[name];
+      return updated;
+    });
+    setEditMode((prev) => {
+      const updated = { ...prev };
+      delete updated[name];
+      return updated;
+    });
   };
 
-  const triggerBrowse = () => {
-    inputRef.current.click();
-  };
+  const triggerBrowse = () => inputRef.current.click();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        const normalizedType =
-          parsedUser.type === "processperson" ? "process_person" : parsedUser.type;
-
+        const normalizedType = parsedUser.type === "processperson" ? "process_person" : parsedUser.type;
         const updatedUser = { ...parsedUser, type: normalizedType };
         setUserDetails(updatedUser);
 
-        if (normalizedType === "customer") {
-          setCustomerId(parsedUser.id);
-          fetchDocs(parsedUser.id);
-        } else {
-          setCustomerId(id);
-          fetchDocs(id);
-        }
+        const cid = normalizedType === "customer" ? parsedUser.id : id;
+        setCustomerId(cid);
+        fetchDocs(cid);
       } catch (err) {
         console.error("Invalid user object in localStorage", err);
       }
     }
   }, [id]);
 
-const fetchDocs = async () => {
-  if (!customerId) return;
-  setLoading(true);
+  const fetchDocs = async (cid) => {
+    if (!cid) return;
+    setLoading(true);
+    try {
+      const [customerResult, processResult] = await Promise.allSettled([
+        getDocumentsApi("customer", cid),
+        getDocumentsApi("process_person", cid),
+      ]);
 
-  try {
-    // Run both API calls in parallel
-    const [customerResult, processResult] = await Promise.allSettled([
-      getDocumentsApi("customer", customerId),
-      getDocumentsApi("process_person", customerId),
-    ]);
+      setCustomerDocs(customerResult.status === "fulfilled" && Array.isArray(customerResult.value)
+        ? [...customerResult.value].sort((a, b) => b.id - a.id)
+        : []);
 
-    if (customerResult.status === "fulfilled" && Array.isArray(customerResult.value)) {
-      setCustomerDocs([...customerResult.value].sort((a, b) => b.id - a.id));
-    } else {
-      console.warn("Customer docs failed to load");
-      setCustomerDocs([]);  // Ensure table renders empty if fail
+      setProcessDocs(processResult.status === "fulfilled" && Array.isArray(processResult.value)
+        ? [...processResult.value].sort((a, b) => b.id - a.id)
+        : []);
+
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setCustomerDocs([]);
+      setProcessDocs([]);
+      setError("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
-
-    if (processResult.status === "fulfilled" && Array.isArray(processResult.value)) {
-      setProcessDocs([...processResult.value].sort((a, b) => b.id - a.id));
-    } else {
-      console.warn("Process docs failed to load");
-      setProcessDocs([]);  // Ensure table renders empty if fail
-    }
-
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    setCustomerDocs([]);
-    setProcessDocs([]);
-    setError("Something went wrong.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
-    if (customerId) {
-      fetchDocs();
-    }
+    if (customerId) fetchDocs(customerId);
   }, [customerId]);
 
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    if (!customerId) {
-      setMessage("Customer ID not found.");
-      return;
-    }
-
-    if (!userDetails?.type) {
-      setMessage("User type not found.");
+    if (!customerId || !userDetails?.type) {
+      setMessage("Missing customer or user type.");
       return;
     }
 
@@ -134,6 +168,7 @@ const fetchDocs = async () => {
       const formData = new FormData();
       formData.append("customerId", customerId);
       formData.append("userType", userDetails.type);
+      formData.append("documentNames", JSON.stringify(files.map(file => documentNames[file.name])));
 
       files.forEach((file) => {
         formData.append("documents", file);
@@ -143,11 +178,9 @@ const fetchDocs = async () => {
       setMessage(result.message || "Documents uploaded successfully");
       setFiles([]);
       setProgress({});
-      await fetchDocs();
-
-      setTimeout(() => {
-        setMessage("");
-      }, 100);
+      setDocumentNames({});
+      await fetchDocs(customerId);
+      setTimeout(() => setMessage(""), 2000);
     } catch (err) {
       console.error("Upload failed", err);
       setMessage("Upload failed: " + (err.message || "Unknown error"));
@@ -155,12 +188,6 @@ const fetchDocs = async () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (id) {
-      setCustomerId(id);
-    }
-  }, [id]);
 
   const renderTable = (docs, title) => (
     <>
@@ -183,9 +210,7 @@ const fetchDocs = async () => {
                   <button
                     onClick={() => {
                       const byteCharacters = atob(doc.base64Data);
-                      const byteNumbers = Array.from(byteCharacters).map((char) =>
-                        char.charCodeAt(0)
-                      );
+                      const byteNumbers = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
                       const byteArray = new Uint8Array(byteNumbers);
                       const blob = new Blob([byteArray], { type: doc.mimeType });
                       const blobUrl = URL.createObjectURL(blob);
@@ -196,10 +221,6 @@ const fetchDocs = async () => {
                       border: "none",
                       cursor: "pointer",
                       fontSize: "18px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
                     }}
                     title="Preview"
                   >
@@ -222,8 +243,9 @@ const fetchDocs = async () => {
 
   return (
     <div>
- {loading && (
-  <div className="loader-container">
+      {loading && (
+        <div className="loader-container">
+       
     <svg className="pl" width="240" height="240" viewBox="0 0 240 240">
       <circle
         className="pl__ring pl__ring--a"
@@ -272,10 +294,9 @@ const fetchDocs = async () => {
         strokeLinecap="round"
       ></circle>
     </svg>
-  </div>
-)}
-
-
+ 
+        </div>
+      )}
 
       <div className="process-container">
         <h1>Upload Your Files</h1>
@@ -285,13 +306,7 @@ const fetchDocs = async () => {
           <div className="process-drop-zone">
             <p>Drag & drop files here</p>
             <span>OR</span>
-            <input
-              type="file"
-              multiple
-              ref={inputRef}
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
+            <input type="file" multiple ref={inputRef} onChange={handleFileChange} style={{ display: "none" }} />
             <button type="button" onClick={triggerBrowse}>Browse Files</button>
           </div>
         </div>
@@ -300,9 +315,38 @@ const fetchDocs = async () => {
           <div className="process-file-list">
             {files.map((file) => (
               <div key={file.name} className="process-file-item">
-                <span className="process-file-name">{file.name}</span>
+                {editMode[file.name] ? (
+                  <>
+                    <input
+                      type="text"
+                      value={documentNames[file.name]}
+                      onChange={(e) =>
+                        setDocumentNames((prev) => ({ ...prev, [file.name]: e.target.value }))
+                      }
+                      style={{ width: "140px", marginRight: "10px" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setEditMode((prev) => ({ ...prev, [file.name]: false }))}
+                      className="save-btn"
+                    >
+                      Save
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="process-file-name">{documentNames[file.name]}</span>
+                    <button
+                      type="button"
+                      onClick={() => setEditMode((prev) => ({ ...prev, [file.name]: true }))}
+                      className="rename-btn"
+                    >
+                      Rename
+                    </button>
+                  </>
+                )}
 
-                <div className="process-progress-bar">
+                <div className="process-progress-bar" style={{marginLeft:"93px"}}>
                   <div
                     className="process-progress"
                     style={{ width: `${progress[file.name] || 0}%` }}
@@ -312,19 +356,12 @@ const fetchDocs = async () => {
                 {progress[file.name] === 100 ? (
                   <>
                     <span className="process-check">✔</span>
-             {/* {file.type.startsWith("image/") && ( */}
-             <button
-                        className="process-open-btn"
-                        type="submit"
-                      >
-                        Submit
-                      </button>
-                    {/* )} */}
-                     <button
+                    <button className="process-open-btn" type="submit">Submit</button>
+                    <button
                       type="button"
                       onClick={() => handleRemove(file.name)}
                       className="process-delete-btn"
-                      style={{
+                        style={{
                         marginLeft: "10px",
                         backgroundColor: "transparent",
                         border: "none",
@@ -332,9 +369,8 @@ const fetchDocs = async () => {
                         cursor: "pointer",
                         fontSize: "16px",
                       }}
-                      title="Delete file"
                     >
-                      <FontAwesomeIcon icon={faTrash} style={{ 
+                       <FontAwesomeIcon icon={faTrash} style={{ 
     color: 'red', 
     paddingLeft: '10px',
     border: '2px solid #1976d2',
@@ -350,7 +386,7 @@ const fetchDocs = async () => {
                     onClick={() => handleRemove(file.name)}
                     className="process-crossmark"
                   >
-                  <FontAwesomeIcon icon={faXmark} /> 
+                    <FontAwesomeIcon icon={faXmark} />
                   </button>
                 )}
               </div>
@@ -362,12 +398,8 @@ const fetchDocs = async () => {
       </div>
 
       <div style={{ display: "flex", gap: "40px", justifyContent: "space-between", flexWrap: "wrap", marginTop: "40px", padding: "30px" }}>
-        <div style={{ flex: 1, textAlign: "center", fontSize: "15px" }}>
-          {renderTable(customerDocs, "Customer Uploaded Documents")}
-        </div>
-        <div style={{ flex: 1, textAlign: "center", fontSize: "15px" }}>
-          {renderTable(processDocs, "Process Uploaded Documents")}
-        </div>
+        <div style={{ flex: 1 }}>{renderTable(customerDocs, "Customer Uploaded Documents")}</div>
+        <div style={{ flex: 1 }}>{renderTable(processDocs, "Process Uploaded Documents")}</div>
       </div>
     </div>
   );

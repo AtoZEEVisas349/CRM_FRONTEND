@@ -1,3 +1,8 @@
+
+
+
+
+
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
@@ -44,10 +49,10 @@ function FreshLead() {
   const [verifyingIndex, setVerifyingIndex] = useState(null);
   const [showChatbotPopup, setShowChatbotPopup] = useState(false); // New state for chatbot popup
   const [selectedLead, setSelectedLead] = useState(null); // Store selected lead for chatbot
-  const itemsPerPage = 9;
+  const itemsPerPage = 10;
   const navigate = useNavigate();
 
-  // ✅ Ensure this line ends with a semicolon
+  // Ensure this line ends with a semicolon
   useCopyNotification(createCopyNotification, fetchNotifications);
 
   const isLeadOld = (assignmentDate) => {
@@ -65,7 +70,7 @@ function FreshLead() {
     setVerifyingIndex(null);
   };
   const popupRef = useRef(null);
-  const headerRef = useRef(null);
+  const headerRef= useRef(null);
 
   useEffect(() => {
     if (!showChatbotPopup || !popupRef.current || !headerRef.current) return;
@@ -277,7 +282,7 @@ function FreshLead() {
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
-                  <th>Add follow-ups</th>
+                  <th>Actions</th>
                   <th>Status</th>
                   <th>Call</th>
                 </tr>
@@ -322,10 +327,10 @@ function FreshLead() {
                             </div>
                           </div>
                         </td>
-                        <td style={isOld ? { color: "#c62828" } : {}}>
+                        <td style={isOld ? { color: "#c62828", fontWeight: "bold" } : {}}>
                           {lead.phone}
                         </td>
-                        <td style={isOld ? { color: "#c62828" } : {}}>
+                        <td style={isOld ? { color: "#c62828", fontWeight: "bold" } : {}}>
                           {lead.email}
                         </td>
                         <td>
@@ -364,7 +369,6 @@ function FreshLead() {
                                 isOld
                                   ? {
                                       borderColor: "#d32f2f",
-                                      color: "#d32f2f",
                                     }
                                   : {}
                               }
@@ -406,7 +410,7 @@ function FreshLead() {
                               isOld
                                 ? {
                                     color: "#d32f2f",
-                                    border: "1px solid #d32f2f",
+                                    border: "3px solid #d32f2f",
                                   }
                                 : {}
                             }
@@ -484,30 +488,35 @@ function FreshLead() {
                   </tr>
                 )}
               </tbody>
+
+              {/* Pagination row */}
+              <tfoot>
+                <tr>
+                  <td colSpan="6" style={{ textAlign: "center", padding: "12px" }}>
+                    <div className="fl-unique-pagination">
+                      <button
+                        className="fl-unique-pagination-btn"
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                      >
+                        Prev
+                      </button>
+                      <span className="fl-unique-pagination-span">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <button
+                        className="fl-unique-pagination-btn"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
-
-          {totalPages > 1 && (
-            <div className="fresh-pagination">
-              <button
-                className="fresh-pagination-btn"
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-              >
-                « Prev
-              </button>
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                className="fresh-pagination-btn"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Next »
-              </button>
-            </div>
-          )}
         </>
       )}
 

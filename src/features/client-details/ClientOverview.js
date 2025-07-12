@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
@@ -628,7 +631,6 @@ const ClientOverview = () => {
       <div className="c-container">
         <div className="c-header">
           <h2>Client Details</h2>
-          <button className="c-button">×</button>
         </div>
         <div className="c-content">
           <div className="c-layout">
@@ -657,7 +659,7 @@ const ClientOverview = () => {
                       border: "none",
                       cursor: isSaving ? "not-allowed" : "pointer",
                       opacity: isSaving ? 0.6 : 1,
-                      marginTop: "20px",
+                      margin: "10px 70px",
                     }}
                   >
                     {isSaving ? "Saving..." : "Save Client Details"}
@@ -1065,3 +1067,4 @@ const ClientOverview = () => {
 };
 
 export default ClientOverview;
+

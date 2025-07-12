@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
@@ -558,12 +561,7 @@ const ClientDetailsOverview = () => {
                         <div
                           key={index}
                           className={`followup-entry ${index === 0 ? "latest-followup" : "previous-followup"}`}
-                          style={{
-                            backgroundColor: index === 0 ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
-                            marginBottom: '5px',
-                            padding: '10px',
-                            borderRadius: '5px'
-                          }}
+                          
                         >
                           <div className="followup-header-info">
                             <div className="interaction-badges">
@@ -846,6 +844,7 @@ const ClientDetailsOverview = () => {
               color: "white",
               padding: "10px 20px",
               borderRadius: "5px",
+              marginRight:"20px",
               border: "none",
               cursor: followUpLoading ? "not-allowed" : "pointer",
               opacity: followUpLoading ? 0.6 : 1,

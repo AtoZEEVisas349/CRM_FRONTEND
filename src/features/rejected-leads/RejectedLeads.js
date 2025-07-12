@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
@@ -146,35 +145,48 @@ useEffect(() => {
       )}
         <h2 className="c-heading">Rejected Leads</h2>
         <div className="leads_page_wrapper">
-          <h4 className="Total_leads">Total Rejected Leads leads:{clients ? clients.length : 0}</h4>
+          <h4 className="Total_leads" style={{marginBottom:"20px"}}>Total Rejected Leads leads:{clients ? clients.length : 0}</h4>
           {closeLeadsLoading ? (
             <p>Loading Rejected leads...</p>
           ) : clients.length > 0 ? (
-            <div className="scrollable-leads-container">
-            <div className="country_container">
-              {clients.map((lead, index) => (
-                <div key={index} className="country_cards">
-                  <div className="country_name">
-                    <h3>{lead.fullName || "Unnamed Lead"}</h3>
-                    <p>Phone: {lead.phone}</p>
-                    <p>Email: {lead.email || "No Email"}</p>
-                    <p>Created At: {new Date(lead.createdAt).toLocaleDateString()}</p>
-                  
-                    <button
-                      className="follow-history-btn"
-                      onClick={() => handleViewHistory(lead)}
-                      title="View Follow-up History"
-                    >
-                      <span className="history-icon"><FaPlus /></span>
-                      Follow History
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+         <div className="scrollable-leads-container">
+  <table className="rejected-leads-table">
+    <thead>
+      <tr>
+     
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {clients.map((lead, index) => (
+        <tr key={index}>
+       
+          <td>{lead.fullName || "Unnamed Lead"}</td>
+          <td>{lead.phone}</td>
+          <td>{lead.email || "No Email"}</td>
+          <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+          <td>
+            <button
+              className="r-follow-history-btn"
+              onClick={() => handleViewHistory(lead)}
+              title="View Follow-up History"
+            >
+              <span className="history-icon"><FaPlus /></span>
+              Follow History
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
           ) : (
-            <p>No final stage leads found.</p>
+            <p>No Rejected leads found.</p>
           )}
         </div>
       </div>

@@ -20,7 +20,7 @@ function convertTo24HrFormat(timeStr) {
 
 const ProcessClientOverview = () => {
   const { id } = useParams();
-    const { handleUpsertStages, handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,getProcessHistory,createReminder } = useProcessService();
+    const { handleUpsertStages, handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,getProcessHistory,createReminder,fetchAllHistory } = useProcessService();
   const location = useLocation();
   const navigate = useNavigate();
   const client = useMemo(() => location.state?.client || {}, []);
@@ -42,7 +42,9 @@ const email = userData?.email || "";
   const ampmValue = currentHour >= 12 ? "PM" : "AM";
   const hour12 = currentHour % 12 || 12;
   const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-
+  const [generatedInfo, setGeneratedInfo] = useState(null);
+const [showGeneratedModal, setShowGeneratedModal] = useState(false);
+const [unlockedStage, setUnlockedStage] = useState(1); 
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -69,10 +71,11 @@ const email = userData?.email || "";
     const [isSaving, setIsSaving] = useState(false); // Added
         const [showToast, setShowToast] = useState(false);
 const[followupHistory,setFollowupHistory]=useState();
+const [docName, setDocName] = useState("");
    useEffect(() => {
    const fetchFollowups = async () => {
      try {
-       const response = await getProcessHistory(id);
+       const response = await fetchAllHistory(id);
        setFollowupHistory(response)
        
      } catch (err) {
@@ -82,8 +85,22 @@ const[followupHistory,setFollowupHistory]=useState();
  
    fetchFollowups();
  }, [id]);
+ const[historyFollowup,setHistoryFollowup]=useState();
+useEffect(() => {
+    const fetchFollowupAllHistory = async () => {
+      try {
+        const result = await fetchAllHistory(id);
+        setHistoryFollowup(result?.data || []);
+      } catch (error) {
+        console.error("Failed to load followups:", error);
+      } finally {
+    
+      }
+    };
+if (id) fetchFollowupAllHistory();
+  
+  }, [id]);
 
-const[historyFollowup,setHistoryFollowup]=useState();
   useEffect(() => {
     const fetchHistory = async () => {
       setLoadingHistory(true);
@@ -267,7 +284,8 @@ const[historyFollowup,setHistoryFollowup]=useState();
       follow_up_time: convertTo24HrFormat(interactionTime),
         follow_up_type: followUpType,
    comments: reasonDesc,
-   interaction_rating:interactionRating
+   interaction_rating:interactionRating,
+   document_name:docName
 
 }
    await processCreateFollowUp(newFollowUpData);
@@ -487,7 +505,7 @@ const handleSubmit = async () => {
 
     setNewComment("");
 setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    setTimeout(() => setShowToast(false), 3000);
   } catch (err) {
     console.error("Failed to add reminder:", err.message);
   }
@@ -542,13 +560,66 @@ console.log(clientInfo,"id");
       setSendingEmail(false);
     }
   };
+//  const handleGenerateLink = () => {
+//   const updatedComment = latestComment[selectedStage].comment + " /client/upload";
+
+//   // Save to localStorage (keyed by client ID + stage)
+//   const storageKey = `comment_${clientInfo.id}_stage_${selectedStage}`;
+//   localStorage.setItem(storageKey, updatedComment);
+
+//   // Update state if needed
+//   setLatestComment(prev => ({
+//     ...prev,
+//     [selectedStage]: {
+//       ...prev[selectedStage],
+//       comment: updatedComment,
+//     },
+//   }));
+// };
+const handleGenerateLink = () => {
+  const currentComment = latestComment[selectedStage]?.comment || "";
+  const updatedComment = `${currentComment} /client/upload`;
+
+  // Save in localStorage
+  const key = `comment_${id}_stage_${selectedStage}`;
+  const existing = JSON.parse(localStorage.getItem(key) || "[]");
+
+  const updated = {
+    comment: updatedComment,
+    timestamp: new Date().toISOString(),
+  };
+
+  localStorage.setItem(key, JSON.stringify([...existing, updated]));
+
+  // Update latestComment state
+  setLatestComment(prev => ({
+    ...prev,
+    [selectedStage]: updated
+  }));
+};
+
+
+useEffect(() => {
+  if (!selectedStage) return;
+
+  const key = `comment_${id}_stage_${selectedStage}`;
+  const stored = JSON.parse(localStorage.getItem(key) || "[]");
+
+  if (stored.length) {
+    setLatestComment(prev => ({
+      ...prev,
+      [selectedStage]: stored[stored.length - 1],
+    }));
+  }
+}, [selectedStage]);
+
   return (
     <div className="client-overview-wrapper">
       <div className="c-container">
-        <div className="c-header">
-          <h2>Client Details</h2>
-          <button className="c-button">×</button>
-        </div>
+    
+          <h2 style={{marginLeft:"9px",marginBottom:"10px"}}>Client Details</h2>
+        
+    
         <div className="c-content">
           <div className="c-layout">
             <div className="client-info-column">
@@ -579,7 +650,7 @@ console.log(clientInfo,"id");
     <div key={index} className="followup-item">
       {/* Reason for follow-up */}
       <div className="followup-reason">
-        {client.comments|| "N/A"}
+        {client.reason_for_follow_up|| "N/A"}
       </div>
 
       {/* Follow-up Date and Time */}
@@ -717,7 +788,7 @@ console.log(clientInfo,"id");
           
                     </div>
          <div className="connected-via">
-            <h4>Connected Via</h4>
+            <h4 style={{marginBottom:"10px"}}>Connected Via</h4>
             <div className="radio-group">
               {["Call", "Email", "Call/Email"].map((method) => (
                 <label key={method} className="radio-container">
@@ -733,9 +804,9 @@ console.log(clientInfo,"id");
             </div>
           </div>
          <div className="follow-up-type"  style={{ marginBottom: "20px" }}>
-            <h4>Follow-Up Type</h4>
+            <h4 style={{marginBottom:"10px"}}>Follow-Up Type</h4>
             <div className="radio-group">
-              {["document collection","payment follow-up","visa filing", "other","meeting"].map((type) => (
+              {["document collection","payment follow-up","visa filing","meeting"].map((type) => (
                 <label key={type} className="radio-container">
                   <input
                     type="radio"
@@ -748,8 +819,45 @@ console.log(clientInfo,"id");
               ))}
             </div>
           </div>
+                     {followUpType === "document collection" && (
+  <div className="doc-dropdown" style={{ marginBottom: "20px" }}>
+  <label style={{marginTop:"20px",fontWeight:"700"}}>Select Document:</label>
+  <select
+    value={docName}
+    onChange={(e) => setDocName(e.target.value)}
+    style={{ padding: "8px", borderRadius: "5px", width: "50%", cursor: "pointer", display: "block", marginTop: "8px" }}
+  >
+    <option value="">Select Document</option>
+    <option value="aadharcard">Aadhar Card</option>
+    <option value="pancard">Pan Card</option>
+    <option value="10th">10th Marksheet</option>
+    <option value="12th">12th Marksheet</option>
+    <option value="passport">Passport</option>
+    <option value="other">Other</option>
+  </select>
+
+  {docName === "other" && (
+    <input
+      type="text"
+      placeholder="Enter custom document name"
+      value={docName}
+      onChange={(e) => setDocName(e.target.value)}
+      style={{
+        marginTop: "10px",
+        padding: "8px",
+        borderRadius: "5px",
+        width: "50%",
+        border: "1px solid #ccc",
+        display: "block",
+      }}
+    />
+  )}
+</div>
+
+
+  )}
  <div className="interaction-rating" >
-            <h4>Interaction Rating</h4>
+            <h4 style={{marginBottom:"10px"}}>Interaction Rating</h4>
             <div className="radio-group">
               {["hot", "warm", "cold"].map((rating) => (
                 <label key={rating} className="radio-container">
@@ -784,7 +892,7 @@ console.log(clientInfo,"id");
             </option>
           ))}
         </select>
-      <div className="reminder-action-wrapper">
+        <div className="reminder-action-wrapper">
   <div className="reminder-tooltip-wrapper">
      <span className="reminder-inline-label">Send the latest comment as a reminder</span>
     <button onClick={handleSubmit} className="reminder-button">⏰</button>
@@ -794,43 +902,70 @@ console.log(clientInfo,"id");
   {showToast && (
     <span className="reminder-toast-inline">Reminder sent successfully!</span>
   )}
-  </div>
+</div>
+
       </div>
 
       {selectedStage && (
-        <table className="stage-comments-table">
-          <thead>
-            <tr>
-              <th>Stage</th>
-              <th>Comment</th>
-              <th>View History</th>
-              <th>Add Comment</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{selectedStage}</td>
-              <td>{latestComment[selectedStage]?.comment || "-"}</td>
-              <td>
-                <button
-                  className="p-action-btn"
-                  onClick={handleViewHistory}
-                  disabled={!history.length}
-                >
-                  View History
-                </button>
-              </td>
-              <td>
-                <button
-                  className="p-action-btn"
-                  onClick={() => setShowAddModal(true)}
-                >
-                  Add Comment
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <table className="new-stage-comments-table">
+  <thead>
+    <tr>
+      <th>Stage</th>
+      <th>Comment</th>
+      <th>View History</th>
+      <th>Add Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{selectedStage}</td>
+      <td className="new-comment-cell">
+        {latestComment[selectedStage]?.comment ? (
+          <>
+           {latestComment[selectedStage].comment
+  .split(/(\/processperson\/client\/upload)/g)
+  .map((part, idx) =>
+    part === "/processperson/client/upload" ? (
+      <a
+        key={idx}
+        href={`/processperson/client/upload/${client.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#007bff", textDecoration: "underline" }}
+      >
+        {part}
+      </a>
+    ) : (
+      <span key={idx}>{part}</span>
+    )
+)}
+
+          </>
+        ) : (
+          "-"
+        )}
+      </td>
+      <td>
+        <button
+          className="new-p-action-btn"
+          onClick={handleViewHistory}
+          disabled={!history.length}
+        >
+          View History
+        </button>
+      </td>
+      <td>
+        <button
+          className="new-p-action-btn"
+          onClick={() => setShowAddModal(true)}
+        >
+          Add Comment
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
       )}
 
       {/* History Modal */}
@@ -855,27 +990,49 @@ console.log(clientInfo,"id");
       )}
 
       {/* Add Comment Modal */}
-      {showAddModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h4>Add Comment for {selectedStage}</h4>
-            <button className="modal-close-btn" onClick={() => setShowAddModal(false)}>×</button>
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Enter your comment"
-              className="comment-textarea"
-            />
-            <button
-              className="submit-btn"
-              onClick={handleAddCommentSubmit}
-              disabled={!newComment.trim()}
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-      )}
+  {showAddModal && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <h4>Add Comment for {selectedStage}</h4>
+      <button className="modal-close-btn" onClick={() => setShowAddModal(false)}>×</button>
+
+      <textarea
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        placeholder="Enter your comment"
+        className="comment-textarea"
+      />
+
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+       <button
+  className="submit-btn"
+  style={{ backgroundColor: "#0056b3", color: "white" }}
+  onClick={() =>
+    setNewComment((prev) => {
+      const baseLink = `/processperson/client/upload/${client.id}`;
+      return prev.includes(baseLink) ? prev : prev.trim() + " " + baseLink;
+    })
+  }
+  disabled={!newComment.trim()}
+>
+  Generate Link
+</button>
+
+        <button
+          className="submit-btn"
+          onClick={handleAddCommentSubmit}
+          disabled={!newComment.trim()}
+        >
+          Submit
+        </button>
+
+        
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
     </div>
       </div>

@@ -139,11 +139,11 @@ const totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
          <table className="c-lead-table">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Phone</th>
-      <th>Email</th>
-      <th>Created At</th>
-      <th>Actions</th>
+      <th>NAME</th>
+      <th>PHONE</th>
+      <th>EMAIL</th>
+      <th>CREATED AT</th>
+      <th>ACTIONS</th>
     </tr>
   </thead>
   <tbody>

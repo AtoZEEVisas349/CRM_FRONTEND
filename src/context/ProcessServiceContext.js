@@ -33,8 +33,10 @@ import {
   getAllNotificationsByUser,
   getAllProcessPersonsApi,
   createProcessforConvertedApi,
-  getAllProcessCustomerIdApi
+  getAllProcessCustomerIdApi,
+  getAllProcessPersonsFollowupApi
 } from "../services/processService";
+
 
 // 1. Create Context
 const ProcessServiceContext = createContext();
@@ -507,6 +509,17 @@ const [convertedError, setConvertedError] = useState(null);
         setLoading(false);
       }
     };
+     const fetchAllHistory = async (id) => {
+      setLoading(true);
+      try {
+        const data = await getAllProcessPersonsFollowupApi(id);
+        return data;
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
   // -----------------------
   // Provider Return
   // -----------------------
@@ -561,7 +574,8 @@ processProfile,
     fetchNotifications,
     getAllProcessPersons,
     createProcesstoConverted,
-    getProcessCustomerById
+    getProcessCustomerById,
+    fetchAllHistory
       }}
     >
       {children}
@@ -571,3 +585,4 @@ processProfile,
 
 // 3. Custom Hook
 export const useProcessService = () => useContext(ProcessServiceContext);
+

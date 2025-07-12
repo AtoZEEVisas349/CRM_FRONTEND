@@ -153,12 +153,12 @@ const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
  <table className="customer-table">
   <thead>
     <tr>
-      <th>Select</th>
-      <th>Name</th>
-      <th>Phone</th>
-      <th>Email</th>
-      <th>Last Contacted</th>
-      <th>Actions</th>
+      <th>SELECT</th>
+      <th>NAME</th>
+      <th>PHONE</th>
+      <th>EMAIL</th>
+      <th>LAST CONTACTED</th>
+      <th>ACTIONS</th>
     </tr>
   </thead>
   <tbody>

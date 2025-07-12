@@ -26,11 +26,15 @@
 }
 
 .scrollable-leads-container {
-  width: 100%;
-  /* Removed max-height to prevent vertical cutoff; allow natural height */
+  max-height: 70vh; /* Or adjust as needed */
   overflow-y: auto;
-  overflow-x: auto; /* Allow horizontal scrolling for overflow content */
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE 10+ */
 }
+
 
 .country_container {
   display: flex;
@@ -151,6 +155,13 @@
 .Total_leads {
   font-size: 18px;
   color: var(--text-color, #333);
+}
+.customer-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: white; /* Match table background */
+  z-index: 10;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
 .convert-heading {
@@ -844,7 +855,7 @@
 .customer-table th,
 .customer-table td {
   padding: 8px 12px;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #eee;
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useProcess } from "../../context/ProcessAuthContext";
-import { useParams,useLocation } from "react-router-dom";
+import { useParams,useLocation,useNavigate } from "react-router-dom";
 import img1 from '../../assets/user.png';
 import img2 from '../../assets/user1.png';
 
@@ -9,6 +9,7 @@ const ClientDash = ({ initialStages = 6 }) => {
   const { id } = useParams();
   const { handleUpsertStages, handleGetStages, handleGetCustomerStagesById,createStages,getComments } = useProcessService();
   const { user } = useProcess();
+  const navigate =useNavigate();
    const location = useLocation();
   const clientName = location.state?.clientName || "Unknown";
   const [comments, setComments] = useState([]);
@@ -603,7 +604,126 @@ fetchComments()
         const latest = [...commentArray].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
         return (
           <div style={{ marginBottom: '4px' }}>
-            <p style={{ margin: 0 }}>{latest.comment}</p>
+<div style={{ margin: 0 }}>
+ {/* {(latest.comment || "").split(/(\/processperson\/client\/upload\/\w+)/g).map((part, idx) => {
+  const isUploadLink = /^\/processperson\/client\/upload\/\w+$/.test(part);
+  if (isUploadLink) {
+    const customerLink = "/customer/client/upload";
+    return user?.type === "processperson" ? (
+      <a
+        key={idx}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#007bff", textDecoration: "underline" }}
+      >
+        {part}
+      </a>
+    ) : (
+      <a
+        key={idx}
+        href={customerLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#007bff", textDecoration: "underline" }}
+      >
+        {customerLink}
+      </a>
+    );
+  }
+  return <span key={idx}>{part}</span>;
+})} */}
+{/* {latest.comment
+  .split(/(\/(?:processperson|customer)\/client\/upload\/\w+)/g)
+  .map((part, idx) => {
+    const isUploadLink = /^\/(?:processperson|customer)\/client\/upload\/\w+$/.test(part);
+
+    if (isUploadLink) {
+      return (
+        <span
+          key={idx}
+          onClick={() => {
+            const fullComment = latest.comment || "";
+            const commentOnly = fullComment
+              .split(/\/(?:processperson|customer)\/client\/upload\/\w+/)[0]
+              .trim();
+
+            const isCustomer = user?.type === "customer";
+            const uploadPath = isCustomer
+              ? part.replace("/processperson/", "/customer/")
+              : part.replace("/customer/", "/processperson/");
+
+            navigate(uploadPath, {
+              state: {
+                label: commentOnly,
+                defaultFilename: commentOnly
+              }
+            });
+          }}
+          style={{ color: "#007bff", textDecoration: "underline", cursor: "pointer" }}
+        >
+          {part}
+        </span>
+      );
+    }
+
+    return <span key={idx}>{part}</span>;
+  })} */}
+
+{(latest.comment || "")
+  .split(/(\/(?:processperson|customer)\/client\/upload\/\w+)/g)
+  .map((part, idx) => {
+    const isUploadLink = /^\/(?:processperson|customer)\/client\/upload\/\w+$/.test(part);
+
+    if (isUploadLink) {
+      return (
+        <span
+          key={idx}
+          onClick={() => {
+            const fullComment = latest.comment || "";
+
+            // Get the comment part only (before the link)
+            const commentOnly = fullComment
+              .split(/\/(?:processperson|customer)\/client\/upload\/\w+/)[0]
+              .trim();
+
+            const isCustomer = user?.type === "customer";
+
+            // For processperson, extract id and construct full path
+            const idMatch = part.match(/\/(?:processperson|customer)\/client\/upload\/(\w+)/);
+            const extractedId = idMatch?.[1];
+            const path = isCustomer
+              ? "/customer/client/upload"
+              : `/processperson/client/upload/${extractedId}`;
+
+            navigate(path, {
+              state: {
+                label: commentOnly,
+                defaultFilename: commentOnly,
+              },
+            });
+          }}
+          style={{ color: "#007bff", textDecoration: "underline", cursor: "pointer" }}
+        >
+          {user?.type === "customer"
+            ? "/customer/client/upload"
+            : part}
+        </span>
+      );
+    }
+
+    return <span key={idx}>{part}</span>;
+  })}
+
+
+
+
+
+</div>
+
+
+
+
             <small style={{ color: '#888' }}>
               {new Date(latest.timestamp).toLocaleString()}
             </small>
@@ -776,9 +896,38 @@ onClick={() =>
     {Array.isArray(comment.text) && comment.text.length > 0 ? (
       <>
         {/* 🟣 Show latest comment */}
-        <p style={{ margin: 0 }}>
-          {comment.text[comment.text.length - 1]?.comment || '-'}
-        </p>
+   <p style={{ margin: 0 }}>
+  {(comment.text[comment.text.length - 1]?.comment || "").split(/(\/processperson\/client\/upload\/\w+)/g).map((part, idx) => {
+    const isUploadLink = /^\/processperson\/client\/upload\/\w+$/.test(part);
+    if (isUploadLink) {
+      const customerLink = "/customer/client/upload";
+      return user?.type === "processperson" ? (
+        <a
+          key={idx}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#007bff", textDecoration: "underline" }}
+        >
+          {part}
+        </a>
+      ) : (
+        <a
+          key={idx}
+          href={customerLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#007bff", textDecoration: "underline" }}
+        >
+          {customerLink}
+        </a>
+      );
+    }
+    return <span key={idx}>{part}</span>;
+  })}
+</p>
+
+
         <small style={{ color: '#888' }}>
           {comment.text[comment.text.length - 1]?.timestamp
             ? new Date(comment.text[comment.text.length - 1].timestamp).toLocaleString()

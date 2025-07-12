@@ -1,10 +1,10 @@
-
-
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 import { useApi } from "../../context/ApiContext";
 import { isSameDay } from "../../utils/helpers";
 import FollowUpForm from "./FollowUpForm";
@@ -31,14 +31,65 @@ const ScheduleMeeting = () => {
 
   const { searchQuery } = useContext(SearchContext);
   const [localLoading, setLocalLoading] = useState(false);
-  
   const navigate = useNavigate();
   const location = useLocation();
-
   const [meetings, setMeetings] = useState([]);
   const [activeFilter, setActiveFilter] = useState("today");
   const [selectedMeetingForHistory, setSelectedMeetingForHistory] = useState(null);
   const [selectedMeetingForFollowUp, setSelectedMeetingForFollowUp] = useState(null);
+  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+  const calendarRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const fp = flatpickr(calendarRef.current, {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      static: true, // Use static positioning
+      appendTo: dropdownRef.current, // Append to dropdown container
+      onChange: (selectedDates) => {
+        if (selectedDates.length === 2) {
+          setDateRange(selectedDates);
+          setActiveFilter("custom");
+        }
+      },
+      onReady: function() {
+        // Set z-index and positioning when calendar is ready
+        const calendarElement = this.calendarContainer;
+        if (calendarElement) {
+          calendarElement.style.zIndex = "1000";
+          calendarElement.style.position = "absolute";
+          calendarElement.style.top = "100%";
+          calendarElement.style.left = "0";
+          calendarElement.style.marginTop = "5px";
+        }
+      },
+      onOpen: function() {
+        // Ensure proper positioning when opened
+        const calendarElement = this.calendarContainer;
+        if (calendarElement) {
+          calendarElement.style.zIndex = "1000";
+          calendarElement.style.position = "absolute";
+          calendarElement.style.top = "100%";
+          calendarElement.style.left = "0";
+          calendarElement.style.marginTop = "5px";
+        }
+      }
+    });
+
+    const handleClick = (e) => {
+      if (!dropdownRef.current.contains(e.target)) {
+        fp.close();
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+    return () => {
+      document.removeEventListener("click", handleClick);
+      fp.destroy();
+    };
+  }, []);
 
   const loadMeetings = async () => {
     try {
@@ -121,6 +172,10 @@ const ScheduleMeeting = () => {
           monthFromNow.setDate(today.getDate() + 30);
           return start >= today && start < monthFromNow;
         }
+        if (activeFilter === "custom" && dateRange.length === 2) {
+          const [startDate, endDate] = dateRange;
+          return start >= new Date(startDate) && start <= new Date(endDate);
+        }
         return true;
       });
 
@@ -151,9 +206,9 @@ const ScheduleMeeting = () => {
       follow_up_date,
       follow_up_time,
     } = formData;
-  
+
     const meeting = selectedMeetingForFollowUp;
-  
+
     const freshLeadId =
       meeting.fresh_lead_id ||
       meeting.freshLead?.id ||
@@ -162,9 +217,9 @@ const ScheduleMeeting = () => {
       meeting.freshLead?.lead?.id ||
       meeting.id ||
       meeting.clientLead?.id;
-  
+
     const clientLeadId = meeting.clientLead?.id;
-  
+
     if (!freshLeadId || !clientLeadId) {
       Swal.fire({
         icon: "error",
@@ -173,7 +228,7 @@ const ScheduleMeeting = () => {
       });
       return;
     }
-  
+
     try {
       let followUpId;
       const histories = await fetchFollowUpHistoriesAPI();
@@ -187,7 +242,7 @@ const ScheduleMeeting = () => {
           )[0];
         followUpId = recent?.follow_up_id;
       }
-  
+
       const payload = {
         connect_via,
         follow_up_type,
@@ -197,26 +252,23 @@ const ScheduleMeeting = () => {
         follow_up_time,
         fresh_lead_id: freshLeadId,
       };
-  
-      // Create or update follow-up
+
       if (followUpId) {
         await updateFollowUp(followUpId, payload);
       } else {
         const res = await createFollowUp(payload);
         followUpId = res.data.id;
       }
-  
-      // Update client lead status for specific follow-up types
+
       if (["interested", "not interested", "no response"].includes(follow_up_type)) {
         await updateClientLead(clientLeadId, {
           status: "Follow-Up",
           companyId: meeting.clientLead?.companyId,
         });
       }
-  
-      // Always create follow-up history before any navigation
+
       await createFollowUpHistoryAPI({ ...payload, follow_up_id: followUpId });
-  
+
       const leadDetails = {
         fresh_lead_id: freshLeadId,
         clientName,
@@ -229,25 +281,21 @@ const ScheduleMeeting = () => {
         follow_up_date,
         follow_up_time,
       };
-  
-      // Handle specific follow-up types that require special API calls
+
       if (follow_up_type === "converted") {
         await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
       } else if (follow_up_type === "close") {
         await createCloseLeadAPI({ fresh_lead_id: freshLeadId });
       }
-  
-      // Remove meeting from the list
+
       setMeetings((prev) => prev.filter((m) => m.id !== meeting.id));
-  
-      // Refresh data
+
       await Promise.all([
         fetchFreshLeadsAPI(),
         refreshMeetings(),
         getAllFollowUps(),
       ]);
-  
-      // Handle navigation and success messages based on follow-up type
+
       if (follow_up_type === "converted") {
         Swal.fire({ icon: "success", title: "Client Converted Successfully!" });
         navigate("/executive/customer", { state: { lead: leadDetails } });
@@ -255,13 +303,12 @@ const ScheduleMeeting = () => {
         Swal.fire({ icon: "success", title: "Lead Closed Successfully!" });
         navigate("/executive/close-leads", { state: { lead: leadDetails } });
       } else {
-        // For all other follow-up types (interested, not interested, no response, appointment, etc.)
         const targetTab = "All Follow Ups";
         navigate("/executive/follow-up", {
           state: { lead: leadDetails, activeTab: targetTab },
         });
       }
-  
+
       handleCloseFollowUpForm();
     } catch (error) {
       console.error("Follow-up submission error:", error);
@@ -272,16 +319,15 @@ const ScheduleMeeting = () => {
       });
     }
   };
-  
+
   const handleAddFollowUp = (meeting) => setSelectedMeetingForFollowUp(meeting);
   const handleCloseFollowUpForm = () => setSelectedMeetingForFollowUp(null);
   const handleShowHistory = (meeting) => setSelectedMeetingForHistory(meeting);
   const handleCloseHistory = () => setSelectedMeetingForHistory(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadMeetings();
-  }, [activeFilter, searchQuery]);
+  }, [activeFilter, searchQuery, dateRange]);
 
   return (
     <div className="task-management-container">
@@ -296,12 +342,33 @@ const ScheduleMeeting = () => {
                   {new Date().toLocaleDateString(undefined, { weekday: "long" })}
                 </p>
                 <p className="current-date">
-                  {new Date().toLocaleDateString(undefined, {
-                    day: "numeric",
-                    month: "long",
-                  })}
+                  {dateRange.length === 2
+                    ? `${dateRange[0].toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "long",
+                      })} - ${dateRange[1].toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "long",
+                      })}`
+                    : new Date().toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "long",
+                      })}
                 </p>
-                <FontAwesomeIcon icon={faChevronDown} className="date-dropdown" />
+                <div ref={dropdownRef} style={{ position: "relative", display: "inline-block" }}>
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className="date-dropdown"
+                    onClick={() => calendarRef.current._flatpickr.toggle()}
+                    style={{ cursor: "pointer" }}
+                  />
+                  <input
+                    ref={calendarRef}
+                    style={{ display: "none" }}
+                    type="text"
+                    placeholder="Select date range"
+                  />
+                </div>
               </div>
             </div>
             <div className="filter-controls">
@@ -309,9 +376,12 @@ const ScheduleMeeting = () => {
                 <button
                   key={key}
                   className={activeFilter === key ? "active-filter" : ""}
-                  onClick={() => setActiveFilter(key)}
+                  onClick={() => {
+                    setActiveFilter(key);
+                    setDateRange([new Date(), new Date()]);
+                  }}
                   disabled={localLoading}
-                                  >
+                >
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </button>
               ))}
@@ -347,7 +417,3 @@ const ScheduleMeeting = () => {
 };
 
 export default ScheduleMeeting;
-
-
-
-

@@ -110,36 +110,47 @@ const ProcessLeads = ({searchQuery}) => {
       )}
         <h2 className="c-heading">Final Stage Leads</h2>
         <div className="leads_page_wrapper">
-          <h4 className="Total_leads">Total Final Stage leads:{clients ? clients.length : 0}</h4>
-          {closeLeadsLoading ? (
-            <p>Loading Final Stage leads...</p>
-          ) : clients.length > 0 ? (
-            <div className="scrollable-leads-container">
-            <div className="country_container">
-              {clients.map((lead, index) => (
-                <div key={index} className="country_cards">
-                  <div className="country_name">
-                    <h3>{lead.fullName || "Unnamed Lead"}</h3>
-                    <p>Phone: {lead.phone}</p>
-                    <p>Email: {lead.email || "No Email"}</p>
-                    <p>Created At: {new Date(lead.createdAt).toLocaleDateString()}</p>
-                    <button
-                      className="follow-history-btn"
-                      onClick={() => handleViewHistory(lead)}
-                      title="View Follow-up History"
-                    >
-                      <span className="history-icon"><FaPlus /></span>
-                      Follow History
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          ) : (
-            <p>No final stage leads found.</p>
-          )}
-        </div>
+  <h4 className="Total_leads" style={{marginBottom:"20px"}}>Total Final Stage leads: {clients.length}</h4>
+  {closeLeadsLoading ? (
+    <p>Loading Final Stage leads...</p>
+  ) : clients.length > 0 ? (
+    <div className="leads-table-wrapper">
+      <table className="rejected-leads-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Created At</th>
+            <th>Follow-up</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clients.map((lead, index) => (
+            <tr key={index}>
+              <td>{lead.fullName || "Unnamed Lead"}</td>
+              <td>{lead.phone}</td>
+              <td>{lead.email || "No Email"}</td>
+              <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+              <td>
+                <button
+                  className="follow-history-btn"
+                  onClick={() => handleViewHistory(lead)}
+                  title="View Follow-up History"
+                >
+                  <span className="history-icon"><FaPlus /></span> Follow History
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <p>No final stage leads found.</p>
+  )}
+</div>
+
       </div>
 
       {/* Follow-up History Modal */}

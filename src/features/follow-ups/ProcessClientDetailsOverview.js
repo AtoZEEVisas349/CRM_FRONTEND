@@ -9,6 +9,7 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailProcess from '../process-client/SendEmailProcess';
+
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
@@ -31,7 +32,10 @@ const ProcessClientDetailsOverview = () => {
     getProcessHistory,
     createReminder}=useProcessService();
   const {
+    createConvertedClientAPI,
+    createCloseLeadAPI,
     followUpLoading,
+    createFollowUpHistoryAPI,
     fetchNotifications,
     createCopyNotification,
   } = useApi();
@@ -69,7 +73,7 @@ const ProcessClientDetailsOverview = () => {
     const [clientEmail, setClientEmail] = useState("");
     const [isSaving, setIsSaving] = useState(false); // Added
      const [showToast, setShowToast] = useState(false);
-
+const [docName, setDocName] = useState("");
     const userData = JSON.parse(localStorage.getItem("user"));
 const name = userData?.fullName || "";
 const email = userData?.email || "";
@@ -328,8 +332,8 @@ useEffect(() => {
        follow_up_time: convertTo24HrFormat(interactionTime),
          follow_up_type: followUpType,
     comments: reasonDesc,
-    interaction_rating:interactionRating
-   
+    interaction_rating:interactionRating,
+   document_name:docName
   
  }
  
@@ -432,7 +436,20 @@ useEffect(() => {
     }
 
     try {
-       if (followUpType === "final") {
+      if (followUpType === "converted") {
+        await createConvertedClientAPI({ fresh_lead_id: freshLeadId });
+        await createFollowUpHistoryAPI({ 
+        follow_up_id: clientInfo.followUpId || clientInfo.id, 
+        connect_via: capitalize(contactMethod), 
+        follow_up_type: followUpType, 
+        interaction_rating: capitalize(interactionRating), 
+        reason_for_follow_up: reasonDesc, 
+        follow_up_date: interactionDate, 
+        follow_up_time: convertTo24HrFormat(interactionTime), 
+        fresh_lead_id: freshLeadId, 
+      });
+        Swal.fire({ icon: "success", title: "Client Converted" });
+      } else if (followUpType === "final") {
         const payload={
       //  follow_up_id: clientInfo.followUpId || clientInfo.id, 
         connect_via: capitalize(contactMethod), 
@@ -638,7 +655,7 @@ const handleSubmit = async () => {
       }));
     }
 setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    setTimeout(() => setShowToast(false), 3000);
     setNewComment("");
 
   } catch (err) {
@@ -698,9 +715,9 @@ console.log(clientInfo,"id");
     <div className="client-overview-wrapper">
       {/* Client Details */}
       <div className="c-container">
-        <div className="c-header">
-          <h2>Client Details</h2>
-        </div>
+     
+        <h2 style={{marginLeft:"9px",marginBottom:"30px"}}>Client Details</h2>
+       
         <div className="c-content">
           <div className="c-layout">
             <div className="client-info-column">
@@ -893,7 +910,7 @@ console.log(clientInfo,"id");
                     </div>
 
           <div className="connected-via">
-            <h4>Connected Via</h4>
+            <h4 style={{marginBottom:"10px"}}>Connected Via</h4>
             <div className="radio-group">
               {["Call", "Email", "Call/Email"].map((method) => (
                 <label key={method} className="radio-container">
@@ -911,11 +928,11 @@ console.log(clientInfo,"id");
             </div>
           </div>
 
-          <div className="follow-up-type">
-            <h4>Follow-Up Type</h4>
+          <div className="follow-up-type" >
+            <h4 style={{marginBottom:"10px"}}>Follow-Up Type</h4>
             <div className="radio-group">
               {[
-               "document collection","payment follow-up","visa filing", "other","meeting","rejected",
+               "document collection","payment follow-up","visa filing","meeting","rejected",
                 "final",
               ].map((type) => (
               <label key={type} className="radio-container">
@@ -929,10 +946,51 @@ console.log(clientInfo,"id");
                 </label>
               ))}
             </div>
-          </div>
+            {followUpType === "document collection" && (
+  <div className="doc-dropdown" style={{ marginBottom: "20px" }}>
+  <label style={{marginTop:"20px",fontWeight:"700"}}>Select Document:</label>
+  <select
+    value={docName}
+    onChange={(e) => setDocName(e.target.value)}
+    style={{ padding: "8px", borderRadius: "5px", width: "50%", cursor: "pointer", display: "block", marginTop: "8px" }}
+  >
+    <option value="">Select Document</option>
+    <option value="aadharcard">Aadhar Card</option>
+    <option value="pancard">Pan Card</option>
+    <option value="10th">10th Marksheet</option>
+    <option value="12th">12th Marksheet</option>
+    <option value="passport">Passport</option>
+    <option value="other">Other</option>
+  </select>
+
+  {docName === "other" && (
+    <input
+      type="text"
+      placeholder="Enter custom document name"
+      value={docName}
+      onChange={(e) => setDocName(e.target.value)}
+      style={{
+        marginTop: "10px",
+        padding: "8px",
+        borderRadius: "5px",
+        width: "50%",
+        border: "1px solid #ccc",
+        display: "block",
+      }}
+    />
+  )}
+</div>
+
+
+  )}
+
+  {/* Show input when 'other' is selected */}
+ 
+</div>
+       
 
           <div className="interaction-rating">
-            <h4>Interaction Rating</h4>
+            <h4 style={{marginBottom:"10px"}}>Interaction Rating</h4>
             <div className="radio-group">
               {["hot", "warm", "cold"].map((rating) => (
                 <label key={rating} className="radio-container">
@@ -966,11 +1024,11 @@ console.log(clientInfo,"id");
             </option>
           ))}
         </select>
-      
-  <div className="reminder-action-wrapper">
+       <div className="reminder-action-wrapper">
   <div className="reminder-tooltip-wrapper">
      <span className="reminder-inline-label">Send the latest comment as a reminder</span>
     <button onClick={handleSubmit} className="reminder-button">⏰</button>
+    {/* <span className="reminder-tooltip">Send the latest comment as a reminder</span> */}
   </div>
  
 
@@ -979,6 +1037,7 @@ console.log(clientInfo,"id");
   )}
 </div>
 
+ 
       </div>
 
       {selectedStage && (
@@ -994,7 +1053,31 @@ console.log(clientInfo,"id");
           <tbody>
             <tr>
               <td>{selectedStage}</td>
-              <td>{latestComment[selectedStage]?.comment || "-"}</td>
+                {latestComment[selectedStage]?.comment ? (
+          <>
+           {latestComment[selectedStage].comment
+  .split(/(\/processperson\/client\/upload)/g)
+  .map((part, idx) =>
+    part === "/processperson/client/upload" ? (
+      <a
+        key={idx}
+        href={`/processperson/client/upload/${client.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#007bff", textDecoration: "underline" }}
+      >
+        {part}
+      </a>
+    ) : (
+      <span key={idx}>{part}</span>
+    )
+)}
+
+          </>
+        ) : (
+          "-"
+        )}
+              {/* <td>{latestComment[selectedStage]?.comment || "-"}</td> */}
               <td>
                 <button
                   className="p-action-btn"
@@ -1050,13 +1133,32 @@ console.log(clientInfo,"id");
               placeholder="Enter your comment"
               className="comment-textarea"
             />
-            <button
-              className="submit-btn"
-              onClick={handleAddCommentSubmit}
-              disabled={!newComment.trim()}
-            >
-              Submit
-            </button>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+       <button
+  className="submit-btn"
+  style={{ backgroundColor: "#0056b3", color: "white" }}
+  onClick={() =>
+    setNewComment((prev) => {
+      const baseLink = `/processperson/client/upload/${client.id}`;
+      return prev.includes(baseLink) ? prev : prev.trim() + " " + baseLink;
+    })
+  }
+  disabled={!newComment.trim()}
+>
+  Generate Link
+</button>
+
+        <button
+          className="submit-btn"
+          onClick={handleAddCommentSubmit}
+          disabled={!newComment.trim()}
+        >
+          Submit
+        </button>
+
+        
+      </div>
+           
           </div>
         </div>
       )}

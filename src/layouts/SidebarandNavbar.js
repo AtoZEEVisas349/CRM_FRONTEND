@@ -519,8 +519,23 @@ const chatbotHeaderRef = useRef(null);
                   <FontAwesomeIcon icon={faTimes} />
                 </button>
               </div>
-              <div className="chatbot-popup-content">
-                <Chat token={localStorage.getItem("token")} />
+              <div
+                className="chatbot-popup-content"
+                style={{ height: "500px" }}
+              >
+                <iframe
+                  src={process.env.REACT_APP_BOTPRESS_URL}
+                  title="Botpress Chatbot"
+                  width="100%"
+                  height="100%"
+                  allow="microphone; camera"
+                  style={{
+                    border: "none",
+                    borderRadius: "8px",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
               </div>
             </div>
           </div>

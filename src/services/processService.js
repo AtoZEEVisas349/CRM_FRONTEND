@@ -1,4 +1,3 @@
-// --- processService.js (Updated with PUT API) ---
 import axios from 'axios';
 
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
@@ -540,4 +539,15 @@ credentials: "include",
 const data = await res.json();
 if (!res.ok) throw new Error(data.error || "Failed to fetch");
 return data.customers;
+};
+export const getAllProcessPersonsFollowupApi = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/process-history/all-followups/${id}`, {
+    method: "GET",
+    headers: getHeaders(),
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to fetch customer stages");
+  return data;
 };
