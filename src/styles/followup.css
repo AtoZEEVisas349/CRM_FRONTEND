@@ -2638,3 +2638,37 @@ h6 {
 .follow-up-box::-webkit-scrollbar-thumb:hover {
   background: #555; /* Thumb color on hover */
 }
+.rating-badge {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #ffffff;
+  text-align: center;
+  min-width: 60px;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.rating-hot {
+  background-color: #d32f2f;
+  border-color: #721111;
+}
+
+.rating-warm {
+  background-color: #ff9800;
+  border-color: #aa700d;
+}
+
+.rating-cold {
+  background-color: #2196f3;
+  border-color: #0d47a1;
+}
+
+.rating-default {
+  background-color: #757575;
+  border-color: #424242;
+}

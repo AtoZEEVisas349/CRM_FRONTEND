@@ -728,3 +728,6 @@
 [data-theme="peach"] .fresh-leads-profession {
   color: #6d4c41 !important;
 }
+[data-theme="dark"] .fl-unique-pagination-span {
+  color: #b2c8df ;
+}

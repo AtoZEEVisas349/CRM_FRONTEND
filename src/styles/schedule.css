@@ -886,6 +886,11 @@
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  width: 100%; /* Ensure it takes full width of container */
+  max-width: 800px; /* Set a maximum width */
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .history-card:hover {

@@ -169,7 +169,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  padding-top: 10px;
+  padding: 10px ;
   border-radius: 8px;
 }
 
@@ -813,8 +813,8 @@
   color:white;
 }
 [data-theme="dark"] .customer-table th {
-  background-color: black;
-  color:black;
+  background-color: #2b394b;
+  color:#ffffff;
 }
 [data-theme="green"] .customer-table th {
  background: #2e7d32;
@@ -838,7 +838,11 @@
 }
 [data-theme="ocean"] .customer-table th {
  background: #4b6cb7;
- color:black;
+ color:rgb(255, 255, 255);
+}
+[data-theme="peach"] .customer-table th {
+ background: #815b5b;
+ color:rgb(255, 255, 255);
 }
 .customer-table {
   width: 100%;
@@ -882,3 +886,4 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
