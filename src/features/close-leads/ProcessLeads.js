@@ -134,7 +134,7 @@ const ProcessLeads = ({searchQuery}) => {
               <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
               <td>
                 <button
-                  className="follow-history-btn"
+                  className="r-follow-history-btn"
                   onClick={() => handleViewHistory(lead)}
                   title="View Follow-up History"
                 >

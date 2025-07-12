@@ -2611,3 +2611,17 @@ body {
   box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
     cursor: pointer;
 }
+.rejected-leads-table {
+  width: 100%;
+   /* important to allow border radius */
+   border-spacing: 0; /* removes spacing between cells */
+   border-radius: 15px;
+   overflow: hidden;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+ }
+ .rejected-leads-table th{
+   padding: 8px 12px;
+   text-align: left;
+ 
+ }
+ 

@@ -446,18 +446,6 @@ select:hover {
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-.rejected-leads-table th{
-  border: 1px solid #ddd;
-  padding: 8px 12px;
-  text-align: left;
-
-}
-
-.rejected-leads-table td {
-  border: 1px solid #ddd;
-  padding: 8px 12px;
-  text-align: left;
-}
 
 .rejected-leads-table th {
   background-color: #f5f5f5;
@@ -477,7 +465,7 @@ select:hover {
 }
 
 .r-follow-history-btn:hover {
-  background-color: #218838;
+  background-color: #917ad1;
 }
 
 .c-lead-table {
@@ -587,7 +575,7 @@ select:hover {
  }
  
  .rejected-leads-table thead th {
-   background-color: #c5c1c1;
+   background-color: #e3e3e3;
    font-weight: bold;
  }
  
