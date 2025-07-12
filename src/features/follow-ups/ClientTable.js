@@ -189,12 +189,12 @@ const ClientTable = ({
                   return (
                     <tr
                       key={index}
-                      className={`$isOld ? "old-followup-row" : ""} ${ratingClass}`}
+                      className={`clickable-row ${isOld ? "old-followup-row" : ""} ${ratingClass}`}
                       style={
                         isOld
                           ? {
                               backgroundColor: "white",
-                              fontWeight:"900"
+                              fontWeight:"900",
                             }
                           : {}
                       }

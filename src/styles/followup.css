@@ -1218,15 +1218,12 @@ h6 {
   background-color: #d32f2f;
   border-color: #721111;
 }
-
-.rating-warm {
-  background-color: #ff9800;
-  border-color: #aa700d;
-}
-
 .rating-cold {
   background-color: #2196f3;
   border-color: #0d47a1;
+}
+.rating-badge {
+  cursor: pointer;
 }
 
 .rating-default {
@@ -1608,6 +1605,7 @@ h6 {
 .client-table tr.rating-warm {
   background-color: #fff3e0;
   border-left: 4px solid #e3950f !important;
+  cursor: pointer;
 }
 
 .client-table tr.rating-cold {
@@ -2103,6 +2101,7 @@ h6 {
   background: #fef3c7;
   color: #d97706;
   border: 1px solid #fde68a;
+  cursor: pointer;
 }
 
 .rating-cold {
@@ -2631,6 +2630,9 @@ h6 {
 .follow-up-box::-webkit-scrollbar-thumb {
   background: #888; /* Thumb color */
   border-radius: 4px;
+}
+.clickable-row {
+  cursor: pointer;
 }
 
 .follow-up-box::-webkit-scrollbar-thumb:hover {

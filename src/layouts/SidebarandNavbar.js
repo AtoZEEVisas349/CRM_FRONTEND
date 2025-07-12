@@ -409,19 +409,21 @@ const chatbotHeaderRef = useRef(null);
               title="Open ChatBot"
               style={{ cursor: "pointer" }}
             />
+<FontAwesomeIcon
+  className="navbar_icon"
+  icon={faClock}
+  title="Toggle Activity Tracker"
+  onClick={() => setShowTracker((prev) => !prev)}
+  style={{ cursor: "pointer" }}
+/>
 
-            <div
-              onMouseEnter={() => setShowTracker(true)}
-              onMouseLeave={() => setShowTracker(false)}
-            >
-              <FontAwesomeIcon
-                className="navbar_icon"
-                icon={faClock}
-                title="Toggle Activity Tracker"
-                onClick={() => setShowTracker((prev) => !prev)}
-              />
-              {showTracker && <ExecutiveActivity />}
-            </div>
+{showTracker && (
+  <div className="activity-tracker-wrapper">
+    <ExecutiveActivity />
+  </div>
+)}
+
+
 
             <div className="user-icon-wrapper" ref={popoverRef}>
               <FontAwesomeIcon
