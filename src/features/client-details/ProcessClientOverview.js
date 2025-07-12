@@ -947,7 +947,7 @@ useEffect(() => {
       </td>
       <td>
         <button
-          className="new-p-action-btn"
+          className="p-action-btn"
           onClick={handleViewHistory}
           disabled={!history.length}
         >
@@ -956,7 +956,7 @@ useEffect(() => {
       </td>
       <td>
         <button
-          className="new-p-action-btn"
+          className="p-action-btn"
           onClick={() => setShowAddModal(true)}
         >
           Add Comment
