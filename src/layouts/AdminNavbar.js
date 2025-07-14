@@ -47,7 +47,8 @@ function AdminNavbar() {
         userRole: localStorageUser.role,
       });
     }
-  }, []);
+}, [fetchNotifications, localStorageUser.id, localStorageUser.role, notifications]);
+
 
   useEffect(() => {
     if (unreadCount > 0 && badgeRef.current) {
@@ -57,7 +58,7 @@ function AdminNavbar() {
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [location.pathname]);
+  }, [location.pathname,unreadCount]);
 
   const handleMouseEnter = async () => {
     clearTimeout(hoverTimeout.current);

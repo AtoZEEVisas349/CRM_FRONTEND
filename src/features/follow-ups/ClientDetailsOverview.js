@@ -8,18 +8,18 @@ import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import SendEmailToClients from "../client-details/SendEmailToClients";
-import CallRoundedIcon from '@mui/icons-material/CallRounded';
-import EmailIcon from '@mui/icons-material/Email';
-import CallMadeIcon from '@mui/icons-material/CallMade';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import PersonOffIcon from '@mui/icons-material/PersonOff';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LockPersonIcon from '@mui/icons-material/LockPerson';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import CallRoundedIcon from "@mui/icons-material/CallRounded";
+import EmailIcon from "@mui/icons-material/Email";
+import CallMadeIcon from "@mui/icons-material/CallMade";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import PersonOffIcon from "@mui/icons-material/PersonOff";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LockPersonIcon from "@mui/icons-material/LockPerson";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import AcUnitIcon from "@mui/icons-material/AcUnit";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
 
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -53,12 +53,13 @@ const ClientDetailsOverview = () => {
   useCopyNotification(createCopyNotification, fetchNotifications);
   const client = useMemo(() => location.state?.client || {}, []);
 
-
   const getCurrentTime24Hour = () => {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
-    return `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+    return `${currentHour.toString().padStart(2, "0")}:${currentMinute
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const contactIcons = {
@@ -72,7 +73,9 @@ const ClientDetailsOverview = () => {
     appointment: <EventAvailableIcon fontSize="small" />,
     "no response": <PersonOffIcon fontSize="small" />,
     converted: <CheckCircleIcon fontSize="small" />,
-    "not interested": <ThumbDownIcon fontSize="small" style={{ marginTop: 4 }} />,
+    "not interested": (
+      <ThumbDownIcon fontSize="small" style={{ marginTop: 4 }} />
+    ),
     close: <LockPersonIcon fontSize="small" />,
   };
 
@@ -96,7 +99,10 @@ const ClientDetailsOverview = () => {
   const [interactionDate, setInteractionDate] = useState(todayStr);
   const [timeOnly, setTimeOnly] = useState(() => {
     const now = new Date();
-    return `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    return `${now.getHours().toString().padStart(2, "0")}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
   });
 
   const [isTimeEditable, setIsTimeEditable] = useState(false);
@@ -133,7 +139,8 @@ const ClientDetailsOverview = () => {
   const isListeningRef = useRef(isListening);
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true; // ENABLE continuous listening
@@ -141,7 +148,8 @@ const ClientDetailsOverview = () => {
       recognition.lang = "en-US";
 
       recognition.onresult = (event) => {
-        const transcript = event.results[event.results.length - 1][0].transcript;
+        const transcript =
+          event.results[event.results.length - 1][0].transcript;
         setReasonDesc((prev) => `${prev} ${transcript}`);
       };
 
@@ -389,7 +397,9 @@ const ClientDetailsOverview = () => {
         clientPhone: clientInfo.phone,
         reasonForFollowup: reasonDesc,
         startTime: new Date(
-          `${interactionDate || new Date().toISOString().split("T")[0]}T${convertTo24HrFormat(interactionTime)}`
+          `${
+            interactionDate || new Date().toISOString().split("T")[0]
+          }T${convertTo24HrFormat(interactionTime)}`
         ).toISOString(),
         endTime: null,
         fresh_lead_id: freshLeadId,
@@ -474,7 +484,9 @@ const ClientDetailsOverview = () => {
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
-      alert("Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome.");
+      alert(
+        "Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome."
+      );
       return;
     }
     setSpeechError(null); // Clear any previous errors
@@ -496,7 +508,7 @@ const ClientDetailsOverview = () => {
     recognitionRef.current?.stop();
   };
 
-  const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
+  const { handleSendEmail } = useExecutiveActivity(); //Getting Email templates
   const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
 
   //State for selecting email template
@@ -507,14 +519,13 @@ const ClientDetailsOverview = () => {
     setSelectedTemplateId(e.target.value);
   };
 
-
   const isMeetingInPast = useMemo(() => {
-    if (followUpType !== "appointment" || !interactionDate || !interactionTime) return false;
+    if (followUpType !== "appointment" || !interactionDate || !interactionTime)
+      return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
     const now = new Date();
     return selectedDateTime < now;
   }, [followUpType, interactionDate, interactionTime]);
-
 
   return (
     <>
@@ -543,115 +554,137 @@ const ClientDetailsOverview = () => {
                   </div>
                 </div>
               </div>
-     <div className="follow-up-column">
-  <div className="follow-up-box">
-    <div className="follow-up-header">
-      <h3>Follow-up History</h3>
-    </div>
-    {isLoading ? (
-      <div className="loading-state">
-        <p>Loading follow-up history...</p>
-      </div>
-    ) : histories.length > 0 ? (
-      <div className="followup-history-list">
-        {histories.map((history, index) => (
-          <div
-            key={index}
-            className={`followup-entry ${index === 0 ? "latest-followup" : "previous-followup"}`}
-            style={{
-              backgroundColor: index === 0 ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
-              marginBottom: '5px',
-              padding: '10px',
-              borderRadius: '5px',
-              position: 'relative'
-            }}
-          >
-            {/* Date and Time in top right corner */}
-            <div className="followup-datetime" style={{
-              position: 'absolute',
-              top: '10px',
-              right: '20px',
-              textAlign: 'right',
-              fontSize: '0.8em',
-              color: '#666'
-            }}>
-              <div className="date">
-                {new Date(history.createdAt).toLocaleDateString()}
-              </div>
-              <div className="time">
-                {new Date(history.createdAt).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true
-                })}
-              </div>
-            </div>
+              <div className="follow-up-column">
+                <div className="follow-up-box">
+                  <div className="follow-up-header">
+                    <h3>Follow-up History</h3>
+                  </div>
+                  {isLoading ? (
+                    <div className="loading-state">
+                      <p>Loading follow-up history...</p>
+                    </div>
+                  ) : histories.length > 0 ? (
+                    <div className="followup-history-list">
+                      {histories.map((history, index) => (
+                        <div
+                          key={index}
+                          className={`followup-entry ${
+                            index === 0
+                              ? "latest-followup"
+                              : "previous-followup"
+                          }`}
+                          style={{
+                            marginBottom: "5px",
+                            padding: "10px",
+                            borderRadius: "5px",
+                            position: "relative",
+                          }}
+                        >
+                          {/* Date and Time in top right corner */}
+                          <div
+                            className="followup-datetime"
+                            style={{
+                              position: "absolute",
+                              top: "10px",
+                              right: "20px",
+                              textAlign: "right",
+                              fontSize: "0.8em",
+                              color: "#666",
+                            }}
+                          >
+                            <div className="date">
+                              {new Date(history.createdAt).toLocaleDateString()}
+                            </div>
+                            <div className="time">
+                              {new Date(history.createdAt).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                }
+                              )}
+                            </div>
+                          </div>
 
-            <div className="followup-content">
-              {/* Latest badge and interaction badges in one row */}
-              <div className="badges-row" style={{
-                display: 'flex',
-                gap: '8px',
-                alignItems: 'center',
-                marginBottom: '8px',
-                marginLeft: '-10px',
-                flexWrap: 'wrap'
-              }}>
-                {index === 0 && (
-                  <span
-                    className="latest-badge"
-                    style={{ 
-                      display: 'inline-block'
-                    }}
-                  >
-                    Latest
-                  </span>
-                )}
-                
-                <span className="connect-badge" style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  padding: '2px 8px',
-                  borderRadius: '12px',
-                  fontSize: '0.75em',
-                  fontWeight: 'bold'
-                }}>
-                  {history.connect_via || "Call"}
-                </span>
-                <span className="c-rating-badge" style={{
-                  backgroundColor: '#fd7e14',
-                  color: 'white',
-                  padding: '2px 8px',
-                  borderRadius: '12px',
-                  fontSize: '0.75em',
-                  fontWeight: 'bold'
-                }}>
-                  {history.interaction_rating || "Warm"}
-                </span>
-              </div>
+                          <div className="followup-content">
+                            {/* Latest badge and interaction badges in one row */}
+                            <div
+                              className="badges-row"
+                              style={{
+                                display: "flex",
+                                gap: "8px",
+                                alignItems: "center",
+                                marginBottom: "8px",
+                                marginLeft: "-10px",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              {index === 0 && (
+                                <span
+                                  className="latest-badge"
+                                  style={{
+                                    display: "inline-block",
+                                  }}
+                                >
+                                  Latest
+                                </span>
+                              )}
 
-              {/* Follow-up reason */}
-              <p className="followup-reason" style={{
-                margin: '0',
-                paddingRight: '80px', // Give space for date/time
-                lineHeight: '1.4'
-              }}>
-                {history.reason_for_follow_up || "No description available."}
-              </p>
+                              <span
+                                className="connect-badge"
+                                style={{
+                                  backgroundColor: "#28a745",
+                                  color: "white",
+                                  padding: "2px 8px",
+                                  borderRadius: "12px",
+                                  fontSize: "0.75em",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {history.connect_via || "Call"}
+                              </span>
+                              <span
+                                className="c-rating-badge"
+                                style={{
+                                  backgroundColor: "#fd7e14",
+                                  color: "white",
+                                  padding: "2px 8px",
+                                  borderRadius: "12px",
+                                  fontSize: "0.75em",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {history.interaction_rating || "Warm"}
+                              </span>
+                            </div>
+
+                            {/* Follow-up reason */}
+                            <p
+                              className="followup-reason"
+                              style={{
+                                margin: "0",
+                                paddingRight: "80px", // Give space for date/time
+                                lineHeight: "1.4",
+                              }}
+                            >
+                              {history.reason_for_follow_up ||
+                                "No description available."}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <p>No follow-up history available.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-    ) : (
-      <div className="empty-state">
-        <p>No follow-up history available.</p>
-      </div>
-    )}
-  </div>
-</div>
-</div>
-</div>
-</div>
+        </div>
         {/* Client Interaction */}
         <div className="client-interaction-container">
           <div className="interaction-form">
@@ -669,7 +702,7 @@ const ClientDetailsOverview = () => {
                       onChange={() => setContactMethod(method)}
                     />
                     <span className="radio-label">
-                    {contactIcons[method]}
+                      {contactIcons[method]}
                       {method.charAt(0).toUpperCase() + method.slice(1)}
                     </span>
                   </label>
@@ -696,8 +729,9 @@ const ClientDetailsOverview = () => {
                       onChange={() => setFollowUpType(type)}
                     />
                     <span className="radio-label">
-                    {followUpIcons[type]}
-                    {type.replace("-", " ")}</span>
+                      {followUpIcons[type]}
+                      {type.replace("-", " ")}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -715,7 +749,7 @@ const ClientDetailsOverview = () => {
                       onChange={() => setInteractionRating(rating)}
                     />
                     <span className="radio-label">
-                    {ratingIcons[rating]}
+                      {ratingIcons[rating]}
                       {rating.charAt(0).toUpperCase() + rating.slice(1)}
                     </span>
                   </label>
@@ -742,18 +776,29 @@ const ClientDetailsOverview = () => {
                     type="button"
                     className={`speech-btn ${isListening ? "listening" : ""}`}
                     onClick={toggleListening}
-                    aria-label={isListening ? "Stop recording" : "Start recording"}
+                    aria-label={
+                      isListening ? "Stop recording" : "Start recording"
+                    }
                   >
                     {isListening ? "⏹" : "🎤"}
                   </button>
                 </div>
 
-                <div className="interaction-datetime" style={{ marginTop: "20px" }}>
+                <div
+                  className="interaction-datetime"
+                  style={{ marginTop: "10px" }}
+                >
                   {/* Show Date and Time inputs only when appointment is selected */}
                   {followUpType === "appointment" && (
                     <>
                       <h4>Interaction Schedule and Time</h4>
-                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "20px",
+                          alignItems: "center",
+                        }}
+                      >
                         <div>
                           <label style={{ display: "block" }}>Date:</label>
                           <input
@@ -765,11 +810,34 @@ const ClientDetailsOverview = () => {
                             style={{ padding: "8px", borderRadius: "4px" }}
                           />
                         </div>
-                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
                           {/* TIME FIELD */}
-                          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", width: "200px" }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: "10px",
+                              width: "200px",
+                            }}
+                          >
                             <div>
-                              <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Time:</label>
+                              <label
+                                style={{
+                                  display: "block",
+                                  marginBottom: "4px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                Time:
+                              </label>
                               <div
                                 style={{
                                   display: "flex",
@@ -779,14 +847,18 @@ const ClientDetailsOverview = () => {
                                   borderRadius: "6px",
                                   padding: "0 10px",
                                   backgroundColor: "#fff",
-                                  height: "38px"
+                                  height: "38px",
                                 }}
                               >
                                 <input
                                   type="time"
                                   value={timeOnly}
                                   onChange={(e) => setTimeOnly(e.target.value)}
-                                  style={{ border: "none", outline: "none", width: "100px" }}
+                                  style={{
+                                    border: "none",
+                                    outline: "none",
+                                    width: "100px",
+                                  }}
                                 />
                                 <button
                                   type="button"
@@ -799,7 +871,7 @@ const ClientDetailsOverview = () => {
                                     color: "#007bff",
                                     padding: "2px 4px",
                                     borderRadius: "3px",
-                                    marginLeft: "4px"
+                                    marginLeft: "4px",
                                   }}
                                   title="Use current time"
                                 >
@@ -812,8 +884,24 @@ const ClientDetailsOverview = () => {
                       </div>
                     </>
                   )}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px", width: "200px" }}>
-                    <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>Set Follow-up Reminder:</label>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: "10px",
+                      width: "200px",
+                    }}
+                  >
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: "4px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      Set Follow-up Reminder:
+                    </label>
                     <div
                       style={{
                         display: "flex",
@@ -824,14 +912,18 @@ const ClientDetailsOverview = () => {
                         padding: "0 10px",
                         backgroundColor: "#fff",
                         height: "38px",
-                        width: "150px"
+                        width: "150px",
                       }}
                     >
                       <input
                         type="time"
                         value={reminderTime}
                         onChange={(e) => setReminderTime(e.target.value)}
-                        style={{ border: "none", outline: "none", width: "100px" }}
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "100px",
+                        }}
                       />
                       <button
                         type="button"
@@ -844,7 +936,7 @@ const ClientDetailsOverview = () => {
                           color: "#007bff",
                           padding: "2px 4px",
                           borderRadius: "3px",
-                          marginLeft: "4px"
+                          marginLeft: "4px",
                         }}
                         title="Schedule Reminder"
                       >
@@ -858,23 +950,32 @@ const ClientDetailsOverview = () => {
           </div>
         </div>
 
-
         {followUpType === "appointment" && isMeetingInPast && (
-          <div style={{
-            marginTop: "12px",
-            color: "#b71c1c",
-            background: "#fff4f4",
-            borderLeft: "4px solid #e57373",
-            padding: "10px 15px",
-            borderRadius: "6px",
-            fontSize: "14px"
-          }}>
-            ⚠ Please select a <strong>future date or time</strong> to schedule the meeting.
+          <div
+            style={{
+              marginTop: "12px",
+              color: "#b71c1c",
+              background: "#fff4f4",
+              borderLeft: "4px solid #e57373",
+              padding: "10px 15px",
+              borderRadius: "6px",
+              fontSize: "14px",
+            }}
+          >
+            ⚠ Please select a <strong>future date or time</strong> to schedule
+            the meeting.
           </div>
-        )
-        }
+        )}
 
-        <div className="button-group" style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
+        <div
+          className="button-group"
+          style={{
+            marginTop: "5px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+          }}
+        >
           {/* Update Follow-Up button */}
           <button
             onClick={handleUpdateFollowUp}
@@ -904,6 +1005,7 @@ const ClientDetailsOverview = () => {
                 color: "white",
                 padding: "10px 20px",
                 marginLeft: "10px",
+                marginRight: "10px",
                 borderRadius: "5px",
                 border: "none",
               }}
@@ -948,9 +1050,7 @@ const ClientDetailsOverview = () => {
             </button>
           )}
         </div>
-      </div >
-
-
+      </div>
     </>
   );
 };

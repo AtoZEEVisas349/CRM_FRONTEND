@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import '../../styles/verify.css'; 
 
 const Verify = () => {
-  const { verifyExecutiveOTP, handleResendExecutiveOtp, otpResendLoading, otpResendSuccess, otpResendError } = useApi();
+  const { verifyExecutiveOTP, handleResendExecutiveOtp, otpResendLoading, otpResendError } = useApi();
   const [email, setEmail] = useState(null); // Start as null
   const navigate = useNavigate();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);

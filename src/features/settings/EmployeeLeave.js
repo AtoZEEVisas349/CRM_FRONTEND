@@ -112,7 +112,7 @@ const EmployeeLeave = () => {
     };
 
     fetchUserDataAndLeaves();
-  }, []);
+  }, [fetchLeaveApplicationsAPI]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;

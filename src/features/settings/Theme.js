@@ -247,39 +247,12 @@ const Theme = () => {
     transition: 'opacity 0.3s ease'
   });
 
-  const getSidebarPreviewStyle = (color, themeKey) => ({
-    height: '128px',
-    borderRadius: '12px',
-    padding: '1rem',
-    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1)',
-    background: themeKey === 'light' ? 'linear-gradient(135deg, #e2e8f0, #cbd5e1)' : `linear-gradient(135deg, ${color}e6, ${color}cc)`
-  });
-
-  const getHeaderPreviewStyle = (color) => ({
-    height: '128px',
-    borderRadius: '12px',
-    padding: '1rem',
-    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1)',
-    background: `linear-gradient(135deg, ${color}33, ${color}22)`
-  });
-
-  const getPreviewLabelStyle = (themeKey) => ({
-    color: themeKey === 'light' ? '#374151' : 'rgba(255, 255, 255, 0.9)',
-    fontWeight: '500',
-    marginBottom: '0.5rem'
-  });
-
   const getPreviewBarStyle = (themeKey) => ({
     height: '8px',
     borderRadius: '4px',
     marginBottom: '4px',
     background: themeKey === 'light' ? '#94a3b8' : 'rgba(255, 255, 255, 0.3)'
   });
-
-  const renderPreviewBars = (widths, themeKey) => 
-    widths.map((width, i) => (
-      <div key={i} style={{ ...getPreviewBarStyle(themeKey), width, opacity: i > 0 ? 0.7 : 1 }} />
-    ));
 
   return (
     <div style={styles.container} >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useApi } from "../../context/ApiContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -20,7 +20,7 @@ const MyProfile = () => {
       fetchSettings();
       hasFetched.current = true;
     }
-  }, [userSettings]);
+  }, [userSettings,fetchSettings]);
 
   useEffect(() => {
     if (userSettings) {
@@ -83,7 +83,6 @@ const MyProfile = () => {
           role: userSettings?.user?.role || "",
           phone: userSettings?.user?.phone || "",
           country: userSettings?.user?.country || "",
-          role: userSettings?.user?.role || "",
           tax_id: userSettings?.user?.tax_id || "",
           city: userSettings?.user?.city || "",
           state: userSettings?.user?.state || "",

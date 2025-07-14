@@ -1,6 +1,3 @@
-
-
-
 /* closeLeads */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 .close-leads-container{
@@ -390,8 +387,6 @@ select:hover {
 }
 
 
-
-
 /*----------------------------------Ocean Blue Mist--------------------------*/
 [data-theme="ocean"] .close-leads-page {
 
@@ -477,13 +472,46 @@ select:hover {
   margin-top: 16px;
   background-color: #ffffff;
   margin-bottom: 20px;
+  table-layout: fixed; /* Added to enforce consistent column widths */
 }
 
 .c-lead-table th,
 .c-lead-table td {
   padding: 12px 16px;
-
   text-align: left;
+}
+
+/* Assign specific widths to each column */
+.c-lead-table th:nth-child(1),
+.c-lead-table td:nth-child(1) { /* NAME column */
+  width: 25%;
+}
+
+.c-lead-table th:nth-child(2),
+.c-lead-table td:nth-child(2) { /* PHONE column */
+  width: 20%;
+}
+
+.c-lead-table th:nth-child(3),
+.c-lead-table td:nth-child(3) { /* EMAIL column */
+  width: 25%;
+}
+
+.c-lead-table th:nth-child(4),
+.c-lead-table td:nth-child(4) { /* CREATED AT column */
+  width: 15%;
+}
+
+.c-lead-table th:nth-child(5),
+.c-lead-table td:nth-child(5) { /* ACTIONS column */
+  width: 15%;
+}
+
+/* Ensure content doesn't overflow */
+.c-lead-table td {
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .c-lead-table th {
@@ -597,4 +625,3 @@ select:hover {
    align-items: center;
    gap: 4px;
  }
-

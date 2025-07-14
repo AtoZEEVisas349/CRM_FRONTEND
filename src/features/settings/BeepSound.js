@@ -20,8 +20,8 @@ function BeepSound() {
     } else {
       setDraftSettings(committedSettings);
     }
-  }, []);
-
+ }, [committedSettings, setCommittedSettings]);
+ 
   useEffect(() => {
     // Initialize sound generator
     soundGeneratorRef.current = new SoundGenerator();

@@ -1,6 +1,8 @@
 
 
 
+
+
 /* client */
 /* === BASE RESET === */
 
@@ -267,7 +269,7 @@
   background-color: var(--card-bg);
 }
 .info-item {
-  margin-bottom: 12px; /* Adds vertical spacing between each field */
+  margin-bottom: 5px; /* Adds vertical spacing between each field */
   display: flex;
   align-items: center;
   gap: 20px;
@@ -295,15 +297,13 @@ select {
 /* === CLIENT INTERACTIONS & FOLLOW-UP === */
 .followup-detail-container {
   background-color: var(--card-bg);
-  padding: 20px;
-  margin-top: 30px;
+  padding: 10px 20px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 .client-interaction-container{
   background-color: var(--card-bg);
-  padding: 20px;
-  margin-top: 30px;
+  padding: 10px 20px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
@@ -321,7 +321,7 @@ select {
 .follow-up-datetime {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 .interaction-field label,

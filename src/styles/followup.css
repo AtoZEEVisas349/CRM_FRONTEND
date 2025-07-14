@@ -3,6 +3,7 @@
 
 
 
+
 body {
   overflow-y: auto;
   font-family: 'Poppins', sans-serif;
@@ -87,7 +88,6 @@ body {
 
 .info-item .label {
   width: 70px;
-  font-weight: 600;
   color: #456dc9;
   font-size: 14px;
 }
@@ -882,12 +882,12 @@ label {
 /* Client Table */
 .client-table {
   width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background-color: var(--card-bg);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-    table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  table-layout: fixed;
 }
 
 /* Table Headers - Fix color to black and prevent it from changing in light/dark mode */
@@ -901,6 +901,8 @@ label {
 .client-table td {
   padding: 8px 15px;
   border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: middle;
 }
 
 .client-name {
@@ -1164,7 +1166,7 @@ h6 {
   gap: 6px;
   padding: 8px 14px;
   background-color: #f5f5f5;
-  border: 3px solid #cfd4dc;
+  border: 1px solid #cfd4dc;
   border-radius: 999px;
   font-weight: 500;
   color: #1a1a1a;
@@ -2062,7 +2064,7 @@ h6 {
 
 .interaction-form h4{
   font-size: 18px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
 }
 
 [data-theme="dark"] .follow-up-header h3{
@@ -2779,3 +2781,34 @@ h6 {
   background-color: #757575;
   border-color: #424242;
 }
+
+.client-table th:nth-child(1),
+.client-table td:nth-child(1) { /* NAME column */
+  width: 17%;
+}
+
+.client-table th:nth-child(2),
+.client-table td:nth-child(2) { /* PHONE column */
+  width: 12%;
+}
+
+.client-table th:nth-child(3),
+.client-table td:nth-child(3) { /* EMAIL column */
+  width: 20%;
+}
+
+.client-table th:nth-child(4),
+.client-table td:nth-child(4) { /* ADD FOLLOW-UPS column */
+  width: 12%;
+}
+
+.client-table th:nth-child(5),
+.client-table td:nth-child(5) { /* STATUS column */
+  width: 8%;
+}
+
+.client-table th:nth-child(6),
+.client-table td:nth-child(6) { /* CALL column */
+  width: 7%;
+}
+

@@ -22,14 +22,13 @@ const HrLayout = () => {
     const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   
     const user = JSON.parse(localStorage.getItem("user"));
-    const roleLabel = user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1);
    
     useEffect(() => {
       localStorage.setItem("adminSidebarExpanded", "false");
       window.dispatchEvent(new Event("sidebarToggle"));
       fetchExecutives();
       fetchExecutivesList();
-    }, []);
+    }, [fetchExecutives,fetchExecutivesList]);
   
     const fetchExecutivesList = async () => {
       try {
@@ -59,9 +58,6 @@ const HrLayout = () => {
         {isDashboard ? (
           <RequirePermission requiredKey="dashboard">
            <div className="dashboard-wrapper">
-           {/* <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
-                {roleLabel} Dashboard
-              </h2> */}
             <Header />
             <Summary />
 

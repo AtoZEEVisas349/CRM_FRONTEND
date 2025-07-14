@@ -37,7 +37,7 @@ const FollowUpHistory = ({ meeting, onClose }) => {
         console.warn("No valid freshLeadId found for meeting:", meeting);
         setFollowUpHistories([]);
       }
-    }, [meeting]);
+    }, [meeting,loadFollowUpHistories]);
   
     const loadFollowUpHistories = async (freshLeadId) => {
       if (!freshLeadId) {

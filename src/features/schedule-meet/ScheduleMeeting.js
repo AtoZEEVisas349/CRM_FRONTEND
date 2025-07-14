@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
@@ -11,7 +11,6 @@ import FollowUpForm from "./FollowUpForm";
 import FollowUpHistory from "./FollowUpHistory";
 import MeetingList from "./MeetingList";
 import { SearchContext } from "../../context/SearchContext";
-import { useLoading } from "../../context/LoadingContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 
 const ScheduleMeeting = () => {
@@ -32,7 +31,6 @@ const ScheduleMeeting = () => {
   const { searchQuery } = useContext(SearchContext);
   const [localLoading, setLocalLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const [meetings, setMeetings] = useState([]);
   const [activeFilter, setActiveFilter] = useState("today");
   const [selectedMeetingForHistory, setSelectedMeetingForHistory] = useState(null);
@@ -327,7 +325,7 @@ const ScheduleMeeting = () => {
 
   useEffect(() => {
     loadMeetings();
-  }, [activeFilter, searchQuery, dateRange]);
+  }, [activeFilter, searchQuery, dateRange,loadMeetings]);
 
   return (
     <div className="task-management-container">

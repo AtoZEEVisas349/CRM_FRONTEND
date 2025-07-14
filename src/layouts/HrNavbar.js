@@ -22,9 +22,7 @@ function HrNavbar() {
 
   const { changeTheme, theme } = useContext(ThemeContext);
   const {
-    adminProfile,
     loading,
-    fetchAdmin,
     fetchNotifications,
     notifications,
     unreadCount,

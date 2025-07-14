@@ -63,7 +63,7 @@ const SidebarandNavbar = () => {
     useBreakTimer();
   const timer = useWorkTimer();
   const chatbotRef = useRef(null);
-const chatbotHeaderRef = useRef(null);
+  const chatbotHeaderRef = useRef(null);
 
   const { user, logout } = useAuth();
   const {
@@ -152,47 +152,47 @@ const chatbotHeaderRef = useRef(null);
     navigate("/executive");
   };
   useEffect(() => {
-  if (!showChatbot || !chatbotRef.current || !chatbotHeaderRef.current) return;
+    if (!showChatbot || !chatbotRef.current || !chatbotHeaderRef.current)
+      return;
 
-  const popup = chatbotRef.current;
-  const header = chatbotHeaderRef.current;
+    const popup = chatbotRef.current;
+    const header = chatbotHeaderRef.current;
 
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
 
-  const onMouseDown = (e) => {
-    isDragging = true;
-    const rect = popup.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    popup.style.position = "absolute";
-    popup.style.zIndex = 10000;
-  };
+    const onMouseDown = (e) => {
+      isDragging = true;
+      const rect = popup.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      popup.style.position = "absolute";
+      popup.style.zIndex = 10000;
+    };
 
-  const onMouseMove = (e) => {
-    if (isDragging) {
-      popup.style.left = `${e.clientX - offsetX}px`;
-      popup.style.top = `${e.clientY - offsetY}px`;
-    }
-  };
+    const onMouseMove = (e) => {
+      if (isDragging) {
+        popup.style.left = `${e.clientX - offsetX}px`;
+        popup.style.top = `${e.clientY - offsetY}px`;
+      }
+    };
 
-  const onMouseUp = () => {
-    isDragging = false;
-  };
+    const onMouseUp = () => {
+      isDragging = false;
+    };
 
-  header.style.cursor = "move";
-  header.addEventListener("mousedown", onMouseDown);
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
+    header.style.cursor = "move";
+    header.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
 
-  return () => {
-    header.removeEventListener("mousedown", onMouseDown);
-    window.removeEventListener("mousemove", onMouseMove);
-    window.removeEventListener("mouseup", onMouseUp);
-  };
-}, [showChatbot]);
-
+    return () => {
+      header.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [showChatbot]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -240,6 +240,38 @@ const chatbotHeaderRef = useRef(null);
       markNotificationReadAPI(notification.id);
     });
   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close user popover if clicked outside
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target) &&
+        userIconRef.current &&
+        !userIconRef.current.contains(event.target)
+      ) {
+        setShowUserPopover(false);
+      }
+
+      // Close tracker if clicked outside
+      const trackerButton = document.querySelector(".fa-clock");
+      const trackerWrapper = document.querySelector(
+        ".activity-tracker-wrapper"
+      );
+      if (
+        trackerWrapper &&
+        !trackerWrapper.contains(event.target) &&
+        trackerButton &&
+        !trackerButton.contains(event.target)
+      ) {
+        setShowTracker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -409,21 +441,19 @@ const chatbotHeaderRef = useRef(null);
               title="Open ChatBot"
               style={{ cursor: "pointer" }}
             />
-<FontAwesomeIcon
-  className="navbar_icon"
-  icon={faClock}
-  title="Toggle Activity Tracker"
-  onClick={() => setShowTracker((prev) => !prev)}
-  style={{ cursor: "pointer" }}
-/>
+            <FontAwesomeIcon
+              className="navbar_icon"
+              icon={faClock}
+              title="Toggle Activity Tracker"
+              onClick={() => setShowTracker((prev) => !prev)}
+              style={{ cursor: "pointer" }}
+            />
 
-{showTracker && (
-  <div className="activity-tracker-wrapper">
-    <ExecutiveActivity />
-  </div>
-)}
-
-
+            {showTracker && (
+              <div className="activity-tracker-wrapper">
+                <ExecutiveActivity />
+              </div>
+            )}
 
             <div className="user-icon-wrapper" ref={popoverRef}>
               <FontAwesomeIcon

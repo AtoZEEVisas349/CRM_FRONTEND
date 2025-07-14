@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
 import DealFunnel from "../features/admin/DealFunnel";
-import OpportunityStage from "../features/admin/OpportunityStage";
 import RevenueChart from "../features/admin/RevenueChart";
-import ProfitChart from "../features/admin/ProfitChart";
 import Meetings from "../features/admin/Meetings";
 import LeadGraph from "../features/admin/LeadGraph";
 import ExecutiveActi from "../features/admin/ExecuitveActi";
@@ -21,27 +19,24 @@ const AdminLayout = () => {
   const location = useLocation();
 
   const [selectedExecutive, setSelectedExecutive] = useState(null);
-  const [timeRange, setTimeRange] = useState("last30days");
   const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   const [executives, setExecutives] = useState([]);
 
-  useEffect(() => {
-    // Force sidebar collapsed on every page load
-    localStorage.setItem("adminSidebarExpanded", "false");
-    window.dispatchEvent(new Event("sidebarToggle"));
-
-    fetchExecutives();
-    fetchExecutivesList();
-  }, []);
-
-  const fetchExecutivesList = async () => {
+const fetchExecutivesList = useCallback(async () => {
     try {
       const data = await fetchExecutivesAPI();
       setExecutives(data);
     } catch (error) {
       console.error("❌ Error fetching executives:", error);
     }
-  };
+  }, [fetchExecutivesAPI]);
+
+  useEffect(() => {
+    localStorage.setItem("adminSidebarExpanded", "false");
+    window.dispatchEvent(new Event("sidebarToggle"));
+    fetchExecutives();
+    fetchExecutivesList();
+  }, [fetchExecutives, fetchExecutivesList]);
 
   const currentExecutive = selectedExecutive || topExecutive;
   const isDashboard = location.pathname === "/admin";
