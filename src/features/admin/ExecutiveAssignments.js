@@ -13,7 +13,7 @@ const ExecutiveAssignments = () => {
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [expandedLeads, setExpandedLeads] = useState({});
   const [selectedRange, setSelectedRange] = useState("");
-  const [leadsPerPage, setLeadsPerPage] = useState(10);
+  const [leadsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
   const [filterType, setFilterType] = useState("all"); 
@@ -35,9 +35,6 @@ const ExecutiveAssignments = () => {
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
   const [allClients, setAllClients] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingLead, setEditingLead] = useState(null);
 
   // Function to format date and time for meeting schedule
   const formatMeetingDateTime = (dateString) => {
@@ -101,11 +98,10 @@ const ExecutiveAssignments = () => {
 
   useEffect(() => {
     fetchExecutives();
-  }, []);
+  }, [fetchExecutives]);
 
   useEffect(() => {
     const getAllLeads = async () => {
-      setLoading(true);
       try {
         showLoader("Loading task management...", "admin");
         const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
@@ -124,7 +120,7 @@ const ExecutiveAssignments = () => {
     };
   
     getAllLeads(); // Call the async function
-  }, []); 
+}, [fetchAllClients, showLoader, hideLoader]);
 
   const fetchExecutives = async () => {
     try {
@@ -189,7 +185,7 @@ const ExecutiveAssignments = () => {
       .map(({ lead }) => String(lead.id));
 
     setSelectedLeads(selectedIds);
-  }, [leads, selectedRange, currentPage]);
+  }, [leads, selectedRange, currentPage,leadsPerPage]);
 
   const assignLeads = async () => {
     if (!selectedExecutive) return alert("⚠️ Please select an executive.");
@@ -390,6 +386,11 @@ const ExecutiveAssignments = () => {
         <div className="scrollable-container">
           <div className="leads-table">
             <div className="leads-header">
+              <input
+    type="checkbox"
+    checked={selectedLeads.length === leads.length && leads.length > 0}
+    onChange={toggleSelectAll}
+  />
               <span>All customers ({totalLeads})</span>
               <span className="source-header">Source</span>
               <span className="assign-header">Assigned To</span>

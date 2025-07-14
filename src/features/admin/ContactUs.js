@@ -70,8 +70,7 @@ const ContactUs = () => {
       soundManager.playSound("error");
       hideLoader();
     }
-  }, []);  
-
+}, [alerts, hideLoader, showLoader]);
   return (
     <>
       <SidebarToggle />

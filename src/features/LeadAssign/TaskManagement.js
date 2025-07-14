@@ -46,7 +46,6 @@ const TaskManagement = () => {
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
   const [allClients, setAllClients] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [alerts, setAlerts] = useState([]);
@@ -108,10 +107,9 @@ const TaskManagement = () => {
 
   useEffect(() => {
     fetchExecutives();
-  }, []);
+  }, [fetchExecutives]);
 
   const getAllConvertedClients = async () => {
-    setLoading(true);
     try {
       showLoader("Loading task management...", "admin");
       const data = await getAllConverted();
@@ -147,7 +145,6 @@ const TaskManagement = () => {
   };
 
   const getAllLeads = async () => {
-    setLoading(true);
     try {
       showLoader("Loading task management...", "admin");
       const data = await fetchAllClients();
@@ -341,15 +338,28 @@ useEffect(() => {
 
   switch (filterType) {
     case "unassigned":
-    filtered = filtered.filter((lead) => !lead.assignedToExecutive);
-    break;
-    case "converted": filtered = filtered.filter((lead) => lead.status === "Converted"); break;
-    case "new": filtered = filtered.filter((lead) => lead.status === "New"); break;
-    case "followup": filtered = filtered.filter((lead) => lead.status === "Follow-Up"); break;
-    case "fresh": filtered = filtered.filter((lead) => lead.status === "Assigned"); break;
-    case "meeting": filtered = filtered.filter((lead) => lead.status === "Meeting"); break;
-    case "closed": filtered = filtered.filter((lead) => lead.status === "Closed"); break;
-    default: break;
+      filtered = filtered.filter((lead) => !lead.assignedToExecutive);
+      break;
+    case "converted":
+      filtered = filtered.filter((lead) => lead.status === "Converted");
+      break;
+    case "new":
+      filtered = filtered.filter((lead) => lead.status === "New");
+      break;
+    case "followup":
+      filtered = filtered.filter((lead) => lead.status === "Follow-Up");
+      break;
+    case "fresh":
+      filtered = filtered.filter((lead) => lead.status === "Assigned");
+      break;
+    case "meeting":
+      filtered = filtered.filter((lead) => lead.status === "Meeting");
+      break;
+    case "closed":
+      filtered = filtered.filter((lead) => lead.status === "Closed");
+      break;
+    default:
+      break;
   }
 
   const total = filtered.length;
@@ -441,12 +451,12 @@ useEffect(() => {
       } catch (err) {
         console.error("Failed to load process persons", err);
       } finally {
-        setLoading(false);
+        //setLoading(false);
       }
     };
 
     fetchProcessPersons();
-  }, []);
+  }, [getAllProcessPersons]);
 
   const [previousFilterType, setPreviousFilterType] = useState("all");
 
@@ -463,7 +473,7 @@ useEffect(() => {
     };
 
     loadDataByView();
-  }, [viewMode]);
+}, [viewMode, filterType, getAllConvertedClients, getAllLeads, previousFilterType]);
 
   const handleImportToProcess = async () => {
     if (!selectedProcess) {
@@ -561,6 +571,14 @@ useEffect(() => {
               <option value="21-50">21 - 50</option>
               <option value="51-100">51 - 100</option>
             </select>
+            <select
+    value={leadsPerPage}
+    onChange={(e) => setLeadsPerPage(Number(e.target.value))}
+  >
+    <option value={10}>10 per page</option>
+    <option value={20}>20 per page</option>
+    <option value={50}>50 per page</option>
+  </select>
             <div className="header-sort-filter">
               <button className="gradient-button" onClick={toggleSelectAll}>
                 Select/Unselect All Leads

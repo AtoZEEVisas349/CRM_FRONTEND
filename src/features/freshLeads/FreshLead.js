@@ -435,7 +435,7 @@ function FreshLead() {
                                     /[^\d]/g,
                                     ""
                                   );
-                                  window.location.href = `whatsapp://send?phone=91${cleaned}`;
+                                  window.location.href = `whatsapp://send?phone=${cleaned}`;
                                   setActivePopoverIndex(null);
                                   // Open chatbot popup immediately
                                   openChatbotPopup(lead);

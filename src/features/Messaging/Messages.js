@@ -3,7 +3,6 @@ import "../../styles/messaging.css"
 import { 
   FaPaperPlane, 
   FaSearch, 
-  FaUser, 
   FaCircle, 
   FaUsers, 
   FaStar, 
@@ -16,16 +15,11 @@ import {
   FaUserPlus,
   FaCrown,
   FaShieldAlt,
-  FaHeart,
-  FaThumbsUp,
-  FaLaugh,
   FaRocket,
   FaFire,
   FaBolt,
   FaMagic,
-  FaPalette,
-  FaMusic,
-  FaGamepad
+ 
 } from 'react-icons/fa';
 import SidebarToggle from "../admin/SidebarToggle";
 

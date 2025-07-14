@@ -1,5 +1,4 @@
-
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { ThemeContext } from "../admin/ThemeContext";
 import InvoiceHeader from "./InvoiceHeader";
 import InvoiceStats from "./InvoiceStats";
@@ -8,7 +7,7 @@ import BlurOverlay from "./BlurOverlay";
 
 const InvoicePage = () => {
   const { theme } = useContext(ThemeContext);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading] = useState(true); 
 
 
   return (

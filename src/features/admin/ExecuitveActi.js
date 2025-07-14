@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaCoffee, FaBriefcase, FaPhone ,FaUser} from "react-icons/fa";
+import { FaCoffee, FaBriefcase,FaUser} from "react-icons/fa";
 import { useApi } from "../../context/ApiContext";
 
 const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
@@ -61,7 +61,7 @@ const ExecutiveActi = ({ selectedExecutiveId, executiveName }) => {
     };
 
     fetchData();
-  }, [selectedExecutiveId]);
+  }, [selectedExecutiveId,fetchExecutiveDashboardData]);
 
   const activitiesRaw = [
     { name: "Break Time", value: activityData.breakTime, icon: <FaCoffee />, color: "#8b5cf6" },

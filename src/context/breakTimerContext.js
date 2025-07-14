@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useCallback,
 } from "react";
 import { useExecutiveActivity } from "./ExecutiveActivityContext";
 import { useProcessService } from "./ProcessServiceContext";
@@ -22,6 +23,32 @@ export const BreakTimerProvider = ({ children }) => {
 
   const intervalRef = useRef(null);
 
+  // -----------------------
+  // Timer Helpers
+  // -----------------------
+  const startTimer = useCallback((startTime, previousSeconds = 0) => {
+    clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(() => {
+      const now = new Date();
+      const diffSeconds = Math.floor((now - startTime) / 1000);
+      setBreakTimer(formatTime(previousSeconds + diffSeconds));
+    }, 1000);
+  }, []);
+
+  const formatTime = (totalSeconds) => {
+    const pad = (num) => String(num).padStart(2, "0");
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  };
+
+  const breakTimerToSeconds = (timeString) => {
+    const [hours, minutes, seconds] = timeString.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+
   // On mount: restore break session state
   useEffect(() => {
     const breakStart = localStorage.getItem("breakStartTime");
@@ -39,33 +66,7 @@ export const BreakTimerProvider = ({ children }) => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, []);
-
-  // -----------------------
-  // Timer Helpers
-  // -----------------------
-  const startTimer = (startTime, previousSeconds = 0) => {
-    clearInterval(intervalRef.current);
-
-    intervalRef.current = setInterval(() => {
-      const now = new Date();
-      const diffSeconds = Math.floor((now - startTime) / 1000);
-      setBreakTimer(formatTime(previousSeconds + diffSeconds));
-    }, 1000);
-  };
-
-  const formatTime = (totalSeconds) => {
-    const pad = (num) => String(num).padStart(2, "0");
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-  };
-
-  const breakTimerToSeconds = (timeString) => {
-    const [hours, minutes, seconds] = timeString.split(":").map(Number);
-    return hours * 3600 + minutes * 60 + seconds;
-  };
+  }, [startTimer]);
 
   // -----------------------
   // Break Actions

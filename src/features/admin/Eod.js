@@ -76,7 +76,7 @@ const Eod = () => {
     };
 
     fetchExecutives();
-  }, []);
+  }, [fetchExecutivesAPI]);
 
   const handleCheckboxChange = (index, key) => {
     setCards((prev) =>

@@ -50,17 +50,18 @@ export const ProcessServiceProvider = ({ children }) => {
   const [stageLoading, setStageLoading] = useState(false);
   const [stageError, setStageError] = useState(null);
 
-const [convertedClients, setConvertedClients] = useState([]);
-const [convertedLoading, setConvertedLoading] = useState(false);
-const [convertedError, setConvertedError] = useState(null);
-
   // -----------------------
   // Profile Settings State
   // -----------------------
   const [profiles, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [response, setResponse] = useState(null);
+
+  // -----------------------
+  // Other State
+  // -----------------------
+  const [customers, setCustomers] = useState([]);
+  const [processProfile, setProcessProfile] = useState(null);
 
   // -----------------------
   // Effects
@@ -142,10 +143,9 @@ const [convertedError, setConvertedError] = useState(null);
     }
   };
 
-
-
-  const [processProfile, setProcessProfile] = useState(null);
-  // New handlers for process persons
+  // -----------------------
+  // Process Profile Handlers
+  // -----------------------
   const getProcessProfile = async () => {
     setLoading(true);
     setError(null);
@@ -158,16 +158,13 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
-  // -----------------------
-  // Profile Settings Handlers
-  // -----------------------
-   const processCreateFollowUp = async (payload) => {
+
+  const processCreateFollowUp = async (payload) => {
     console.log(payload,"m")
     setLoading(true);
     setError(null);
     try {
       const data = await createProcessFollowUpApi(payload);
-      
       return data;
     } catch (err) {
       setError(err);
@@ -176,12 +173,15 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
+
+  // -----------------------
+  // Profile Settings Handlers
+  // -----------------------
   const profile = async (data) => {
     setLoading(true);
     setError(null);
     try {
       const result = await profileSettings(data);
-      setResponse(result);
       return result;
     } catch (err) {
       setError(err);
@@ -207,10 +207,8 @@ const [convertedError, setConvertedError] = useState(null);
   const handleProfileSettings = async (data) => {
     setLoading(true);
     setError(null);
-    setResponse(null);
     try {
       const result = await updateProfileSettings(data);
-      setResponse(result);
       return result;
     } catch (err) {
       setError(err);
@@ -220,15 +218,11 @@ const [convertedError, setConvertedError] = useState(null);
     }
   };
 
-  const [customers, setCustomers] = useState([]);
-   const[clients,setClients]=useState()
-   
-    const handleImportConvertedClients = async () => {
-       setLoading(true);
+  const handleImportConvertedClients = async () => {
+    setLoading(true);
     setError(null);
     try {
       const result = await importConvertedClients();
-      setClients(result)
       return result;
     } catch (err) {
       setError(err);
@@ -238,34 +232,32 @@ const [convertedError, setConvertedError] = useState(null);
     }
   };
 
-  
   const fetchCustomers = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllProcessCustomerIdApi();
-        setCustomers(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const data = await getAllProcessCustomerIdApi();
+      setCustomers(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGetCustomerStagesById = async (customerId) => {
-        try {
-    const res = await getCustomerStagesById(customerId) // ✅ Adjust endpoint if needed
-    console.log("Raw API response:", res); // This should now show an Axios response object
-    return res; // ✅ MUST return this
-  } catch (error) {
-    console.error("Error in handleGetCustomerStagesById:", error);
-    throw error;
-  }
-    
-
+    try {
+      const res = await getCustomerStagesById(customerId);
+      console.log("Raw API response:", res);
+      return res;
+    } catch (error) {
+      console.error("Error in handleGetCustomerStagesById:", error);
+      throw error;
+    }
   };
+
   const uploadDocs = async (formData) => {
     try {
-      const response= await uploadCustomerDocuments(formData);
+      const response = await uploadCustomerDocuments(formData);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
@@ -273,123 +265,131 @@ const [convertedError, setConvertedError] = useState(null);
     }
   };
 
-  const getDocumentsApi = async (userType,id) => {
+  const getDocumentsApi = async (userType, id) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await getCustomerDocuments(userType,id);
-       console.log(res.documents)
-   return res.documents;
-
+      const res = await getCustomerDocuments(userType, id);
+      console.log(res.documents)
+      return res.documents;
     } catch (err) {
       setError(err?.error || "Failed to fetch customer documents");
     } finally {
       setLoading(false);
     }
   };
-    const getProcessFollowup = async (id) => {
+
+  const getProcessFollowup = async (id) => {
     setLoading(true);
     setError(null);
     try {
       const data = await getProcessFollowupApi(id);
-   return data;
+      return data;
     } catch (err) {
       setError(err.message || "Failed to fetch process settings");
     } finally {
       setLoading(false);
     }
   };
-   
- const createFinalStage = async (payload) => {
+
+  const createFinalStage = async (payload) => {
     try {
-      const response= await createFinalStageApi(payload);
+      const response = await createFinalStageApi(payload);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const createRejected = async (payload) => {
+
+  const createRejected = async (payload) => {
     try {
-      const response= await moveToRejectedApi(payload);
+      const response = await moveToRejectedApi(payload);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const createMeetingApi = async (managerData) => {
+
+  const createMeetingApi = async (managerData) => {
     try {
-      const response= await createMeetings(managerData);
+      const response = await createMeetings(managerData);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const createCloseLead = async (freshLeadId) => {
+
+  const createCloseLead = async (freshLeadId) => {
     try {
-      const response= await createCloseLeadApi(freshLeadId);
+      const response = await createCloseLeadApi(freshLeadId);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const createStages = async (customerId, stageNumber, newComment) => {
+
+  const createStages = async (customerId, stageNumber, newComment) => {
     try {
-      const response= await createCustomerStagesApi(customerId, stageNumber, newComment);
+      const response = await createCustomerStagesApi(customerId, stageNumber, newComment);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const getProcessAllFollowup = async () => {
-  
+
+  const getProcessAllFollowup = async () => {
     try {
       const data = await getAllProcessFollowupsApi();
-   return data;
+      return data;
     } catch (err) {
       setError(err.message || "Failed to fetch process settings");
     } finally {
       setLoading(false);
     }
   };
-    const getProcessFollowupHistory = async (id) => {
+
+  const getProcessFollowupHistory = async (id) => {
     try {
       const data = await getProcessFollowupHistoryApi(id);
-   return data;
+      return data;
     } catch (err) {
       setError(err.message || "Failed to fetch process settings");
     } finally {
       setLoading(false);
     }
   };
-    const getProcessHistory = async (id) => {
+
+  const getProcessHistory = async (id) => {
     try {
       const data = await getProcessHistoryApi(id);
-   return data;
+      return data;
     } catch (err) {
       setError(err.message || "Failed to fetch process settings");
     } finally {
       setLoading(false);
     }
   };
-    const getAllFinalStages = async () => {
+
+  const getAllFinalStages = async () => {
     try {
       const data = await getFinalStage();
-   return data;
+      return data;
     } catch (err) {
       setError(err.message || "Failed to fetch process settings");
     } finally {
       setLoading(false);
     }
   };
-   const startWork = async (process_person_id) => {
+
+  const startWork = async (process_person_id) => {
     try {
-      const response= await startWorkApi(process_person_id);
-       if (response?.activity?.workStartTime) {
+      const response = await startWorkApi(process_person_id);
+      if (response?.activity?.workStartTime) {
         localStorage.setItem(
           'workStartTime',
           new Date(response.activity.workStartTime).toISOString()
@@ -401,57 +401,63 @@ const [convertedError, setConvertedError] = useState(null);
       throw error;
     }
   };
-   const createStartBreak = async (id) => {
+
+  const createStartBreak = async (id) => {
     try {
-      const response= await startBreakApi(id);
+      const response = await startBreakApi(id);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const createStopBreak = async (id) => {
+
+  const createStopBreak = async (id) => {
     try {
-      const response= await stopBreakApi(id);
+      const response = await stopBreakApi(id);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const stopWork = async (id) => {
+
+  const stopWork = async (id) => {
     try {
-      const response= await stopWorkApi(id);
+      const response = await stopWorkApi(id);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
-   const getComments = async (customerId, stageNumber) => {
+
+  const getComments = async (customerId, stageNumber) => {
     try {
-      const response= await getStageComments(customerId, stageNumber);
+      const response = await getStageComments(customerId, stageNumber);
       return response;
     } catch (error) {
       console.error(" error in context:", error);
       throw error;
     }
   };
-    const createReminder = async ( customerId, stageNumber, newComment) => {
+
+  const createReminder = async (customerId, stageNumber, newComment) => {
     try {
-      const response= await addStageCommentAndNotify( customerId, stageNumber, newComment);
+      const response = await addStageCommentAndNotify(customerId, stageNumber, newComment);
       return response;
     } catch (error) {
       console.error("Upload error in context:", error);
       throw error;
     }
   };
+
   const getProcessPersonMeetings = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await getProcessPersonMeetingsApi();
-      return response.meetings; // returns just the array of meetings
+      return response.meetings;
     } catch (error) {
       console.error("Error fetching process person meetings:", error);
       setError(error.message || "Failed to fetch process meetings");
@@ -460,13 +466,13 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
+
   const fetchNotifications = async (userRole, page = 1) => {
     setLoading(true);
     setError(null);
     try {
       const response = await getAllNotificationsByUser(userRole, page);
-    
-      return response; // returns just the array of notifications
+      return response;
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setError(error.message || "Failed to fetch notifications");
@@ -475,18 +481,19 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
-    const getAllProcessPersons = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllProcessPersonsApi();
-       return data;
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-   
+
+  const getAllProcessPersons = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllProcessPersonsApi();
+      return data;
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createProcesstoConverted = async (payload) => {
     try {
       const data = await createProcessforConvertedApi(payload);
@@ -498,28 +505,31 @@ const [convertedError, setConvertedError] = useState(null);
       setLoading(false);
     }
   };
+
   const getProcessCustomerById = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllCustomers();
-       return data;
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-     const fetchAllHistory = async (id) => {
-      setLoading(true);
-      try {
-        const data = await getAllProcessPersonsFollowupApi(id);
-        return data;
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const data = await getAllCustomers();
+      return data;
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllHistory = async (id) => {
+    setLoading(true);
+    try {
+      const data = await getAllProcessPersonsFollowupApi(id);
+      return data;
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // -----------------------
   // Provider Return
   // -----------------------
@@ -541,41 +551,41 @@ const [convertedError, setConvertedError] = useState(null);
         handleProfileSettings,
         profiles,
         setProfile,
-processProfile,
-        convertedClients,
-    convertedLoading,
-    convertedError,
-    fetchCustomers,
-    customers,
-    getProcessPersonMeetings,
-    setCustomers,
-    handleImportConvertedClients,
-    handleGetCustomerStagesById,
-    uploadDocs,
-    getDocumentsApi,
-    getProcessProfile,
-    processCreateFollowUp,
-    getProcessFollowup,
-    createFinalStage,
-    createCloseLead,
-    getProcessAllFollowup,
-    getProcessFollowupHistory,
-    createMeetingApi,
-    startWork,
-    createStartBreak,
-    createStopBreak,
-    stopWork,
-    getAllFinalStages,
-    createStages,
-    getComments,
-    createRejected,
-    getProcessHistory,
-    createReminder,
-    fetchNotifications,
-    getAllProcessPersons,
-    createProcesstoConverted,
-    getProcessCustomerById,
-    fetchAllHistory
+        processProfile,
+        fetchCustomers,
+        customers,
+        getProcessPersonMeetings,
+        setCustomers,
+        handleImportConvertedClients,
+        handleGetCustomerStagesById,
+        uploadDocs,
+        getDocumentsApi,
+        getProcessProfile,
+        processCreateFollowUp,
+        getProcessFollowup,
+        createFinalStage,
+        createCloseLead,
+        getProcessAllFollowup,
+        getProcessFollowupHistory,
+        createMeetingApi,
+        startWork,
+        createStartBreak,
+        createStopBreak,
+        stopWork,
+        getAllFinalStages,
+        createStages,
+        getComments,
+        createRejected,
+        getProcessHistory,
+        createReminder,
+        fetchNotifications,
+        getAllProcessPersons,
+        createProcesstoConverted,
+        getProcessCustomerById,
+        fetchAllHistory,
+        // Global state
+        loading,
+        error
       }}
     >
       {children}
@@ -585,4 +595,3 @@ processProfile,
 
 // 3. Custom Hook
 export const useProcessService = () => useContext(ProcessServiceContext);
-
