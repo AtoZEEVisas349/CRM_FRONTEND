@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { FaTimes, FaBell, FaCheck } from 'react-icons/fa';
 import { BeepSettingsContext } from './context/BeepSettingsContext';
 import { SoundGenerator, soundOptions } from './features/settings/SoundGenerator';
@@ -31,7 +31,7 @@ const BeepNotification = ({
     };
   }, []);
 
-  const playNotificationSound = async () => {
+  const playNotificationSound = useCallback(async () => {
     if (settings.enabled && soundGeneratorRef.current) {
       const selectedSound = soundOptions.find(s => s.id === settings.selectedSound);
       if (selectedSound) {
@@ -42,10 +42,10 @@ const BeepNotification = ({
         }
       }
     }
-  };
+  }, [settings.enabled, settings.selectedSound, settings.volume]);
 
   // Function to determine notification type and generate appropriate messages
-  const getNotificationMessages = (notifications) => {
+  const getNotificationMessages = useCallback((notifications) => {
     if (!notifications || notifications.length === 0) {
       return { 
         initialMessage: 'New notification', 
@@ -105,15 +105,15 @@ const BeepNotification = ({
       reminderMessage: "Haven't you checked the notification yet?",
       type: 'general'
     };
-  };
+  }, []);
 
-  const showNotificationPopup = (message) => {
+  const showNotificationPopup = useCallback((message) => {
     setPopupMessage(message);
     setShowPopup(true);
     playNotificationSound();
-  };
+  }, [playNotificationSound]);
 
-  const handleDismissPopup = () => {
+  const handleDismissPopup = useCallback(() => {
     setShowPopup(false);
     
     // Clear all timeouts and intervals
@@ -129,7 +129,7 @@ const BeepNotification = ({
     }, (settings.reminderDelay || 30) * 1000);
     
     if (onDismissPopup) onDismissPopup();
-  };
+  }, [unreadCount, onDismissPopup, reminderMessage, showNotificationPopup]);
 
   // Effect to handle beep interval when popup is shown
   useEffect(() => {
@@ -151,7 +151,7 @@ const BeepNotification = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [showPopup, unreadCount, settings.enabled, settings.timing, settings.selectedSound, settings.volume]);
+  }, [showPopup, unreadCount, settings.enabled, settings.timing, playNotificationSound]);
 
   // Effect to handle notification logic
   useEffect(() => {
@@ -181,7 +181,7 @@ const BeepNotification = ({
       if (dismissTimeoutRef.current) clearTimeout(dismissTimeoutRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
     }
-  }, [unreadCount, notifications]);
+  }, [unreadCount, notifications, isFirstMessage, showNotificationPopup, showPopup, getNotificationMessages]);
 
   // Update first message state when popup message changes
   useEffect(() => {
