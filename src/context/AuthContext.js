@@ -18,8 +18,10 @@ export const AuthProvider = ({ children }) => {
   const [clearTimer, setClearTimer] = useState(false); // Used by workTimer
   const navigate = useNavigate();
   const { forceLightTheme } = useContext(ThemeContext);
-  // Removed unused variable: const timer = useWorkTimer(clearTimer);
 
+  // Initialize work timer with clearTimer and setClearTimer
+  useWorkTimer(clearTimer, setClearTimer);
+   
   // Initialize user session on mount
   useEffect(() => {
     const token = localStorage.getItem("token");

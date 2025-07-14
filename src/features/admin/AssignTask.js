@@ -104,7 +104,7 @@ const AssignTask = () => {
     try {
       setUploading(true);
       setAlerts([]);
-      const response = await uploadFileAPI(file);
+       await uploadFileAPI(file);
       setAlerts([
         ...alerts,
         {
@@ -157,7 +157,7 @@ const AssignTask = () => {
     try {
       setUploading(true);
       setAlerts([]);
-      const response = await createSingleLeadAPI(leadData);
+       await createSingleLeadAPI(leadData);
       setAlerts([
         ...alerts,
         {
@@ -212,7 +212,7 @@ const AssignTask = () => {
     }, 400);
   
     return () => clearTimeout(timeout);
-  }, []);
+  }, [showLoader, hideLoader]);
   
   // Function to set date to today (for button functionality)
   const setToday = () => {
@@ -230,13 +230,7 @@ const AssignTask = () => {
     backgroundClip: "text",
     animation: "gradientShift 3s ease infinite",
   };
-const neutralTextStyle = {
-  color: "#888888", // light gray tone that works on both themes
-  fontSize: "3rem",
-  fontWeight: "800",
-  letterSpacing: "2px",
-  userSelect: "none",
-};
+
 
   const inputStyle = {
     padding: "12px 15px",
@@ -702,6 +696,4 @@ const neutralTextStyle = {
 };
 
 export default AssignTask;
-
-
 

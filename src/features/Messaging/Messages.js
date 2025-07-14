@@ -16,7 +16,6 @@ import {
   FaCrown,
   FaShieldAlt,
   FaRocket,
-  FaFire,
   FaBolt,
   FaMagic,
  

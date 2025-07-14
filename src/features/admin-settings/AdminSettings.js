@@ -21,7 +21,6 @@ const AdminSettings = () => {
     fetchAdminUserData,
     handleUpdateProfile,
     handleChangePassword,
-    isProfileUpdating,
     isPasswordUpdating
   } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();

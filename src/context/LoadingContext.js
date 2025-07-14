@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState } from "react";
-import ExecutiveSpinner from "../features/spinner/LoadingSpinner";
-import AdminSpinner from "../features/spinner/AdminSpinner"; // <- new admin loader
 
 const LoadingContext = createContext();
 
