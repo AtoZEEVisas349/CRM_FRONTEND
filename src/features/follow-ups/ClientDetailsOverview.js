@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
@@ -546,71 +543,115 @@ const ClientDetailsOverview = () => {
                   </div>
                 </div>
               </div>
-              <div className="follow-up-column">
-                <div className="follow-up-box">
-                  <div className="follow-up-header">
-                    <h3>Follow-up History</h3>
-                  </div>
-                  {isLoading ? (
-                    <div className="loading-state">
-                      <p>Loading follow-up history...</p>
-                    </div>
-                  ) : histories.length > 0 ? (
-                    <div className="followup-history-list">
-                      {histories.map((history, index) => (
-                        <div
-                          key={index}
-                          className={`followup-entry ${index === 0 ? "latest-followup" : "previous-followup"}`}
-                          
-                        >
-                          <div className="followup-header-info">
-                            <div className="interaction-badges">
-                              <span className="connect-badge">
-                                {history.connect_via || "N/A"}
-                              </span>
-                              <span className="c-rating-badge">
-                                {history.interaction_rating || "N/A"}
-                              </span>
-                            </div>
-                            <div className="followup-datetime">
-                              <span className="date">
-                                {new Date(history.createdAt).toLocaleDateString()}
-                              </span>
-                              <span className="time">
-                                {new Date(history.createdAt).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                  hour12: true
-                                })}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="followup-content">
-                            {index === 0 && (
-                              <span
-                                className="latest-badge"
-                                style={{ marginLeft: "-10px", marginBottom: "5px" }}
-                              >
-                                Latest
-                              </span>
-                            )}
-                            <p className="followup-reason">
-                              {history.reason_for_follow_up || "No description available."}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="empty-state">
-                      <p>No follow-up history available.</p>
-                    </div>
-                  )}
-                </div>
+     <div className="follow-up-column">
+  <div className="follow-up-box">
+    <div className="follow-up-header">
+      <h3>Follow-up History</h3>
+    </div>
+    {isLoading ? (
+      <div className="loading-state">
+        <p>Loading follow-up history...</p>
+      </div>
+    ) : histories.length > 0 ? (
+      <div className="followup-history-list">
+        {histories.map((history, index) => (
+          <div
+            key={index}
+            className={`followup-entry ${index === 0 ? "latest-followup" : "previous-followup"}`}
+            style={{
+              backgroundColor: index === 0 ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
+              marginBottom: '5px',
+              padding: '10px',
+              borderRadius: '5px',
+              position: 'relative'
+            }}
+          >
+            {/* Date and Time in top right corner */}
+            <div className="followup-datetime" style={{
+              position: 'absolute',
+              top: '10px',
+              right: '20px',
+              textAlign: 'right',
+              fontSize: '0.8em',
+              color: '#666'
+            }}>
+              <div className="date">
+                {new Date(history.createdAt).toLocaleDateString()}
+              </div>
+              <div className="time">
+                {new Date(history.createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+                })}
               </div>
             </div>
+
+            <div className="followup-content">
+              {/* Latest badge and interaction badges in one row */}
+              <div className="badges-row" style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center',
+                marginBottom: '8px',
+                marginLeft: '-10px',
+                flexWrap: 'wrap'
+              }}>
+                {index === 0 && (
+                  <span
+                    className="latest-badge"
+                    style={{ 
+                      display: 'inline-block'
+                    }}
+                  >
+                    Latest
+                  </span>
+                )}
+                
+                <span className="connect-badge" style={{
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.75em',
+                  fontWeight: 'bold'
+                }}>
+                  {history.connect_via || "Call"}
+                </span>
+                <span className="c-rating-badge" style={{
+                  backgroundColor: '#fd7e14',
+                  color: 'white',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.75em',
+                  fontWeight: 'bold'
+                }}>
+                  {history.interaction_rating || "Warm"}
+                </span>
+              </div>
+
+              {/* Follow-up reason */}
+              <p className="followup-reason" style={{
+                margin: '0',
+                paddingRight: '80px', // Give space for date/time
+                lineHeight: '1.4'
+              }}>
+                {history.reason_for_follow_up || "No description available."}
+              </p>
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
+    ) : (
+      <div className="empty-state">
+        <p>No follow-up history available.</p>
+      </div>
+    )}
+  </div>
+</div>
+</div>
+</div>
+</div>
         {/* Client Interaction */}
         <div className="client-interaction-container">
           <div className="interaction-form">
@@ -844,7 +885,6 @@ const ClientDetailsOverview = () => {
               color: "white",
               padding: "10px 20px",
               borderRadius: "5px",
-              marginRight:"20px",
               border: "none",
               cursor: followUpLoading ? "not-allowed" : "pointer",
               opacity: followUpLoading ? 0.6 : 1,

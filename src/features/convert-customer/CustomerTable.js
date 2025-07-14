@@ -13,7 +13,7 @@ const CustomerTable = () => {
     fetchNotifications,
     createCopyNotification,
     fetchFollowUpHistoriesAPI,
-    setConvertedCustomerCount
+    setConvertedCustomerCount,
   } = useApi();
 
   const [customers, setCustomers] = useState([]);
@@ -25,22 +25,19 @@ const CustomerTable = () => {
 
   useCopyNotification(createCopyNotification, fetchNotifications);
 
-
   useEffect(() => {
     const fetchAndSetCustomers = async () => {
       try {
         showLoader("Loading Converted Customers...");
         if (Array.isArray(convertedClients)) {
-          const filtered = convertedClients.filter(
-            (client) => client.status === "Converted"
-          );
-        
+          const filtered = convertedClients.filter((client) => client.status === "Converted");
+
           const sorted = filtered.sort((a, b) => {
             const timeA = new Date(a.updatedAt || 0).getTime();
             const timeB = new Date(b.updatedAt || 0).getTime();
             return timeB - timeA;
           });
-        
+
           setCustomers(sorted);
         }
       } catch (error) {
@@ -49,9 +46,9 @@ const CustomerTable = () => {
         hideLoader();
       }
     };
-  
+
     fetchAndSetCustomers();
-  }, [convertedClients]);  
+  }, [convertedClients]);
 
   const handleViewHistory = async (customer) => {
     setSelectedCustomer(customer);
@@ -72,33 +69,28 @@ const CustomerTable = () => {
       const parsed = filtered.map((item) => ({
         date: item.follow_up_date || item.followUp?.follow_up_date || "N/A",
         time: item.follow_up_time || item.followUp?.follow_up_time || "N/A",
-        reason: item.reason_for_follow_up || item.followUp?.reason_for_follow_up || "No reason provided",
+        reason:
+          item.reason_for_follow_up || item.followUp?.reason_for_follow_up || "No reason provided",
         tags: [
           item.connect_via || item.followUp?.connect_via || "",
           item.follow_up_type || item.followUp?.follow_up_type || "",
-          item.interaction_rating || item.followUp?.interaction_rating || ""
+          item.interaction_rating || item.followUp?.interaction_rating || "",
         ].filter(Boolean),
-        // Add original timestamp for sorting
         originalDate: item.follow_up_date || item.followUp?.follow_up_date || "N/A",
         originalTime: item.follow_up_time || item.followUp?.follow_up_time || "N/A",
       }));
 
-      // Sort by date and time in descending order (latest first)
       const sortedParsed = parsed.sort((a, b) => {
-        // Create comparable datetime strings
         const dateTimeA = `${a.originalDate} ${a.originalTime}`;
         const dateTimeB = `${b.originalDate} ${b.originalTime}`;
-        
-        // Try to parse as dates
+
         const parsedDateA = new Date(dateTimeA);
         const parsedDateB = new Date(dateTimeB);
-        
-        // If both dates are valid, sort by them
+
         if (!isNaN(parsedDateA.getTime()) && !isNaN(parsedDateB.getTime())) {
-          return parsedDateB.getTime() - parsedDateA.getTime(); // Descending order
+          return parsedDateB.getTime() - parsedDateA.getTime();
         }
-        
-        // Fallback: string comparison (descending)
+
         return dateTimeB.localeCompare(dateTimeA);
       });
 
@@ -130,12 +122,12 @@ const CustomerTable = () => {
 
   const customerCount = filteredCustomers.length;
   const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 10;
-const indexOfLastItem = currentPage * itemsPerPage;
-const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-const currentCustomers = filteredCustomers.slice(indexOfFirstItem, indexOfLastItem);
+  const itemsPerPage = 10;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCustomers = filteredCustomers.slice(indexOfFirstItem, indexOfLastItem);
 
-const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
 
   return (
     <>
@@ -149,66 +141,65 @@ const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
         {convertedClientsLoading ? (
           <p>Loading customers...</p>
         ) : filteredCustomers.length > 0 ? (
-        <div className="scrollable-leads-container">
- <table className="customer-table">
-  <thead>
-    <tr>
-      <th>SELECT</th>
-      <th>NAME</th>
-      <th>PHONE</th>
-      <th>EMAIL</th>
-      <th>LAST CONTACTED</th>
-      <th>ACTIONS</th>
-    </tr>
-  </thead>
-  <tbody>
-    {currentCustomers.map((customer, index) => (
-      <tr key={index}>
-        <td><input type="checkbox" /></td>
-        <td>{customer.name || "N/A"}</td>
-        <td>{customer.phone || "N/A"}</td>
-        <td>{customer.email || "N/A"}</td>
-        <td>{customer.last_contacted || "N/A"}</td>
-        <td>
-          <button
-            className="follow-history-btn"
-            onClick={() => handleViewHistory(customer)}
-            title="View Follow-up History"
-          >
-            <FaPlus /> Follow History
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
+          <>
+            <div className="scrollable-leads-container">
+              <table className="customer-table">
+                <thead>
+                  <tr>
+                    <th>SELECT</th>
+                    <th>NAME</th>
+                    <th>PHONE</th>
+                    <th>EMAIL</th>
+                    <th>LAST CONTACTED</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentCustomers.map((customer, index) => (
+                    <tr key={index}>
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <td>{customer.name || "N/A"}</td>
+                      <td>{customer.phone || "N/A"}</td>
+                      <td>{customer.email || "N/A"}</td>
+                      <td>{customer.last_contacted || "N/A"}</td>
+                      <td>
+                        <button
+                          className="follow-history-btn"
+                          onClick={() => handleViewHistory(customer)}
+                          title="View Follow-up History"
+                        >
+                          <FaPlus /> Follow History
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-  {/* ✅ Add pagination row */}
-  <tfoot>
-    <tr>
-      <td colSpan="6" style={{ textAlign: "center", padding: "12px" }}>
-        <div className="c-pagination">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Prev
-          </button>
-          <span style={{ margin: "0 10px" }}>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      </td>
-    </tr>
-  </tfoot>
-</table>
-</div>
-
+            {/* ✅ Pagination outside the table */}
+            <div className="c-pagination-wrapper">
+              <div className="c-pagination">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  Prev
+                </button>
+                <span style={{ margin: "0 10px" }}>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
         ) : (
           <p>No customers available.</p>
         )}

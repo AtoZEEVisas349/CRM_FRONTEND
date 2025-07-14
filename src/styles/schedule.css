@@ -948,7 +948,7 @@
   font-size: 10px;
 }
 
-.latest-badge {
+.schedule-latest-badge {
   background: linear-gradient(135deg, #1ea593, #16876f);
   color: white;
   padding: 4px 12px;
@@ -1143,7 +1143,7 @@
   color: #a0aec0;
 }
 
-[data-theme="dark"] .latest-badge {
+[data-theme="dark"] .schedule-latest-badge {
   background: linear-gradient(135deg, #008B8B, #20b2aa);
 }
 
@@ -1229,7 +1229,7 @@
   background: linear-gradient(to bottom, #983197, #e9ecef);
 }
 
-[data-theme="red"] .latest-badge {
+[data-theme="red"] .schedule-latest-badge {
   background: linear-gradient(135deg, #983197, #e8b5e1);
 }
 
@@ -1286,7 +1286,7 @@
   background: linear-gradient(to bottom, #4e38a7, #e9ecef);
 }
 
-[data-theme="blue"] .latest-badge {
+[data-theme="blue"] .schedule-latest-badge {
   background: linear-gradient(135deg, #4e38a7, #b8b5e8);
 }
 
@@ -1343,7 +1343,7 @@
   background: linear-gradient(to bottom, #2e7d32, #e9ecef);
 }
 
-[data-theme="green"] .latest-badge {
+[data-theme="green"] .schedule-latest-badge {
   background: linear-gradient(135deg, #2e7d32, #c8e6c9);
 }
 

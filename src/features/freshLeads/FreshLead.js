@@ -488,35 +488,30 @@ function FreshLead() {
                   </tr>
                 )}
               </tbody>
-
-              {/* Pagination row */}
-              <tfoot>
-                <tr>
-                  <td colSpan="6" style={{ textAlign: "center", padding: "12px" }}>
-                    <div className="fl-unique-pagination">
-                      <button
-                        className="fl-unique-pagination-btn"
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                      >
-                        Prev
-                      </button>
-                      <span className="fl-unique-pagination-span">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      <button
-                        className="fl-unique-pagination-btn"
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tfoot>
             </table>
           </div>
+          <div className="fl-unique-pagination-wrapper">
+  <div className="fl-unique-pagination">
+    <button
+      className="fl-unique-pagination-btn"
+      onClick={handlePrevPage}
+      disabled={currentPage === 1}
+    >
+      Prev
+    </button>
+    <span className="fl-unique-pagination-span">
+      Page {currentPage} of {totalPages}
+    </span>
+    <button
+      className="fl-unique-pagination-btn"
+      onClick={handleNextPage}
+      disabled={currentPage === totalPages}
+    >
+      Next
+    </button>
+  </div>
+</div>
+
         </>
       )}
 

@@ -5,9 +5,7 @@ const ClientDetails = ({ selectedClient, onClose }) => {
   const { fetchFollowUpHistoriesAPI } = useApi();
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hour, setHour] = useState("12");
-  const [minute, setMinute] = useState("00");
-  const [ampm, setAmPm] = useState("AM");
+
 
   // Helper function to count words in a string
   const countWords = (text) => {
@@ -103,13 +101,33 @@ const ClientDetails = ({ selectedClient, onClose }) => {
                     }`}
                 >
                   <div className="followup-content-wrapper">
-                    {/* Header with Date/Time - Fixed height container */}
+                    {/* Header with Latest Badge and Date/Time - Swapped positions */}
                     <div className="followup-header">
-                      <div className="followup-date-time">
-                        <span className="follow-up-date">
+                      {/* Latest badge positioned where date/time used to be */}
+                      <div className="latest-badge-container-left">
+                        {index === 0 && (
+                          <span className="status-badge latest-badge">Latest</span>
+                        )}
+                      </div>
+                      <div>
+                      <span
+                        className={`rating-badge rating-${followUp.interaction_rating?.toLowerCase() || "default"
+                          }`}
+                      >
+                        Rating: {followUp.interaction_rating || "N/A"}
+                      </span>
+                      </div>
+                      <div>
+                      <span className="connect-via-badge">
+                        Connected Via: {followUp.connect_via || "N/A"}
+                      </span>
+                      </div>
+                      {/* Date/Time positioned where Latest badge used to be */}
+                      <div className="followup-date-time-right" style={{display: "flex" , flexDirection: "column"}}>
+                        <span className="c-followup-date">
                           {new Date(followUp.createdAt).toLocaleDateString()}
                         </span>
-                        <span className="followup-time">
+                        <span className="c-followup-time">
                           {new Date(followUp.createdAt).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -117,27 +135,7 @@ const ClientDetails = ({ selectedClient, onClose }) => {
                           })}
                         </span>
                       </div>
-                      {/* Latest badge positioned absolutely to not affect layout */}
-                      <div className="latest-badge-container">
-                        {index === 0 && (
-                          <span className="status-badge latest-badge">Latest</span>
-                        )}
-                      </div>
                     </div>
-
-                    {/* Rating and Connect Via badges - moved below header */}
-                    <div className="followup-tags">
-                      <span
-                        className={`rating-badge rating-${followUp.interaction_rating?.toLowerCase() || "default"
-                          }`}
-                      >
-                        Rating: {followUp.interaction_rating || "N/A"}
-                      </span>
-                      <span className="connect-via-badge">
-                        Connected Via: {followUp.connect_via || "N/A"}
-                      </span>
-                    </div>
-
                     {/* Main Content */}
                     <div className="followup-main-content">
                       <div className="followup-reason-container">

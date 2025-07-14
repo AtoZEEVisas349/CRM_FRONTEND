@@ -3074,10 +3074,11 @@ body.sidebar-collapsed .admin-main-content {
 }
 .compare-icon { font-size: 1.6rem; color: #1e90ff; margin-bottom: 4px; }
 .compare-values {
-  font-size: 1.2rem;
-  font-weight: 600;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  font-size: 1.2rem;
+  font-weight: 200;
   gap: 6px;
+  justify-content: center;
 }
 .compare-values .vs { color: #888; font-weight: 400; }

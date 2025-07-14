@@ -186,7 +186,7 @@ const ExecutiveActivity = () => {
             </div>
           </div>
 
-          <div className="status-badge">
+          <div className="exec-status-badge">
             <strong>Status:</strong>{" "}
             {isBreakActive ? "Break" : "Working"}
           </div>

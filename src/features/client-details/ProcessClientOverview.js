@@ -91,6 +91,7 @@ useEffect(() => {
       try {
         const result = await fetchAllHistory(id);
         setHistoryFollowup(result?.data || []);
+            
       } catch (error) {
         console.error("Failed to load followups:", error);
       } finally {
@@ -803,7 +804,7 @@ useEffect(() => {
               ))}
             </div>
           </div>
-         <div className="follow-up-type"  style={{ marginBottom: "20px" }}>
+         <div className="follow-up-type"  style={{ marginBottom: "10px" }}>
             <h4 style={{marginBottom:"10px"}}>Follow-Up Type</h4>
             <div className="radio-group">
               {["document collection","payment follow-up","visa filing","meeting"].map((type) => (
@@ -820,8 +821,8 @@ useEffect(() => {
             </div>
           </div>
                      {followUpType === "document collection" && (
-  <div className="doc-dropdown" style={{ marginBottom: "20px" }}>
-  <label style={{marginTop:"20px",fontWeight:"700"}}>Select Document:</label>
+  <div className="doc-dropdown" style={{ marginBottom: "10px" }}>
+  <label style={{marginTop:"10px",fontWeight:"700"}}>Select Document:</label>
   <select
     value={docName}
     onChange={(e) => setDocName(e.target.value)}
@@ -859,7 +860,7 @@ useEffect(() => {
  <div className="interaction-rating" >
             <h4 style={{marginBottom:"10px"}}>Interaction Rating</h4>
             <div className="radio-group">
-              {["hot", "warm", "cold"].map((rating) => (
+              {["Aggressive", "Calm", "Neutral"].map((rating) => (
                 <label key={rating} className="radio-container">
                   <input
                     type="radio"
@@ -922,23 +923,42 @@ useEffect(() => {
       <td className="new-comment-cell">
         {latestComment[selectedStage]?.comment ? (
           <>
-           {latestComment[selectedStage].comment
-  .split(/(\/processperson\/client\/upload)/g)
-  .map((part, idx) =>
-    part === "/processperson/client/upload" ? (
-      <a
-        key={idx}
-        href={`/processperson/client/upload/${client.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ color: "#007bff", textDecoration: "underline" }}
-      >
-        {part}
-      </a>
-    ) : (
-      <span key={idx}>{part}</span>
-    )
-)}
+        {(latestComment[selectedStage]?.comment || "")
+  .split(/(\/processperson\/client\/upload\/\w+)/g)
+  .map((part, idx) => {
+    const isUploadLink = /^\/processperson\/client\/upload\/\w+$/.test(part);
+
+    if (isUploadLink) {
+      return (
+        <span
+          key={idx}
+          onClick={() => {
+            const fullComment = latestComment[selectedStage]?.comment || "";
+
+            // Extract comment text before the link
+            const commentOnly = fullComment
+              .split(/\/processperson\/client\/upload\/\w+/)[0]
+              .trim();
+
+            const idMatch = part.match(/\/processperson\/client\/upload\/(\w+)/);
+            const extractedId = idMatch?.[1];
+
+            navigate(`/processperson/client/upload/${extractedId}`, {
+              state: {
+                label: commentOnly,
+                defaultFilename: commentOnly,
+              },
+            });
+          }}
+          style={{ color: "#007bff", textDecoration: "underline", cursor: "pointer" }}
+        >
+          {part}
+        </span>
+      );
+    }
+
+    return <span key={idx}>{part}</span>;
+  })}
 
           </>
         ) : (

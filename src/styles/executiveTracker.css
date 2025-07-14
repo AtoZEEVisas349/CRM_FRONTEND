@@ -181,8 +181,7 @@
   opacity: 0.6;
 }
 
-.status-badge {
-  
+.exec-status-badge {  
   margin-bottom: 16px;
   padding: 6px 10px;
   border-radius: 6px;
@@ -274,7 +273,7 @@
   color: #ffffff;
 }
 
-[data-theme="dark"] .status-badge {
+[data-theme="dark"] .exec-status-badge {
   background-color: #383838;
   color: #ffffff;
 }
@@ -328,7 +327,7 @@
   color: #333333;
 }
 
-[data-theme="red"] .status-badge {
+[data-theme="red"] .exec-status-badge {
   background-color: #ffffff;
   color: #d63384;
 }
@@ -382,7 +381,7 @@
   color: #333333;
 }
 
-[data-theme="blue"] .status-badge {
+[data-theme="blue"] .exec-status-badge {
   background-color: #ffffff;
   color: #1976d2;
 }
@@ -436,7 +435,7 @@
   color: #333333;
 }
 
-[data-theme="brown"] .status-badge {
+[data-theme="brown"] .exec-status-badge {
   background-color: #ffffff;
   color: #8d6e63;
 }
@@ -490,7 +489,7 @@
   color: #333333;
 }
 
-[data-theme="green"] .status-badge {
+[data-theme="green"] .exec-status-badge {
   background-color: #ffffff;
   color: #4caf50;
 }
@@ -544,7 +543,7 @@
   color: #333333;
 }
 
-[data-theme="lavender"] .status-badge {
+[data-theme="lavender"] .exec-status-badge {
   background-color: #ffffff;
   color: #9c88ff;
 }
@@ -598,7 +597,7 @@
   color: #333333;
 }
 
-[data-theme="ocean"] .status-badge {
+[data-theme="ocean"] .exec-status-badge {
   background-color: #ffffff;
   color: #0ea5e9;
 }
@@ -652,7 +651,7 @@
   color: #333333;
 }
 
-[data-theme="peach"] .status-badge {
+[data-theme="peach"] .exec-status-badge {
   background-color: #ffffff;
   color: #ff8a65;
 }

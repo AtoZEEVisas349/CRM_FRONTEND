@@ -52,6 +52,7 @@ const ProcessScheduleMeeting = () => {
   const [interactionDate, setInteractionDate] = useState(new Date().toISOString().split("T")[0]);
   const [interactionTime, setInteractionTime] = useState("12:00");
   const [comments, setComments] = useState("");
+  const [docName, setDocName] = useState("");
 
   useEffect(() => {
     loadMeetings();
@@ -190,6 +191,7 @@ console.log(meetings);
       follow_up_date: interactionDate,
       follow_up_time: interactionTime,
       comments: comments || "-",
+        document_name:docName
     };
 
     try {
@@ -403,7 +405,7 @@ console.log(meetings);
               </button>
             </div>
 
-            <div className="create-followup-container">
+            <div className="create-followup-container" style={{cursor:"pointer"}}>
               <div style={{ margin: "20px" }}>
                 <label>Reason for Followup</label>
                 <textarea
@@ -415,7 +417,7 @@ console.log(meetings);
                 />
               </div>
               <h4 style={{ margin: "20px" }}>Connected Via</h4>
-<div className="radio-group">
+<div className="radio-group"  style={{cursor:"pointer"}}>
   {["Call", "Email", "Call/Email"].map((method) => (
     <label key={method} style={{ marginRight: "15px" }}>
       <input
@@ -431,7 +433,7 @@ console.log(meetings);
 </div>
 
 <h4 style={{ margin: "20px" }}>Follow-Up Type</h4>
-<div className="radio-group">
+<div className="radio-group"  style={{cursor:"pointer"}}>
   {["document collection", "payment follow-up", "visa filing", "other", "meeting","rejected","final"].map((type) => (
     <label key={type} style={{ marginRight: "15px" }}>
       <input
@@ -445,10 +447,46 @@ console.log(meetings);
     </label>
   ))}
 </div>
+          {followUpType === "document collection" && (
+  <div className="doc-dropdown" style={{ marginBottom: "20px",cursor:"ponter" }}>
+  <label style={{marginTop:"20px",fontWeight:"700"}}>Select Document:</label>
+  <select
+    value={docName}
+    onChange={(e) => setDocName(e.target.value)}
+    style={{ padding: "8px", borderRadius: "5px", width: "50%", cursor: "pointer", display: "block", marginTop: "8px" }}
+  >
+    <option value="">Select Document</option>
+    <option value="aadharcard">Aadhar Card</option>
+    <option value="pancard">Pan Card</option>
+    <option value="10th">10th Marksheet</option>
+    <option value="12th">12th Marksheet</option>
+    <option value="passport">Passport</option>
+    <option value="other">Other</option>
+  </select>
 
+  {docName === "other" && (
+    <input
+      type="text"
+      placeholder="Enter custom document name"
+      value={docName}
+      onChange={(e) => setDocName(e.target.value)}
+      style={{
+        marginTop: "10px",
+        padding: "8px",
+        borderRadius: "5px",
+        width: "50%",
+        border: "1px solid #ccc",
+        display: "block",
+      }}
+    />
+  )}
+</div>
+
+
+  )}
 <h4 style={{ margin: "20px" }}>Interaction Rating</h4>
-<div className="radio-group">
-  {["hot", "warm", "cold"].map((rating) => (
+<div className="radio-group"  style={{cursor:"pointer"}}>
+  {["Aggressive", "Calm", "Neutral"].map((rating) => (
     <label key={rating} style={{ marginRight: "15px" }}>
       <input
         type="radio"

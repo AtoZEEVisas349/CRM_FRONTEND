@@ -201,7 +201,7 @@ const FollowUpHistory = ({ meeting, onClose }) => {
                             )}
                           </div>
                           {index === 0 && (
-                            <div className="latest-badge">
+                            <div className="schedule-latest-badge">
                               <span>Latest</span>
                             </div>
                           )}

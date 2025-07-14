@@ -18,6 +18,7 @@ import HrLayout from "../layouts/HrLayout";
 import LeaveManagement from "../features/hr/LeaveManagement";
 import HrNotification from "../features/hr/HrNotification";
 import HrSettings from "../features/hr/HrSettings";
+import PayrollSystem from "../features/hr/PayrollSystem";
 const HrRoutes = () => {
   return (
     <Routes>
@@ -57,7 +58,8 @@ const HrRoutes = () => {
             <Eod />
             </RequirePermission>} /> {/* ✅ EOD route added here */}
         <Route path="executive-attendance" element={<AttendanceTable />} />
-        
+       <Route path="Payroll" element={<PayrollSystem />} />
+
       </Route>
     </Routes>
   );

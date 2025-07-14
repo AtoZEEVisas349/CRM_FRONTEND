@@ -289,9 +289,10 @@ useEffect(() => {
   const populateFormWithHistory = (history) => {
       setContactMethod(history.connect_via?.trim() || "");
     setFollowUpType(history.follow_up_type || "");
-    setInteractionRating(history.interaction_rating?.toLowerCase() || "");
+    setInteractionRating(history.interaction_rating || "");
     setReasonDesc(history.comments || "");
     setInteractionDate(history.follow_up_date || "");
+    setDocName(history.document_name || "")
     const [hour, minute] = (history.follow_up_time || "12:00").split(":");
     let hr = parseInt(hour, 10);
     const ampmValue = hr >= 12 ? "PM" : "AM";
@@ -324,7 +325,7 @@ useEffect(() => {
          text: "Please fill out all required fields before creating follow-up.",
        });
      }
-     
+    try{ 
   const newFollowUpData= {
     fresh_lead_id: freshLeadId,
       connect_via: contactMethod,
@@ -350,7 +351,15 @@ useEffect(() => {
              title: "Follow-up Created",
              text: "Follow-up and history created successfully!"
            });
-   };
+           
+   }catch (error) {
+       
+         Swal.fire({
+           icon: "error",
+           title: "Update Failed",
+           text: "Something went wrong. Please try again.",
+         });
+       }  } 
 
  
 
@@ -552,7 +561,9 @@ useEffect(() => {
        
         try {
           const result = await getProcessFollowup(id);
-          setHistoryFollowup(result.data); // The backend sends { message, data }
+          setHistoryFollowup(result.data);
+          if (result.data.document_name) {
+      setDocName(result.data.document_name); } // The backend sends { message, data }
           console.log(result.data);
         } catch (err) {
           console.error("Failed to load follow-up history", err.message);
@@ -992,7 +1003,7 @@ console.log(clientInfo,"id");
           <div className="interaction-rating">
             <h4 style={{marginBottom:"10px"}}>Interaction Rating</h4>
             <div className="radio-group">
-              {["hot", "warm", "cold"].map((rating) => (
+              {["Aggressive", "Calm", "Neutral"].map((rating) => (
                 <label key={rating} className="radio-container">
                   <input
                     type="radio"
@@ -1055,23 +1066,43 @@ console.log(clientInfo,"id");
               <td>{selectedStage}</td>
                 {latestComment[selectedStage]?.comment ? (
           <>
-           {latestComment[selectedStage].comment
-  .split(/(\/processperson\/client\/upload)/g)
-  .map((part, idx) =>
-    part === "/processperson/client/upload" ? (
-      <a
-        key={idx}
-        href={`/processperson/client/upload/${client.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ color: "#007bff", textDecoration: "underline" }}
-      >
-        {part}
-      </a>
-    ) : (
-      <span key={idx}>{part}</span>
-    )
-)}
+          {(latestComment[selectedStage]?.comment || "")
+  .split(/(\/processperson\/client\/upload\/\w+)/g)
+  .map((part, idx) => {
+    const isUploadLink = /^\/processperson\/client\/upload\/\w+$/.test(part);
+
+    if (isUploadLink) {
+      return (
+        <span
+          key={idx}
+          onClick={() => {
+            const fullComment = latestComment[selectedStage]?.comment || "";
+
+            // Extract comment text before the link
+            const commentOnly = fullComment
+              .split(/\/processperson\/client\/upload\/\w+/)[0]
+              .trim();
+
+            const idMatch = part.match(/\/processperson\/client\/upload\/(\w+)/);
+            const extractedId = idMatch?.[1];
+
+            navigate(`/processperson/client/upload/${extractedId}`, {
+              state: {
+                label: commentOnly,
+                defaultFilename: commentOnly,
+              },
+            });
+          }}
+          style={{ color: "#007bff", textDecoration: "underline", cursor: "pointer" }}
+        >
+          {part}
+        </span>
+      );
+    }
+
+    return <span key={idx}>{part}</span>;
+  })}
+
 
           </>
         ) : (

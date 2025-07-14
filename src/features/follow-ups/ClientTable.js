@@ -353,29 +353,26 @@ const ClientTable = ({
           </table>
         </div>
 
-        {/* Pagination */}
-        {filteredClients.length > itemsPerPage && (
-          <div className="pagination-container">
-            <div className="pagination-controls">
-              <button
-                className="pagination-btn"
-                onClick={handlePrevious}
-                disabled={currentPage === 1}
-              >
-                Prev
-              </button>
-              <span className="page-indicator">
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                className="pagination-btn"
-                onClick={handleNext}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
+      {/* Pagination */}
+      {filteredClients.length > itemsPerPage && (
+          <div className="flw-unique-pagination">
+            <button
+              className="flw-unique-pagination-btn"
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+            <span className="flw-unique-pagination-span">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="flw-unique-pagination-btn"
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

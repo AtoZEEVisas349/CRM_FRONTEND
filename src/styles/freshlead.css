@@ -125,34 +125,46 @@
   font-size: 12px;
   color: gray;
 }
+.fl-unique-pagination-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px; /* Reduced from large value */
+}
+
 .fl-unique-pagination {
   display: flex;
   align-items: center;
-  gap: 5px;
-  justify-content: flex-end;
+  gap: 6px;
+  margin-right: 40px;
 }
+
 .fl-unique-pagination-btn {
-  padding: 8px 20px;
+  padding: 6px 16px;
   background-color: #2563eb;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
   cursor: pointer;
 }
+
 .fl-unique-pagination-btn:hover:not(:disabled) {
   background-color: #1e40af;
   transform: translateY(-1px);
 }
+
 .fl-unique-pagination-btn:disabled {
   background-color: #cbd5e1;
   cursor: not-allowed;
 }
+
 .fl-unique-pagination-span {
   font-weight: 500;
   color: #4b5563;
 }
+
 .call-cell {
   position: relative;
 }

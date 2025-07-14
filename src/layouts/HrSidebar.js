@@ -147,6 +147,14 @@ const HrSidebar = () => {
               </Link>
             </li>
           </ul>
+             <ul>
+            <li>
+              <Link to="/hr/payroll" className="admin-aside-link" data-tooltip="Leave Management">
+                <Users className="admin-aside-icon" />
+                <span className="sidebar-label">Payroll</span>
+              </Link>
+            </li>
+          </ul>
           <ul>
             <li>
               <Link to="/hr/leave-management" className="admin-aside-link" data-tooltip="Leave Management">

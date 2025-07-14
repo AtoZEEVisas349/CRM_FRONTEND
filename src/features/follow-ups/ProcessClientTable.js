@@ -163,7 +163,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
         return "rating-default";
     }
   };
-
+console.log(filteredClients,"hhh");
   return (
     <>
       <div className="client-table-wrapper" style={{ position: "relative" }}>
@@ -172,6 +172,8 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
   <div
     className="client-info"
     style={{
+      width: "95%",
+      margin: "10px auto",
       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
       padding: "12px",
       borderRadius: "8px",
@@ -237,7 +239,6 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
         style={{
           marginTop: "16px",
           background: "#f9f9f9",
-          width:"95%",
           borderRadius: "8px",
           padding: "16px",
           boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
@@ -406,7 +407,7 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
                                 : {}
                             }
                           >
-                            {client.status || "N/A"}
+                            {client.processfollowuphistories?.[0]?.interaction_rating || "N/A"}
                           </span>
                         )}
                       </td>

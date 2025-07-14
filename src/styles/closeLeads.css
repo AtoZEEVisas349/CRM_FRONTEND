@@ -494,14 +494,21 @@ select:hover {
 .c-lead-table tr:hover {
   background-color: #f9f9f9;
 }
+.close-pagination-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0;
+}
+
 .close-pagination {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .close-pagination button {
-  padding: 6px 10px;
+  padding: 6px 12px;
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -513,6 +520,7 @@ select:hover {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
 [data-theme="dark"] .c-lead-table {
   background-color: black;
   color:white;
@@ -569,7 +577,6 @@ select:hover {
  }
  
  .rejected-leads-table td {
- 
    padding: 8px 12px;
    text-align: left;
  }
