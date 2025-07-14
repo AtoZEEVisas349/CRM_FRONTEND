@@ -129,7 +129,7 @@ const BeepNotification = ({
     }, (settings.reminderDelay || 30) * 1000);
     
     if (onDismissPopup) onDismissPopup();
-  }, [unreadCount, onDismissPopup, reminderMessage, showNotificationPopup]);
+  }, [unreadCount, onDismissPopup, reminderMessage, showNotificationPopup, settings.reminderDelay]);
 
   // Effect to handle beep interval when popup is shown
   useEffect(() => {

@@ -464,12 +464,20 @@ const updateSettings = async (updatedSettings) => {
 const [meetings, setMeetings] = useState([]);
 const [meetingsLoading, setMeetingsLoading] = useState(false);
 
-
 const refreshMeetings = async () => {
-  const all = await apiService.fetchMeetings();  
-  setMeetings(all);
-  return all; 
-}
+  setMeetingsLoading(true); // Add this to use setMeetingsLoading
+  try {
+    const all = await apiService.fetchMeetings();
+    setMeetings(all);
+    return all;
+  } catch (error) {
+    console.error("❌ Error refreshing meetings:", error);
+    return [];
+  } finally {
+    setMeetingsLoading(false); // Add this to use setMeetingsLoading
+  }
+};
+
 const adminMeeting = useCallback(async () => {
   try {
     const meetings = await apiService.adminMeeting();
@@ -519,7 +527,7 @@ useEffect(() => {
   };
 
   preloadMeetings();
-}, []);
+}, [adminMeeting]);
 
 const [convertedCustomerCount, setConvertedCustomerCount] = useState(0);
 const [convertedClients, setConvertedClients] = useState([]);
@@ -1560,7 +1568,7 @@ const triggerDashboardRefresh = () => {
     if (currentUser?.id) {
       fetchNotifications(currentUser.id);
     }
-  }, []);
+  }, [fetchNotifications]);
   
 
   useEffect(() => {
@@ -1644,7 +1652,6 @@ const triggerDashboardRefresh = () => {
         fetchHrUserData,
        updateHrProfileById,
         markMeetingAsRead,
-        unreadMeetingsCount,
         fetchExecutiveData,
         createFreshLeadAPI,
         createLeadAPI,
@@ -1652,6 +1659,7 @@ const triggerDashboardRefresh = () => {
 allTeamLeadsLoading,
 fetchAllTeamLeadsAPI,
 getAllConverted,
+summaryLoading,
         updateFreshLeadFollowUp,
         executiveDashboardData,
         executiveDashboardLoading,
@@ -1813,6 +1821,9 @@ getAllConverted,
               allTeamsLoading,
               allTeamsError,
               fetchAllTeamsAPI,
+              allClients,
+  allClientsLoading,
+  fetchAllClients,
               
               
       }}
