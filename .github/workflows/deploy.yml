@@ -24,7 +24,7 @@ jobs:
       - name: 🏗️ Build React App
         run: npm run build
 
-      - name: 🚀 Deploy to EC2 using SCP
+      - name: 🚀 Upload build files to EC2 via SCP
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -32,3 +32,14 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: "build/*"
           target: "/var/www/react-app"
+
+      - name: 🖥️ Run remote commands on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            echo "✅ Deployed on $(date)"
+            sudo systemctl restart nginx
+            # Optional: any extra commands, like restarting PM2 or checking logs
