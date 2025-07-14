@@ -58,16 +58,10 @@ export const ExecutiveActivityProvider = ({ children }) => {
   useEffect(() => {
     handleStartWork();
 
-    const handleBeforeUnload = async () => {
-      await handleStopWork();
-    };
-
-    // You could consider adding window event if needed
-    // window.addEventListener("beforeunload", handleBeforeUnload);
-
+    // Cleanup function can be added here if needed
     return () => {
       // Cleanup logic (optional)
-      // window.removeEventListener("beforeunload", handleBeforeUnload);
+      // You could add handleStopWork() here if needed when component unmounts
     };
   }, []);
 
@@ -113,7 +107,7 @@ export const ExecutiveActivityProvider = ({ children }) => {
   const handleStartBreak = async () => {
     try {
       setLoading(true);
-      const response = await recordStartBreak();
+      await recordStartBreak();
       setStatus((prev) => ({ ...prev, breakActive: true }));
     } catch (error) {
       console.error("❌ Error starting break:", error.message);

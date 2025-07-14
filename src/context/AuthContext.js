@@ -6,7 +6,7 @@ import * as authService from "../services/auth";
 import { recordStartWork, recordStopWork } from "../services/executiveService";
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { ThemeContext } from "../features/admin/ThemeContext";
-import { useBreakTimer } from "./breakTimerContext"; // Currently unused, but retained for scalability
+// Removed unused import: import { useBreakTimer } from "./breakTimerContext";
 
 // 1. Create Auth Context
 const AuthContext = createContext();
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [clearTimer, setClearTimer] = useState(false); // Used by workTimer
   const navigate = useNavigate();
   const { forceLightTheme } = useContext(ThemeContext);
-  const timer = useWorkTimer(clearTimer); // Work timer hook
+  // Removed unused variable: const timer = useWorkTimer(clearTimer);
 
   // Initialize user session on mount
   useEffect(() => {
