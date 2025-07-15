@@ -293,7 +293,7 @@ const ClientTable = ({
                             isOld
                               ? {
                                   color: "#d32f2f",
-                                  border: "3px solid #d32f2f",
+                                  border: "1px solid #d32f2f",
                                 }
                               : {}
                           }
