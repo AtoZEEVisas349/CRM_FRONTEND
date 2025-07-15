@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import { FaUserPlus, FaClipboardCheck, FaUsers } from "react-icons/fa";
-import { useApi } from "../../context/ApiContext";
 import { useNavigate } from "react-router-dom";
 import { isSameDay } from "../../utils/helpers";
 import { useProcessService } from "../../context/ProcessServiceContext";
@@ -8,40 +7,37 @@ const ProcessReportCard = () => {
   
  const {
     customers,
-    setCustomers,
     fetchCustomers,
   getProcessPersonMeetings
   } = useProcessService();
   const navigate = useNavigate();
-  const [freshLeadCount,setFreshLeadCount]=useState();
   useEffect(() => {
     fetchCustomers()
-      .then((data) => {
-        // If data returned from fetchConvertedClients is the raw clients array
-        if (data && Array.isArray(data)) {
-             const mappedClients = data
-  .filter((client) => client.status === "pending")
-          setFreshLeadCount(mappedClients);
-        }
-      })
+  //     .then((data) => {
+  //       // If data returned from fetchConvertedClients is the raw clients array
+  //       if (data && Array.isArray(data)) {
+  //            const mappedClients = data
+  // .filter((client) => client.status === "pending")
+  //         setFreshLeadCount(mappedClients);
+  //       }
+  //     })
       
        
       .catch((err) => {
         console.error("❌ Error fetching clients:", err);
       });
-  }, []);
+  }, [fetchCustomers]);
   const[meetingData,setMeetingData]=useState();
-const loadMeetings = async () => {
 
+
+
+const loadMeetings = useCallback(async () => {
   try {
     const response = await getProcessPersonMeetings();
-
-    // Filter only meetings where status is "meeting"
     const allMeetings = response.filter(
       (m) => m?.freshLead?.CustomerStatus?.status === "meeting"
     );
 
-    // Get unique meetings based on fresh_lead_id
     const uniqueMeetingsMap = new Map();
     allMeetings.forEach((meeting) => {
       const leadId = meeting.fresh_lead_id;
@@ -51,27 +47,20 @@ const loadMeetings = async () => {
     });
 
     const uniqueMeetings = Array.from(uniqueMeetingsMap.values());
-
-    // Get today's date
     const today = new Date();
-
-    // Count how many meetings are scheduled for today
     const todayCount = uniqueMeetings.filter((m) =>
       isSameDay(new Date(m.startTime), today)
     ).length;
 
-    // Set that count
-    setMeetingData(todayCount); // or rename this state to `setTodayMeetingCount` for clarity
+    setMeetingData(todayCount);
   } catch (err) {
     console.error("Failed to fetch process meetings", err);
-  } finally {
-   
   }
-};
+}, [getProcessPersonMeetings]);
 
      useEffect(() => {
         loadMeetings();
-      }, []);
+      }, [loadMeetings]);
      
   const freshLeadCountData= customers
   .filter((client) => client.status === "pending")

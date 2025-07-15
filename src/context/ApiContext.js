@@ -187,7 +187,7 @@ export const ApiProvider = ({ children }) => {
   // ✅ Fetch All Executives Activities
   const [topExecutive, setTopExecutive] = useState(null);
 
-  const fetchExecutives = async () => {
+const fetchExecutives = useCallback(async () => {
     try {
       const executives = await apiService.fetchAllExecutivesActivities();
       if (executives.length > 0) {
@@ -196,7 +196,7 @@ export const ApiProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching executives:", error);
     }
-  };
+  }, []);
 
   // ✅ Notifications
   const [notifications, setNotifications] = useState([]);
@@ -427,7 +427,7 @@ export const ApiProvider = ({ children }) => {
   };
 
   // ✅ New: Fetch Follow-Up Histories
-  const fetchFollowUpHistoriesAPI = async () => {
+const fetchFollowUpHistoriesAPI = useCallback(async () => {
     setFollowUpHistoriesLoading(true);
     try {
       const data = await apiService.fetchFollowUpHistories();
@@ -439,7 +439,9 @@ export const ApiProvider = ({ children }) => {
     } finally {
       setFollowUpHistoriesLoading(false);
     }
-  };
+  }, []);
+
+
   const [userSettings, setUserSettings] = useState(null); 
 
 // Fetch user settings
@@ -937,15 +939,15 @@ const createHr = async (hrData) => {
     setLoading(false);
   }
 };
-const getHrProfile = async () => {
-  try {
+const getHrProfile = useCallback(async () => {
+    try {
     const response = await apiService.getHr(); 
     return response.hr;
   } catch (error) {
     console.error("❌ Error creating close lead:", error);
     throw error;
   }
-};
+},[]);
 
 const [managerProfile, setManagerProfile] = useState(null);
   const [managerLoading, setManagerLoading] = useState(false);

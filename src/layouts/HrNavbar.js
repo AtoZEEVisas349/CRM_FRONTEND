@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect, useRef,useCallback } from "react";
 import { useAuth } from "../context/AuthContext"; // using logoutManager from here
 import { useApi } from "../context/ApiContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
@@ -31,10 +31,19 @@ function HrNavbar() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const localStorageUser = JSON.parse(localStorage.getItem("user"));
+  const [localStorageUser, setLocalStorageUser] = useState(JSON.parse(localStorage.getItem("user")));
   const hoverTimeout = useRef(null);
   const isHovering = useRef(false);
   const badgeRef = useRef(null);
+ 
+ 
+  useEffect(() => {
+  const handleStorageChange = () => {
+    setLocalStorageUser(JSON.parse(localStorage.getItem("user")));
+  };
+  window.addEventListener("storage", handleStorageChange);
+  return () => window.removeEventListener("storage", handleStorageChange);
+}, []);
 
   useEffect(() => {
     if (
@@ -47,7 +56,7 @@ function HrNavbar() {
         userRole: localStorageUser.role,
       });
     }
-  }, []);
+}, [fetchNotifications, localStorageUser?.id, localStorageUser?.role, notifications.length]);
 
   useEffect(() => {
     if (unreadCount > 0 && badgeRef.current) {
@@ -57,18 +66,19 @@ function HrNavbar() {
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [location.pathname]);
+  }, [unreadCount,location.pathname]);
   const [hrProfile, setHrProfile] = useState(null);
 
-  const handleMouseEnter = async () => {
-    clearTimeout(hoverTimeout.current);
-    isHovering.current = true;
-    setShowPopover(true);
+const handleMouseEnter = useCallback(async () => {
+  clearTimeout(hoverTimeout.current);
+  isHovering.current = true;
+  setShowPopover(true);
 
-    if (!hrProfile && !loading) {
-      await fetchProfile();
-    }
-  };
+  if (!hrProfile && !loading) {
+    console.log("Fetching profile on mouse enter");
+    await fetchProfile();
+  }
+}, [hrProfile, loading, fetchProfile]);
 
   const handleMouseLeave = () => {
     isHovering.current = false;
@@ -96,24 +106,16 @@ function HrNavbar() {
     changeTheme(isLight ? "dark" : "light");
   };
 
+const fetchProfile = useCallback(async () => {
+  try {
+    const profile = await getHrProfile();
+    console.log(profile, "p");
+    setHrProfile(profile);
+  } catch (err) {
+    console.error("Failed to load profile:", err.response?.data?.error || err.message);
+  }
+}, [getHrProfile]);
 
-  const [error, setError] = useState(null);
- const fetchProfile = async () => {
-      try {
-        const profile = await getHrProfile();
-          console.log(profile,"p");
-        setHrProfile(profile);
-      
-      } catch (err) {
-        setError(err.response?.data?.error || "Failed to load profile");
-      } 
-    };
-  useEffect(() => {
-
-
-    fetchProfile();
-    
-  }, []);
 
 
   return (

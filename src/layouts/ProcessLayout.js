@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import { useLoading } from "../context/LoadingContext"; // ✅ Import context
 import LoadingSpinner from "../features/spinner/LoadingSpinner"; // ✅ Spinner
 import "../styles/executive.css";

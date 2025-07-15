@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef,useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
@@ -89,109 +89,109 @@ const ScheduleMeeting = () => {
     };
   }, []);
 
-  const loadMeetings = async () => {
-    try {
-      setLocalLoading(true);
-      const allMeetings = await fetchMeetings();
+const loadMeetings = useCallback(async () => {
+  try {
+    setLocalLoading(true);
+    const allMeetings = await fetchMeetings();
 
-      if (!Array.isArray(allMeetings)) {
-        setMeetings([]);
-        return;
-      }
-
-      const filteredByStatus = allMeetings.filter(
-        (m) => m?.clientLead?.status === "Meeting"
-      );
-
-      const enriched = await Promise.all(
-        filteredByStatus.map(async (meeting) => {
-          const leadId =
-            meeting.fresh_lead_id ||
-            meeting.freshLead?.id ||
-            meeting.clientLead?.freshLead?.id ||
-            meeting.clientLead?.fresh_lead_id ||
-            meeting.freshLead?.lead?.id ||
-            meeting.id ||
-            meeting.clientLead?.id;
-
-          try {
-            const histories = await fetchFollowUpHistoriesAPI();
-            const recent = histories
-              .filter((h) => String(h.fresh_lead_id) === String(leadId))
-              .sort(
-                (a, b) =>
-                  new Date(b.created_at || b.follow_up_date) -
-                  new Date(a.created_at || a.follow_up_date)
-              )[0];
-
-            return {
-              ...meeting,
-              leadId,
-              interactionScheduleDate: recent?.follow_up_date,
-              interactionScheduleTime: recent?.follow_up_time,
-              followUpDetails: recent,
-            };
-          } catch {
-            return { ...meeting, leadId };
-          }
-        })
-      );
-
-      const uniqueMeetings = enriched.reduce((unique, meeting) => {
-        const exists = unique.find(
-          (m) => String(m.leadId) === String(meeting.leadId)
-        );
-        if (!exists) {
-          unique.push(meeting);
-        } else {
-          const oldDate = new Date(exists.startTime);
-          const newDate = new Date(meeting.startTime);
-          if (newDate > oldDate) {
-            const index = unique.indexOf(exists);
-            unique[index] = meeting;
-          }
-        }
-        return unique;
-      }, []);
-
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      const filtered = uniqueMeetings.filter((m) => {
-        const start = new Date(m.startTime);
-        if (activeFilter === "today") return isSameDay(start, now);
-        if (activeFilter === "week") {
-          const weekFromNow = new Date(today);
-          weekFromNow.setDate(today.getDate() + 7);
-          return start >= today && start < weekFromNow;
-        }
-        if (activeFilter === "month") {
-          const monthFromNow = new Date(today);
-          monthFromNow.setDate(today.getDate() + 30);
-          return start >= today && start < monthFromNow;
-        }
-        if (activeFilter === "custom" && dateRange.length === 2) {
-          const [startDate, endDate] = dateRange;
-          return start >= new Date(startDate) && start <= new Date(endDate);
-        }
-        return true;
-      });
-
-      const query = searchQuery.toLowerCase();
-      const searchFiltered = filtered.filter((m) =>
-        [m.clientName, m.clientEmail, m.clientPhone?.toString()]
-          .filter(Boolean)
-          .some((field) => field.toLowerCase().includes(query))
-      );
-
-      setMeetings(searchFiltered);
-    } catch (error) {
-      console.error("Failed to load meetings:", error);
+    if (!Array.isArray(allMeetings)) {
       setMeetings([]);
-    } finally {
-      setLocalLoading(false);
+      return;
     }
-  };
+
+    const filteredByStatus = allMeetings.filter(
+      (m) => m?.clientLead?.status === "Meeting"
+    );
+
+    const enriched = await Promise.all(
+      filteredByStatus.map(async (meeting) => {
+        const leadId =
+          meeting.fresh_lead_id ||
+          meeting.freshLead?.id ||
+          meeting.clientLead?.freshLead?.id ||
+          meeting.clientLead?.fresh_lead_id ||
+          meeting.freshLead?.lead?.id ||
+          meeting.id ||
+          meeting.clientLead?.id;
+
+        try {
+          const histories = await fetchFollowUpHistoriesAPI();
+          const recent = histories
+            .filter((h) => String(h.fresh_lead_id) === String(leadId))
+            .sort(
+              (a, b) =>
+                new Date(b.created_at || b.follow_up_date) -
+                new Date(a.created_at || a.follow_up_date)
+            )[0];
+
+          return {
+            ...meeting,
+            leadId,
+            interactionScheduleDate: recent?.follow_up_date,
+            interactionScheduleTime: recent?.follow_up_time,
+            followUpDetails: recent,
+          };
+        } catch {
+          return { ...meeting, leadId };
+        }
+      })
+    );
+
+    const uniqueMeetings = enriched.reduce((unique, meeting) => {
+      const exists = unique.find(
+        (m) => String(m.leadId) === String(meeting.leadId)
+      );
+      if (!exists) {
+        unique.push(meeting);
+      } else {
+        const oldDate = new Date(exists.startTime);
+        const newDate = new Date(meeting.startTime);
+        if (newDate > oldDate) {
+          const index = unique.indexOf(exists);
+          unique[index] = meeting;
+        }
+      }
+      return unique;
+    }, []);
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const filtered = uniqueMeetings.filter((m) => {
+      const start = new Date(m.startTime);
+      if (activeFilter === "today") return isSameDay(start, now);
+      if (activeFilter === "week") {
+        const weekFromNow = new Date(today);
+        weekFromNow.setDate(today.getDate() + 7);
+        return start >= today && start < weekFromNow;
+      }
+      if (activeFilter === "month") {
+        const monthFromNow = new Date(today);
+        monthFromNow.setDate(today.getDate() + 30);
+        return start >= today && start < monthFromNow;
+      }
+      if (activeFilter === "custom" && dateRange.length === 2) {
+        const [startDate, endDate] = dateRange;
+        return start >= new Date(startDate) && start <= new Date(endDate);
+      }
+      return true;
+    });
+
+    const query = searchQuery.toLowerCase();
+    const searchFiltered = filtered.filter((m) =>
+      [m.clientName, m.clientEmail, m.clientPhone?.toString()]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(query))
+    );
+
+    setMeetings(searchFiltered);
+  } catch (error) {
+    console.error("Failed to load meetings:", error);
+    setMeetings([]);
+  } finally {
+    setLocalLoading(false);
+  }
+}, [activeFilter, dateRange, searchQuery, fetchMeetings, fetchFollowUpHistoriesAPI, isSameDay]);
 
   const handleFollowUpSubmit = async (formData) => {
     const {

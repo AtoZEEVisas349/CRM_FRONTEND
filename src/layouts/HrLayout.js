@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
@@ -21,7 +21,6 @@ const HrLayout = () => {
     const [selectedExecutive, setSelectedExecutive] = useState(null);
     const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   
-    const user = JSON.parse(localStorage.getItem("user"));
    
     useEffect(() => {
       localStorage.setItem("adminSidebarExpanded", "false");
@@ -30,14 +29,14 @@ const HrLayout = () => {
       fetchExecutivesList();
     }, [fetchExecutives,fetchExecutivesList]);
   
-    const fetchExecutivesList = async () => {
-      try {
-        const data = await fetchExecutivesAPI();
-        setExecutives(data);
-      } catch (error) {
-        console.error("❌ Error fetching executives:", error);
-      }
-    };
+const fetchExecutivesList = useCallback(async () => {
+  try {
+    const data = await fetchExecutivesAPI();
+    setExecutives(data);
+  } catch (error) {
+    console.error("❌ Error fetching executives:", error);
+  }
+}, [fetchExecutivesAPI]);
   
     const currentExecutive = selectedExecutive || topExecutive;
     const isDashboard = location.pathname === "/hr";

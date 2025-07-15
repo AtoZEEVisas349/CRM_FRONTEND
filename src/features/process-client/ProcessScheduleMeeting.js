@@ -63,11 +63,6 @@ const ProcessScheduleMeeting = () => {
         if (data && Array.isArray(data)) {
          const mappedClients = data
   .filter((client) => client.status === "pending")
-  // .map((client) => ({
-  //   ...client,
-  //   id: client.id || client._id,
-  // }));
-
           setCustomers(mappedClients);
         }
       })
@@ -708,9 +703,6 @@ console.log(meetings);
     </div>
   </div>
 )}
-
-      {/* History Modal remains unchanged... */}
-      {/* You can append it below if needed */}
     </div>
   );
 };

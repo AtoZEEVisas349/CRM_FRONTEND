@@ -45,7 +45,7 @@ useEffect(() => {
   };
 
   getNotifications();
-}, [userRole]);
+}, [userRole, fetchNotifications]);
 
   const dashboardTitle = user?.type === 'processperson' ? 'Process Dashboard' : 'Client Dashboard';
     const [selectedRole, setSelectedRole] = useState("processperson"); 
@@ -65,10 +65,6 @@ useEffect(() => {
     }
   };
   
-  const handleBellClick = () => {
-    navigate('/process/client/notifications');
-  };
-  console.log("🔔 Unread Count:", count); 
   return (
     <nav className="process-navbar">
       <h2 className="process-navbar-logo">{dashboardTitle}</h2>

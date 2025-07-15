@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect,useCallback } from "react";
 import {
   createCustomerStages,
   getCustomerStages,
@@ -191,18 +191,18 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  const getProfile = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await getprofileSettings();
-      setProfile(res);
-    } catch (err) {
-      setError(err?.error || "Failed to fetch profile settings");
-    } finally {
-      setLoading(false);
-    }
-  };
+const getProfile = useCallback(async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await getprofileSettings();
+    setProfile(res);
+  } catch (err) {
+    setError(err?.error || "Failed to fetch profile settings");
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   const handleProfileSettings = async (data) => {
     setLoading(true);
@@ -232,17 +232,19 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  const fetchCustomers = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllProcessCustomerIdApi();
-      setCustomers(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchCustomers = useCallback(async () => {
+  setLoading(true);
+  try {
+    const data = await getAllProcessCustomerIdApi();
+    setCustomers(data);
+    return data;
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   const handleGetCustomerStagesById = async (customerId) => {
     try {

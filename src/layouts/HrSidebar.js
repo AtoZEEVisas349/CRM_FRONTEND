@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState,useCallback } from "react";
+import { Link } from "react-router-dom";
 import "../styles/adminsidebar.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   PieChart,
   FolderOpen,
@@ -22,58 +21,57 @@ const HrSidebar = () => {
     return stored === "true";
   });
 
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Update body classes whenever isExpanded changes
-    document.body.classList.toggle("sidebar-expanded", isExpanded);
-    document.body.classList.toggle("sidebar-collapsed", !isExpanded);
-    document.body.classList.toggle("sidebar-mobile-active", !isExpanded);
+useEffect(() => {
+  document.body.classList.toggle("sidebar-expanded", isExpanded);
+  document.body.classList.toggle("sidebar-collapsed", !isExpanded);
+  document.body.classList.toggle("sidebar-mobile-active", !isExpanded);
 
-    const handleSidebarToggle = () => {
-      const updated = localStorage.getItem("adminSidebarExpanded") === "true";
-      setIsExpanded(updated);
-    };
+  const handleSidebarToggle = () => {
+    const updated = localStorage.getItem("adminSidebarExpanded") === "true";
+    setIsExpanded(updated);
+  };
 
-    window.addEventListener("sidebarToggle", handleSidebarToggle);
+  window.addEventListener("sidebarToggle", handleSidebarToggle);
 
-    let touchStartX = 0;
-    let touchEndX = 0;
+  let touchStartX = 0;
+  let touchEndX = 0;
 
-    const handleTouchStart = (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    };
+  const handleTouchStart = (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  };
 
-    const handleTouchEnd = (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-    };
+  const handleTouchEnd = (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  };
 
-    const handleSwipe = () => {
-      const swipeThreshold = 50;
-      if (touchStartX - touchEndX > swipeThreshold && isExpanded) {
-        toggleSidebar();
-      }
-      if (touchEndX - touchStartX > swipeThreshold && !isExpanded) {
-        toggleSidebar();
-      }
-    };
+  const handleSwipe = () => {
+    const swipeThreshold = 50;
+    if (touchStartX - touchEndX > swipeThreshold && isExpanded) {
+      toggleSidebar();
+    }
+    if (touchEndX - touchStartX > swipeThreshold && !isExpanded) {
+      toggleSidebar();
+    }
+  };
 
-    window.addEventListener("touchstart", handleTouchStart);
-    window.addEventListener("touchend", handleTouchEnd);
+  window.addEventListener("touchstart", handleTouchStart);
+  window.addEventListener("touchend", handleTouchEnd);
 
-    return () => {
-      window.removeEventListener("sidebarToggle", handleSidebarToggle);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [isExpanded]);
+  return () => {
+    window.removeEventListener("sidebarToggle", handleSidebarToggle);
+    window.removeEventListener("touchstart", handleTouchStart);
+    window.removeEventListener("touchend", handleTouchEnd);
+  };
+}, [isExpanded, toggleSidebar]);
 
-  const toggleSidebar = () => {
-    const newState = !isExpanded;
-    setIsExpanded(newState);
-    localStorage.setItem("adminSidebarExpanded", newState.toString());
-    window.dispatchEvent(new Event("sidebarToggle"));  };
+ const toggleSidebar = useCallback(() => {
+  const newState = !isExpanded;
+  setIsExpanded(newState);
+  localStorage.setItem("adminSidebarExpanded", newState.toString());
+  window.dispatchEvent(new Event("sidebarToggle"));
+}, [isExpanded]); // Depend on isExpanded since it's used in the function
 
   return (
     <section>

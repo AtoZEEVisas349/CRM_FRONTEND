@@ -45,7 +45,17 @@ const Chat = ({ isCallActive , token}) => {
       }
     }
   }, [token]); 
-
+useEffect(() => {
+  const script = document.createElement("script");
+  script.src = "https://cdn.botpress.cloud/webchat/v3.0/webchat.js";
+  script.async = true;
+  script.onload = () => {
+    window.botpressWebChat.init({
+      configUrl: "https://files.bpcontent.cloud/2025/06/28/09/20250628095833-D0OMUHIV.json"
+    });
+  };
+  document.body.appendChild(script);
+}, []);
   const handleRecording = async (audioBlob) => {
     if (!authToken) {
       alert("Authentication token missing. Please login again.");

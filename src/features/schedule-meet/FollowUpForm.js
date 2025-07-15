@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import TimePicker from "react-time-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
@@ -14,17 +13,15 @@ const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
   const [interactionRating, setInteractionRating] = useState("");
-  const [interactionDate, setInteractionDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0]; // e.g. "2025-05-28"
-  });
+const interactionDate = new Date().toISOString().split("T")[0];
+
   const now = new Date();
   const defaultTime = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   });
-  const [interactionTime, setInteractionTime] = useState(defaultTime);
+const interactionTime = defaultTime;
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {

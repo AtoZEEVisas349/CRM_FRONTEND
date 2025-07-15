@@ -247,12 +247,7 @@ const Theme = () => {
     transition: 'opacity 0.3s ease'
   });
 
-  const getPreviewBarStyle = (themeKey) => ({
-    height: '8px',
-    borderRadius: '4px',
-    marginBottom: '4px',
-    background: themeKey === 'light' ? '#94a3b8' : 'rgba(255, 255, 255, 0.3)'
-  });
+
 
   return (
     <div style={styles.container} >

@@ -3,18 +3,15 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
 import DealFunnel from "../features/admin/DealFunnel";
-import OpportunityStage from "../features/admin/OpportunityStage";
 import RevenueChart from "../features/admin/RevenueChart";
 import ProfitChart from "../features/admin/ProfitChart";
 import Meetings from "../features/admin/Meetings";
 import LeadGraph from "../features/admin/LeadGraph";
 import ExecutiveActi from "../features/admin/ExecuitveActi";
-import AdminSidebar from "../layouts/AdminSidebar";
 import ManagerSidebar from "../layouts/ManagerSidebar";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
-import AdminNavbar from "./AdminNavbar";
 import RequirePermission from '../features/admin-settings/RequirePermission'
 import ManagerNavbar from "./ManagerNavbar";
 const ManagerLayout = () => {
@@ -25,13 +22,12 @@ const ManagerLayout = () => {
     const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   
     const user = JSON.parse(localStorage.getItem("user"));
-    const roleLabel = user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1);
     useEffect(() => {
       localStorage.setItem("adminSidebarExpanded", "false");
       window.dispatchEvent(new Event("sidebarToggle"));
       fetchExecutives();
       fetchExecutivesList();
-    }, []);
+    }, [fetchExecutives,fetchExecutivesList]);
   
     const fetchExecutivesList = async () => {
       try {
@@ -61,9 +57,7 @@ const ManagerLayout = () => {
         {isDashboard ? (
           <RequirePermission requiredKey="dashboard">
            <div className="dashboard-wrapper">
-           {/* <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
-                {roleLabel} Dashboard
-              </h2> */}
+         
             <Header />
             <Summary />
 

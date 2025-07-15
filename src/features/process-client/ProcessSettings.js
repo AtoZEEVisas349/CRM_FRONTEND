@@ -5,12 +5,11 @@ import { useProcessService } from '../../context/ProcessServiceContext';
 const ProcessSetting = () => {
   const [profileImage, setProfileImage] = useState(null);
     
-  const{profile,getProfile,handleProfileSettings,profiles,profileLoading}=useProcessService();
+  const{profile,getProfile,handleProfileSettings,profiles}=useProcessService();
    const[loading,setLoading]=useState()
   const [detailsExist, setDetailsExist] = useState(false);
    const[showMessage,setShowMessage]=useState("");
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
  const [formData, setFormData] = useState({
   customerId: '',
   dob: '',
@@ -71,7 +70,7 @@ useEffect(() => {
   };
 
   fetchProfile();
-}, []);
+}, [getProfile]);
 
 useEffect(() => {
   if (profiles && Object.keys(profiles).length > 0) {
@@ -114,7 +113,6 @@ useEffect(() => {
 
    const handleSubmit = async (e) => {
     e.preventDefault();
-    const userType = localStorage.getItem("userType");
     try {
       if (detailsExist) {
         // Always PUT if detailsExist is true
