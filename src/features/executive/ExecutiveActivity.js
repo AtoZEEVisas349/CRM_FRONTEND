@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee, faPhone, faSync } from "@fortawesome/free-solid-svg-icons";
+import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import {
-  startCall,
-  endCall,
   getActivityStatus,
 } from "../../services/executiveService";
-import { toast } from "react-toastify";
 import "../../styles/executiveTracker.css";
 import { useExecutiveActivity } from '../../context/ExecutiveActivityContext';
 import useWorkTimer from "./useLoginTimer";
@@ -15,24 +12,21 @@ import { useBreakTimer } from "../../context/breakTimerContext";
 
 const ExecutiveActivity = () => {
   const { user } = useExecutiveActivity();
-  const {handleStartBreak,handleStopBreak,handleStartCall,handleEndCall}=useExecutiveActivity()
-  const { breakTimer, startBreak, stopBreak, isBreakActive, timerloading } = useBreakTimer();
+  const { breakTimer, startBreak, isBreakActive } = useBreakTimer()
   const timer = useWorkTimer();
   const { executiveInfo, executiveLoading, fetchExecutiveData, activityData, getExecutiveActivity } = useApi();
   
   useEffect(() => {
     fetchExecutiveData(); // Call it only once on mount
-  }, []);
+  }, [fetchExecutiveData,getExecutiveActivity]);
 
   // ✅ Fetch daily activity data when executiveInfo is available
   useEffect(() => {
     if (executiveInfo?.id) {
       getExecutiveActivity(executiveInfo.id);
     }
-  }, [executiveInfo?.id]);
-  
-  const [callText, setCallText] = useState('Start Call');
-  
+  }, [executiveInfo?.id,getExecutiveActivity]);
+    
   const [status, setStatus] = useState({
     onBreak: false,
     isOnCall: false,
@@ -99,68 +93,68 @@ const ExecutiveActivity = () => {
     if (!executiveInfo && !executiveLoading) {
       fetchExecutiveData(); // only when necessary
     }
-  }, []);
+  }, [ executiveInfo, executiveLoading, fetchExecutiveData]);
   
-  const [breakText, setBreakText] = useState("Take Break");
+  
   const toggle= async () => {
     if (!isBreakActive) {
       await startBreak();
     } 
   };
   
-  const toggleCallTracking = async () => {
-    try {
-      setLoading(true);
+  // const toggleCallTracking = async () => {
+  //   try {
+  //     setLoading(true);
 
-      if (!status.isOnCall) {
-        if (!status.currentLeadId) {
-          toast.warning("Please enter a Lead ID first");
-          setLoading(false);
-          return;
-        }
+  //     if (!status.isOnCall) {
+  //       if (!status.currentLeadId) {
+  //         toast.warning("Please enter a Lead ID first");
+  //         setLoading(false);
+  //         return;
+  //       }
 
-        await startCall(status.currentLeadId);
-        toast.info("Call tracking started");
-      } else {
-        await endCall(status.currentLeadId);
-        toast.success("Call tracked successfully");
-      }
+  //       await startCall(status.currentLeadId);
+  //       toast.info("Call tracking started");
+  //     } else {
+  //       await endCall(status.currentLeadId);
+  //       toast.success("Call tracked successfully");
+  //     }
 
-      await fetchActivityStatus();
-    } catch (error) {
-      toast.error(`Failed to ${status.isOnCall ? "end" : "start"} call: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     await fetchActivityStatus();
+  //   } catch (error) {
+  //     toast.error(`Failed to ${status.isOnCall ? "end" : "start"} call: ${error.message}`);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleLeadIdChange = (e) => {
-    setStatus((prev) => ({
-      ...prev,
-      currentLeadId: e.target.value,
-    }));
-  };
+  // const handleLeadIdChange = (e) => {
+  //   setStatus((prev) => ({
+  //     ...prev,
+  //     currentLeadId: e.target.value,
+  //   }));
+  // };
 
-  const handleManualRefresh = () => {
-    fetchActivityStatus();
-    // ✅ Also refresh daily activity data
-    if (executiveInfo?.id) {
-      getExecutiveActivity(executiveInfo.id);
-    }
-    toast.info("Activity data refreshed");
-  };
+  // const handleManualRefresh = () => {
+  //   fetchActivityStatus();
+  //   // ✅ Also refresh daily activity data
+  //   if (executiveInfo?.id) {
+  //     getExecutiveActivity(executiveInfo.id);
+  //   }
+  //   toast.info("Activity data refreshed");
+  // };
   
-  const toggleCall = (e) => {
-    if (callText === 'Start Call') {
-       handleStartCall();
-      setCallText('End Call');
-      // ✅ Save call status
-    } else {
-      handleEndCall();
-      setCallText('Start Call');
-        // ✅ Save call status
-    }
-  }
+  // const toggleCall = (e) => {
+  //   if (callText === 'Start Call') {
+  //      handleStartCall();
+  //     setCallText('End Call');
+  //     // ✅ Save call status
+  //   } else {
+  //     handleEndCall();
+  //     setCallText('Start Call');
+  //       // ✅ Save call status
+  //   }
+  // }
   
   return (
     <div className="activity-tracker-container">

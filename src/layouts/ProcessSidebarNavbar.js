@@ -4,9 +4,7 @@ import "../styles/sidebar.css";
 import BeepNotification from "../BeepNotification";
 import ProcessActivity from "../features/executive/ProcessActivity";
 import { useApi } from "../context/ApiContext";
-import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
-import { useExecutiveActivity } from "../context/ExecutiveActivityContext";
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "../context/breakTimerContext";
 import { SearchContext } from "../context/SearchContext";
@@ -18,7 +16,7 @@ import {
   faBed, faCouch, faUmbrellaBeach, faPeace, faBookOpen, faMusic,
   faHeadphones, faYinYang, faStopCircle,faSpinner
 } from "@fortawesome/free-solid-svg-icons";
-import { FaPlay,FaPause ,BeepNo} from "react-icons/fa";
+import { FaPlay,FaPause} from "react-icons/fa";
 import { useProcess } from "../context/ProcessAuthContext";
 // Break timer icons
 const breakIcons = [
@@ -27,15 +25,14 @@ const breakIcons = [
 ];
 
 const ProcessSidebarNavbar = () => {
-  const { breakTimer, startBreak, stopBreak, isBreakActive, resetBreakTimer,processstartBreak,processstopBreak} = useBreakTimer();
+  const { breakTimer, isBreakActive, resetBreakTimer,processstartBreak,processstopBreak} = useBreakTimer();
   const {logout}=useProcess();
   const timer = useWorkTimer();
-  const { user } = useAuth();
   const {
      executiveLoading, 
     fetchNotifications, unreadCount, notifications,markNotificationReadAPI
   } = useApi();
-  const { handleStopWork } = useExecutiveActivity();
+
   const { theme } = useContext(ThemeContext);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
@@ -46,15 +43,8 @@ const ProcessSidebarNavbar = () => {
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
   const userDetails = JSON.parse(localStorage.getItem("user")) || {};
-const { email, fullName,id } = userDetails;
+  const { fullName,id } = userDetails;
 
-
-  const [workTime, setWorkTime] = useState("00:00");
-  const [isWorkRunning, setIsWorkRunning] = useState(false);
-  const [breakTime, setBreakTime] = useState("00:00");
-  const [isBreakRunning, setIsBreakRunning] = useState(false);
-  const workIntervalRef = useRef(null);
-  const breakIntervalRef = useRef(null);
 
   const [hourDeg, setHourDeg] = useState(0);
   const [minuteDeg, setMinuteDeg] = useState(0);

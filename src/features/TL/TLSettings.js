@@ -96,7 +96,7 @@ const TLSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [getAllProfile, showLoader, hideLoader]);
+  }, [getAllProfile, showLoader, hideLoader,alerts]);
 
   // Handle alert close
   const handleAlertClose = (id) => {

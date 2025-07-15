@@ -27,7 +27,7 @@ function Notification() {
         hideLoader();
       });
     }
-  }, [fetchNotifications]);
+  }, [fetchNotifications,showLoader, hideLoader]);
 
   // Group lead assignment notifications
   const groupedLeadAssignments = [];
@@ -221,3 +221,4 @@ function Notification() {
 }
 
 export default Notification;
+       

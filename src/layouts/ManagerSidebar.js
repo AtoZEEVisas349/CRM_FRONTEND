@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useCallback} from "react";
 import { Link } from "react-router-dom";
 import "../styles/adminsidebar.css";
 import {
@@ -21,6 +21,13 @@ const ManagerSidebar = () => {
     return stored === "true";
   });
 
+  const toggleSidebar = useCallback(() => {
+    const newState = !isExpanded;
+    setIsExpanded(newState);
+    localStorage.setItem("adminSidebarExpanded", newState.toString());
+    window.dispatchEvent(new Event("sidebarToggle"));
+    document.body.classList.toggle("sidebar-mobile-active", !newState);
+  }, [isExpanded]);
 
   useEffect(() => {
     // Update body classes whenever isExpanded changes
@@ -65,15 +72,7 @@ const ManagerSidebar = () => {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isExpanded]);
-
-  const toggleSidebar = () => {
-    const newState = !isExpanded;
-    setIsExpanded(newState);
-    localStorage.setItem("adminSidebarExpanded", newState.toString());
-    window.dispatchEvent(new Event("sidebarToggle"));
-    document.body.classList.toggle("sidebar-mobile-active", !newState);
-  };
+  }, [isExpanded,toggleSidebar]);
 
   return (
     <section>

@@ -4,7 +4,6 @@ import { MdSmartToy } from "react-icons/md";
 import { BsRecordCircle } from "react-icons/bs";
 import { jwtDecode } from "jwt-decode";
 
-const token = new URLSearchParams(window.location.search).get("token");
 
 const Chat = ({ isCallActive , token}) => {
   const [messages, setMessages] = useState([]);
@@ -56,35 +55,7 @@ useEffect(() => {
   };
   document.body.appendChild(script);
 }, []);
-  const handleRecording = async (audioBlob) => {
-    if (!authToken) {
-      alert("Authentication token missing. Please login again.");
-      return;
-    }
 
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.webm');
-    
-    try {
-      const response = await fetch('/api/save-recording', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          // Don't set Content-Type when using FormData
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save recording');
-      }
-
-      console.log('Recording saved successfully');
-    } catch (error) {
-      console.error('Error saving recording:', error);
-      alert('Failed to save recording. Please try again.');
-    }
-  };
 
 
   useEffect(() => {
@@ -102,7 +73,7 @@ useEffect(() => {
         console.error("❌ Invalid token:", err);
       }
     }
-  }, []);
+  }, [token]);
 
   const handleSend = async (input) => {
     if (!input.trim()) return;

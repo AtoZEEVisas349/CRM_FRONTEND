@@ -3,7 +3,7 @@ import { Search, ChevronDown, Filter, Download, TrendingUp, Users, DollarSign, C
 
 const PayrollSystem = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [setSelectedEmployee] = useState(null);
   
   const employees = [
     {

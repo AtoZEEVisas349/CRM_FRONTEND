@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { useApi } from "../../context/ApiContext";
-import { getEmailTemplates } from "../../static/emailTemplates";
 
 export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
-  const { executiveInfo } = useApi();
-  const { handleSendEmail } = useExecutiveActivity();
-  const { fetchAllTemplates, fetchTemplateById, templateLoading } = useApi();
-
+  const {
+    executiveInfo,
+    fetchAllTemplates,
+    fetchTemplateById,
+    templateLoading,
+  } = useApi();
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [emailTemplates, setEmailTemplates] = useState([]);
-  const user=localStorage.getItem("user")
- 
- 
+
   useEffect(() => {
     const loadTemplates = async () => {
       try {
@@ -24,34 +22,36 @@ export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
         console.error("❌ Failed to fetch templates:", error);
       }
     };
-  
+
     if (clientInfo?.email) {
       loadTemplates();
     }
-  }, [clientInfo?.email]);
-  
+  }, [clientInfo?.email, fetchAllTemplates]);
 
   const handleTemplateChange = async (e) => {
     const templateId = e.target.value;
     setSelectedTemplateId(templateId);
-  
+
     if (!templateId) {
       onTemplateSelect(null, clientInfo.email);
       return;
     }
-  
+
     try {
       const fullTemplate = await fetchTemplateById(templateId);
       if (fullTemplate?.id && clientInfo.email) {
         onTemplateSelect(fullTemplate, clientInfo.email);
       } else {
-        console.warn("Template or client email missing:", fullTemplate, clientInfo.email);
+        console.warn(
+          "Template or client email missing:",
+          fullTemplate,
+          clientInfo.email
+        );
       }
     } catch (err) {
       console.error("Failed to load template by ID:", err);
     }
   };
-  
 
   if (!clientInfo?.email) {
     return <p>Client info not available</p>;
@@ -118,7 +118,7 @@ export const SendEmailToClients = ({ clientInfo, onTemplateSelect }) => {
                 </option>
               ))}
             </select>
-          </label> 
+          </label>
         </div>
       </div>
     </div>

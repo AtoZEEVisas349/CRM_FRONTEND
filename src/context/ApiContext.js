@@ -31,31 +31,31 @@ export const ApiProvider = ({ children }) => {
     useState(false);
 
   // ✅ Fetch executive data
-  const fetchExecutiveData = async () => {
-    setExecutiveLoading(true);
-    try {
-      const currentUser = JSON.parse(localStorage.getItem("user"));
-      const executiveId = currentUser?.id;
+const fetchExecutiveData = useCallback(async () => {
+  setExecutiveLoading(true);
+  try {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const executiveId = currentUser?.id;
 
-      if (!executiveId) {
-        console.error("No executiveId found in localStorage!");
-        setExecutiveLoading(false);
-        return;
-      }
-
-      const response = await apiService.fetchExecutiveInfo(executiveId);
-
-      if (response?.data?.executive) {
-        setExecutiveInfo(response.data.executive);
-      } else {
-        console.error("Executive data missing:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching executive data:", error);
-    } finally {
+    if (!executiveId) {
+      console.error("No executiveId found in localStorage!");
       setExecutiveLoading(false);
+      return;
     }
-  };
+
+    const response = await apiService.fetchExecutiveInfo(executiveId);
+
+    if (response?.data?.executive) {
+      setExecutiveInfo(response.data.executive);
+    } else {
+      console.error("Executive data missing:", response.data);
+    }
+  } catch (error) {
+    console.error("Error fetching executive data:", error);
+  } finally {
+    setExecutiveLoading(false);
+  }
+}, []);
 
   const fetchAdminUserData = async () => {
     setUserLoading(true);
@@ -102,18 +102,19 @@ export const ApiProvider = ({ children }) => {
       }
     };
   // ✅ Fetch online executives
-  const fetchOnlineExecutivesData = async () => {
-    setOnlineLoading(true);
-    try {
-      const data = await apiService.fetchOnlineExecutives();
-      setOnlineExecutives(data);
-      return data; // <-- add this
-    } catch (error) {
-      console.error("Error fetching online executives:", error);
-    } finally {
-      setOnlineLoading(false); 
-    }
-  };
+ const fetchOnlineExecutivesData = useCallback(async () => {
+  setOnlineLoading(true);
+  try {
+    const data = await apiService.fetchOnlineExecutives();
+    setOnlineExecutives(data);
+    return data; // ✅ allows caller to use result
+  } catch (error) {
+    console.error("❌ Error fetching online executives:", error);
+    return []; // ✅ fallback return
+  } finally {
+    setOnlineLoading(false);
+  }
+}, [setOnlineLoading, setOnlineExecutives]); 
 
   // ✅ Admin Profile
   const [adminProfile, setAdminProfile] = useState(null);
@@ -265,71 +266,66 @@ const fetchExecutives = useCallback(async () => {
   });
 
   // ✅ Get Executive Activity - Updated to filter by current date
-  const getExecutiveActivity = async (executiveId) => {
-    if (!executiveId) return;
 
-    try {
-      const data = await apiService.fetchExecutiveActivity(executiveId);
-      
-      // Get today's date in YYYY-MM-DD format
-      const today = format(new Date(), "yyyy-MM-dd");
+const getExecutiveActivity = useCallback(async (executiveId) => {
+  if (!executiveId) return;
 
-      // Filter activities for today only
-      let totalBreakTime = 0;
-      let totalWorkTime = 0;
-      let totalCallTime = 0;
+  try {
+    const data = await apiService.fetchExecutiveActivity(executiveId);
+    const today = format(new Date(), "yyyy-MM-dd");
 
-      if (Array.isArray(data)) {
-        // Filter and sum records for today
-        const todayActivities = data.filter(record => record.activityDate === today);
-        todayActivities.forEach(record => {
-          totalBreakTime += record.breakTime || 0;
-          totalWorkTime += record.workTime || 0;
-          totalCallTime += record.dailyCallTime || 0;
-        });
-      } else if (data && typeof data === 'object') {
-        // Handle single object response for today
-        if (data.activityDate === today) {
-          totalBreakTime = data.breakTime || 0;
-          totalWorkTime = data.workTime || 0;
-          totalCallTime = data.dailyCallTime || 0;
-        }
-      }
+    let totalBreakTime = 0;
+    let totalWorkTime = 0;
+    let totalCallTime = 0;
 
-      setActivityData({
-        breakTime: totalBreakTime,
-        workTime: totalWorkTime,
-        callTime: totalCallTime,
+    if (Array.isArray(data)) {
+      const todayActivities = data.filter(record => record.activityDate === today);
+      todayActivities.forEach(record => {
+        totalBreakTime += record.breakTime || 0;
+        totalWorkTime += record.workTime || 0;
+        totalCallTime += record.dailyCallTime || 0;
       });
-
-      console.log('✅ Activity totals for today:', {
-        totalWorkTime,
-        totalBreakTime,
-        totalCallTime
-      });
-
-    } catch (error) {
-      console.error("Error fetching executive activity data:", error);
+    } else if (data?.activityDate === today) {
+      totalBreakTime = data.breakTime || 0;
+      totalWorkTime = data.workTime || 0;
+      totalCallTime = data.dailyCallTime || 0;
     }
-  };
+
+    setActivityData({
+      breakTime: totalBreakTime,
+      workTime: totalWorkTime,
+      callTime: totalCallTime,
+    });
+
+    console.log('✅ Activity totals for today:', {
+      totalWorkTime,
+      totalBreakTime,
+      totalCallTime
+    });
+
+  } catch (error) {
+    console.error("Error fetching executive activity data:", error);
+  }
+}, []);
+
   
   // ✅ Fetch Fresh Leads API
   const [freshLeads, setFreshLeads] = useState([]);
   const [freshLeadsLoading, setFreshLeadsLoading] = useState(false);
 
-  const fetchFreshLeadsAPI = async () => {
-    setFreshLeadsLoading(true);
-    try {
-      const data = await apiService.fetchFreshLeads();
-      setFreshLeads(data || []);
-      return data || [];
-    } catch (error) {
-      console.error("❌ Error fetching fresh leads:", error);
-      return [];
-    } finally {
-      setFreshLeadsLoading(false);
-    }
-  };
+ const fetchFreshLeadsAPI = useCallback(async () => {
+  setFreshLeadsLoading(true);
+  try {
+    const data = await apiService.fetchFreshLeads();
+    setFreshLeads(data || []);
+    return data || [];
+  } catch (error) {
+    console.error("❌ Error fetching fresh leads:", error);
+    return [];
+  } finally {
+    setFreshLeadsLoading(false);
+  }
+}, []);
 
   // ✅ Update Fresh Lead FollowUp
   const updateFreshLeadFollowUp = async (leadId, updatedData) => {
@@ -379,18 +375,18 @@ const fetchExecutives = useCallback(async () => {
   const [followUps, setFollowUps] = useState([]);
   const [followUpLoading, setFollowUpLoading] = useState(false);
 
-  const getAllFollowUps = async () => {
-    setFollowUpLoading(true);
-    try {
-      const data = await apiService.fetchAllFollowUps();
-      setFollowUps(data);
-      return data || [];
-    } catch (error) {
-      console.error("❌ Failed to fetch follow-ups in context:", error);
-    } finally {
-      setFollowUpLoading(false);
-    }
-  };
+const getAllFollowUps = useCallback(async () => {
+  setFollowUpLoading(true);
+  try {
+    const data = await apiService.fetchAllFollowUps();
+    setFollowUps(data);
+    return data || [];
+  } catch (error) {
+    console.error("❌ Failed to fetch follow-ups in context:", error);
+  } finally {
+    setFollowUpLoading(false);
+  }
+}, []);
 
   // ✅ Create a follow-up
   const createFollowUp = async (followUpData) => {
@@ -951,17 +947,18 @@ const getHrProfile = useCallback(async () => {
 
 const [managerProfile, setManagerProfile] = useState(null);
   const [managerLoading, setManagerLoading] = useState(false);
-  const getManager = async () => {
-    setManagerLoading(true);
-    try {
-      const data = await apiService.getManager();
-      setManagerProfile(data.manager);  // ✅ This is the fix
-    } catch (error) {
-      console.error("❌ Error fetching manager profile:", error);
-    } finally {
-      setManagerLoading(false);
-    }
-  };
+ const getManager = useCallback(async () => {
+  setManagerLoading(true);
+  try {
+    const data = await apiService.getManager();
+    setManagerProfile(data.manager);
+  } catch (error) {
+    console.error("❌ Error fetching manager profile:", error);
+  } finally {
+    setManagerLoading(false);
+  }
+}, []);
+
   
 
 const updateManagerProfile = async (managerId, profileData) => {
@@ -1110,19 +1107,19 @@ const [emailTemplates, setEmailTemplates] = useState([]);
   const [leaveApplicationsLoading, setLeaveApplicationsLoading] = useState(false);
 
   // New function to fetch leave applications
-  const fetchLeaveApplicationsAPI = async (employeeId = null) => {
-    setLeaveApplicationsLoading(true);
-    try {
-      const data = await apiService.fetchLeaveApplications(employeeId);
-      setLeaveApplications(data);
-      return data;
-    } catch (error) {
-      console.error("❌ Error fetching leave applications:", error);
-      return [];
-    } finally {
-      setLeaveApplicationsLoading(false);
-    }
-  };
+const fetchLeaveApplicationsAPI = useCallback(async (employeeId = null) => {
+  setLeaveApplicationsLoading(true);
+  try {
+    const data = await apiService.fetchLeaveApplications(employeeId);
+    setLeaveApplications(data);
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching leave applications:", error);
+    return [];
+  } finally {
+    setLeaveApplicationsLoading(false);
+  }
+}, []);
 
   const updateLeaveStatusAPI = async (leaveId, status, hrComment = '') => {
     try {
@@ -1218,7 +1215,7 @@ const createManagerTeam = async (teamData) => {
 };
 
 
-const fetchManagerTeams = async (managerId) => {
+const fetchManagerTeams = useCallback(async (managerId) => {
   if (!managerId) {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     managerId = currentUser?.id;
@@ -1237,7 +1234,7 @@ const fetchManagerTeams = async (managerId) => {
     console.log("✅ Fetched manager teams from API:", teams);
 
     if (Array.isArray(teams)) {
-      setManagerTeams(teams); // important: update state
+      setManagerTeams(teams);
     } else {
       console.warn("⚠️ Unexpected teams format:", teams);
       setManagerTeams([]);
@@ -1251,7 +1248,7 @@ const fetchManagerTeams = async (managerId) => {
   } finally {
     setManagerTeamsLoading(false);
   }
-};
+}, []);
 
 
 // ✅ Fetch members of a specific team by ID (manager only)
@@ -1567,10 +1564,10 @@ const triggerDashboardRefresh = () => {
     getExecutiveActivity();
     fetchFollowUpHistoriesAPI();
   
-    if (currentUser?.id) {
+if (currentUser?.id) {
       fetchNotifications(currentUser.id);
     }
-  }, [fetchNotifications]);
+  }, [fetchNotifications, fetchExecutives , fetchFollowUpHistoriesAPI]);
   
 
   useEffect(() => {

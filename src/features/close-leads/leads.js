@@ -26,20 +26,21 @@ const Leads = ({ searchQuery }) => {
 
   useCopyNotification(createCopyNotification, fetchNotifications);
 
-  useEffect(() => {
-    const loadCloseLeads = async () => {
-      try {
-        showLoader("Loading Closed Leads...");
-        await fetchAllCloseLeadsAPI();
-      } catch (error) {
-        console.error("Failed to fetch close leads", error);
-      } finally {
-        hideLoader();
-      }
-    };
+ useEffect(() => {
+  const loadCloseLeads = async () => {
+    try {
+      showLoader("Loading Closed Leads...");
+      await fetchAllCloseLeadsAPI();
+    } catch (error) {
+      console.error("Failed to fetch close leads", error);
+    } finally {
+      hideLoader();
+    }
+  };
 
-    loadCloseLeads();
-  }, []);
+  loadCloseLeads();
+}, [fetchAllCloseLeadsAPI, showLoader, hideLoader]);
+
 
   const leadsArray = closeLeads?.data || [];
 

@@ -54,7 +54,7 @@ function HrNotification() {
     };
 
     loadInitialData();
-  }, []);
+}, [fetchExecutivesAPI, fetchNotifications, hideLoader, showLoader, user.id, user.role]);
 
   useEffect(() => {
     const loadMeetings = async () => {

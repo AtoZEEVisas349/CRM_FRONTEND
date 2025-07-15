@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 import "../../styles/attendancetable.css";
 import SidebarToggle from "./SidebarToggle";
@@ -33,7 +33,8 @@ const AttendanceTable = () => {
   const isSidebarExpanded =
     localStorage.getItem("adminSidebarExpanded") === "true";
 
-  const fetchAttendance = async () => {
+  // ✅ Use useCallback to memoize fetchAttendance function
+  const fetchAttendance = useCallback(async () => {
     try {
       showLoader("Fetching attendance report...", "admin");
       const data = await handleGetAttendance(
@@ -49,58 +50,58 @@ const AttendanceTable = () => {
     } finally {
       hideLoader();
     }
-  };
+  }, [startDate, endDate, handleGetAttendance, showLoader, hideLoader]);
 
-  // 🔁 Fetch attendance when not in payroll view
+  // 🔁 Fetch attendance when not in payroll view or when date range changes
   useEffect(() => {
     if (!showPayroll) {
       fetchAttendance();
     }
-  }, [showPayroll,fetchAttendance]);
+  }, [showPayroll, fetchAttendance]);
 
   // 🔁 Fetch selected department roles when payroll view is active
   useEffect(() => {
-  if (!showPayroll) return;
+    if (!showPayroll) return;
 
-  const fetchDepartmentData = async () => {
-    try {
-      showLoader("Fetching employees...", "admin");
+    const fetchDepartmentData = async () => {
+      try {
+        showLoader("Fetching employees...", "admin");
 
-      // Clear all roles
-      setAllHRs([]);
-      setAllManagers([]);
-      setAllTLs([]);
-      setAllExecutives([]);
+        // Clear all roles
+        setAllHRs([]);
+        setAllManagers([]);
+        setAllTLs([]);
+        setAllExecutives([]);
 
-      switch (department) {
-        case "HR":
-          const hrRes = await fetchAllHRsAPI();
-          setAllHRs(hrRes?.hrs || hrRes?.data || []);
-          break;
-        case "Manager":
-          const mgrRes = await fetchAllManagersAPI();
-          setAllManagers(mgrRes?.managers || mgrRes?.data || []);
-          break;
-        case "TL":
-          const tlRes = await fetchAllTeamLeadsAPI();
-          setAllTLs(tlRes?.teamLeads || tlRes?.data || []);
-          break;
-        case "Executive":
-          const execRes = await fetchExecutivesAPI();
-          setAllExecutives(execRes?.executives || execRes?.data || []);
-          break;
-        default:
-          break;
+        switch (department) {
+          case "HR":
+            const hrRes = await fetchAllHRsAPI();
+            setAllHRs(hrRes?.hrs || hrRes?.data || []);
+            break;
+          case "Manager":
+            const mgrRes = await fetchAllManagersAPI();
+            setAllManagers(mgrRes?.managers || mgrRes?.data || []);
+            break;
+          case "TL":
+            const tlRes = await fetchAllTeamLeadsAPI();
+            setAllTLs(tlRes?.teamLeads || tlRes?.data || []);
+            break;
+          case "Executive":
+            const execRes = await fetchExecutivesAPI();
+            setAllExecutives(execRes?.executives || execRes?.data || []);
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        console.error("❌ Error fetching roles:", error);
+      } finally {
+        hideLoader();
       }
-    } catch (error) {
-      console.error("❌ Error fetching roles:", error);
-    } finally {
-      hideLoader();
-    }
-  };
+    };
 
-  fetchDepartmentData();
-}, [showPayroll, department, fetchAllHRsAPI, fetchAllManagersAPI, fetchAllTeamLeadsAPI, fetchExecutivesAPI, showLoader, hideLoader]);
+    fetchDepartmentData();
+  }, [showPayroll, department, fetchAllHRsAPI, fetchAllManagersAPI, fetchAllTeamLeadsAPI, fetchExecutivesAPI, showLoader, hideLoader]);
 
   const isFutureDate = (date) => dayjs(date).isAfter(dayjs(), "day");
 

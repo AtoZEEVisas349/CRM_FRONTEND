@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
@@ -21,24 +21,22 @@ const TlLayout = () => {
     const [selectedExecutive, setSelectedExecutive] = useState(null);
     const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   
-    const user = JSON.parse(localStorage.getItem("user"));
-    const roleLabel = user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1);
-  
-    useEffect(() => {
-      localStorage.setItem("adminSidebarExpanded", "false");
-      window.dispatchEvent(new Event("sidebarToggle"));
-      fetchExecutives();
-      fetchExecutivesList();
-    }, []);
-  
-    const fetchExecutivesList = async () => {
-      try {
-        const data = await fetchExecutivesAPI();
-        setExecutives(data);
-      } catch (error) {
-        console.error("❌ Error fetching executives:", error);
-      }
-    };
+const fetchExecutivesList = useCallback(async () => {
+  try {
+    const data = await fetchExecutivesAPI();
+    setExecutives(data);
+  } catch (error) {
+    console.error("❌ Error fetching executives:", error);
+  }
+}, [fetchExecutivesAPI]); // include any dependency used inside
+
+useEffect(() => {
+  localStorage.setItem("adminSidebarExpanded", "false");
+  window.dispatchEvent(new Event("sidebarToggle"));
+  fetchExecutives();
+  fetchExecutivesList();
+}, [fetchExecutives, fetchExecutivesList]);
+
   
     const currentExecutive = selectedExecutive || topExecutive;
     const isDashboard = location.pathname === "/team-lead";

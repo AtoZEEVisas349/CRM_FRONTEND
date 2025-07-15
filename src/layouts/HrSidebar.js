@@ -21,6 +21,13 @@ const HrSidebar = () => {
     return stored === "true";
   });
 
+ const toggleSidebar = useCallback(() => {
+  const newState = !isExpanded;
+  setIsExpanded(newState);
+  localStorage.setItem("adminSidebarExpanded", newState.toString());
+  window.dispatchEvent(new Event("sidebarToggle"));
+}, [isExpanded]); 
+
 
 useEffect(() => {
   document.body.classList.toggle("sidebar-expanded", isExpanded);
@@ -65,13 +72,6 @@ useEffect(() => {
     window.removeEventListener("touchend", handleTouchEnd);
   };
 }, [isExpanded, toggleSidebar]);
-
- const toggleSidebar = useCallback(() => {
-  const newState = !isExpanded;
-  setIsExpanded(newState);
-  localStorage.setItem("adminSidebarExpanded", newState.toString());
-  window.dispatchEvent(new Event("sidebarToggle"));
-}, [isExpanded]); // Depend on isExpanded since it's used in the function
 
   return (
     <section>

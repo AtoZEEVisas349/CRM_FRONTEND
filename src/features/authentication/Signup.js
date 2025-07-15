@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
@@ -18,44 +18,72 @@ const Signup = ({ userType }) => {
   const isAdmin = userType === "admin";
   const role = isAdmin ? "Admin" : "Executive"; // default fallback
 
-  const slides = [
-    { text: "Fast & Secure", img: img1 },
-    { text: "User-Friendly Interface", img: img3 },
-    { text: "24/7 Support", img: img2 }
-  ];
+  // Memoize slides to prevent recreation on every render
+  const slides = useMemo(
+    () => [
+      { text: "Fast & Secure", img: img1 },
+      { text: "User-Friendly Interface", img: img3 },
+      { text: "24/7 Support", img: img2 },
+    ],
+    []
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]); // Now slides.length is stable due to useMemo
 
   useEffect(() => {
     if (!isAdmin) {
       toast.error("Signup only allowed for Admins.");
       navigate("/login");
     }
-  }, []);
+  }, [isAdmin, navigate]);
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-    signup(username, email, password, role);
-  };
+  const handleSignup = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      try {
+        await signup(username, email, password, role);
+        // Navigate after successful signup if needed
+        // navigate('/admin/dashboard'); // Uncomment and adjust route as needed
+      } catch (error) {
+        console.error("Signup failed:", error);
+      }
+    },
+    [username, email, password, role, signup]
+  );
 
   return (
     <div className="main-container">
       <div className="container">
-        <ToastContainer position="top-right" autoClose={2000} hideProgressBar closeButton />
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar
+          closeButton
+        />
 
         <div className="left-half">
           <div className="image-wrapper">
-            <img src={slides[currentIndex].img} alt="Slide" className="background-img" />
+            <img
+              src={slides[currentIndex].img}
+              alt="Slide"
+              className="background-img"
+            />
             <div className="slider-overlay">
               <div className="slider-text">{slides[currentIndex].text}</div>
               <div className="indicator-container">
                 {slides.map((_, i) => (
-                  <div key={i} className={`indicator-line ${i === currentIndex ? "active" : ""}`} />
+                  <div
+                    key={i}
+                    className={`indicator-line ${
+                      i === currentIndex ? "active" : ""
+                    }`}
+                  />
                 ))}
               </div>
             </div>
@@ -66,7 +94,10 @@ const Signup = ({ userType }) => {
           <div className="login-form">
             <div className="create">Create Admin Account</div>
             <p className="small-text">
-              Already have an account? <Link to="/admin/login" style={{ color: "black" }}>Login</Link>
+              Already have an account?{" "}
+              <Link to="/admin/login" style={{ color: "black" }}>
+                Login
+              </Link>
             </p>
             <form onSubmit={handleSignup}>
               <input

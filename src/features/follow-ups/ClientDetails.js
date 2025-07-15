@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useApi } from "../../context/ApiContext";
-
 const ClientDetails = ({ selectedClient, onClose }) => {
   const { fetchFollowUpHistoriesAPI } = useApi();
   const [recentFollowUps, setRecentFollowUps] = useState([]);
@@ -60,7 +59,7 @@ const ClientDetails = ({ selectedClient, onClose }) => {
     } else {
       setRecentFollowUps([]);
     }
-  }, [selectedClient]);
+  }, [selectedClient,fetchFollowUpHistoriesAPI]);
 
   if (!selectedClient) {
     return (

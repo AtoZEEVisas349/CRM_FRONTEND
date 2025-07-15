@@ -27,14 +27,19 @@ const ReportCard = () => {
 
   // Load data once executive is ready
   useEffect(() => {
-    if (executiveInfo?.id) {
-      fetchFreshLeadsAPI();
-      getAllFollowUps();
-      fetchConvertedClientsAPI();
-      refreshMeetings();
-    }
-  }, [executiveInfo,refreshDashboard]);
-  
+  if (executiveInfo?.id) {
+    fetchFreshLeadsAPI();
+    getAllFollowUps();
+    fetchConvertedClientsAPI();
+    refreshMeetings();
+  }
+}, [
+  executiveInfo,
+  fetchFreshLeadsAPI,
+  getAllFollowUps,
+  fetchConvertedClientsAPI,
+  refreshMeetings
+]);
   useEffect(() => {
     if (refreshDashboard) {
       toast.success("Dashboard updated");

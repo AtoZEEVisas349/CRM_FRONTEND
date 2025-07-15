@@ -1,6 +1,5 @@
 import React from "react";
 import "../styles/client.css";
-import SideandNavbar from "../layouts/SidebarandNavbar";
 import ClientOverview from "../features/client-details/ClientOverview";
 import ClientDetailsOverview from "../features/follow-ups/ClientDetailsOverview";
 import { Routes, Route, useLocation } from "react-router-dom";

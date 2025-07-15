@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState,useCallback } from "react";
 import {
   createCompany,
   getCompaniesForMaster,
@@ -19,17 +19,8 @@ export const CompanyProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // -------------------------
-  // Load all companies on mount
-  // -------------------------
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
 
-  // -------------------------
-  // Fetch all companies
-  // -------------------------
-  const fetchCompanies = async () => {
+    const fetchCompanies = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -41,7 +32,13 @@ export const CompanyProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // no dependencies — safe to memoize once
+
+  // ✅ Call on mount
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
+
 
   // -------------------------
   // Add a new company

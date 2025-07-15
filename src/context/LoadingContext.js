@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState,useCallback } from "react";
 
 const LoadingContext = createContext();
 
@@ -9,18 +9,18 @@ export const LoadingProvider = ({ children }) => {
   const [loadingText, setLoadingText] = useState("Processing request...");
   const [variant, setVariant] = useState("executive"); // executive | admin
 
-  const showLoader = (text = "Processing request...", variantType = "executive") => {
-    setLoadingText(text);
-    setVariant(variantType);
-    setIsLoading(true);
-  };
 
-  const hideLoader = () => {
-    setIsLoading(false);
-    setLoadingText("Processing request...");
-    setVariant("executive");
-  };
+  const showLoader = useCallback((text = "Processing request...", variantType = "executive") => {
+  setLoadingText(text);
+  setVariant(variantType);
+  setIsLoading(true);
+}, []);
 
+const hideLoader = useCallback(() => {
+  setIsLoading(false);
+  setLoadingText("Processing request...");
+  setVariant("executive");
+}, []);
 
   return (
     <LoadingContext.Provider

@@ -69,6 +69,16 @@ function HrNavbar() {
   }, [unreadCount,location.pathname]);
   const [hrProfile, setHrProfile] = useState(null);
 
+  const fetchProfile = useCallback(async () => {
+  try {
+    const profile = await getHrProfile();
+    console.log(profile, "p");
+    setHrProfile(profile);
+  } catch (err) {
+    console.error("Failed to load profile:", err.response?.data?.error || err.message);
+  }
+}, [getHrProfile]);
+
 const handleMouseEnter = useCallback(async () => {
   clearTimeout(hoverTimeout.current);
   isHovering.current = true;
@@ -105,18 +115,6 @@ const handleMouseEnter = useCallback(async () => {
   const handleToggle = () => {
     changeTheme(isLight ? "dark" : "light");
   };
-
-const fetchProfile = useCallback(async () => {
-  try {
-    const profile = await getHrProfile();
-    console.log(profile, "p");
-    setHrProfile(profile);
-  } catch (err) {
-    console.error("Failed to load profile:", err.response?.data?.error || err.message);
-  }
-}, [getHrProfile]);
-
-
 
   return (
     <div className="admin-navbar">

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect, useRef,useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../context/ApiContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
@@ -29,12 +29,13 @@ function TLNavbar() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const localStorageUser = JSON.parse(localStorage.getItem("user"));
   const hoverTimeout = useRef(null);
   const isHovering = useRef(false);
   const badgeRef = useRef(null);
 
   useEffect(() => {
+      const localStorageUser = JSON.parse(localStorage.getItem("user"));
+
     if (
       localStorageUser?.id &&
       localStorageUser?.role &&
@@ -45,7 +46,7 @@ function TLNavbar() {
         userRole: localStorageUser.role,
       });
     }
-  }, []);
+}, [fetchNotifications, notifications.length]);
 
   useEffect(() => {
     if (unreadCount > 0 && badgeRef.current) {
@@ -55,19 +56,24 @@ function TLNavbar() {
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [location.pathname]);
+  }, [unreadCount, unreadMeetingsCount,location.pathname]);
+
+
 const[tlProfile,setTlProfile]=useState()
- const fetchProfile = async () => {
-      try {
-        const profile = await getAllProfile();
-         const tl = profile.find((profile) => profile.role === "TL");
+const fetchProfile = useCallback(async () => {
+  try {
+    const profile = await getAllProfile();
+    const tl = profile.find((p) => p.role === "TL");
     setTlProfile(tl);
-      } catch (err) {
-      } 
-    };
+  } catch (err) {
+    console.error("Failed to fetch TL profile", err);
+  }
+}, [getAllProfile]);
+
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [fetchProfile]);
+
   const handleMouseEnter = async () => {
     clearTimeout(hoverTimeout.current);
     isHovering.current = true;

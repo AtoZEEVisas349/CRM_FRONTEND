@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef, useMemo,useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
-import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { getEmailTemplates } from "../../static/emailTemplates";
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
@@ -30,10 +28,8 @@ function convertTo24HrFormat(timeStr) {
 
 const ClientDetailsOverview = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
   const location = useLocation();
   const {
-    followUpHistories,
     fetchFollowUpHistoriesAPI,
     updateFollowUp,
     createConvertedClientAPI,
@@ -51,7 +47,7 @@ const ClientDetailsOverview = () => {
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
-  const client = useMemo(() => location.state?.client || {}, []);
+const client = useMemo(() => location.state?.client || {}, [location.state?.client]);
 
   const getCurrentTime24Hour = () => {
     const now = new Date();
@@ -85,10 +81,9 @@ const ClientDetailsOverview = () => {
     cold: <AcUnitIcon fontSize="small" />,
   };
   // Initialize current time properly
-  const now = new Date();
+const now = useMemo(() => new Date(), []);
   const todayStr = now.toISOString().split("T")[0];
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
+
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -105,7 +100,7 @@ const ClientDetailsOverview = () => {
       .padStart(2, "0")}`;
   });
 
-  const [isTimeEditable, setIsTimeEditable] = useState(false);
+  
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -123,19 +118,16 @@ const ClientDetailsOverview = () => {
   }, [timeOnly]);
 
   // Add date constraints
-  const minDate = useMemo(() => todayStr, []);
+  const minDate = useMemo(() => todayStr, [todayStr]);
   const maxDate = useMemo(() => {
     const d = new Date(now);
     d.setFullYear(d.getFullYear() + 5);
     return d.toISOString().split("T")[0];
-  }, []);
+  }, [now]);
 
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const timeSelectRef = useRef(null);
-  const ampmSelectRef = useRef(null);
-  const [speechError, setSpeechError] = useState(null);
-  const recognitionRef = useRef(null);
+   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
 
   useEffect(() => {
@@ -199,50 +191,52 @@ const ClientDetailsOverview = () => {
     // { key: "assignDate", label: "Assign Date" },
   ];
 
-  useEffect(() => {
-    if (client) {
-      const freshLeadId =
-        client.freshLead?.id || client.fresh_lead_id || client.id;
-      const normalizedClient = {
-        ...client,
-        ...(client.freshLead || {}), // ✅ inject education, experience, dob, state, etc.
-        fresh_lead_id: freshLeadId,
-        followUpId: client.followUpId || client.id,
-      };
-
-      setClientInfo(normalizedClient);
-      loadFollowUpHistories(freshLeadId);
-    }
-  }, [client]);
-
-  const loadFollowUpHistories = async (freshLeadId) => {
-    if (!freshLeadId) return;
-    setIsLoading(true);
-    try {
-      const response = await fetchFollowUpHistoriesAPI();
-      if (Array.isArray(response)) {
-        const filteredHistories = response.filter(
-          (history) => history.fresh_lead_id === freshLeadId
-        );
-        filteredHistories.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setHistories(filteredHistories);
-        if (filteredHistories.length > 0) {
-          populateFormWithHistory(filteredHistories[0]);
-        } else {
-          setHistories([]);
-        }
+// ✅ Move loadFollowUpHistories here first
+const loadFollowUpHistories = useCallback(async (freshLeadId) => {
+  if (!freshLeadId) return;
+  setIsLoading(true);
+  try {
+    const response = await fetchFollowUpHistoriesAPI();
+    if (Array.isArray(response)) {
+      const filteredHistories = response.filter(
+        (history) => history.fresh_lead_id === freshLeadId
+      );
+      filteredHistories.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setHistories(filteredHistories);
+      if (filteredHistories.length > 0) {
+        populateFormWithHistory(filteredHistories[0]);
       } else {
         setHistories([]);
       }
-    } catch (error) {
-      console.error("Error fetching follow-up histories:", error);
+    } else {
       setHistories([]);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching follow-up histories:", error);
+    setHistories([]);
+  } finally {
+    setIsLoading(false);
+  }
+}, [fetchFollowUpHistoriesAPI]);
+
+
+ useEffect(() => {
+  if (client) {
+    const freshLeadId =
+      client.freshLead?.id || client.fresh_lead_id || client.id;
+    const normalizedClient = {
+      ...client,
+      ...(client.freshLead || {}), // ✅ inject education, experience, dob, state, etc.
+      fresh_lead_id: freshLeadId,
+      followUpId: client.followUpId || client.id,
+    };
+
+    setClientInfo(normalizedClient);
+    loadFollowUpHistories(freshLeadId);
+  }
+}, [client, loadFollowUpHistories]);
 
   const populateFormWithHistory = (history) => {
     setContactMethod(history.connect_via?.toLowerCase() || "");
@@ -483,40 +477,27 @@ const ClientDetailsOverview = () => {
   };
 
   const toggleListening = () => {
-    if (!recognitionRef.current) {
-      alert(
-        "Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome."
-      );
-      return;
+  if (!recognitionRef.current) {
+    alert(
+      "Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome."
+    );
+    return;
+  }
+  if (isListening) {
+    stopListening();
+  } else {
+    try {
+      recognitionRef.current.start();
+      setIsListening(true);
+    } catch (error) {
+      console.error("Error starting speech recognition:", error);
     }
-    setSpeechError(null); // Clear any previous errors
-    if (isListening) {
-      stopListening();
-    } else {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (error) {
-        setSpeechError("Failed to start speech recognition. Please try again.");
-        console.error("Error starting speech recognition:", error);
-      }
-    }
-  };
+  }
+};
 
   const stopListening = () => {
     setIsListening(false);
     recognitionRef.current?.stop();
-  };
-
-  const { handleSendEmail } = useExecutiveActivity(); //Getting Email templates
-  const emailTemplates = getEmailTemplates(clientInfo, executiveInfo);
-
-  //State for selecting email template
-  const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [sendingEmail, setSendingEmail] = useState(false);
-
-  const handleTemplateChange = (e) => {
-    setSelectedTemplateId(e.target.value);
   };
 
   const isMeetingInPast = useMemo(() => {

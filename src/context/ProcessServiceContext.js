@@ -62,13 +62,7 @@ export const ProcessServiceProvider = ({ children }) => {
   // -----------------------
   const [customers, setCustomers] = useState([]);
   const [processProfile, setProcessProfile] = useState(null);
-
-  // -----------------------
-  // Effects
-  // -----------------------
-  useEffect(() => {
-    getProfile();
-  }, []);
+ 
 
   // -----------------------
   // Stage API Handlers
@@ -203,6 +197,12 @@ const getProfile = useCallback(async () => {
     setLoading(false);
   }
 }, []);
+
+
+ useEffect(() => {
+    getProfile();
+  }, [getProfile]);
+
 
   const handleProfileSettings = async (data) => {
     setLoading(true);

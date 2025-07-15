@@ -21,7 +21,6 @@ class SoundManager {
         if (!this.sounds[type]) return;
 
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const sound = this.sounds[type];
         
         if (type === 'success') {
             this.playTone(audioContext, 523, 150);

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, Clock, CheckCircle, XCircle, Filter, Search, Download, MessageSquare } from 'lucide-react';
+import { Calendar,Clock, CheckCircle, XCircle, Filter, Search, Download, MessageSquare } from 'lucide-react';
 import { useApi } from '../../context/ApiContext';
 import '../../styles/leave-managment.css';
 
 const LeaveManagement = () => {
-  const { fetchExecutivesAPI, fetchLeaveApplicationsAPI, updateLeaveStatusAPI, user } = useApi();
+  const { fetchExecutivesAPI, fetchLeaveApplicationsAPI, updateLeaveStatusAPI } = useApi();
   const [allLeaveApplications, setAllLeaveApplications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -40,7 +40,7 @@ const LeaveManagement = () => {
     };
 
     fetchAllLeaves();
-  }, [fetchExecutivesAPI]);
+  }, [fetchExecutivesAPI,fetchLeaveApplicationsAPI]);
 
   // Open comment modal
   const openCommentModal = (leaveId, action) => {

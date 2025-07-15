@@ -1,17 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext"; // ✅ Import your auth context
 
 const SessionTimeout = ({ timeout = 45 * 60 * 1000 }) => {
   const logoutTimerRef = useRef(null);
   const { logout } = useAuth(); // ✅ Use context logout
 
-  const resetSession = () => {
+  const resetSession = useCallback(() => {
     clearTimeout(logoutTimerRef.current);
     logoutTimerRef.current = setTimeout(() => {
       console.warn("⏱ Logged out due to inactivity");
-      logout(); 
+      logout();
     }, timeout);
-  };
+  }, [timeout, logout]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -29,7 +29,7 @@ const SessionTimeout = ({ timeout = 45 * 60 * 1000 }) => {
       );
       clearTimeout(logoutTimerRef.current);
     };
-  }, []);
+  }, [resetSession]);
 
   return null;
 };

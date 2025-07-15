@@ -48,7 +48,7 @@ const CustomerTable = () => {
     };
 
     fetchAndSetCustomers();
-  }, [convertedClients]);
+  }, [convertedClients, showLoader, hideLoader]);
 
   const handleViewHistory = async (customer) => {
     setSelectedCustomer(customer);
@@ -118,7 +118,7 @@ const CustomerTable = () => {
 
   useEffect(() => {
     setConvertedCustomerCount(filteredCustomers.length);
-  }, [filteredCustomers]);
+  }, [filteredCustomers ,setConvertedCustomerCount]);
 
   const customerCount = filteredCustomers.length;
   const [currentPage, setCurrentPage] = useState(1);

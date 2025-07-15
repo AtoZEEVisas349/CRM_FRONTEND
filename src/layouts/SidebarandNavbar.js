@@ -3,11 +3,9 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/sidebar.css";
 import BeepNotification from "../BeepNotification";
 import ExecutiveActivity from "../features/executive/ExecutiveActivity";
-import Chat from "../features/chatbot/Chat"; // Import the Chat component
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../features/admin/ThemeContext";
-import { useExecutiveActivity } from "../context/ExecutiveActivityContext";
 import useWorkTimer from "../features/executive/useLoginTimer";
 import { useBreakTimer } from "../context/breakTimerContext";
 import { SearchContext } from "../context/SearchContext";
@@ -42,7 +40,7 @@ import {
   faSpinner,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaPlay, FaPause, BeepNo } from "react-icons/fa";
+import { FaPlay, FaPause } from "react-icons/fa";
 
 // Break timer icons
 const breakIcons = [
@@ -65,17 +63,15 @@ const SidebarandNavbar = () => {
   const chatbotRef = useRef(null);
   const chatbotHeaderRef = useRef(null);
 
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const {
     executiveInfo,
     executiveLoading,
-    fetchExecutiveData,
     fetchNotifications,
     unreadCount,
     notifications,
     markNotificationReadAPI,
   } = useApi();
-  const { handleStopWork } = useExecutiveActivity();
   const { theme } = useContext(ThemeContext);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
@@ -92,14 +88,6 @@ const SidebarandNavbar = () => {
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false); // New state for chatbot popup
-
-  const [workTime, setWorkTime] = useState("00:00");
-  const [isWorkRunning, setIsWorkRunning] = useState(false);
-  const [breakTime, setBreakTime] = useState("00:00");
-  const [isBreakRunning, setIsBreakRunning] = useState(false);
-  const workIntervalRef = useRef(null);
-  const breakIntervalRef = useRef(null);
-
   const [hourDeg, setHourDeg] = useState(0);
   const [minuteDeg, setMinuteDeg] = useState(0);
   const [secondDeg, setSecondDeg] = useState(0);

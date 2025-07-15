@@ -1,5 +1,4 @@
-import React, { useEffect, useState ,useMemo} from "react";
-import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
+import React, { useEffect, useState} from "react";
 import { useApi } from "../../context/ApiContext";
 
 export const SendEmailProcess = ({clientInfo,onTemplateSelect }) => {

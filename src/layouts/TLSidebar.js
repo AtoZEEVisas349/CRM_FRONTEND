@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState,useCallback } from "react";
+import { Link } from "react-router-dom";
 import "../styles/adminsidebar.css";
 import {
   Gauge,
   ClipboardList,
   UserCheck,
   UserPlus,
-  Users,
   ActivitySquare,
   FileText,
   UserCircle,
@@ -21,10 +20,17 @@ const TLSidebar = () => {
     return stored === "true";
   });
 
-  const navigate = useNavigate();
+const toggleSidebar = useCallback(() => {
+  setIsExpanded((prevState) => {
+    const newState = !prevState;
+    localStorage.setItem("adminSidebarExpanded", newState.toString());
+    window.dispatchEvent(new Event("sidebarToggle"));
+    document.body.classList.toggle("sidebar-mobile-active", !newState);
+    return newState;
+  });
+}, []);
 
   useEffect(() => {
-    // Update body classes whenever isExpanded changes
     document.body.classList.toggle("sidebar-expanded", isExpanded);
     document.body.classList.toggle("sidebar-collapsed", !isExpanded);
     document.body.classList.toggle("sidebar-mobile-active", !isExpanded);
@@ -33,8 +39,6 @@ const TLSidebar = () => {
       const updated = localStorage.getItem("adminSidebarExpanded") === "true";
       setIsExpanded(updated);
     };
-
-    window.addEventListener("sidebarToggle", handleSidebarToggle);
 
     let touchStartX = 0;
     let touchEndX = 0;
@@ -58,6 +62,7 @@ const TLSidebar = () => {
       }
     };
 
+    window.addEventListener("sidebarToggle", handleSidebarToggle);
     window.addEventListener("touchstart", handleTouchStart);
     window.addEventListener("touchend", handleTouchEnd);
 
@@ -66,15 +71,7 @@ const TLSidebar = () => {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isExpanded]);
-
-  const toggleSidebar = () => {
-    const newState = !isExpanded;
-    setIsExpanded(newState);
-    localStorage.setItem("adminSidebarExpanded", newState.toString());
-    window.dispatchEvent(new Event("sidebarToggle"));
-    document.body.classList.toggle("sidebar-mobile-active", !newState);
-  };
+  }, [isExpanded, toggleSidebar]);
 
   return (
     <section>

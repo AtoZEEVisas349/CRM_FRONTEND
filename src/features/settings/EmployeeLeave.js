@@ -210,16 +210,14 @@ const EmployeeLeave = () => {
 
       const response = await createLeaveApplication(payload);
       if (response && response.data) {
-        let hrId = 2;
-        try {
-          const hrProfile = await getHrProfile();
-          if (hrProfile?.id) {
-            hrId = hrProfile.id;
+      try {
+            const hrProfile = await getHrProfile();
+            if (hrProfile?.id) {
+              console.log("HR Profile fetched:", hrProfile);
+            }
+          } catch (hrError) {
+            console.warn('Failed to fetch HR profile:', hrError);
           }
-        } catch (hrError) {
-          console.warn('Failed to fetch HR profile:', hrError);
-        }
-
         setIsSubmitted(true);
         const applications = await fetchLeaveApplicationsAPI(formData.employeeId);
         setLeaveApplications(applications || []);

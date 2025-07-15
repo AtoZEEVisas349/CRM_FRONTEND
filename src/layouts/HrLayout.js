@@ -21,13 +21,6 @@ const HrLayout = () => {
     const [selectedExecutive, setSelectedExecutive] = useState(null);
     const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
   
-   
-    useEffect(() => {
-      localStorage.setItem("adminSidebarExpanded", "false");
-      window.dispatchEvent(new Event("sidebarToggle"));
-      fetchExecutives();
-      fetchExecutivesList();
-    }, [fetchExecutives,fetchExecutivesList]);
   
 const fetchExecutivesList = useCallback(async () => {
   try {
@@ -37,7 +30,14 @@ const fetchExecutivesList = useCallback(async () => {
     console.error("❌ Error fetching executives:", error);
   }
 }, [fetchExecutivesAPI]);
-  
+
+    useEffect(() => {
+      localStorage.setItem("adminSidebarExpanded", "false");
+      window.dispatchEvent(new Event("sidebarToggle"));
+      fetchExecutives();
+      fetchExecutivesList();
+    }, [fetchExecutives,fetchExecutivesList]);
+    
     const currentExecutive = selectedExecutive || topExecutive;
     const isDashboard = location.pathname === "/hr";
   

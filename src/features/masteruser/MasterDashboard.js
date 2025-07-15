@@ -19,7 +19,7 @@ const MasterDashboard = () => {
 
   useEffect(() => {
     fetchCompanies();
-  }, []);
+  }, [fetchCompanies]);
 
   // ✅ Toggle ON = resumeCompany | Toggle OFF = pauseCompany
   const handleToggleStatus = async (company, isChecked) => {

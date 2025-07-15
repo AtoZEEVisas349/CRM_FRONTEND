@@ -14,39 +14,40 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const ManagerSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
-  const { getManager, updateManagerProfile, managerProfile, managerLoading, setManagerProfile, handleChangeManagerPassword, isManagerPasswordUpdating } = useApi();
+  const { getManager, updateManagerProfile, managerProfile, setManagerProfile, handleChangeManagerPassword, isManagerPasswordUpdating } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const hasLoaded = useRef(false);
   const [alerts, setAlerts] = useState([]); // Added for alert.js integration
 
-  useEffect(() => {
-    const init = async () => {
-      if (hasLoaded.current) return;
-      hasLoaded.current = true;
+useEffect(() => {
+  const init = async () => {
+    if (hasLoaded.current) return;
+    hasLoaded.current = true;
 
-      try {
-        showLoader("Loading Manager profile...", "admin");
-        await getManager();
-      } catch (err) {
-        console.error("Failed to load Manager profile:", err);
-        setAlerts([
-          ...alerts,
-          {
-            id: Date.now(),
-            type: "error",
-            title: "Load Failed",
-            message: "Failed to load Manager profile.",
-            duration: 5000,
-          },
-        ]);
-        soundManager.playSound("error");
-      } finally {
-        hideLoader();
-      }
-    };
+    try {
+      showLoader("Loading Manager profile...", "admin");
+      await getManager();
+    } catch (err) {
+      console.error("Failed to load Manager profile:", err);
+      setAlerts((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Load Failed",
+          message: "Failed to load Manager profile.",
+          duration: 5000,
+        },
+      ]);
+      soundManager.playSound("error");
+    } finally {
+      hideLoader();
+    }
+  };
 
-    init();
-  }, [getManager]);
+  init();
+}, [getManager, showLoader, hideLoader]);
+
 
   // Handle alert close
   const handleAlertClose = (id) => {

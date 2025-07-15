@@ -47,16 +47,17 @@ const HrSettings = () => {
         });
       } catch (err) {
         console.error("Failed to load HR profile:", err);
-        setAlerts([
-          ...alerts,
-          {
-            id: Date.now(),
-            type: "error",
-            title: "Load Failed",
-            message: "Failed to load HR profile.",
-            duration: 5000,
-          },
-        ]);
+      setAlerts((prevAlerts) => [
+  ...prevAlerts,
+  {
+    id: Date.now(),
+    type: "error",
+    title: "Load Failed",
+    message: "Failed to load HR profile.",
+    duration: 5000,
+  },
+]);
+
         soundManager.playSound("error");
       } finally {
         hideLoader();

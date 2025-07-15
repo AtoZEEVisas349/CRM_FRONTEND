@@ -27,7 +27,6 @@ function FreshLead() {
     executiveInfo,
     fetchExecutiveData,
     executiveLoading,
-    createFollowUp,
     verifyNumberAPI,
     verificationResults,
     verificationLoading,
@@ -37,8 +36,8 @@ function FreshLead() {
   } = useApi();
 
   const { leadtrack } = useExecutiveActivity();
-  const { searchQuery, setActivepage } = useContext(SearchContext);
-  const [chatbotPopoverIndex, setChatbotPopoverIndex] = useState(null);
+  const { searchQuery } = useContext(SearchContext);
+  const [setChatbotPopoverIndex] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [leadsData, setLeadsData] = useState([]);
@@ -142,7 +141,7 @@ function FreshLead() {
     if (executiveId) {
       leadtrack(executiveId);
     }
-  }, []);
+  }, [leadtrack]);
 
   useEffect(() => {
     const loadLeads = async () => {
@@ -198,7 +197,8 @@ function FreshLead() {
     };
 
     loadLeads();
-  }, [executiveInfo, executiveLoading, hasLoaded]);
+}, [executiveInfo, executiveLoading, hasLoaded, fetchExecutiveData, fetchFreshLeadsAPI]);
+
 
   const filteredLeadsData = leadsData.filter((lead) => {
     const query = searchQuery.toLowerCase();

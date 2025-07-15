@@ -20,24 +20,26 @@ const ManagerLayout = () => {
     const [executives, setExecutives] = useState([]);
     const [selectedExecutive, setSelectedExecutive] = useState(null);
     const [selectedExecutiveId, setSelectedExecutiveId] = useState("all");
+
   
-    const user = JSON.parse(localStorage.getItem("user"));
-    useEffect(() => {
-      localStorage.setItem("adminSidebarExpanded", "false");
-      window.dispatchEvent(new Event("sidebarToggle"));
-      fetchExecutives();
-      fetchExecutivesList();
-    }, [fetchExecutives,fetchExecutivesList]);
-  
-    const fetchExecutivesList = async () => {
-      try {
-        const data = await fetchExecutivesAPI();
-        setExecutives(data);
-      } catch (error) {
-        console.error("❌ Error fetching executives:", error);
-      }
-    };
-  
+useEffect(() => {
+  localStorage.setItem("adminSidebarExpanded", "false");
+  window.dispatchEvent(new Event("sidebarToggle"));
+  fetchExecutives();
+
+  const fetchExecutivesList = async () => {
+    try {
+      const data = await fetchExecutivesAPI();
+      setExecutives(data);
+    } catch (error) {
+      console.error("❌ Error fetching executives:", error);
+    }
+  };
+
+  fetchExecutivesList();
+}, [fetchExecutives, fetchExecutivesAPI]);
+
+
     const currentExecutive = selectedExecutive || topExecutive;
     const isDashboard = location.pathname === "/manager";
   

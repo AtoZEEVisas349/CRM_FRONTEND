@@ -4,9 +4,8 @@ import { useApi } from "../../context/ApiContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPhone,
-  faPenToSquare,
-  faChevronLeft,
-  faChevronRight,
+  faPenToSquare
+  
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { SearchContext } from "../../context/SearchContext";
@@ -21,7 +20,7 @@ const ClientTable = ({
   const { followUps, getAllFollowUps } = useApi();
   const clients = Array.isArray(followUps?.data) ? followUps.data : [];
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
-  const [tableHeight, setTableHeight] = useState("800px");
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const navigate = useNavigate();
@@ -48,11 +47,11 @@ const ClientTable = ({
       }
     };
     loadFollowUps();
-  }, []);
+}, [getAllFollowUps, showLoader, hideLoader]);
 
   useEffect(() => {
     setActivePage("follow-up");
-  }, [setActivePage]);
+  }, [setActivePage ,getAllFollowUps, hideLoader, showLoader]);
 
   
 
@@ -91,9 +90,7 @@ const ClientTable = ({
   const endIndex = startIndex + itemsPerPage;
   const currentClients = filteredClients.slice(startIndex, endIndex);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+ 
 
   const handlePrevious = () => {
     if (currentPage > 1) {
