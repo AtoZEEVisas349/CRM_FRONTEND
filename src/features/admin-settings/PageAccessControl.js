@@ -44,7 +44,7 @@ const PageAccessControl = () => {
     };
 
     fetchAllUsers();
-  }, []);
+  }, [fetchUsers]);
 
   // Create permission
   const handleCreatePermission = async () => {
@@ -100,7 +100,7 @@ const PageAccessControl = () => {
     };
 
     fetchAllPermissions();
-  }, [createStatus]);
+  }, [fetchAllRolePermissions,createStatus]);
 
   // Fetch selected permission details
   useEffect(() => {
@@ -157,7 +157,7 @@ const PageAccessControl = () => {
     };
 
     fetchDetails();
-  }, [selectedPermission]);
+  }, [selectedPermission,fetchSinglePermission]);
 
   // Handle toggle update
   const handleToggle = async (funcKey, role) => {
@@ -230,7 +230,7 @@ const PageAccessControl = () => {
       setSelectedRole("");
       return;
     }
-    const [id, role] = selectedValue.split("-");
+    const [, role] = selectedValue.split("-");
     setSelectedUser(selectedValue);
     setSelectedRole(role);
   }}

@@ -13,7 +13,6 @@ import InvoicePage from "../features/Invoice/InvoicePage";
 import "../styles/invoice.css"; 
 import SettingRoutes from "./SettingRoutes";
 import NotificationRoutes from "./NotificationRoutes";
-import Chat from "../features/chatbot/Chat";
 import ChatBotRoutes from "./ChatBotRoutes";
 import RequirePermission from "../features/admin-settings/RequirePermission";
 

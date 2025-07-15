@@ -45,7 +45,7 @@ const ExecutiveDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [selectedManagers, setSelectedManagers] = useState([]);
-  const [managers, setManagers] = useState([]);
+const [, setManagers] = useState([]);
   const [isTeamLoading, setIsTeamLoading] = useState(false);
   const [teamAssigning, setTeamAssigning] = useState(false);
   const [focusedTeamId, setFocusedTeamId] = useState("");
@@ -86,13 +86,10 @@ const ExecutiveDetails = () => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
   };
 
-  // Initialize cooldown state from localStorage
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const savedCooldowns = JSON.parse(
       localStorage.getItem("cooldownUsers") || "{}"
-    );
-    const savedTimers = JSON.parse(
-      localStorage.getItem("cooldownTimers") || "{}"
     );
     const now = Date.now();
 
@@ -122,7 +119,7 @@ const ExecutiveDetails = () => {
         }
       });
     };
-  }, []);
+  }, [cooldownTimers]);
 
   const startCooldown = (userId, initialTime = 15) => {
     const cooldownDuration = initialTime; // seconds
@@ -345,18 +342,25 @@ const ExecutiveDetails = () => {
     };
 
     fetchData();
-  }, [filter]);
+  }, [filter,fetchAllHRsAPI,
+  fetchAllManagersAPI,
+  fetchAllProcessPersonsAPI,
+  fetchAllTeamLeadsAPI,
+  fetchAllTeamsAPI,
+  fetchExecutivesAPI,
+  hideLoader,
+  showLoader,]);
 
   useEffect(() => {
     const loadTeamsIfNeeded = async () => {
       if (filter === "All") {
         setIsTeamLoading(true);
-        const teams = await fetchAllTeamsAPI();
+         await fetchAllTeamsAPI();
         setIsTeamLoading(false);
       }
     };
     loadTeamsIfNeeded();
-  }, [filter]);
+  }, [filter,fetchAllTeamsAPI]);
 
   const handleDragStart = (e, executive) => {
     if (filter !== "All") return;
@@ -506,12 +510,6 @@ const ExecutiveDetails = () => {
     }
   };
 
-  const handleMemberSelect = (id) => {
-    setSelectedMembers((prev) =>
-      prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
-    );
-  };
-
   const handleManagerSelect = (id) => {
     setSelectedManagers((prev) =>
       prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
@@ -626,7 +624,6 @@ const ExecutiveDetails = () => {
     return () => window.removeEventListener("dragover", scrollOnEdge);
   }, []);
 
-  const unassignedExecutives = people.filter((person) => !person.teamId);
 
   return (
     <>

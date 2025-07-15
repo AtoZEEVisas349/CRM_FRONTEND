@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
 import { useApi } from "../../context/ApiContext";
@@ -12,11 +12,8 @@ import { SearchContext } from "../../context/SearchContext";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 
 function ProcessFreshlead() {
-  const { fetchCustomers, customers, setCustomers } = useProcessService();
+  const { fetchCustomers, customers } = useProcessService();
   const {
-    fetchFreshLeadsAPI,
-    executiveInfo,
-    fetchExecutiveData,
     executiveLoading,
     verifyNumberAPI,
     verificationResults,
@@ -24,18 +21,15 @@ function ProcessFreshlead() {
     fetchNotifications,
     createCopyNotification,
   } = useApi();
-
   const { leadtrack } = useExecutiveActivity();
   const { searchQuery } = useContext(SearchContext);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [leadsData, setLeadsData] = useState([]);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [activePopoverIndex, setActivePopoverIndex] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [verifyingIndex, setVerifyingIndex] = useState(null);
-  const [selectedLead, setSelectedLead] = useState(null);
 
   const itemsPerPage = 9;
   const navigate = useNavigate();
@@ -48,119 +42,40 @@ function ProcessFreshlead() {
     setVerifyingIndex(null);
   };
 
- 
+  // Memoized async load function to prevent re-execution
+  const loadInitialData = useCallback(async () => {
+    if (hasLoaded) return;
+    setIsLoading(true);
+    try {
+      await fetchCustomers();
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const executiveId = userData?.id;
+      if (executiveId) await leadtrack(executiveId);
+    } catch (err) {
+      setError("Failed to load data. Please try again.");
+      console.error("❌ Error loading data:", err);
+    } finally {
+      setIsLoading(false);
+      setHasLoaded(true);
+      setCurrentPage(1);
+    }
+  }, [fetchCustomers, leadtrack, hasLoaded]);
 
   useEffect(() => {
-    fetchCustomers()
-      .then((data) => {
-        if (data && Array.isArray(data)) {
-         const mappedClients = data
-  .filter((client) => client.status === "pending")
-  // .map((client) => ({
-  //   ...client,
-  //   id: client.id || client._id,
-  // }));
+    loadInitialData();
+  }, [loadInitialData]);
 
-          setCustomers(mappedClients);
-        }
-      })
-      .catch((err) => console.error("❌ Error fetching clients:", err));
-      console.log(customers)
-  }, []);
-  const leadData=customers.filter((client) => client.status === "pending")
-console.log(leadData);
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    const executiveId = userData?.id;
-    if (executiveId) leadtrack(executiveId);
-  }, []);
-
-  useEffect(() => {
-    const loadLeads = async () => {
-      if (hasLoaded) return;
-      setIsLoading(true);
-      try {
-        if (!executiveInfo && !executiveLoading) await fetchExecutiveData();
-        const data = await fetchFreshLeadsAPI();
-
-        // let leads = [];
-        // if (Array.isArray(data)) {
-        //   leads = data;
-        // } else if (data && Array.isArray(data.data)) {
-        //   leads = data.data;
-        // } else {
-        //   setError("Invalid leads data format.");
-        //   return;
-        // }
-
-        // const filteredLeads = leads
-        //   .filter(
-        //     (lead) =>
-        //       lead.clientLead?.status === "New" ||
-        //       lead.clientLead?.status === "Assigned"
-        //   )
-        //   .sort((a, b) => {
-        //     const dateA = new Date(
-        //       a.assignDate ||
-        //         a.lead?.assignmentDate ||
-        //         a.clientLead?.assignDate ||
-        //         0
-        //     );
-        //     const dateB = new Date(
-        //       b.assignDate ||
-        //         b.lead?.assignmentDate ||
-        //         b.clientLead?.assignDate ||
-        //         0
-        //     );
-        //     return dateB - dateA;
-        //   });
-
-        // setLeadsData(filteredLeads);
-        setCurrentPage(1);
-        setHasLoaded(true);
-      } catch (err) {
-        setError("Failed to load leads. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadLeads();
-  }, [executiveInfo, executiveLoading, hasLoaded]);
-  useEffect(() => {
-    const loadLeads = async () => {
-      if (hasLoaded) return;
-      setIsLoading(true);
-const data=customers;
-       let leads = [];
-        if (Array.isArray(data)) {
-          leads = data;
-        } else if (data && Array.isArray(data)) {
-          leads = data;
-        } else {
-          setError("Invalid leads data format.");
-          return;
-        }
-        setCurrentPage(1);
-        setHasLoaded(true);
-    
-    };
-
-    loadLeads();
-  }, []);
-
-  
-  const filteredLeadsData = leadsData.filter((lead) => {
+  const leadData = customers.filter((client) => client.status === "pending").filter((lead) => {
     const query = searchQuery.toLowerCase();
     return (
-      lead.name?.toLowerCase().includes(query) ||
+      lead.fullName?.toLowerCase().includes(query) ||
       lead.phone?.toString().includes(query) ||
       lead.email?.toLowerCase().includes(query)
     );
   });
 
-  const totalPages = Math.ceil(filteredLeadsData.length / itemsPerPage);
-  const currentLeads = filteredLeadsData.slice(
+  const totalPages = Math.ceil(leadData.length / itemsPerPage);
+  const paginatedLeads = leadData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -174,7 +89,7 @@ const data=customers;
   };
 
   const handleAddFollowUp = (lead) => {
-    const clientLead = lead.freshLead.lead.clientLead || {};
+    const clientLead = lead.freshLead?.lead?.clientLead || {};
     const clientData = {
       name: lead.fullName || clientLead.fullName || "",
       email: lead.email || clientLead.email || "",
@@ -187,7 +102,7 @@ const data=customers;
       country: lead.country || clientLead.country || "",
       assignDate: lead.assignDate || lead.assignmentDate || "",
       freshLeadId: lead.fresh_lead_id,
-      id:lead.id,
+      id: lead.id,
     };
 
     navigate(`/process/clients/processperson/${encodeURIComponent(lead.fullName)}/${lead.fresh_lead_id}`, {
@@ -206,7 +121,6 @@ const data=customers;
       {isLoading && <LoadingSpinner text="Loading Fresh Leads..." />}
       <div className="fresh-leads-header">
         <h2 className="fresh-leads-title">Fresh leads list</h2>
-     
       </div>
 
       {error && <p className="error-text">{error}</p>}
@@ -226,19 +140,10 @@ const data=customers;
                 </tr>
               </thead>
               <tbody>
-                {leadData.length > 0 ? (
-                  leadData.map((lead, index) => (
+                {paginatedLeads.length > 0 ? (
+                  paginatedLeads.map((lead, index) => (
                     <tr key={index}>
-                      <td
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          setSelectedLead({
-                            name: lead.fullName,
-                            email: lead.email,
-                            phone: lead.phone,
-                          })
-                        }
-                      >
+                      <td>
                         <div className="fresh-leads-name">
                           <div className="fresh-lead-detail">
                             <div>{lead.fullName}</div>
@@ -247,31 +152,9 @@ const data=customers;
                         </div>
                       </td>
 
-                      <td
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          setSelectedLead({
-                            name: lead.fullName,
-                            email: lead.email,
-                            phone: lead.phone,
-                          })
-                        }
-                      >
-                        {lead.phone}
-                      </td>
+                      <td>{lead.phone}</td>
 
-                      <td
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          setSelectedLead({
-                            name: lead.fullName,
-                            email: lead.email,
-                            phone: lead.phone,
-                          })
-                        }
-                      >
-                        {lead.email}
-                      </td>
+                      <td>{lead.email}</td>
 
                       <td>
                         <button
@@ -334,7 +217,7 @@ const data=customers;
                                 localStorage.setItem(
                                   "activeClient",
                                   JSON.stringify({
-                                    name: lead.name,
+                                    name: lead.fullName,
                                     phone: lead.phone,
                                   })
                                 );

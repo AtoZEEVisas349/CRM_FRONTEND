@@ -3,12 +3,10 @@ import { useProcessService } from "../../context/ProcessServiceContext";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { processgetEmailTemplates } from "../../static/processgetEmailTemplates";
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
-import SendEmailProcess from "../process-client/SendEmailProcess";
 import ProcessSendEmailtoClients from "../process-client/ProcessSentEmailtoClient";
 function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
@@ -20,10 +18,11 @@ function convertTo24HrFormat(timeStr) {
 
 const ProcessClientOverview = () => {
   const { id } = useParams();
-    const { handleUpsertStages, handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,getProcessHistory,createReminder,fetchAllHistory } = useProcessService();
+    const {handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,createReminder,fetchAllHistory } = useProcessService();
   const location = useLocation();
   const navigate = useNavigate();
-  const client = useMemo(() => location.state?.client || {}, []);
+const client = useMemo(() => location.state?.client || {}, [location.state?.client]);
+
   const createFollowUpFlag = location.state?.createFollowUp || false;
 const userData = JSON.parse(localStorage.getItem("user"));
 const name = userData?.fullName || "";
@@ -35,16 +34,13 @@ const email = userData?.email || "";
   } = useApi();
  
   useCopyNotification(createCopyNotification, fetchNotifications);
-  const now = new Date();
+const now = useMemo(() => new Date(), []);
   const todayStr = now.toISOString().split("T")[0];
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
   const ampmValue = currentHour >= 12 ? "PM" : "AM";
   const hour12 = currentHour % 12 || 12;
   const currentTime12Hour = `${hour12.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-  const [generatedInfo, setGeneratedInfo] = useState(null);
-const [showGeneratedModal, setShowGeneratedModal] = useState(false);
-const [unlockedStage, setUnlockedStage] = useState(1); 
   const [clientInfo, setClientInfo] = useState(client);
   const [contactMethod, setContactMethod] = useState("");
   const [followUpType, setFollowUpType] = useState("");
@@ -55,37 +51,18 @@ const [unlockedStage, setUnlockedStage] = useState(1);
   const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
   const [ampm, setAmPm] = useState(ampmValue);
   const [isTimeEditable, setIsTimeEditable] = useState(false);
-   const [selectedStage, setSelectedStage] = useState("");
-  const [commentText, setCommentText] = useState("");
-  const [stagesData, setStagesData] = useState({});
-  const [stageTimestamp, setStageTimestamp] = useState("");
-  const [customerId, setCustomerId] = useState("1");
-  const [followUpHistory, setFollowUpHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
-  const [showStageCompleted, setShowStageCompleted] = useState(false);
+  const [selectedStage, setSelectedStage] = useState("");
+  const [, setStagesData] = useState({});
   const [showEmailModal, setShowEmailModal] = useState(false);
-    const [selectedTemplate, setSelectedTemplate] = useState(null);
-    const [emailBody, setEmailBody] = useState("");
-    const [emailSubject, setEmailSubject] = useState("");
-    const [clientEmail, setClientEmail] = useState("");
-    const [isSaving, setIsSaving] = useState(false); // Added
-        const [showToast, setShowToast] = useState(false);
-const[followupHistory,setFollowupHistory]=useState();
-const [docName, setDocName] = useState("");
-   useEffect(() => {
-   const fetchFollowups = async () => {
-     try {
-       const response = await fetchAllHistory(id);
-       setFollowupHistory(response)
-       
-     } catch (err) {
-       console.error("❌ Failed to load follow-ups:", err.message);
-     }
-   };
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [emailBody, setEmailBody] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [docName, setDocName] = useState("");
+  const[historyFollowup,setHistoryFollowup]=useState();
  
-   fetchFollowups();
- }, [id]);
- const[historyFollowup,setHistoryFollowup]=useState();
+  let customerId;
 useEffect(() => {
     const fetchFollowupAllHistory = async () => {
       try {
@@ -100,40 +77,25 @@ useEffect(() => {
     };
 if (id) fetchFollowupAllHistory();
   
-  }, [id]);
+  }, [id,fetchAllHistory]);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      setLoadingHistory(true);
       try {
         const result = await getProcessFollowup(id);
         setHistoryFollowup(result.data); // The backend sends { message, data }
         console.log(result.data);
       } catch (err) {
         console.error("Failed to load follow-up history", err.message);
-        setFollowUpHistory([]);
+        setHistoryFollowup([]);
       } finally {
-        setLoadingHistory(false);
       }
     };
 
     if (id) {
       fetchHistory();
     }
-  }, [id]);
-
-  
-  useEffect(() => {
-  if (selectedStage && stagesData) {
-    const stageNum = selectedStage.split(" ")[1];
-    const existingComment = stagesData[`stage${stageNum}_data`] || "";
-    const existingTimestamp = stagesData[`stage${stageNum}_timestamp`] || "";
-    setCommentText(existingComment);
-    setStageTimestamp(existingTimestamp);
-  }
-}, [selectedStage, stagesData]);
-
-
+  }, [id,getProcessFollowup]);
 
   const convertTo24Hour = (time12h, amPm) => {
     let [hours, minutes] = time12h.split(':').map(Number);
@@ -153,7 +115,7 @@ if (id) fetchFollowupAllHistory();
   };
 
   const timeSelectRef = useRef(null);
-  const ampmSelectRef = useRef(null);
+ 
 
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
@@ -163,15 +125,13 @@ if (id) fetchFollowupAllHistory();
     if (ampm === "AM" && hr === 12) hr = 0;
     return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
   }, [timeOnly, ampm]);
-
-  const minDate = useMemo(() => todayStr, []);
+const minDate =  todayStr
   const maxDate = useMemo(() => {
-    const d = new Date(now);
-    d.setFullYear(d.getFullYear() + 5);
-    return d.toISOString().split("T")[0];
-  }, []);
+  const d = new Date(now);
+  d.setFullYear(d.getFullYear() + 5);
+  return d.toISOString().split("T")[0];
+}, [now]);
 
-  const minTime = interactionDate === minDate ? `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}` : "00:00";
 
   const clientFields = [
     { key: "name", label: "Name" },
@@ -329,13 +289,7 @@ if (id) fetchFollowupAllHistory();
   };
 
   const { handleSendEmail } = useExecutiveActivity();
-  const emailTemplates = processgetEmailTemplates(clientInfo, userData);
-
-  const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
-
-
-
 
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "meeting" || !interactionDate || !interactionTime) return false;
@@ -346,6 +300,7 @@ if (id) fetchFollowupAllHistory();
  // Replace with actual customer ID logic
 
   // 🔹 Fetch stages on mount / on demand
+useEffect(() => {
   const fetchStages = async () => {
     try {
       const data = await handleGetCustomerStagesById(id);
@@ -355,44 +310,12 @@ if (id) fetchFollowupAllHistory();
     }
   };
 
-  useEffect(() => {
-    fetchStages();
-  }, [customerId]);
+  fetchStages();
+}, [id, customerId,handleGetCustomerStagesById]);
+
 
   // 🔹 Add or update stage comment
-  const handleAddOrUpdateStage = async () => {
-    if (!selectedStage) {
-      alert("Please select a stage.");
-      return;
-    }
-    if (!commentText.trim()) {
-      alert("Comment cannot be empty.");
-      return;
-    }
 
-    const stageNum = selectedStage.split(" ")[1];
-    const currentDate = new Date().toISOString();
-
-    const updatedStage = {
-      ...stagesData,
-      [`stage${stageNum}_data`]: commentText.trim(),
-      [`stage${stageNum}_completed`]: true,
-      [`stage${stageNum}_timestamp`]: currentDate,
-    customerId: id
-    };
-
-    try {
-      await handleUpsertStages(updatedStage);
-      alert("Stage saved successfully.");
-          await fetchStages();
-    //   setCommentText("");
-    //   setSelectedStage("");
-    //   fetchStages(); // refresh
-    } catch (err) {
-      console.error("Error saving stage", err.message);
-      alert("Failed to save. Please try again.");
-    }
-  };
 const formatDate = (dateStr) => {
   if (!dateStr) return "N/A";
   const date = new Date(dateStr);
@@ -561,43 +484,6 @@ console.log(clientInfo,"id");
       setSendingEmail(false);
     }
   };
-//  const handleGenerateLink = () => {
-//   const updatedComment = latestComment[selectedStage].comment + " /client/upload";
-
-//   // Save to localStorage (keyed by client ID + stage)
-//   const storageKey = `comment_${clientInfo.id}_stage_${selectedStage}`;
-//   localStorage.setItem(storageKey, updatedComment);
-
-//   // Update state if needed
-//   setLatestComment(prev => ({
-//     ...prev,
-//     [selectedStage]: {
-//       ...prev[selectedStage],
-//       comment: updatedComment,
-//     },
-//   }));
-// };
-const handleGenerateLink = () => {
-  const currentComment = latestComment[selectedStage]?.comment || "";
-  const updatedComment = `${currentComment} /client/upload`;
-
-  // Save in localStorage
-  const key = `comment_${id}_stage_${selectedStage}`;
-  const existing = JSON.parse(localStorage.getItem(key) || "[]");
-
-  const updated = {
-    comment: updatedComment,
-    timestamp: new Date().toISOString(),
-  };
-
-  localStorage.setItem(key, JSON.stringify([...existing, updated]));
-
-  // Update latestComment state
-  setLatestComment(prev => ({
-    ...prev,
-    [selectedStage]: updated
-  }));
-};
 
 
 useEffect(() => {
@@ -612,7 +498,7 @@ useEffect(() => {
       [selectedStage]: stored[stored.length - 1],
     }));
   }
-}, [selectedStage]);
+}, [selectedStage,id]);
 
   return (
     <div className="client-overview-wrapper">

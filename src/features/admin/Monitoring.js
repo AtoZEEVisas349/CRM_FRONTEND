@@ -1,4 +1,3 @@
-// ✅ Updated Monitoring.jsx
 import React, { useState, useEffect } from "react";
 import { useApi } from "../../context/ApiContext";
 import SidebarToggle from "./SidebarToggle";
@@ -30,7 +29,7 @@ function Monitoring() {
     };
 
     fetchExecs();
-  }, []);
+  }, [fetchExecutivesAPI, showLoader, hideLoader]);
 
   const selectedExecutive = executives.find(e => e.username === selectedExec);
 

@@ -737,7 +737,6 @@ export const getManager = async () => {
   try {
     const response = await apiService.get("/manager/profile");
     return response.data; // Assuming you're using only the leads array
-    return response.data.manager; // Return only the manager object
   } catch (error) {
     console.error("❌ Error fetching follow-up leads:", error);
     console.error("❌ Error fetching manager profile:", error.response?.data || error.message);

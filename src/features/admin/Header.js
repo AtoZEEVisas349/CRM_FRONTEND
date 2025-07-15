@@ -1,6 +1,5 @@
 import React from "react";
 import { FaBars } from "react-icons/fa";
-import AdminNavbar from "../../layouts/AdminNavbar";
 import AdminCalendar from "../admin/AdminCalendar";
 
 const Header = () => {

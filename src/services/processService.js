@@ -63,10 +63,9 @@ export const updateCustomerStages = async (stageData) => {
 export const profileSettings = async (payload) => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) {
-      throw { error: 'Token missing in localStorage' };
-    }
-
+if (!token) {
+  throw new Error("Token missing in localStorage");
+}
     const { phone, dob, nationality, passportNumber } = payload;
 
     const response = await axios.post(

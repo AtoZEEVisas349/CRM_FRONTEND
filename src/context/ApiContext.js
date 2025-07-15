@@ -57,18 +57,18 @@ const fetchExecutiveData = useCallback(async () => {
   }
 }, []);
 
-  const fetchAdminUserData = async () => {
-    setUserLoading(true);
-    try {
-      const response = await apiService.fetchAdminProfile();
-      const { username, email, role } = response;
-      setUser({ username, email, role });
-    } catch (error) {
-      console.error("❌ Error fetching Admin user data:", error);
-    } finally {
-      setUserLoading(false);
-    }
-  };
+const fetchAdminUserData = useCallback(async () => {
+  setUserLoading(true);
+  try {
+    const response = await apiService.fetchAdminProfile();
+    const { username, email, role } = response;
+    setUser({ username, email, role });
+  } catch (error) {
+    console.error("❌ Error fetching Admin user data:", error);
+  } finally {
+    setUserLoading(false);
+  }
+}, []);
   
   
     const [isProfileUpdating, setProfileUpdating] = useState(false);
@@ -119,44 +119,45 @@ const fetchExecutiveData = useCallback(async () => {
   // ✅ Admin Profile
   const [adminProfile, setAdminProfile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const fetchAdmin = async () => {
-    try {
-      setLoading(true);
-      const data = await apiService.fetchAdminProfile();
 
-      if (data && data.username && data.email && data.role) {
-        const mappedData = {
-          name: data.username,
-          email: data.email,
-          role: data.role,
-        };
-        setAdminProfile(mappedData);
-      } else {
-        console.warn("⚠️ Unexpected API response format:", data);
-      }
-    } catch (error) {
-      console.error("🔴 Error fetching admin profile:", error);
-    } finally {
-      setLoading(false);
+  const fetchAdmin = useCallback(async () => {
+  try {
+    setLoading(true);
+    const data = await apiService.fetchAdminProfile();
+
+    if (data && data.username && data.email && data.role) {
+      const mappedData = {
+        name: data.username,
+        email: data.email,
+        role: data.role,
+      };
+      setAdminProfile(mappedData);
+    } else {
+      console.warn("⚠️ Unexpected API response format:", data);
     }
-  };
+  } catch (error) {
+    console.error("🔴 Error fetching admin profile:", error);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   // ✅ Fetch Lead Section Visits
   const [visitData, setVisitData] = useState([]);
   const [visitLoading, setVisitLoading] = useState(false);
 
-  const fetchLeadSectionVisitsAPI = async (executiveId) => {
-    if (!executiveId) return;
-    try {
-      setVisitLoading(true);
-      const data = await apiService.fetchLeadSectionVisits(executiveId);
-      setVisitData(data.leadSectionVisits || []);
-    } catch (error) {
-      console.error("❌ Error fetching visits:", error);
-    } finally {
-      setVisitLoading(false);
-    }
-  };
+const fetchLeadSectionVisitsAPI = useCallback(async (executiveId) => {
+  if (!executiveId) return;
+  try {
+    setVisitLoading(true);
+    const data = await apiService.fetchLeadSectionVisits(executiveId);
+    setVisitData(data.leadSectionVisits || []);
+  } catch (error) {
+    console.error("❌ Error fetching visits:", error);
+  } finally {
+    setVisitLoading(false);
+  }
+}, []);
 
   // ✅ File Upload
   const [uploading, setUploading] = useState(false);
@@ -543,7 +544,7 @@ const createConvertedClientAPI = async (convertedData) => {
 };
 
 // Fetch all converted clients
-const fetchConvertedClientsAPI = async () => {
+const fetchConvertedClientsAPI = useCallback(async () => {
   setConvertedClientsLoading(true);
   try {
     const response = await apiService.fetchConvertedClients(); 
@@ -560,7 +561,7 @@ const fetchConvertedClientsAPI = async () => {
   } finally {
     setConvertedClientsLoading(false);
   }
-};
+}, []);
 
  const [closeLeads, setCloseLeads] = useState([]);
  const [closeLeadsLoading, setCloseLeadsLoading] = useState(false);
@@ -578,19 +579,19 @@ const fetchConvertedClientsAPI = async () => {
  };
 
  // ✅ Function to get all Close Leads (GET)
- const fetchAllCloseLeadsAPI = async () => {
-   setCloseLeadsLoading(true);
-   setCloseLeadsError(null);
-   try {
-     const data = await apiService.fetchAllCloseLeads();
-     setCloseLeads(data || []); 
-   } catch (error) {
-     console.error("❌ Error fetching close leads:", error);
-     setCloseLeadsError(error); 
-   } finally {
-     setCloseLeadsLoading(false);
-   }
- };
+const fetchAllCloseLeadsAPI = useCallback(async () => {
+  setCloseLeadsLoading(true);
+  setCloseLeadsError(null);
+  try {
+    const data = await apiService.fetchAllCloseLeads();
+    setCloseLeads(data || []);
+  } catch (error) {
+    console.error("❌ Error fetching close leads:", error);
+    setCloseLeadsError(error);
+  } finally {
+    setCloseLeadsLoading(false);
+  }
+}, []);
 
  const [executiveDashboardData, setExecutiveDashboardData] = useState([]);
  const [executiveDashboardLoading, setExecutiveDashboardLoading] = useState(false);
@@ -1141,62 +1142,64 @@ const fetchLeaveApplicationsAPI = useCallback(async (employeeId = null) => {
   
   const [allProcessPersons, setAllProcessPersons] = useState([]);
   const [allProcessPersonsLoading, setAllProcessPersonsLoading] = useState(false);
-  const fetchAllHRsAPI = async () => {
-    setAllHRsLoading(true);
-    try {
-      const data = await apiService.fetchAllHRs();
-      setAllHRs(data);
-      return data;
-    } catch (error) {
-      console.error("❌ Error fetching HRs:", error);
-      return [];
-    } finally {
-      setAllHRsLoading(false);
-    }
-  };
+const fetchAllHRsAPI = useCallback(async () => {
+  setAllHRsLoading(true);
+  try {
+    const data = await apiService.fetchAllHRs();
+    setAllHRs(data);
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching HRs:", error);
+    return [];
+  } finally {
+    setAllHRsLoading(false);
+  }
+}, []);
   
-  const fetchAllManagersAPI = async () => {
-    setAllManagersLoading(true);
-    try {
-      const data = await apiService.fetchAllManagers();
-      setAllManagers(data);
-      return data;
-    } catch (error) {
-      console.error("❌ Error fetching Managers:", error);
-      return [];
-    } finally {
-      setAllManagersLoading(false);
-    }
-  };
+
+const fetchAllManagersAPI = useCallback(async () => {
+  setAllManagersLoading(true);
+  try {
+    const data = await apiService.fetchAllManagers();
+    setAllManagers(data);
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching Managers:", error);
+    return [];
+  } finally {
+    setAllManagersLoading(false);
+  }
+}, []);
+
   
-  const fetchAllProcessPersonsAPI = async () => {
-    setAllProcessPersonsLoading(true);
-    try {
-      const data = await apiService.fetchAllProcessPersons();
-      setAllProcessPersons(data);
-      return data;
-    } catch (error) {
-      console.error("❌ Error fetching Process Persons:", error);
-      return [];
-    } finally {
-      setAllProcessPersonsLoading(false);
-    }
-  };
+const fetchAllProcessPersonsAPI = useCallback(async () => {
+  setAllProcessPersonsLoading(true);
+  try {
+    const data = await apiService.fetchAllProcessPersons();
+    setAllProcessPersons(data);
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching Process Persons:", error);
+    return [];
+  } finally {
+    setAllProcessPersonsLoading(false);
+  }
+}, []);
   const [allTeamLeads, setAllTeamLeads] = useState([]);
   const [allTeamLeadsLoading, setAllTeamLeadsLoading] = useState(false);
-  const fetchAllTeamLeadsAPI = async () => {
-    setAllTeamLeadsLoading(true);
-    try {
-      const data = await apiService.fetchAllTeamLeads();
-      setAllTeamLeads(data);
-      return data;
-    } catch (error) {
-      console.error("❌ Error fetching Team Leads:", error);
-      return [];
-    } finally {
-      setAllTeamLeadsLoading(false);
-    }
-  };
+const fetchAllTeamLeadsAPI = useCallback(async () => {
+  setAllTeamLeadsLoading(true);
+  try {
+    const data = await apiService.fetchAllTeamLeads();
+    setAllTeamLeads(data);
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching Team Leads:", error);
+    return [];
+  } finally {
+    setAllTeamLeadsLoading(false);
+  }
+}, []);
     
   const [managerTeams, setManagerTeams] = useState([]);
   const [managerTeamsLoading, setManagerTeamsLoading] = useState(false);
@@ -1275,7 +1278,8 @@ const assignExecutiveToTeam = async ({ teamId, executiveId, managerId }) => {
 const [organizationHierarchy, setOrganizationHierarchy] = useState([]);
   const [hierarchyLoading, setHierarchyLoading] = useState(false);
   // ✅ New: Fetch Organization Hierarchy
-  const fetchOrganizationHierarchyAPI = async () => {
+
+const fetchOrganizationHierarchyAPI = useCallback(async () => {
     setHierarchyLoading(true);
     try {
       const data = await apiService.fetchOrganizationHierarchy();
@@ -1287,8 +1291,7 @@ const [organizationHierarchy, setOrganizationHierarchy] = useState([]);
     } finally {
       setHierarchyLoading(false);
     }
-  };
-
+  }, []);
  
   const [isHrPasswordUpdating, setHrPasswordUpdating] = useState(false);
 
@@ -1324,7 +1327,7 @@ const handleChangeHrPassword = async (currentPassword, newPassword) => {
 const [allTeams, setAllTeams] = useState([]);
 const [allTeamsLoading, setAllTeamsLoading] = useState(false);
 const [allTeamsError, setAllTeamsError] = useState(null);
-const fetchAllTeamsAPI = async () => {
+const fetchAllTeamsAPI = useCallback(async () => {
   setAllTeamsLoading(true);
   setAllTeamsError(null);
   try {
@@ -1343,7 +1346,7 @@ const fetchAllTeamsAPI = async () => {
   } finally {
     setAllTeamsLoading(false);
   }
-};
+}, []);
 
 
 const [teamMembers, setTeamMembers] = useState([]);
@@ -1421,21 +1424,21 @@ const fetchFollowUpsByExecutive = async (execName) => {
   }
 };
 
-const fetchHrUserData = async () => {
+const fetchHrUserData = useCallback(async () => {
   setUserLoading(true);
   try {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     const hr = await apiService.getHrById(currentUser.id);
     const { name, email, role, username, jobTitle } = hr;
     setUser({ username: name || username || "", email, role });
-    return { id: hr.id, name, email, username, role, jobTitle }; // Ensure all fields are returned
+    return { id: hr.id, name, email, username, role, jobTitle };
   } catch (error) {
     console.error("❌ Error fetching HR user data:", error);
     throw error;
   } finally {
     setUserLoading(false);
   }
-};
+}, []);
 
 const updateHrProfileById = async (hrId, updateData) => {
   try {
@@ -1567,7 +1570,17 @@ const triggerDashboardRefresh = () => {
 if (currentUser?.id) {
       fetchNotifications(currentUser.id);
     }
-  }, [fetchNotifications, fetchExecutives , fetchFollowUpHistoriesAPI]);
+  }, [fetchNotifications,
+  fetchExecutives,
+  fetchFollowUpHistoriesAPI,
+  fetchExecutiveData,
+  fetchOnlineExecutivesData,
+  getExecutiveActivity,
+  fetchAdminUserData,
+  fetchAdmin,
+  fetchHrUserData,
+  fetchLeadSectionVisitsAPI,
+  fetchAllCloseLeadsAPI,]);
   
 
   useEffect(() => {
@@ -1580,7 +1593,8 @@ if (currentUser?.id) {
     } else {
       console.warn("⛔ Token or user info missing. Skipping follow-up fetch.");
     }
-  }, []);
+  }, [fetchFreshLeadsAPI,getAllFollowUps]);
+
   // ✅ API Functions
   const apiFunctions = {
     // Leads

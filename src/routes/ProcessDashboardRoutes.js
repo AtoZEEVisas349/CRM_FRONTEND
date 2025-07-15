@@ -6,12 +6,10 @@ import ClientSetting from "../features/process-client/ClientSetting";
 import ClientUpload from "../features/process-client/ClientUpload";
 import CreateClient from "../features/process-client/CreateClient";
 import AllClient from "../features/process-client/AllClient";
-import { useProcess } from "../context/ProcessAuthContext"; // ✅ Make sure to import it
 import "../styles/process.css";
 
 
 const ProcessDashboardRoutes = () => {
-  const { user } = useProcess(); // ✅ Now it's correctly used inside the component
 
   return (
     

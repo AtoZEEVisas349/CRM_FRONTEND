@@ -4,13 +4,10 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AssignTask from "../features/admin/AssignTask";
 import ExecutiveDetails from "../features/admin/ExecutiveDetails";
-import AdminSettings from "../features/admin-settings/AdminSettings";
 import ContactUs from "../features/admin/ContactUs";
-import AdminNotification from "../features/admin/AdminNotification"
 import Eod from "../features/admin/Eod";
 import AttendanceTable from "../features/admin/AttendanceTable";
 import RequirePermission from "../features/admin-settings/RequirePermission";
-import ManagerLayout from "../layouts/ManagerLayout";
 import Monitoring from "../features/admin/Monitoring";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import ExecutiveCredentialsForm from "../features/admin/ExecutiveCredentialsForm";

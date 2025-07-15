@@ -24,11 +24,7 @@ const ExecutiveAssignments = () => {
   const { isLoading, variant, showLoader, hideLoader } = useLoading();
   const {
     fetchAllClients,
-    reassignLead,
     fetchExecutivesAPI,
-    assignLeadAPI,
-    createFreshLeadAPI,
-    createLeadAPI,
   } = useApi();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -97,10 +93,6 @@ const ExecutiveAssignments = () => {
   }, []);
 
   useEffect(() => {
-    fetchExecutives();
-  }, [fetchExecutives]);
-
-  useEffect(() => {
     const getAllLeads = async () => {
       try {
         showLoader("Loading task management...", "admin");
@@ -122,6 +114,7 @@ const ExecutiveAssignments = () => {
     getAllLeads(); // Call the async function
 }, [fetchAllClients, showLoader, hideLoader]);
 
+useEffect(() => {
   const fetchExecutives = async () => {
     try {
       const data = await fetchExecutivesAPI();
@@ -130,6 +123,11 @@ const ExecutiveAssignments = () => {
       console.error("❌ Failed to load executives:", error);
     }
   };
+
+  fetchExecutives();
+}, [fetchExecutivesAPI]); // ✅ include dependency
+
+
 
   const handleFilterChange = (type) => {
     setFilterType(type);
@@ -187,99 +185,7 @@ const ExecutiveAssignments = () => {
     setSelectedLeads(selectedIds);
   }, [leads, selectedRange, currentPage,leadsPerPage]);
 
-  const assignLeads = async () => {
-    if (!selectedExecutive) return alert("⚠️ Please select an executive.");
-    if (selectedLeads.length === 0) return alert("⚠️ Please select at least one lead.");
 
-    const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
-    if (!executive || !executive.username) return alert("⚠️ Invalid executive selected.");
-
-    let successCount = 0;
-    let failCount = 0;
-    const updatedLeads = [...leads];
-
-    for (const leadId of selectedLeads) {
-      const lead = leads.find((l) => String(l.id) === leadId);
-      if (!lead) {
-        failCount++;
-        continue;
-      }
-
-      const clientLeadId = lead.id; // since this is the actual ID from your API
-      if (!clientLeadId) {
-        console.warn("❌ Missing clientLeadId or lead.id:", lead);
-        failCount++;
-        continue;
-      }
-
-      const phone = String(lead.phone).replace(/[eE]+([0-9]+)/gi, "");
-
-      const leadPayload = {
-        name: lead.name,
-        email: lead.email || "default@example.com",
-        phone,
-        source: lead.source || "Unknown",
-        clientLeadId: Number(clientLeadId),
-        assignedToExecutive: executive.username,
-      };
-        
-      try {
-     
-      let finalLeadId = leadId;
-
-      // Assign or Reassign based on whether lead was already assigned
-      if (!lead.assignedToExecutive) {
-        // Always create the lead first
-        const createdLead = await createLeadAPI(leadPayload);
-        if (!createdLead?.id) throw new Error("Lead creation failed");
-
-        finalLeadId = createdLead.clientLeadId;
-        await assignLeadAPI(Number(finalLeadId), executive.username);
-        const freshLeadPayload = {
-          leadId: createdLead.id,
-          name: createdLead.name,
-          email: createdLead.email,
-          phone: String(createdLead.phone),
-          assignedTo: executive.username,
-          assignedToId: executive.id,
-          assignDate: new Date().toISOString(),
-        };
-      
-        await createFreshLeadAPI(freshLeadPayload);
-      
-      } else {
-        await reassignLead(lead.id, executive.username);
-        alert("Lead resassigned successfully!!");
-      }
-
-      const index = updatedLeads.findIndex((l) => String(l.id) === leadId);
-      if (index !== -1) {
-        updatedLeads[index] = {
-          ...updatedLeads[index],
-          assignedToExecutive: executive.username,
-        };
-      }
-
-      successCount++;
-    } catch (err) {
-      console.error(`❌ Error processing lead ID ${leadId}:`, err);
-      failCount++;
-    }
-  }
-
-  setLeads(updatedLeads);
-  setAllClients(updatedLeads); // ✅ update the full list
-  setSelectedLeads([]);
-  setSelectedExecutive("");
-
-  if (successCount > 0 && failCount === 0) {
-    alert("✅ Leads assigned successfully.");
-  } else if (successCount > 0 && failCount > 0) {
-    alert(`⚠️ ${successCount} lead(s) assigned, ${failCount} failed. Check console`);
-  } else {
-    alert("❌ All lead assignments failed.");
-  }
-};
 
   useEffect(() => {
     let filtered = [...allClients];

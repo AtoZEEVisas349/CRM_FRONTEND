@@ -281,7 +281,7 @@ const fetchCustomers = useCallback(async () => {
     }
   };
 
-  const getProcessFollowup = async (id) => {
+  const getProcessFollowup = useCallback(async (id) => {
     setLoading(true);
     setError(null);
     try {
@@ -292,7 +292,7 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[setLoading,setError])
 
   const createFinalStage = async (payload) => {
     try {
@@ -355,7 +355,8 @@ const fetchCustomers = useCallback(async () => {
     }
   };
 
-  const getProcessFollowupHistory = async (id) => {
+  const getProcessFollowupHistory = useCallback(async (id) => {
+      setLoading(true);
     try {
       const data = await getProcessFollowupHistoryApi(id);
       return data;
@@ -364,9 +365,10 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[setLoading]);
 
-  const getProcessHistory = async (id) => {
+  const getProcessHistory = useCallback(async (id) => {
+    setLoading(false)
     try {
       const data = await getProcessHistoryApi(id);
       return data;
@@ -375,7 +377,7 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[setLoading]);
 
   const getAllFinalStages = async () => {
     try {
@@ -520,7 +522,7 @@ const fetchCustomers = useCallback(async () => {
     }
   };
 
-  const fetchAllHistory = async (id) => {
+  const fetchAllHistory =useCallback (async (id) => {
     setLoading(true);
     try {
       const data = await getAllProcessPersonsFollowupApi(id);
@@ -530,7 +532,7 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[setLoading])
 
   // -----------------------
   // Provider Return

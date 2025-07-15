@@ -1,5 +1,5 @@
 // components/FollowUpHistory.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarAlt,
@@ -21,73 +21,53 @@ const FollowUpHistory = ({ meeting, onClose }) => {
     const [followUpHistories, setFollowUpHistories] = useState([]);
     const [loading, setLoading] = useState(false);
   
-    useEffect(() => {
-      if (!meeting) return;
-  
-      const freshLeadId = meeting.fresh_lead_id || 
-                         meeting.freshLead?.id || 
-                         meeting.clientLead?.freshLead?.id || 
-                         meeting.clientLead?.fresh_lead_id ||
-                         meeting.freshLead?.lead?.id ||
-                         meeting.id;
-    
-      if (freshLeadId) {
-        loadFollowUpHistories(freshLeadId);
-      } else {
-        console.warn("No valid freshLeadId found for meeting:", meeting);
-        setFollowUpHistories([]);
-      }
-    }, [meeting,loadFollowUpHistories]);
-  
-    const loadFollowUpHistories = async (freshLeadId) => {
-      if (!freshLeadId) {
-        setFollowUpHistories([]);
-        return;
-      }
-      setLoading(true);
-      try {
-        const response = await fetchFollowUpHistoriesAPI();
-        console.log("Follow-up histories response:", response);
-  
-        if (Array.isArray(response)) {
-          const normalizedFreshLeadId = String(freshLeadId);
-          const filteredHistories = response.filter((history) => {
-            const historyLeadId = String(history.fresh_lead_id);
-            return historyLeadId === normalizedFreshLeadId;
-          });
-  
-          if (filteredHistories.length === 0) {
-            console.log("No histories match the fresh_lead_id:", normalizedFreshLeadId);
-          }
-  
-          // Sort by follow_up_date and follow_up_time descending
-          const sortedHistories = filteredHistories.sort((a, b) => {
-            const dateA = getComparableDateTime(a);
-            const dateB = getComparableDateTime(b);
-            return dateB - dateA;
-          });
-  
-          console.log("Sorted histories:", sortedHistories.map(h => ({
-            id: h.id,
-            follow_up_date: h.follow_up_date,
-            follow_up_time: h.follow_up_time,
-            created_at: h.created_at,
-            reason: h.reason_for_follow_up?.substring(0, 50) + '...'
-          })));
-  
-          setFollowUpHistories(sortedHistories);
-        } else {
-          console.error("Follow-up histories response is not an array:", response);
-          setFollowUpHistories([]);
-        }
-      } catch (error) {
-        console.error("Error fetching follow-up histories:", error);
-        setFollowUpHistories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
+const loadFollowUpHistories = useCallback(async (freshLeadId) => {
+  if (!freshLeadId) {
+    setFollowUpHistories([]);
+    return;
+  }
+  setLoading(true);
+  try {
+    const response = await fetchFollowUpHistoriesAPI();
+    if (Array.isArray(response)) {
+      const normalizedFreshLeadId = String(freshLeadId);
+      const filteredHistories = response.filter(
+        (history) => String(history.fresh_lead_id) === normalizedFreshLeadId
+      );
+      const sortedHistories = filteredHistories.sort((a, b) => {
+        return getComparableDateTime(b) - getComparableDateTime(a);
+      });
+      setFollowUpHistories(sortedHistories);
+    } else {
+      setFollowUpHistories([]);
+    }
+  } catch (error) {
+    console.error("Error fetching follow-up histories:", error);
+    setFollowUpHistories([]);
+  } finally {
+    setLoading(false);
+  }
+}, [fetchFollowUpHistoriesAPI]);
+
+useEffect(() => {
+  if (!meeting) return;
+
+  const freshLeadId =
+    meeting.fresh_lead_id ||
+    meeting.freshLead?.id ||
+    meeting.clientLead?.freshLead?.id ||
+    meeting.clientLead?.fresh_lead_id ||
+    meeting.freshLead?.lead?.id ||
+    meeting.id;
+
+  if (freshLeadId) {
+    loadFollowUpHistories(freshLeadId);
+  } else {
+    setFollowUpHistories([]);
+  }
+}, [meeting, loadFollowUpHistories]);
+
+
     const getConnectViaIcon = (connectVia) => {
       switch (connectVia?.toLowerCase()) {
         case 'call':

@@ -45,16 +45,16 @@ const AdminSettings = () => {
         await fetchAdminUserData();
       } catch (err) {
         console.error("Failed to load user settings:", err);
-        setAlerts([
-          ...alerts,
-          {
-            id: Date.now(),
-            type: "error",
-            title: "Load Failed",
-            message: "Failed to load user settings.",
-            duration: 5000,
-          },
-        ]);
+        setAlerts((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: "error",
+          title: "Load Failed",
+          message: "Failed to load user settings.",
+          duration: 5000,
+        },
+      ]);
         soundManager.playSound("error");
       } finally {
         hideLoader();
@@ -66,14 +66,14 @@ const AdminSettings = () => {
     return () => {
       window.removeEventListener("sidebarToggle", handleSidebarToggle);
     };
-  }, [fetchAdminUserData]);
+  }, [fetchAdminUserData,showLoader,hideLoader]);
 
   useEffect(() => {
     if (user) {
       setBio(user.bio || "");
       setShowJobTitle(user.showJobTitle || false);
     }
-  }, [user]);
+  }, [user]); 
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();

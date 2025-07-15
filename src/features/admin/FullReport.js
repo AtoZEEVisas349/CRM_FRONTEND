@@ -80,7 +80,8 @@ const FullReport = () => {
 
   /* ─────────────────────────────────── SINGLE MODE ─────────────────────────────────── */
   const [compareLoading, setCompareLoading] = useState(false);
-  const [comparisonData, setComparisonData] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [comparisonData, setComparisonData] = useState(null); // Kept for future use
   const showCustomPopup = (message, type = "info") => {
     alert(`${type.toUpperCase()}: ${message}`);
   };
@@ -167,7 +168,7 @@ const FullReport = () => {
   );
 
   /* table rows generator */
-  const getTableRows = () => {
+   const getTableRows = useCallback(() => {
     if (!activeCard) return [];
 
     if (activeCard === "followUp") {
@@ -210,7 +211,8 @@ const FullReport = () => {
     if (activeCard === "fresh") return raw.fresh;
     if (activeCard === "meetings") return raw.meetings;
     return [];
-  };
+  }, [activeCard, raw]);
+  
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
@@ -219,7 +221,7 @@ const FullReport = () => {
     const allRows = getTableRows();
     const start = (currentPage - 1) * rowsPerPage;
     return allRows.slice(start, start + rowsPerPage);
-  }, [getTableRows(), currentPage]);
+  }, [getTableRows, currentPage]); // Fixed dependency array
 
   // Reset to first page when table changes
   useEffect(() => {
@@ -261,14 +263,13 @@ const FullReport = () => {
 
   /* ─────────────────────────────────── COMPARE MODE ─────────────────────────────────── */
 
-const [compareMode, setCompareMode] = useState(false);
-const [selectedExecs, setSelectedExecs] = useState([]); // up to 5
-const [compareStats, setCompareStats] = useState({});
-const [timeStats, setTimeStats] = useState({});
-const [selectedTimeRange, setSelectedTimeRange] = useState("today"); // today | week | month | custom
-const [customDate, setCustomDate] = useState(null);
-const [activeRadar, setActiveRadar] = useState("");
-
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedExecs, setSelectedExecs] = useState([]); // up to 5
+  const [compareStats, setCompareStats] = useState({});
+  const [timeStats, setTimeStats] = useState({});
+  const [selectedTimeRange, setSelectedTimeRange] = useState("today"); // today | week | month | custom
+  const [customDate, setCustomDate] = useState(null);
+  const [activeRadar, setActiveRadar] = useState("");
 
   /* fetch stats for one exec */
   const fetchStats = useCallback(
@@ -316,7 +317,6 @@ const [activeRadar, setActiveRadar] = useState("");
     const diff = ((target - base) / (base || 1)) * 100;
     return `${diff >= 0 ? "+" : ""}${diff.toFixed(1)}%`;
   };
-
 
   /* fetch time stats based on selected range */
   const fetchTimeStats = async (executives) => {
@@ -378,68 +378,65 @@ const [activeRadar, setActiveRadar] = useState("");
     setTimeStats(result);
   };
   
+  const applyCompare = async () => {
+    if (!selectedExecs.length || !selectedTimeRange) {
+      showCustomPopup("Please select executives and date range", "error");
+      return;
+    }
 
+    let startDate, endDate;
+    const today = new Date();
 
-const applyCompare = async () => {
-  if (!selectedExecs.length || !selectedTimeRange) {
-    showCustomPopup("Please select executives and date range", "error");
-    return;
-  }
+    if (selectedTimeRange === "today") {
+      startDate = endDate = today.toISOString().split("T")[0];
+    } else if (selectedTimeRange === "week") {
+      const start = new Date(today);
+      start.setDate(today.getDate() - 6);
+      startDate = start.toISOString().split("T")[0];
+      endDate = today.toISOString().split("T")[0];
+    } else if (selectedTimeRange === "month") {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      startDate = start.toISOString().split("T")[0];
+      endDate = today.toISOString().split("T")[0];
+    } else if (selectedTimeRange === "custom" && customDate) {
+      startDate = endDate = customDate;
+    } else {
+      showCustomPopup("Please select a valid date range", "error");
+      return;
+    }
 
-  let startDate, endDate;
-  const today = new Date();
+    setCompareLoading(true);
 
-  if (selectedTimeRange === "today") {
-    startDate = endDate = today.toISOString().split("T")[0];
-  } else if (selectedTimeRange === "week") {
-    const start = new Date(today);
-    start.setDate(today.getDate() - 6);
-    startDate = start.toISOString().split("T")[0];
-    endDate = today.toISOString().split("T")[0];
-  } else if (selectedTimeRange === "month") {
-    const start = new Date(today.getFullYear(), today.getMonth(), 1);
-    startDate = start.toISOString().split("T")[0];
-    endDate = today.toISOString().split("T")[0];
-  } else if (selectedTimeRange === "custom" && customDate) {
-    startDate = endDate = customDate;
-  } else {
-    showCustomPopup("Please select a valid date range", "error");
-    return;
-  }
+    try {
+      // Fetch stats for all selected executives
+      const statsPromises = selectedExecs.map((ex) => fetchStats(ex.username));
+      const statsResults = await Promise.all(statsPromises);
 
-  setCompareLoading(true);
+      // Update compareStats
+      const newCompareStats = {};
+      selectedExecs.forEach((ex, idx) => {
+        newCompareStats[ex.username] = statsResults[idx];
+      });
+      setCompareStats(newCompareStats);
 
-  try {
-    // Fetch stats for all selected executives
-    const statsPromises = selectedExecs.map((ex) => fetchStats(ex.username));
-    const statsResults = await Promise.all(statsPromises);
+      // Fetch time stats for call time chart
+      await fetchTimeStats(selectedExecs);
 
-    // Update compareStats
-    const newCompareStats = {};
-    selectedExecs.forEach((ex, idx) => {
-      newCompareStats[ex.username] = statsResults[idx];
-    });
-    setCompareStats(newCompareStats);
+      // Fetch summary data (if needed for other purposes)
+      const summaryData = await fetchExecutiveSummaryByRangeAPI(
+        selectedExecs.map((exe) => exe.id),
+        startDate,
+        endDate
+      );
+      setComparisonData(summaryData);
 
-    // Fetch time stats for call time chart
-    await fetchTimeStats(selectedExecs);
-
-    // Fetch summary data (if needed for other purposes)
-    const summaryData = await fetchExecutiveSummaryByRangeAPI(
-      selectedExecs.map((exe) => exe.id),
-      startDate,
-      endDate
-    );
-    setComparisonData(summaryData);
-
-  } catch (error) {
-    console.error("Comparison fetch error", error);
-    showCustomPopup("Failed to fetch comparison data", "error");
-  } finally {
-    setCompareLoading(false);
-  }
-};
-
+    } catch (error) {
+      console.error("Comparison fetch error", error);
+      showCustomPopup("Failed to fetch comparison data", "error");
+    } finally {
+      setCompareLoading(false);
+    }
+  };
 
   /* bar data */
   const barData = useMemo(() => {
@@ -452,32 +449,28 @@ const applyCompare = async () => {
     });
   }, [compareStats, selectedExecs]);
 
- const callTimeChartData = useMemo(() => {
-  return Object.entries(timeStats).map(([username, data]) => {
-    const callTime = Number(data.call) || 0; // ✅ force numeric value
-    return {
-      name: username,
-      Call: callTime,
-    };
-  });
-}, [timeStats]);
+  const callTimeChartData = useMemo(() => {
+    return Object.entries(timeStats).map(([username, data]) => {
+      const callTime = Number(data.call) || 0; // ✅ force numeric value
+      return {
+        name: username,
+        Call: callTime,
+      };
+    });
+  }, [timeStats]);
 
-
-
-
-  /* radar data */
+  // eslint-disable-next-line no-unused-vars
   const radarData = useMemo(() => {
     if (!activeRadar || !compareStats[activeRadar]) return [];
     return CARDS.map(({ key, label }) => ({
       category: label,
       value: compareStats[activeRadar]?.[key] || 0,
     }));
-  }, [activeRadar, compareStats]);
+  }, [activeRadar, compareStats]); // Kept for future use
 
   const isAllCallTimesLessThanHour = useMemo(() => {
-  return callTimeChartData.every((d) => d.Call < 1);
-}, [callTimeChartData]);
-
+    return callTimeChartData.every((d) => d.Call < 1);
+  }, [callTimeChartData]);
 
   /* ─────────────────────────────────── EFFECTS ─────────────────────────────────── */
 
@@ -707,6 +700,11 @@ const applyCompare = async () => {
         {/* ───────────── Compare Mode UI ───────────── */}
         {compareMode && (
           <>
+            {compareLoading && (
+              <div className="fullreport-loading">
+                <p>Loading comparison data...</p>
+              </div>
+            )}
             {/* checkbox list */}
             <div className="fullreport-multi-select">
               <label>Select Executives (max 5)</label>
@@ -743,27 +741,27 @@ const applyCompare = async () => {
                 ✕ Cancel
               </button>
             </div>
-            {/* 👇 Time Filter block add karo yahan */}
+            {/* Time Filter block */}
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
-            <label>Time Range:</label>
-            <select
-            value={selectedTimeRange}
-            onChange={(e) => setSelectedTimeRange(e.target.value)}
-            >
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="custom">Specific Date</option>
-            </select>
+              <label>Time Range:</label>
+              <select
+                value={selectedTimeRange}
+                onChange={(e) => setSelectedTimeRange(e.target.value)}
+              >
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="custom">Specific Date</option>
+              </select>
 
-           {selectedTimeRange === "custom" && (
-           <input
-           type="date"
-           value={customDate || ""}
-           onChange={(e) => setCustomDate(e.target.value)}
-          />
-         )}
-      </div>
+              {selectedTimeRange === "custom" && (
+                <input
+                  type="date"
+                  value={customDate || ""}
+                  onChange={(e) => setCustomDate(e.target.value)}
+                />
+              )}
+            </div>
             {/* results */}
             {Object.keys(compareStats).length > 0 && (
               <>
@@ -824,123 +822,115 @@ const applyCompare = async () => {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              {Object.keys(timeStats).length > 0 && (
-  <div style={{ marginTop: "2rem" }}>
-    <h3>Work vs Break Time (in Hours)</h3>
-    {(() => {
-      const convertedData = Object.keys(timeStats).map((executiveName) => {
-        const { work, break: breakTime } = timeStats[executiveName];
+                {Object.keys(timeStats).length > 0 && (
+                  <div style={{ marginTop: "2rem" }}>
+                    <h3>Work vs Break Time (in Hours)</h3>
+                    {(() => {
+                      const convertedData = Object.keys(timeStats).map((executiveName) => {
+                        const { work, break: breakTime } = timeStats[executiveName];
 
-        return {
-          name: executiveName,
-          Work: parseFloat(work.toFixed(2)),        // ✅ already in hours
-          Break: parseFloat(breakTime.toFixed(2)),  // ✅ already in hours
-        };
-      });
+                        return {
+                          name: executiveName,
+                          Work: parseFloat(work.toFixed(2)),        // ✅ already in hours
+                          Break: parseFloat(breakTime.toFixed(2)),  // ✅ already in hours
+                        };
+                      });
 
-      // ✅ Dynamic Y-axis scale
-      const allValues = convertedData.flatMap(d => [d.Work, d.Break]);
-      const maxVal = Math.max(...allValues, 1);
-      const roundedMax = Math.ceil(maxVal / 5) * 5;
+                      // ✅ Dynamic Y-axis scale
+                      const allValues = convertedData.flatMap(d => [d.Work, d.Break]);
+                      const maxVal = Math.max(...allValues, 1);
+                      const roundedMax = Math.ceil(maxVal / 5) * 5;
 
-      return (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={convertedData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis
-              label={{ value: "Hours", angle: -90, position: "insideLeft" }}
-              domain={[0, roundedMax]}
-              allowDecimals={true}
-              tickFormatter={(v) => `${v}h`}
-            />
-            <Tooltip formatter={(value) => `${value} hrs`} />
-            <Legend />
-            <Bar dataKey="Work" fill="#28a745" />
-            <Bar dataKey="Break" fill="#dc3545" />
-          </BarChart>
-        </ResponsiveContainer>
-      );
-    })()}
-  </div>
-)}
-                {/* 👇 Call Time Comparison Chart */}
-{Object.keys(timeStats).length > 0 && (
-  <div style={{ marginTop: "3rem" }}>
-    <h3>Call Time Comparison (in Hours)</h3>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-        marginBottom: "1rem",
-      }}
-    >
-      <label>Time Range:</label>
-      <select
-        value={selectedTimeRange}
-        onChange={(e) => setSelectedTimeRange(e.target.value)}
-      >
-        <option value="today">Today</option>
-        <option value="week">This Week</option>
-        <option value="month">This Month</option>
-        <option value="custom">Specific Date</option>
-      </select>
+                      return (
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={convertedData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis
+                              label={{ value: "Hours", angle: -90, position: "insideLeft" }}
+                              domain={[0, roundedMax]}
+                              allowDecimals={true}
+                              tickFormatter={(v) => `${v}h`}
+                            />
+                            <Tooltip formatter={(value) => `${value} hrs`} />
+                            <Legend />
+                            <Bar dataKey="Work" fill="#28a745" />
+                            <Bar dataKey="Break" fill="#dc3545" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      );
+                    })()}
+                  </div>
+                )}
+                {/* Call Time Comparison Chart */}
+                {Object.keys(timeStats).length > 0 && (
+                  <div style={{ marginTop: "3rem" }}>
+                    <h3>Call Time Comparison (in Hours)</h3>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem",
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      <label>Time Range:</label>
+                      <select
+                        value={selectedTimeRange}
+                        onChange={(e) => setSelectedTimeRange(e.target.value)}
+                      >
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="custom">Specific Date</option>
+                      </select>
 
-      {selectedTimeRange === "custom" && (
-        <input
-          type="date"
-          value={customDate || ""}
-          onChange={(e) => setCustomDate(e.target.value)}
-        />
-      )}
-    </div>
+                      {selectedTimeRange === "custom" && (
+                        <input
+                          type="date"
+                          value={customDate || ""}
+                          onChange={(e) => setCustomDate(e.target.value)}
+                        />
+                      )}
+                    </div>
 
-    <ResponsiveContainer width="100%" height={320}>
-  <BarChart
-    layout="vertical"
-    data={callTimeChartData}
-    margin={{ top: 20, right: 30, left: 50, bottom: 5 }}
-  >
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis
-      type="number"
-      label={{
-        value: isAllCallTimesLessThanHour ? "Minutes" : "Hours",
-        position: "insideBottomRight",
-        offset: -5,
-      }}
-      domain={[0, (dataMax) =>
-        Math.ceil(Math.max(dataMax * (isAllCallTimesLessThanHour ? 60 : 1), 1) / 5) * 5
-      ]}
-      tickFormatter={(v) =>
-        isAllCallTimesLessThanHour ? `${Math.round(v * 60)} min` : `${v}h`
-      }
-    />
-    <YAxis type="category" dataKey="name" />
-    <Tooltip
-      formatter={(value) =>
-        isAllCallTimesLessThanHour
-          ? `${Math.round(value * 60)} minutes`
-          : `${value} hours`
-      }
-    />
-    <Legend />
-    <Bar dataKey="Call" fill="#007bff" />
-  </BarChart>
-</ResponsiveContainer>
-
-  </div>
-)}
-
-
-
-
-
-
+                    <ResponsiveContainer width="100%" height={320}>
+                      <BarChart
+                        layout="vertical"
+                        data={callTimeChartData}
+                        margin={{ top: 20, right: 30, left: 50, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          type="number"
+                          label={{
+                            value: isAllCallTimesLessThanHour ? "Minutes" : "Hours",
+                            position: "insideBottomRight",
+                            offset: -5,
+                          }}
+                          domain={[0, (dataMax) =>
+                            Math.ceil(Math.max(dataMax * (isAllCallTimesLessThanHour ? 60 : 1), 1) / 5) * 5
+                          ]}
+                          tickFormatter={(v) =>
+                            isAllCallTimesLessThanHour ? `${Math.round(v * 60)} min` : `${v}h`
+                          }
+                        />
+                        <YAxis type="category" dataKey="name" />
+                        <Tooltip
+                          formatter={(value) =>
+                            isAllCallTimesLessThanHour
+                              ? `${Math.round(value * 60)} minutes`
+                              : `${value} hours`
+                          }
+                        />
+                        <Legend />
+                        <Bar dataKey="Call" fill="#007bff" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
 
                 {/* radar selector + chart */}
-                {/* radar charts for all executives */}
                 <div style={{ marginTop: "3rem" }}>
                   <h3 style={{ textAlign: "center", marginBottom: "0.2rem" }}>
                     Radar Charts for Selected Executives

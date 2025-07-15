@@ -101,22 +101,23 @@ function AdminNotification() {
     markNotificationReadAPI(notificationId);
   };
 
-  const formatCopyMessage = (userId, message, createdAt) => {
-    const copiedText = message.split(":")[1] || "something";
-    const cleanedText = copiedText.replace(/['"]+/g, "").trim();
-    const executiveName = executiveMap[userId] || `#${userId}`;
-    const time = new Date(createdAt).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+const formatCopyMessage = (userId, message, createdAt) => {
+  const copiedText = message.split(":")[1] || "something";
+  const cleanedText = copiedText.replace(/['"]+/g, "").trim();
+  const executiveName = executiveMap[userId] || `#${userId}`;
+  const time = new Date(createdAt).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 
-    return (
-      <>
-         {message}
-      </>
-    );
-  };
+  return (
+    <>
+      <strong>{executiveName}</strong> copied <em>{cleanedText}</em> at <span>{time}</span>
+    </>
+  );
+};
+
 
   const unreadMeetingsCount = useMemo(() => {
     return meetings.filter((m) => !readMeetings[m.id]).length;

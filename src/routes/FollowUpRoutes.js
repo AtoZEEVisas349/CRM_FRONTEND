@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ClientDetails from "../features/follow-ups/ClientDetails";
 import ClientTable from "../features/follow-ups/ClientTable";
-import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
 import { useLocation } from "react-router-dom";
-import ProcessClientTable from "../features/follow-ups/ProcessClientTable";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { FormControl, MenuItem, Select } from "@mui/material";
 
 const FollowUpRoutes = () => {
   const location = useLocation();

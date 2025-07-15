@@ -1,8 +1,5 @@
 
 import React, { useState, useEffect } from "react";
-import ClientDetails from "../features/follow-ups/ClientDetails";
-import ClientTable from "../features/follow-ups/ClientTable";
-import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import "../styles/followup.css";
 import { useLocation } from "react-router-dom";
 import ProcessClientDetails from "../features/follow-ups/ProcessClientDetails";

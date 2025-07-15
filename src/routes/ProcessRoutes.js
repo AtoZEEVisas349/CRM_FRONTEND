@@ -1,19 +1,13 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import ProcessNavbar from "../layouts/ProcessNavbar";
-import ReportCard from "../features/executive/ReportCard";
 import ProcessReportCard from "../features/process-client/ProcessReportCard";
 import NewsComponent from "../features/executive/NewsComponent";
-import FreshLeadRoutes from "./FreshLeadRoutes";
-import FollowUpRoutes from "./FollowUpRoutes";
 import ClientRoutes from "./ClientRoutes";
 import CustomerRoutes from "./CustomerRoutes";
-import CloseLeadRoutes from "./CloseLeadRoutes";
 import InvoicePage from "../features/Invoice/InvoicePage";
 import SettingRoutes from "./SettingRoutes";
 import NotificationRoutes from "./NotificationRoutes";
 import ChatBotRoutes from "./ChatBotRoutes";
-import ScheduleRoutes from "./ScheduleRoutes";
 import ClientDash from "../features/process-client/ClientDash";
 import ProcessSetting from "../features/process-client/ProcessSettings";
 import ClientSetting from "../features/process-client/ClientSetting";
@@ -23,7 +17,6 @@ import AllClient from "../features/process-client/AllClient";
 import { useProcess } from "../context/ProcessAuthContext"; // ✅ Make sure to import it
 import "../styles/process.css";
 import ProcessLayout from "../layouts/ProcessLayout";
-import SidebarandNavbar from "../layouts/SidebarandNavbar";
 import ProcessFreshlead from "../features/freshLeads/ProcessFreshlead";
 import ProcessFollowUpRoutes from "./ProcessFollowupRoutes";
 import ProcessFinalRoutes from "./ProcessFinalRoutes";

@@ -78,7 +78,7 @@ navigate(basePath, {
     };
 
     fetchData();
-  }, []);
+  }, [getDealFunnel]);
 
   const summaryItems = [
     {

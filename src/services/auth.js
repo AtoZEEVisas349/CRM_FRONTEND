@@ -1,5 +1,5 @@
 import apiService from "./apiService";
-import { Navigate,useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
 
@@ -171,7 +171,6 @@ export const isAuthenticated = () => {
 export const PrivateRoute = ({ children, allowedRoles = [] }) => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
-  const location = useLocation();
 
   if (!token || !user?.role) {
     return <Navigate to="/login" replace />;
@@ -179,11 +178,6 @@ export const PrivateRoute = ({ children, allowedRoles = [] }) => {
 
   const role = user.role.toLowerCase();
 
-  // If route has allowedRoles and user is not in them, restrict access
-  // if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-  //   const fallback = role === "admin" ? "/admin" : "/executive";
-  //   return <Navigate to={fallback} replace />;
-  // }
   if (!allowedRoles.includes(role)) {
     const fallback = `/${role}`; // e.g., /manager
     return <Navigate to={fallback} replace />;

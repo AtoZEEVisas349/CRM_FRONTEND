@@ -15,12 +15,12 @@ const AllClient = () => {
     customers,
     setCustomers,
     handleImportConvertedClients,
-    convertedClients,
-    fetchConvertedClients,
-    convertedLoading,
-    convertedError,
-    setConvertedClients,
-    getComments // Assuming you have this setter exposed from context
+    // convertedClients,
+    // fetchConvertedClients,
+    // convertedLoading,
+    // convertedError,
+    // setConvertedClients,
+    // getComments // Assuming you have this setter exposed from context
   } = useProcessService();
 
   const navigate = useNavigate();
@@ -44,12 +44,12 @@ const AllClient = () => {
       .catch((err) => {
         console.error("❌ Error fetching clients:", err);
       });
-  }, []);
+  }, [fetchCustomers, setCustomers]);
 
   // Navigate to dashboard with correct client ID
     const handleClick = async () => {
     try {
-      const result = await handleImportConvertedClients();
+       await handleImportConvertedClients();
      await fetchCustomers();
     } catch (error) {
       alert("Failed to import: " + error.message);

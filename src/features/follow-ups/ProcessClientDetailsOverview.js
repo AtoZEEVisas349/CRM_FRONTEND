@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef,useMemo } from "react";
+import React, { useState, useEffect,useMemo,useCallback } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useApi } from "../../context/ApiContext";
 import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
-import { processgetEmailTemplates } from "../../static/processgetEmailTemplates"; 
 import Swal from "sweetalert2";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import "react-time-picker/dist/TimePicker.css";
@@ -33,7 +32,6 @@ const ProcessClientDetailsOverview = () => {
     createReminder}=useProcessService();
   const {
     createConvertedClientAPI,
-    createCloseLeadAPI,
     followUpLoading,
     createFollowUpHistoryAPI,
     fetchNotifications,
@@ -41,10 +39,10 @@ const ProcessClientDetailsOverview = () => {
   } = useApi();
 
   useCopyNotification(createCopyNotification, fetchNotifications);
-  const client = useMemo(() => location.state?.client || {}, []);
+const client = useMemo(() => location.state?.client || {}, [location.state?.client]);
   
   // Initialize current time properly
-  const now = new Date();
+   const now = useMemo(() => new Date(), []);
   const todayStr = now.toISOString().split("T")[0];
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -57,21 +55,15 @@ const ProcessClientDetailsOverview = () => {
   const [followUpType, setFollowUpType] = useState("");
   const [interactionRating, setInteractionRating] = useState("");
   const [reasonDesc, setReasonDesc] = useState("");
-  const [isListening, setIsListening] = useState(false);
   const [interactionDate, setInteractionDate] = useState(todayStr);
   const [timeOnly, setTimeOnly] = useState(currentTime12Hour);
   const [ampm, setAmPm] = useState(ampmValue);
-  const [isTimeEditable, setIsTimeEditable] = useState(false);
-     const [selectedStage, setSelectedStage] = useState("");
-     const [commentText, setCommentText] = useState("");
-       const [stagesData, setStagesData] = useState({});
-       const [stageTimestamp, setStageTimestamp] = useState("");
-       const [showEmailModal, setShowEmailModal] = useState(false);
+  const [selectedStage, setSelectedStage] = useState("");
+  const [showEmailModal, setShowEmailModal] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [emailBody, setEmailBody] = useState("");
     const [emailSubject, setEmailSubject] = useState("");
     const [clientEmail, setClientEmail] = useState("");
-    const [isSaving, setIsSaving] = useState(false); // Added
      const [showToast, setShowToast] = useState(false);
 const [docName, setDocName] = useState("");
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -104,49 +96,17 @@ const email = userData?.email || "";
   }, [timeOnly, ampm]);
 
   // Add date constraints
-  const minDate = useMemo(() => todayStr, []);
-  const maxDate = useMemo(() => {
-    const d = new Date(now);
-    d.setFullYear(d.getFullYear() + 5);
-    return d.toISOString().split("T")[0];
-  }, []);
+  const minDate = useMemo(() => todayStr, [todayStr]);
+   const maxDate = useMemo(() => {
+     const d = new Date(now);
+     d.setFullYear(d.getFullYear() + 5);
+     return d.toISOString().split("T")[0];
+   }, [now]);
 
-  const [histories, setHistories] = useState([]);
+  const [ , setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const timeSelectRef = useRef(null);
-  const ampmSelectRef = useRef(null);  
-  const [speechError, setSpeechError] = useState(null);
-  const recognitionRef = useRef(null);
-  const isListeningRef = useRef(isListening);
 
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = "en-US";
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setReasonDesc((prev) => `${prev} ${transcript}`);
-      };
-
-      recognition.onerror = (event) => {
-        setSpeechError(`Speech error: ${event.error}`);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-    } else {
-      recognitionRef.current = null;
-    }
-  }, []);
-  
-  const capitalize = (text) => {
+ const capitalize = (text) => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
@@ -168,19 +128,7 @@ const email = userData?.email || "";
     // { key: "assignDate", label: "Assign Date" },
   ];
 
-  useEffect(() => {
-    if (client) {
-      const freshLeadId =
-        client.freshLead?.id || client.fresh_lead_id || client.id;
-      const normalizedClient = {
-        ...client,
-        fresh_lead_id: freshLeadId,
-        followUpId: client.followUpId || client.id,
-      };
-      setClientInfo(normalizedClient);
-      loadFollowUpHistories(freshLeadId);
-    }
-  }, [client]);
+
  const[historyData,setHistoryData]=useState();
   useEffect(() => {
   const fetchFollowups = async () => {
@@ -216,7 +164,7 @@ const email = userData?.email || "";
   };
 
   fetchFollowups();
-}, [id]);
+}, [id,getProcessFollowupHistory]);
 
 
 const[followupHistory,setFollowupHistory]=useState();
@@ -232,36 +180,50 @@ const[followupHistory,setFollowupHistory]=useState();
   };
 
   fetchFollowups();
-}, [id]);
-  const loadFollowUpHistories = async (freshLeadId) => {
-    if (!freshLeadId) return;
-    setIsLoading(true);
-    try {
-      const response = await getProcessFollowupHistory(id);
-      if (Array.isArray(response)) {
-        const filteredHistories = response.filter(
-          (history) => history.fresh_lead_id === freshLeadId
-        );
-        filteredHistories.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setHistories(response.data);
-        console.log(histories,"'history");
-        if (filteredHistories.length > 0) {
-          populateFormWithHistory(filteredHistories[0]);
-        } else {
-          setHistories([]);
-        }
+}, [id,getProcessHistory]);
+
+const loadFollowUpHistories = useCallback(async (freshLeadId) => {
+  if (!freshLeadId) return;
+  setIsLoading(true);
+  try {
+    const response = await getProcessFollowupHistory(id);
+    if (Array.isArray(response)) {
+      const filteredHistories = response.filter(
+        (history) => history.fresh_lead_id === freshLeadId
+      );
+      filteredHistories.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setHistories(response.data);
+      if (filteredHistories.length > 0) {
+        populateFormWithHistory(filteredHistories[0]);
       } else {
         setHistories([]);
       }
-    } catch (error) {
-      console.error("Error fetching follow-up histories:", error);
+    } else {
       setHistories([]);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching follow-up histories:", error);
+    setHistories([]);
+  } finally {
+    setIsLoading(false);
+  }
+}, [id, getProcessFollowupHistory]);
+  useEffect(() => {
+    if (client) {
+      const freshLeadId =
+        client.freshLead?.id || client.fresh_lead_id || client.id;
+      const normalizedClient = {
+        ...client,
+        fresh_lead_id: freshLeadId,
+        followUpId: client.followUpId || client.id,
+      };
+      setClientInfo(normalizedClient);
+      loadFollowUpHistories(freshLeadId);
+    }
+  }, [client]);
+
 useEffect(() => {
   if (historyData?.data?.length > 0) {
     const latest = historyData.data[0];
@@ -384,9 +346,7 @@ useEffect(() => {
     }
 
     try {
-      const followUpId = clientInfo.followUpId || clientInfo.id;
-
-      
+     
      const meetingPayload = {
           clientName: clientInfo.name,
           clientEmail: clientInfo.email,
@@ -513,42 +473,10 @@ useEffect(() => {
     }
   };
 
-  const toggleListening = () => {
-    if (!recognitionRef.current) {
-      alert("Speech recognition is not supported in this browser. Please use a supported browser like Google Chrome.");
-      return;
-    }
-    setSpeechError(null); // Clear any previous errors
-    if (isListening) {
-      stopListening();
-    } else {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (error) {
-        setSpeechError("Failed to start speech recognition. Please try again.");
-        console.error("Error starting speech recognition:", error);
-      }
-    }
-  };
+ const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
 
-  const stopListening = () => {
-    setIsListening(false);
-    recognitionRef.current?.stop();
-  };
-
-  const { handleSendEmail } = useExecutiveActivity();                                                                                             //Getting Email templates
-  const emailTemplates = processgetEmailTemplates(clientInfo, userData);
-
-  //State for selecting email template
-  const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
-
-  const handleTemplateChange = (e) => {
-    setSelectedTemplateId(e.target.value);
-  };
-
-  
+ 
   const isMeetingInPast = useMemo(() => {
     if (followUpType !== "meeting" || !interactionDate || !interactionTime) return false;
     const selectedDateTime = new Date(`${interactionDate}T${interactionTime}`);
@@ -576,7 +504,7 @@ useEffect(() => {
       if (id) {
         fetchHistory();
       }
-    }, [id]);
+    }, [id,getProcessFollowup]);
 console.log(clientInfo,"id")
  const [latestComment, setLatestComment] = useState({});
   const [history, setHistory] = useState([]);
@@ -1209,11 +1137,11 @@ console.log(clientInfo,"id");
                 />
                 <button
                   type="button"
-                  className={`speech-btn ${isListening ? "listening" : ""}`}
-                  onClick={toggleListening}
-                  aria-label={isListening ? "Stop recording" : "Start recording"}
+                  // className={`speech-btn ${isListening ? "listening" : ""}`}
+                  // onClick={toggleListening}
+                  // aria-label={isListening ? "Stop recording" : "Start recording"}
                 >
-                  {isListening ? "⏹" : "🎤"}
+                  {/* {isListening ? "⏹" : "🎤"} */}
                 </button>
               </div>
 

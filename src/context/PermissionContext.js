@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { permissionService } from "../services/permissionService";
 
 const PermissionContext = createContext();
@@ -8,7 +8,7 @@ export const PermissionProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchPermissions = async () => {
+  const fetchPermissions = useCallback(async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user?.id || !user?.role) throw new Error("User info missing");
@@ -28,11 +28,19 @@ export const PermissionProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPermissions();
-  }, []);
+  }, [fetchPermissions]);
+
+  // ✅ Memoize all the service methods
+  const fetchUsers = useCallback(() => permissionService.fetchUsers(), []);
+  const createPermission = useCallback((payload) => permissionService.createPermission(payload), []);
+  const fetchAllRolePermissions = useCallback(() => permissionService.fetchAllRolePermissions(), []);
+  const fetchSinglePermission = useCallback((id) => permissionService.fetchSinglePermission(id), []);
+  const togglePermission = useCallback((id, key) => permissionService.togglePermission(id, key), []);
+  const fetchPermissionsForUser = useCallback((id, role) => permissionService.fetchPermissionsForUser(id, role), []);
 
   return (
     <PermissionContext.Provider
@@ -43,13 +51,12 @@ export const PermissionProvider = ({ children }) => {
         error,
         // Utility
         fetchPermissions,
-        // Expose all permission services
-        fetchUsers: permissionService.fetchUsers,
-        createPermission: permissionService.createPermission,
-        fetchAllRolePermissions: permissionService.fetchAllRolePermissions,
-        fetchSinglePermission: permissionService.fetchSinglePermission,
-        togglePermission: permissionService.togglePermission,
-        fetchPermissionsForUser: permissionService.fetchPermissionsForUser,
+        fetchUsers,
+        createPermission,
+        fetchAllRolePermissions,
+        fetchSinglePermission,
+        togglePermission,
+        fetchPermissionsForUser,
       }}
     >
       {children}

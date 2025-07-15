@@ -22,14 +22,13 @@ import { Alert, soundManager } from "../modal/alert";
 import { useNavigate } from "react-router-dom";
 
 const ExecutiveCredentialsForm = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+  const [sidebarCollapsed] = useState(
     localStorage.getItem("adminSidebarExpanded") === "false"
   );
   const { createExecutive, createAdmin, createTeamLead, createManager, createHr } = useApi();
   const [showPassword, setShowPassword] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [errors, setErrors] = useState({});
-  const [previewImage, setPreviewImage] = useState(null);
   const { isLoading, variant, showLoader, hideLoader } = useLoading();
   const navigate = useNavigate();
 
@@ -57,32 +56,6 @@ const ExecutiveCredentialsForm = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          profile_picture: file,
-        }));
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setAlerts([
-        ...alerts,
-        {
-          id: Date.now(),
-          type: "error",
-          title: "Invalid Image",
-          message: "Please upload a valid image file.",
-          duration: 5000,
-        },
-      ]);
-      soundManager.playSound("error");
-    }
-  };
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -96,6 +69,7 @@ const ExecutiveCredentialsForm = () => {
     }, 400);
   
     return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
   
   const handleSubmit = async (e) => {

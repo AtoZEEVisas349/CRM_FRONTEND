@@ -100,7 +100,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
     };
 
     fetchData();
-  }, [selectedExecutiveId, weekOffset]);
+  }, [selectedExecutiveId, weekOffset,fetchAllExecutiveActivitiesByDateAPI,fetchExecutiveActivity]);
 
   const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const maxLead = Math.max(...chartData.weeklyData);

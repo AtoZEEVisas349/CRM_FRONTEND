@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import AdminSidebar from "../layouts/AdminSidebar";
 import TaskManagement from "../features/LeadAssign/TaskManagement";
 import "../styles/leadassign.css";
 
 function LeadAssignRoutes() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    localStorage.getItem("adminSidebarExpanded") === "false"
-  );
+ // eslint-disable-next-line no-unused-vars
+const [, setSidebarCollapsed] = useState(
+  localStorage.getItem("adminSidebarExpanded") === "false"
+);
+
 
   useEffect(() => {
     const updateSidebarState = () => {

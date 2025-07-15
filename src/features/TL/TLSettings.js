@@ -13,7 +13,7 @@ const TLSettings = () => {
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
   const { getAllProfile, handleUpdateUserProfile, isUserProfileUpdating ,isPasswordUpdating , handleChangePassword} = useApi();
   const hasLoaded = useRef(false);
-  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
+  const [alerts, setAlerts] = useState([]); 
 
   const [tlProfile, setTlProfile] = useState({
     id: "",

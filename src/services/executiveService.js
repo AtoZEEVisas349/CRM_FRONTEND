@@ -175,11 +175,12 @@ export const getActivityStatus = async () => {
  */
 export const leadtrackVisit = async (executiveId) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/executive-activities/trackLeadVisit`,
-      { ExecutiveId: executiveId },
-      { headers: getHeaders() }
-    );
+  await axios.post(
+  `${API_BASE_URL}/executive-activities/trackLeadVisit`,
+  { ExecutiveId: executiveId },
+  { headers: getHeaders() }
+);
+
   } catch (error) {
     if (error.response) {
       console.error('API error:', error.response.data.message);

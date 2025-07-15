@@ -15,7 +15,7 @@ const RevenueChart = () => {
 
   useEffect(() => {
     fetchRevenueChartDataAPI();
-  }, []);
+  }, [fetchRevenueChartDataAPI]);
 
   if (revenueChartLoading) {
     return <div>Loading revenue chart data...</div>;
