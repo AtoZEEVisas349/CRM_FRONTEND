@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useCallback } from "react";
 import { useProcessService } from "../../context/ProcessServiceContext";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,16 +8,12 @@ import { useLocation } from "react-router-dom";
 const ClientUpload = () => {
   const { uploadDocs, getDocumentsApi } = useProcessService();
   const location = useLocation();
-const defaultFilename = location.state?.defaultFilename || "";
-const label = location.state?.label || "Upload Files";
-
+  const defaultFilename = location.state?.defaultFilename || "";
   const [files, setFiles] = useState([]);
   const [progress, setProgress] = useState({});
   const [message, setMessage] = useState("");
   const [customerId, setCustomerId] = useState("");
   const inputRef = useRef();
-  const [documents, setDocuments] = useState([]);
-  const [error, setError] = useState("");
   const [userDetails, setUserDetails] = useState(null);
   const [customerDocs, setCustomerDocs] = useState([]);
   const [processDocs, setProcessDocs] = useState([]);
@@ -56,34 +52,8 @@ const label = location.state?.label || "Upload Files";
   });
 };
 
-  // const handleFileChange = (e) => {
-  //   const newFiles = Array.from(e.target.files);
-  //   const updatedFiles = [...files, ...newFiles];
-  //   setFiles(updatedFiles);
-
-  //   const newNames = {};
-  //   const newEditMode = {};
-  //   newFiles.forEach(file => {
-  //     // newNames[file.name] = file.name.split(".")[0];
-  //     newNames[file.name] = defaultFilename || file.name.split(".")[0];
-
-  //     newEditMode[file.name] = false;
-  //   });
-
-  //   setDocumentNames(prev => ({ ...prev, ...newNames }));
-  //   setEditMode(prev => ({ ...prev, ...newEditMode }));
-
-  //   newFiles.forEach((file) => {
-  //     const interval = setInterval(() => {
-  //       setProgress((prev) => {
-  //         const curr = prev[file.name] || 0;
-  //         const next = Math.min(curr + 5, 100);
-  //         if (next === 100) clearInterval(interval);
-  //         return { ...prev, [file.name]: next };
-  //       });
-  //     }, 300);
-  //   });
-  // };
+ 
+ 
 
   const handleRemove = (name) => {
     setFiles(files.filter((file) => file.name !== name));
@@ -106,6 +76,36 @@ const label = location.state?.label || "Upload Files";
 
   const triggerBrowse = () => inputRef.current.click();
 
+    // 👇 Memoize fetchDocs to avoid unnecessary re-renders
+const fetchDocs = useCallback(async (cid) => {
+  if (!cid) return;
+  setLoading(true);
+  try {
+    const [customerResult, processResult] = await Promise.allSettled([
+      getDocumentsApi("customer", cid),
+      getDocumentsApi("process_person", cid),
+    ]);
+
+    setCustomerDocs(
+      customerResult.status === "fulfilled" && Array.isArray(customerResult.value)
+        ? [...customerResult.value].sort((a, b) => b.id - a.id)
+        : []
+    );
+
+    setProcessDocs(
+      processResult.status === "fulfilled" && Array.isArray(processResult.value)
+        ? [...processResult.value].sort((a, b) => b.id - a.id)
+        : []
+    );
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    setCustomerDocs([]);
+    setProcessDocs([]);
+  } finally {
+    setLoading(false);
+  }
+}, [getDocumentsApi]); // ✅ include getDocumentsApi as a dependency
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -122,38 +122,14 @@ const label = location.state?.label || "Upload Files";
         console.error("Invalid user object in localStorage", err);
       }
     }
-  }, [id]);
+  }, [id,fetchDocs]);
 
-  const fetchDocs = async (cid) => {
-    if (!cid) return;
-    setLoading(true);
-    try {
-      const [customerResult, processResult] = await Promise.allSettled([
-        getDocumentsApi("customer", cid),
-        getDocumentsApi("process_person", cid),
-      ]);
 
-      setCustomerDocs(customerResult.status === "fulfilled" && Array.isArray(customerResult.value)
-        ? [...customerResult.value].sort((a, b) => b.id - a.id)
-        : []);
 
-      setProcessDocs(processResult.status === "fulfilled" && Array.isArray(processResult.value)
-        ? [...processResult.value].sort((a, b) => b.id - a.id)
-        : []);
-
-    } catch (err) {
-      console.error("Unexpected error:", err);
-      setCustomerDocs([]);
-      setProcessDocs([]);
-      setError("Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (customerId) fetchDocs(customerId);
-  }, [customerId]);
+  }, [customerId,fetchDocs]);
 
   const handleUpload = async (e) => {
     e.preventDefault();

@@ -1,21 +1,18 @@
 import React, { useEffect, useState ,useMemo} from "react";
-import { useExecutiveActivity } from "../../context/ExecutiveActivityContext";
 import { useApi } from "../../context/ApiContext";
 import { useLocation } from "react-router-dom";
-import { getEmailTemplates } from "../../static/emailTemplates";
+
 
 export const ProcessSendEmailtoClients = ({  onTemplateSelect }) => {
-  const { executiveInfo } = useApi();
    const location = useLocation();
-   const client = useMemo(() => location.state?.client || {}, []);
-   const [clientInfo, setClientInfo] = useState(client);
-  const { handleSendEmail } = useExecutiveActivity();
+   const client = useMemo(() => location.state?.client || {}, [location.state]);
+
+   let clientInfo=client;
   const { fetchAllTemplates, fetchTemplateById, templateLoading } = useApi();
 
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [emailTemplates, setEmailTemplates] = useState([]);
 const userData = JSON.parse(localStorage.getItem("user"));
-const name = userData?.fullName || "";
 const email = userData?.email || "";
 
 
@@ -35,7 +32,7 @@ const email = userData?.email || "";
     if (clientInfo?.email) {
       loadTemplates();
     }
-  }, [clientInfo?.email]);
+  }, [clientInfo?.email,fetchAllTemplates]);
   
 
   const handleTemplateChange = async (e) => {

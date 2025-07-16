@@ -7,32 +7,20 @@ import img2 from '../../assets/user1.png';
 
 const ClientDash = ({ initialStages = 6 }) => {
   const { id } = useParams();
-  const { handleUpsertStages, handleGetStages, handleGetCustomerStagesById,createStages,getComments } = useProcessService();
+  const { handleGetStages, handleGetCustomerStagesById,createStages,getComments } = useProcessService();
   const { user } = useProcess();
   const navigate =useNavigate();
    const location = useLocation();
   const clientName = location.state?.clientName || "Unknown";
   const [comments, setComments] = useState([]);
-  const [expanded, setExpanded] = useState([]);
   const [activeIcon, setActiveIcon] = useState(null);
   const [inputValue, setInputValue] = useState("");
-  const [stageData, setStageData] = useState({});
-  const [processData, setProcessData] = useState({});
-  const [descriptions, setDescriptions] = useState({});
-  const [activeDescription, setActiveDescription] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
   const [stageCount, setStageCount] = useState(initialStages);
   const [hexagons, setHexagons] = useState([]);
   const [roadPaths, setRoadPaths] = useState({ mainPath: "M0 330 ", shadowPath: "M0 335 " });
 
-  const colors = [
-    '#264653', '#e76f51', '#2a9d8f', '#a8dadc',
-    '#e9c46a', '#457b9d', '#f4a261', '#ff6b6b',
-    '#3a86ff', '#8338ec', '#ff006e', '#fb5607'
-  ];
-
-  const[commentData,setCommentData]=useState();
-     
+ 
 
   const generateZebraCrossings = () => {
     const stripes = [];
@@ -66,29 +54,7 @@ const ClientDash = ({ initialStages = 6 }) => {
     return stripes;
   };
 
-  const calculateRealisticRoadPath = () => {
-  const segments = Math.ceil(stageCount / 2);
-  let mainPath = "M0 330 ";
-  let shadowPath = "M0 335 ";
-
-  for (let i = 0; i < segments; i++) {
-    const x1 = 60 + i * 260;
-    const x2 = 140 + i * 260;
-
-    // Main curve up
-    mainPath += `C${x1} 330, ${x1} 180, ${x2} 180 `;
-    shadowPath += `C${x1} 335, ${x1} 185, ${x2} 185 `;
-
-    // Don't draw unnecessary extra segment at the end
-    if (i < segments - 1 || stageCount % 2 === 0) {
-      const x3 = 220 + i * 260;
-      mainPath += `S${x3} 330, ${x3 + 60} 330 `;
-      shadowPath += `S${x3} 335, ${x3 + 60} 335 `;
-    }
-  }
-
-  return { mainPath, shadowPath };
-};
+ 
 
   const generateRoadMarkings = () => {
     // Use minimum segments to ensure proper road markings
@@ -122,6 +88,11 @@ const ClientDash = ({ initialStages = 6 }) => {
   };
 
   useEffect(() => {
+    const colors = [
+    '#264653', '#e76f51', '#2a9d8f', '#a8dadc',
+    '#e9c46a', '#457b9d', '#f4a261', '#ff6b6b',
+    '#3a86ff', '#8338ec', '#ff006e', '#fb5607'
+  ];
     const newHexagons = [];
     const topRowCount = Math.ceil(stageCount / 2);
     const bottomRowCount = Math.floor(stageCount / 2);
@@ -153,11 +124,34 @@ const ClientDash = ({ initialStages = 6 }) => {
         row: 'bottom'
       });
     }
+ const calculateRealisticRoadPath = () => {
+  const segments = Math.ceil(stageCount / 2);
+  let mainPath = "M0 330 ";
+  let shadowPath = "M0 335 ";
 
+  for (let i = 0; i < segments; i++) {
+    const x1 = 60 + i * 260;
+    const x2 = 140 + i * 260;
+
+    // Main curve up
+    mainPath += `C${x1} 330, ${x1} 180, ${x2} 180 `;
+    shadowPath += `C${x1} 335, ${x1} 185, ${x2} 185 `;
+
+    // Don't draw unnecessary extra segment at the end
+    if (i < segments - 1 || stageCount % 2 === 0) {
+      const x3 = 220 + i * 260;
+      mainPath += `S${x3} 330, ${x3 + 60} 330 `;
+      shadowPath += `S${x3} 335, ${x3 + 60} 335 `;
+    }
+  }
+
+  return { mainPath, shadowPath };
+};
     const newRoadPaths = calculateRealisticRoadPath(stageCount);
 
     setHexagons(newHexagons);
     setRoadPaths(newRoadPaths);
+
   }, [stageCount]);
 
   // Calculate SVG viewBox width based on stage count with minimum width
@@ -167,7 +161,10 @@ const ClientDash = ({ initialStages = 6 }) => {
     return Math.max(minWidth, calculatedWidth);
   };
 
-  const fetchStages = async () => {
+ 
+
+  useEffect(() => {
+     const fetchStages = async () => {
     try {
       const latestStages = await handleGetCustomerStagesById(id);
       const newComments = [];
@@ -186,20 +183,20 @@ const ClientDash = ({ initialStages = 6 }) => {
       }
 
       setComments(newComments);
-      setExpanded(Array(stageCount).fill(false));
-      setStageData(latestStages);
     } catch (err) {
       console.error("Error fetching customer stages:", err.message);
     }
   };
+  fetchStages()
+  }, [id, stageCount,handleGetCustomerStagesById]);
+
+ 
 
   useEffect(() => {
-    if (id) {
-      fetchStages();
-    }
-  }, [id, stageCount]);
+    if (!user?.type) return;
 
-  const fetchAndSetStages = async () => {
+    if (user?.type === "customer") {
+       const fetchAndSetStages = async () => {
     try {
       const latestStages = await handleGetStages();
       const newComments = [];
@@ -220,20 +217,14 @@ const ClientDash = ({ initialStages = 6 }) => {
       }
 
       setComments(newComments);
-      setExpanded(Array(stageCount).fill(false));
-      setStageData(latestStages);
     } catch (err) {
       console.error("Error fetching customer stages:", err.message);
     }
   };
-
-  useEffect(() => {
-    if (!user?.type) return;
-
-    if (user?.type === "customer") {
-      fetchAndSetStages();
+   fetchAndSetStages();
     }
-  }, [stageCount, user]);
+   
+  }, [stageCount, user,handleGetStages]);
 
   const toggleCardExpand = (stageNum) => {
     setExpandedCards(prev => ({
@@ -243,34 +234,7 @@ const ClientDash = ({ initialStages = 6 }) => {
   };
 
   const showDescriptionModal = (stageNum) => {
-    setActiveDescription(stageNum);
-  };
-
-  const saveDescription = async (stageNum) => {
-    const input = document.getElementById(`desc-input-${stageNum}`);
-    const text = input.value.trim();
-
-    if (text) {
-      setDescriptions(prev => ({ ...prev, [stageNum]: text }));
-      setActiveDescription(null);
-    }
-    const currentDate = new Date().toISOString();
-    const updatedStage = {
-      [`stage${activeIcon + 1}_data`]: inputValue,
-      [`stage${activeIcon + 1}_completed`]: true,
-      [`stage${activeIcon + 1}_timestamp`]: currentDate,
-    };
-
-    const newStageData = { ...stageData, ...updatedStage };
-    setStageData(newStageData);
-
-    try {
-      await handleUpsertStages({ ...newStageData, customerId: id });
-      await fetchAndSetStages();
-      setActiveIcon(null);
-    } catch (error) {
-      console.error("API error:", error.message);
-    }
+    console.log(stageNum);
   };
 
   const addStage = () => {
@@ -280,27 +244,19 @@ const ClientDash = ({ initialStages = 6 }) => {
   const removeStage = () => {
     if (stageCount > 1) {
       setStageCount(prev => prev - 1);
-      setDescriptions(prev => {
-        const newDescs = { ...prev };
-        delete newDescs[stageCount];
-        return newDescs;
-      });
     }
   };
 
   const handleIconClick = (index) => {
     if (index < stageCount) {
       setActiveIcon(prev => (prev === index ? null : index));
-      const stageKey = `stage${index + 1}_data`;
       setInputValue( "");
     }
   };
-const [stageNumber, setStageNumber] = useState("");
-  const [comment, setComment] = useState("");
-  const [message, setMessage] = useState("");
+
 const handleSubmit = async (customerId, stageNumber, commentsArray) => {
   if (!customerId || !stageNumber || !commentsArray.length) {
-    setMessage("All fields are required");
+  
     return;
   }
 
@@ -313,10 +269,6 @@ const handleSubmit = async (customerId, stageNumber, commentsArray) => {
       );
       console.log("Added comment:", result.message);
     }
-
-    setMessage("All comments added successfully");
-    setComment("");
-    setStageNumber("");
     setInputValue("");         // Clear textarea
     setActiveIcon(null);       // Close the popup
 
@@ -339,27 +291,13 @@ const handleSubmit = async (customerId, stageNumber, commentsArray) => {
       }
 
       setComments(newComments);
-      setExpanded(Array(stageCount).fill(false));
-      setStageData(latestStages);
-    
-    // Assuming you want to update your state
-   
 
   } catch (err) {
     console.error("Failed to add comment:", err);
-    setMessage(err?.response?.data?.error || "Something went wrong");
+   
   }
 };
 
-
-
-  
-
-  const toggleExpand = (index) => {
-    const updated = [...expanded];
-    updated[index] = !updated[index];
-    setExpanded(updated);
-  };
 const [activeStageIndex, setActiveStageIndex] = useState(null);
 const [followupHistory, setFollowupHistory] = useState({});
 const handleOpenFollowupModal = async (stageIndex) => {
@@ -424,11 +362,8 @@ const handleCloseFollowupModal = () => {
 useEffect(() => {
   const fetchComments = async () => {
     try {
-      const result = await getComments(id, activeIcon + 1);
-      setCommentData(prev => ({
-        ...prev,
-        [stageNumber]: result.comments || []
-      }));
+    await getComments(id, activeIcon + 1);
+      
     } catch (err) {
       console.error("❌ Failed to load comments", err.message);
     }
@@ -441,7 +376,7 @@ fetchComments()
   //   }
   // }
 
-}, []);
+}, [id,getComments, activeIcon]);
 
 
   return (

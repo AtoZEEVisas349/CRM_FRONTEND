@@ -1,40 +1,19 @@
+
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useApi } from "../../context/ApiContext";
-import { useProcess } from "../../context/ProcessAuthContext";
 import { useProcessService } from "../../context/ProcessServiceContext";
 
 const ProcessClientDetails = ({ selectedClient, onClose }) => {
-  const { fetchFollowUpHistoriesAPI } = useApi();
   const { getProcessFollowupHistory}=useProcessService;
-  const { id } = useParams();
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hour, setHour] = useState("12");
-const [minute, setMinute] = useState("00");
-const [ampm, setAmPm] = useState("AM");
-const[historyData,setHistoryData]=useState();
- useEffect(() => {
-  const fetchFollowups = async () => {
-    try {
-      const response = await getProcessFollowupHistory(id);
-      setHistoryData(response.data)
-     
-     
-    } catch (err) {
-      console.error("❌ Failed to load follow-ups:", err.message);
-    }
-  };
 
-  fetchFollowups();
-}, [id]);
 
   useEffect(() => {
     if (selectedClient) {
       const freshLeadId = selectedClient.freshLead?.id || selectedClient.fresh_lead_id;
       if (freshLeadId) {
         setLoading(true);
-        fetchFollowUpHistoriesAPI(freshLeadId)
+        getProcessFollowupHistory(freshLeadId)
           .then((histories) => {
             if (histories && Array.isArray(histories)) {
               const filteredHistories = histories.filter(
@@ -76,7 +55,7 @@ const[historyData,setHistoryData]=useState();
     } else {
       setRecentFollowUps([]);
     }
-  }, [selectedClient]);
+  }, [selectedClient,getProcessFollowupHistory]);
 
   if (!selectedClient) {
     return (

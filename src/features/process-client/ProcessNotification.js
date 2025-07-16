@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useProcessService } from "../../context/ProcessServiceContext";
-import { useProcess } from "../../context/ProcessAuthContext";
 import {useApi} from "../../context/ApiContext"
 const NOTIF_STORAGE_KEY = "readNotificationIds";
 
 const ProcessNotification = ({setUnreadCount}) => {
   const {
     fetchNotifications,
-    notifications,
   } = useProcessService();
   const { markNotificationReadAPI}=useApi();
-  const { user } = useProcess();
+
 
   const [notificationData, setNotificationData] = useState([]);
   const [markedAsRead, setMarkedAsRead] = useState(() => {
@@ -41,7 +39,7 @@ const ProcessNotification = ({setUnreadCount}) => {
     };
 
     getNotifications();
-  }, [userRole]);
+  }, [userRole,fetchNotifications]);
 
   const handleMarkAsRead = async (notificationId) => {
     try {
@@ -83,7 +81,7 @@ const ProcessNotification = ({setUnreadCount}) => {
     if (setUnreadCount) {
       setUnreadCount(count); // ✅ Update parent
     }
-  }, [notificationData, markedAsRead]);
+  }, [notificationData, markedAsRead,setUnreadCount]);
 
 
   return (

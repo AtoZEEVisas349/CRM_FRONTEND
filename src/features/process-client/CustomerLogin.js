@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate,useLocation } from "react-router-dom"; // ✅ import useNavigate
+import { useNavigate,useLocation } from "react-router-dom"; // ✅ import useNavigate
 import { useProcess } from "../../context/ProcessAuthContext";
 import { ToastContainer } from "react-toastify";
 
@@ -9,7 +9,6 @@ const CustomerLogin = () => {
   const location=useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("customer");
   const from = location.state?.from?.pathname || "/customer/client/dashboard";
   const handleLogin = async () => {
     try {
@@ -51,7 +50,7 @@ const CustomerLogin = () => {
           Log in
         </button>
 
-        <a href="#" className="process-link">Forgot password?</a>
+        <a href="process-forgot-password" className="process-link">Forgot password?</a>
 
        
       </div>

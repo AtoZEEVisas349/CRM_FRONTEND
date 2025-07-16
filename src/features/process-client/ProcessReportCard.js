@@ -11,22 +11,20 @@ const ProcessReportCard = () => {
   getProcessPersonMeetings
   } = useProcessService();
   const navigate = useNavigate();
-  useEffect(() => {
-    fetchCustomers()
-  //     .then((data) => {
-  //       // If data returned from fetchConvertedClients is the raw clients array
-  //       if (data && Array.isArray(data)) {
-  //            const mappedClients = data
-  // .filter((client) => client.status === "pending")
-  //         setFreshLeadCount(mappedClients);
-  //       }
-  //     })
+ const loadCustomers = useCallback(async () => {
+   try {
       
-       
-      .catch((err) => {
-        console.error("❌ Error fetching clients:", err);
-      });
-  }, [fetchCustomers]);
+    await fetchCustomers();
+    
+   } catch (err) {
+     console.error("❌ Error fetching clients:", err);
+   }
+ }, [fetchCustomers ]);
+ 
+ // useEffect with dependency
+ useEffect(() => {
+   loadCustomers();
+ }, [loadCustomers]);
   const[meetingData,setMeetingData]=useState();
 
 

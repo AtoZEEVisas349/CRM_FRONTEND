@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,7 +18,8 @@ import { useProcessService } from "../../context/ProcessServiceContext";
 import ProcessMeetingItem from "./ProcessMeetingItem";
 import LoadingSpinner from "../spinner/LoadingSpinner";
 import { isSameDay } from "../../utils/helpers";
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
+import "../../styles/schedule.css";
 
 const ProcessScheduleMeeting = () => {
   const {
@@ -26,17 +27,16 @@ const ProcessScheduleMeeting = () => {
     getProcessFollowup,
     processCreateFollowUp,
     fetchCustomers,
-    customers,
     setCustomers,
     createMeetingApi,
     createFinalStage,
     createRejected
   } = useProcessService();
 
-  const location = useLocation();
+
   const navigate = useNavigate();
 
-  const client = useMemo(() => location?.state?.client || {}, [location]);
+  
 
   const [meetings, setMeetings] = useState([]);
   const [activeFilter, setActiveFilter] = useState("today");
@@ -54,21 +54,25 @@ const ProcessScheduleMeeting = () => {
   const [comments, setComments] = useState("");
   const [docName, setDocName] = useState("");
 
-  useEffect(() => {
-    loadMeetings();
-  }, [activeFilter]);
-  useEffect(() => {
-    fetchCustomers()
-      .then((data) => {
-        if (data && Array.isArray(data)) {
-         const mappedClients = data
-  .filter((client) => client.status === "pending")
-          setCustomers(mappedClients);
-        }
-      })
-      .catch((err) => console.error("❌ Error fetching clients:", err));
-      console.log(customers)
-  }, []);
+
+ const loadMeetingCustomers = useCallback(async () => {
+   try {
+      
+     const data = await fetchCustomers();
+     if (Array.isArray(data)) {
+       const mappedClients = data.filter((client) => client.status === "rejected");
+       setCustomers(mappedClients);
+     }
+   } catch (err) {
+     console.error("❌ Error fetching clients:", err);
+   }
+ }, [fetchCustomers, setCustomers]);
+ 
+ // useEffect with dependency
+ useEffect(() => {
+   loadMeetingCustomers();
+ }, [loadMeetingCustomers]);
+
   function convertTo24HrFormat(timeStr) {
   const dateObj = new Date(`1970-01-01 ${timeStr}`);
   const hours = dateObj.getHours().toString().padStart(2, "0");
@@ -76,7 +80,7 @@ const ProcessScheduleMeeting = () => {
   return `${hours}:${minutes}:00`;
 }
 const[meetingData,setMeetingData]=useState();
-const loadMeetings = async () => {
+const loadMeetings = useCallback(async () => {
   setLoading(true);
   try {
     const response = await getProcessPersonMeetings();
@@ -117,9 +121,11 @@ const loadMeetings = async () => {
   } finally {
     setLoading(false);
   }
-};
+},[getProcessPersonMeetings,activeFilter])
 
-  
+    useEffect(() => {
+    loadMeetings();
+  }, [activeFilter,loadMeetings]);
 
   
 useEffect(() => {
@@ -129,7 +135,7 @@ useEffect(() => {
     );
     setMeetings(filtered);
   }
-}, []);
+}, [meetingData]);
 console.log(meetings);
   const handleShowHistory = async (meeting) => {
     setSelectedMeetingForHistory(meeting);

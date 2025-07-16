@@ -97,7 +97,7 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  const handleGetStages = async () => {
+  const handleGetStages = useCallback(async () => {
     setStageLoading(true);
     setStageError(null);
     try {
@@ -110,7 +110,7 @@ export const ProcessServiceProvider = ({ children }) => {
     } finally {
       setStageLoading(false);
     }
-  };
+  },[setStageLoading,setStageError]);
 
   const handleUpsertStages = async (data) => {
     setStageLoading(true);
@@ -246,7 +246,8 @@ const fetchCustomers = useCallback(async () => {
 }, []);
 
 
-  const handleGetCustomerStagesById = async (customerId) => {
+  const handleGetCustomerStagesById = useCallback(async (customerId) => {
+    setLoading(true)
     try {
       const res = await getCustomerStagesById(customerId);
       console.log("Raw API response:", res);
@@ -254,8 +255,10 @@ const fetchCustomers = useCallback(async () => {
     } catch (error) {
       console.error("Error in handleGetCustomerStagesById:", error);
       throw error;
+    }finally{
+   setLoading(true)
     }
-  };
+  },[setLoading])
 
   const uploadDocs = async (formData) => {
     try {
@@ -267,7 +270,7 @@ const fetchCustomers = useCallback(async () => {
     }
   };
 
-  const getDocumentsApi = async (userType, id) => {
+  const getDocumentsApi = useCallback(async (userType, id) => {
     setLoading(true);
     setError(null);
     try {
@@ -279,7 +282,7 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[]);
 
   const getProcessFollowup = useCallback(async (id) => {
     setLoading(true);
@@ -436,7 +439,8 @@ const fetchCustomers = useCallback(async () => {
     }
   };
 
-  const getComments = async (customerId, stageNumber) => {
+  const getComments = useCallback(async (customerId, stageNumber) => {
+    setLoading(true);
     try {
       const response = await getStageComments(customerId, stageNumber);
       return response;
@@ -444,7 +448,10 @@ const fetchCustomers = useCallback(async () => {
       console.error(" error in context:", error);
       throw error;
     }
-  };
+    finally {
+      setLoading(false);
+    }
+  },[setLoading]);
 
   const createReminder = async (customerId, stageNumber, newComment) => {
     try {
@@ -456,7 +463,7 @@ const fetchCustomers = useCallback(async () => {
     }
   };
 
-  const getProcessPersonMeetings = async () => {
+  const getProcessPersonMeetings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -469,9 +476,9 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[])
 
-  const fetchNotifications = async (userRole, page = 1) => {
+  const fetchNotifications = useCallback(async (userRole, page = 1) => {
     setLoading(true);
     setError(null);
     try {
@@ -484,7 +491,7 @@ const fetchCustomers = useCallback(async () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[])
 
   const getAllProcessPersons = async () => {
     setLoading(true);

@@ -8,7 +8,7 @@ const RejectedLeadRoutes = () => {
   const { searchQuery, setActivePage } = useContext(SearchContext); 
   useEffect(() => {
     setActivePage("close-leads"); 
-  }, []);
+  }, [setActivePage]);
   return (
     <div className="close-leads-container">
       {/* <SideandNavbar/> */}

@@ -66,7 +66,7 @@ const ClientLogin = () => {
           Log in
         </button>
 
-        <a href="#" className="process-link">Forgot password?</a>
+        <a href="/process-forgot-password" className="process-link">Forgot password?</a>
 
         <p className="process-footer-text">
           Don't have an account? <Link to="/process/client/signup">Sign up</Link>

@@ -1,15 +1,14 @@
-import React, { useEffect, useState,useRef ,} from 'react';
+import React, { useEffect, useState} from 'react';
 import { FaEdit, FaRegCopy } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useProcessService } from '../../context/ProcessServiceContext';
 const ClientSetting = () => {
   const [profileImage, setProfileImage] = useState(null);
     
-  const{profile,getProfile,handleProfileSettings,profiles,profileLoading}=useProcessService();
+  const{profile,getProfile,handleProfileSettings,profiles}=useProcessService();
    const[loading,setLoading]=useState()
   const [detailsExist, setDetailsExist] = useState(false);
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
   const[showMessage,setShowMessage]=useState("");
  const [formData, setFormData] = useState({
   customerId: '',
@@ -71,7 +70,7 @@ useEffect(() => {
   };
 
   fetchProfile();
-}, []);
+}, [getProfile]);
 
 useEffect(() => {
   if (profiles && Object.keys(profiles).length > 0) {

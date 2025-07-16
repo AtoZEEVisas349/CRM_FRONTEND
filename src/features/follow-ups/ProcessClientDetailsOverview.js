@@ -222,7 +222,7 @@ const loadFollowUpHistories = useCallback(async (freshLeadId) => {
       setClientInfo(normalizedClient);
       loadFollowUpHistories(freshLeadId);
     }
-  }, [client]);
+  }, [client,loadFollowUpHistories]);
 
 useEffect(() => {
   if (historyData?.data?.length > 0) {
