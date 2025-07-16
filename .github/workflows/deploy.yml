@@ -42,4 +42,3 @@ jobs:
           script: |
             echo "✅ Deployed on $(date)"
             sudo systemctl restart nginx
-            # Optional: any extra commands, like restarting PM2 or checking logs

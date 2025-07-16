@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://crm-backend-production-c208.up.railway.app/api";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const payrollService = axios.create({
   baseURL: API_BASE_URL,

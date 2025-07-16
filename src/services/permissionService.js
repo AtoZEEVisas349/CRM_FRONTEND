@@ -1,7 +1,7 @@
 // src/services/permissionService.js
 import axios from "axios";
 
-const BASE_URL = "https://crm-backend-production-c208.up.railway.app/api/role-permissions";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const getToken = () => localStorage.getItem("token");
 const getHeaders = () => ({
   "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",

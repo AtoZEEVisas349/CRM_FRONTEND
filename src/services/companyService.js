@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance specific to company service
 const companyApi = axios.create({
-  baseURL: "https://crm-backend-production-c208.up.railway.app/api", // ⚠️ Replace with env var in production
+  baseURL: process.env.REACT_APP_API_BASE_URL, // ⚠️ Replace with env var in production
   headers: {
     "Content-Type": "application/json",
   },
