@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext,useCallback } from "react";
 import { Alert, soundManager } from "../modal/alert";
 import { useApi } from "../../context/ApiContext";
 import { ThemeContext } from "../../features/admin/ThemeContext";
@@ -105,72 +105,79 @@ const TaskManagement = () => {
     return () => window.removeEventListener("sidebarToggle", updateSidebarState);
   }, []);
 
+const fetchExecutives = useCallback(async () => {
+  try {
+    const data = await fetchExecutivesAPI();
+    setExecutives(data);
+  } catch (error) {
+    console.error("❌ Failed to load executives:", error);
+  }
+}, [fetchExecutivesAPI]); 
+
   useEffect(() => {
     fetchExecutives();
   }, [fetchExecutives]);
 
-  const getAllConvertedClients = async () => {
-    try {
-      showLoader("Loading task management...", "admin");
-      const data = await getAllConverted();
-      const normalizedLeads = Array.isArray(data)
-        ? data
-        : (data.data || []).map((lead) => ({
-            id: lead.id,
-            name: lead.name,
-            email: lead.email,
-            phone: lead.phone,
-            education: lead.education || "",
-            experience: lead.experience || "",
-            state: lead.state || "",
-            country: lead.country || "",
-            dob: lead.dob || "",
-            leadAssignDate: lead.leadAssignDate || "",
-            countryPreference: lead.countryPreference || "",
-            assignedToExecutive: lead.assignedTo || "",
-            status: "Converted",
-          }));
-      const sortedLeads = [...normalizedLeads].sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
-      setLeads(sortedLeads);
-      setAllClients(sortedLeads);
-      setTotalLeads(data.pagination?.total || sortedLeads.length);
-    } catch (error) {
-      console.error("Error fetching converted clients:", error);
-      setLeads([]);
-      setAllClients([]);
-      setTotalLeads(0);
-    } finally {
-      hideLoader();
-    }
-  };
+const getAllConvertedClients = useCallback(async () => {
+  try {
+    showLoader("Loading task management...", "admin");
+    const data = await getAllConverted();
+    const normalizedLeads = Array.isArray(data)
+      ? data
+      : (data.data || []).map((lead) => ({
+          id: lead.id,
+          name: lead.name,
+          email: lead.email,
+          phone: lead.phone,
+          education: lead.education || "",
+          experience: lead.experience || "",
+          state: lead.state || "",
+          country: lead.country || "",
+          dob: lead.dob || "",
+          leadAssignDate: lead.leadAssignDate || "",
+          countryPreference: lead.countryPreference || "",
+          assignedToExecutive: lead.assignedTo || "",
+          status: "Converted",
+        }));
 
-  const getAllLeads = async () => {
-    try {
-      showLoader("Loading task management...", "admin");
-      const data = await fetchAllClients();
-      const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
-      const sortedLeads = [...normalizedLeads].sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
-      setLeads(sortedLeads);
-      setAllClients(sortedLeads);
-      setTotalLeads(data.pagination?.total || sortedLeads.length);
-    } catch (error) {
-      console.error("Error fetching leads:", error);
-      setLeads([]);
-      setAllClients([]);
-      setTotalLeads(0);
-    } finally {
-      hideLoader();
-    }
-  };
+    const sortedLeads = [...normalizedLeads].sort(
+      (a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id)
+    );
 
-  const fetchExecutives = async () => {
-    try {
-      const data = await fetchExecutivesAPI();
-      setExecutives(data);
-    } catch (error) {
-      console.error("❌ Failed to load executives:", error);
-    }
-  };
+    setLeads(sortedLeads);
+    setAllClients(sortedLeads);
+    setTotalLeads(data.pagination?.total || sortedLeads.length);
+  } catch (error) {
+    console.error("Error fetching converted clients:", error);
+    setLeads([]);
+    setAllClients([]);
+    setTotalLeads(0);
+  } finally {
+    hideLoader();
+  }
+}, [getAllConverted, showLoader, hideLoader]); // stable dependencies
+
+
+const getAllLeads = useCallback(async () => {
+  try {
+    showLoader("Loading task management...", "admin");
+    const data = await fetchAllClients();
+    const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
+    const sortedLeads = [...normalizedLeads].sort(
+      (a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id)
+    );
+    setLeads(sortedLeads);
+    setAllClients(sortedLeads);
+    setTotalLeads(data.pagination?.total || sortedLeads.length);
+  } catch (error) {
+    console.error("Error fetching leads:", error);
+    setLeads([]);
+    setAllClients([]);
+    setTotalLeads(0);
+  } finally {
+    hideLoader();
+  }
+}, [fetchAllClients, showLoader, hideLoader]);
 
   const handleFilterChange = (type) => {
     setFilterType(type);
@@ -223,7 +230,7 @@ const TaskManagement = () => {
       .filter(({ index }) => index >= start && index <= end)
       .map(({ lead }) => String(lead.id));
     setSelectedLeads(selectedIds);
-  }, [leads, selectedRange, currentPage]);
+  }, [leads, selectedRange, currentPage,leadsPerPage]);
 
   const assignLeads = async () => {
     const isExecutiveView = viewMode === "executive";

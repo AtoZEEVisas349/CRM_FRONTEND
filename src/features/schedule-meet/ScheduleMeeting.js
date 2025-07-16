@@ -191,7 +191,7 @@ const loadMeetings = useCallback(async () => {
   } finally {
     setLocalLoading(false);
   }
-}, [activeFilter, dateRange, searchQuery, fetchMeetings, fetchFollowUpHistoriesAPI, isSameDay]);
+}, [activeFilter, dateRange, searchQuery, fetchMeetings, fetchFollowUpHistoriesAPI]);
 
   const handleFollowUpSubmit = async (formData) => {
     const {

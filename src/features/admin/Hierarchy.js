@@ -18,7 +18,7 @@ import { ThemeContext } from "./ThemeContext";
 const Hierarchy = () => {
   const isSidebarExpanded =
     localStorage.getItem("adminSidebarExpanded") === "true";
-  const { isLoading, variant, showLoader, hideLoader } = useLoading();
+  const { isLoading, variant } = useLoading();
   const { theme } = useContext(ThemeContext);
   const {
     fetchOrganizationHierarchyAPI,
@@ -31,7 +31,7 @@ const Hierarchy = () => {
   // Fetch hierarchy data on component mount
   useEffect(() => {
     fetchOrganizationHierarchyAPI();
-  }, []);
+  }, [fetchOrganizationHierarchyAPI]);
 
   // Use organizationHierarchy from API, fallback to empty array if not loaded
   const orgData = { hierarchy: organizationHierarchy || [] };

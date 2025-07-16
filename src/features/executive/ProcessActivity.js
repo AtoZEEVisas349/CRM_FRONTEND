@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee, faPhone, faSync } from "@fortawesome/free-solid-svg-icons";
-import {
-  startCall,
-  endCall,
-  getActivityStatus,
-} from "../../services/executiveService";
+import { faCoffee } from "@fortawesome/free-solid-svg-icons";
+import {  getActivityStatus,} from "../../services/executiveService";
 import { toast } from "react-toastify";
 import "../../styles/executiveTracker.css";
 import useWorkTimer from "./useLoginTimer";
@@ -91,38 +87,6 @@ const ProcessActivity = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const toggleCallTracking = async () => {
-    try {
-      setLoading(true);
-
-      if (!status.isOnCall) {
-        if (!status.currentLeadId) {
-          toast.warning("Please enter a Lead ID first");
-          return;
-        }
-
-        await startCall(status.currentLeadId);
-        toast.info("Call tracking started");
-      } else {
-        await endCall(status.currentLeadId);
-        toast.success("Call tracked successfully");
-      }
-
-      await fetchActivityStatus();
-    } catch (error) {
-      toast.error(`Failed to ${status.isOnCall ? "end" : "start"} call: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLeadIdChange = (e) => {
-    setStatus((prev) => ({
-      ...prev,
-      currentLeadId: e.target.value,
-    }));
   };
 
   return (
