@@ -40,15 +40,17 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          source: "build/*"
+          source: "build"
           target: "/var/www/react-app"
+          strip_components: 1
 
-      - name: 🖥️ Run remote commands on EC2 
+      - name: 🖥️ Restart Nginx on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            echo "✅ Deployed on $(date)"
+            sudo nginx -t
             sudo systemctl restart nginx
+            echo "✅ Deployed on $(date)"
