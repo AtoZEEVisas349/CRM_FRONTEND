@@ -21,6 +21,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm install
 
+      - name: 📄 Create .env file from GitHub Secret
+        run: |
+          echo "${{ secrets.REACT_ENV }}" > .env
+
       - name: 🏗️ Build React App
         run: npm run build
 
