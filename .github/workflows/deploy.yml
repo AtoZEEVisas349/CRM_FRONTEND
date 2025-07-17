@@ -40,7 +40,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          source: "build/"
+          source: "build/*"
           target: "/var/www/react-app"
 
       - name: 🖥️ Run remote commands on EC2 
