@@ -33,7 +33,7 @@ jobs:
           source: "build/*"
           target: "/var/www/react-app"
 
-      - name: 🖥️ Run remote commands on EC2
+      - name: 🖥️ Run remote commands on EC2 
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
