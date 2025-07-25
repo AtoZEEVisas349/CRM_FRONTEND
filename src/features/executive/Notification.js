@@ -42,7 +42,7 @@ useEffect(() => {
       showLoader("Loading Notifications...");
       
       try {
-        const result = await fetchNotifications({ userId: user.id, userRole: user.role });
+         await fetchNotifications({ userId: user.id, userRole: user.role });
       } catch (apiError) {
         console.error("❌ API call failed:", apiError);
       } finally {
