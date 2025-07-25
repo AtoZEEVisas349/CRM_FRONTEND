@@ -207,6 +207,7 @@ const fetchExecutives = useCallback(async () => {
     () => notifications.filter(n => !n.is_read).length,
     [notifications]
   );
+  
   const fetchNotifications = useCallback(async ({ userId, userRole }) => {
     if (!userId || !userRole) {
       console.warn(

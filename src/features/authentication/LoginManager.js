@@ -39,7 +39,6 @@ const LoginManager = ({ userType }) => {
 
       try {
         await handleLoginManager(email, password);
-        // Navigate after successful login if needed
         // navigate('/manager-dashboard'); // Uncomment and adjust route as needed
       } catch (error) {
         console.error("Login failed:", error);

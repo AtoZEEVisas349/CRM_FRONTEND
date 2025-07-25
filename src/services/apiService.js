@@ -10,10 +10,9 @@ const apiService = axios.create({
   },
 });
 
-// ✅ Automatically attach token to requests (if available)
 apiService.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // ONLY executive/admin token
+    const token = localStorage.getItem("token"); 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
