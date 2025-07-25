@@ -16,7 +16,7 @@ apiService.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-      delete config.headers.Authorization; // Remove malformed header
+      delete config.headers.Authorization; 
     }    
     config.headers["x-company-id"] = COMPANY_ID;  
     return config;
