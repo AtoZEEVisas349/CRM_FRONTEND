@@ -24,7 +24,6 @@ const ClientLogin = () => {
     if (parsedUser?.id) {
       try {
         await startWork(parsedUser.id);
-        console.log("✅ Work session started");
       } catch (err) {
         console.error("❌ Failed to start work session:", err.message);
       }

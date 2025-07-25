@@ -17,12 +17,6 @@ const ExecutiveList = ({ onSelectExecutive }) => {
     };
 
     fetchExecutives();
-
-    const interval = setInterval(() => {
-      fetchOnlineExecutivesData();
-    }, 5000); // adjust time if needed
-
-    return () => clearInterval(interval);
   }, [fetchExecutivesAPI,fetchOnlineExecutivesData]);
 
   const isExecutiveOnline = (execId) => {

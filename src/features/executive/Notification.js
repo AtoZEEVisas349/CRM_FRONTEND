@@ -7,7 +7,7 @@ import LoadingSpinner from "../spinner/LoadingSpinner";
 function Notification() {
   const {
     notifications = [],
-    setNotifications, // ✅ Added
+    setNotifications,
     notificationsLoading,
     fetchNotifications,
     markNotificationReadAPI,
@@ -19,17 +19,44 @@ function Notification() {
   const itemsPerPage = 8;
   const [readIds, setReadIds] = useState(new Set());
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      showLoader("Loading Notifications...");
-      fetchNotifications({ userId: user.id, userRole: user.role }).finally(() => {
-        hideLoader();
-      });
+useEffect(() => {  
+  const fetchData = async () => {
+    
+    const userString = localStorage.getItem("user");
+    
+    if (!userString) {
+      return;
     }
-  }, [fetchNotifications,showLoader, hideLoader]);
+    
+    try {
+      const user = JSON.parse(userString);
+      
+      if (!user.id || !user.role) {
+        return;
+      }
+          
+      if (typeof fetchNotifications !== 'function') {
+        return;
+      }
+      
+      showLoader("Loading Notifications...");
+      
+      try {
+        const result = await fetchNotifications({ userId: user.id, userRole: user.role });
+      } catch (apiError) {
+        console.error("❌ API call failed:", apiError);
+      } finally {
+        hideLoader();
+      }
+      
+    } catch (parseError) {
+      console.error("❌ Failed to parse user from localStorage:", parseError);
+    }
+  };
+  
+  fetchData();
+}, [fetchNotifications, showLoader, hideLoader]);
 
-  // Group lead assignment notifications
   const groupedLeadAssignments = [];
   const otherNotifications = [];
 
@@ -120,7 +147,6 @@ function Notification() {
 
     setReadIds(newReadIds);
 
-    // ✅ Update notification list locally (optimistic update)
     const updatedNotifications = notifications.map((n) => {
       if (
         (notification.type === "grouped-leads" && notification.originalIds.includes(n.id)) ||
@@ -131,7 +157,7 @@ function Notification() {
       return n;
     });
 
-    setNotifications(updatedNotifications); // ✅ This must be called AFTER updatedNotifications is defined
+    setNotifications(updatedNotifications);
   };
 
   const handlePrevPage = () => {
@@ -221,4 +247,3 @@ function Notification() {
 }
 
 export default Notification;
-       

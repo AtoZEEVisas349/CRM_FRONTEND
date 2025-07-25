@@ -5,8 +5,6 @@ const ClientDetails = ({ selectedClient, onClose }) => {
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
-  // Helper function to count words in a string
   const countWords = (text) => {
     if (!text) return 0;
     return text.trim().split(/\s+/).length;
@@ -23,13 +21,9 @@ const ClientDetails = ({ selectedClient, onClose }) => {
               const filteredHistories = histories.filter(
                 (history) => history.fresh_lead_id === freshLeadId
               );
-
-              // Sort by creation date (newest first)
               filteredHistories.sort(
                 (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
               );
-
-              // Deduplicate by date, time, and reason
               const unique = [];
               const seen = new Set();
 

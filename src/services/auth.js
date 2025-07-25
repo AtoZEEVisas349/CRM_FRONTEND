@@ -2,13 +2,13 @@ import apiService from "./apiService";
 import { Navigate } from "react-router-dom";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const COMPANY_ID = process.env.REACT_APP_COMPANY_ID; 
 
 // Shared headers
 const BASE_HEADERS = {
   "Content-Type": "application/json",
-  "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
+  "x-company-id": COMPANY_ID,
 };
-
 /*------------------------------LOGIN (fetch)---------------------------*/
 export const loginUser = async (email, password,role) => {
   const res = await fetch(`${API_BASE_URL}/login`, {

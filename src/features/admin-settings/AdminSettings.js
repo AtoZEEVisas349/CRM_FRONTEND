@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/adminsettings.css";
 import SidebarToggle from "../admin/SidebarToggle";
@@ -24,8 +20,8 @@ const AdminSettings = () => {
     isPasswordUpdating
   } = useApi();
   const { showLoader, hideLoader, isLoading, variant } = useLoading();
-  const hasLoaded = useRef(false); // 👈 prevent double invocation
-  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
+  const hasLoaded = useRef(false); 
+  const [alerts, setAlerts] = useState([]); 
 
   useEffect(() => {
     const handleSidebarToggle = () => {
@@ -37,7 +33,7 @@ const AdminSettings = () => {
     handleSidebarToggle();
     window.addEventListener("sidebarToggle", handleSidebarToggle);
     const init = async () => {
-      if (hasLoaded.current) return; // ✅ prevent repeat in dev/strict mode
+      if (hasLoaded.current) return; 
       hasLoaded.current = true;
 
       try {
@@ -60,7 +56,6 @@ const AdminSettings = () => {
         hideLoader();
       }
     };
-    
     init();
 
     return () => {
@@ -110,7 +105,6 @@ const AdminSettings = () => {
     }
   };
 
-  // Handle alert close
   const handleAlertClose = (id) => {
     setAlerts(alerts.filter((alert) => alert.id !== id));
   };

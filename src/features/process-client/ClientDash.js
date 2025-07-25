@@ -306,10 +306,9 @@ const handleOpenFollowupModal = async (stageIndex) => {
   try {
   
     const result = await getComments(
-  user.type === "processperson" ? id : user.id,
-  stageIndex + 1
-);
-    console.log("Fetched followup comments:", result);
+      user.type === "processperson" ? id : user.id,
+      stageIndex + 1
+    );
 
     // Transform result to match followupHistory entry format
     const formattedHistory = (result.comments || []).map(c => ({

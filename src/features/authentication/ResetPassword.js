@@ -6,7 +6,6 @@ import { useAuth } from "../../context/AuthContext";
 const ResetPassword = () => {
   const { resetPassword, loading } = useAuth();
   const [newPassword, setNewPassword] = useState("");
-  // const navigate = useNavigate();
   const location = useLocation();
 
   const token = new URLSearchParams(location.search).get("token");
@@ -20,9 +19,8 @@ const ResetPassword = () => {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        {/* Icons for Reset Password */}
         <div className="icons-container">
-          <i className="fas fa-key"></i> {/* Key Icon */}
+          <i className="fas fa-key"></i>
         </div>
 
         <h2>Reset Password</h2>

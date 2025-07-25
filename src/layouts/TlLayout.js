@@ -7,13 +7,13 @@ import RevenueChart from "../features/admin/RevenueChart";
 import ProfitChart from "../features/admin/ProfitChart";
 import Meetings from "../features/admin/Meetings";
 import LeadGraph from "../features/admin/LeadGraph";
-import ExecutiveActi from "../features/admin/ExecuitveActi";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
 import RequirePermission from '../features/admin-settings/RequirePermission'
 import TLNavbar from "./TLNavbar";
 import TLSidebar from "./TLSidebar";
+import Activity from "../features/admin/Activity";
 const TlLayout = () => {
     const { topExecutive, fetchExecutives, fetchExecutivesAPI } = useApi();
     const location = useLocation();
@@ -28,7 +28,7 @@ const fetchExecutivesList = useCallback(async () => {
   } catch (error) {
     console.error("❌ Error fetching executives:", error);
   }
-}, [fetchExecutivesAPI]); // include any dependency used inside
+}, [fetchExecutivesAPI]); 
 
 useEffect(() => {
   localStorage.setItem("adminSidebarExpanded", "false");
@@ -85,7 +85,7 @@ useEffect(() => {
             <div className="charts">
               <div className="chart-row">
                 <DealFunnel />
-                <ExecutiveActi
+                <Activity
                   selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
                   executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />

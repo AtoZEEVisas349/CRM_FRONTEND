@@ -373,8 +373,6 @@ const FullReport = () => {
         };
       })
     );
-    console.log("✅ Time Stats Result:", result);
-
     setTimeStats(result);
   };
   

@@ -83,8 +83,7 @@ if (id) fetchFollowupAllHistory();
     const fetchHistory = async () => {
       try {
         const result = await getProcessFollowup(id);
-        setHistoryFollowup(result.data); // The backend sends { message, data }
-        console.log(result.data);
+        setHistoryFollowup(result.data); 
       } catch (err) {
         console.error("Failed to load follow-up history", err.message);
         setHistoryFollowup([]);
@@ -434,9 +433,6 @@ setShowToast(true);
     console.error("Failed to add reminder:", err.message);
   }
 };
-console.log(clientInfo,"id");
-
-
   const handleTemplateSelect = (template, clientEmail) => {
     if (template) {
       setSelectedTemplate(template);
@@ -453,8 +449,7 @@ console.log(clientInfo,"id");
     }
   };
   useEffect(() => {
-    console.log("Template selected:", selectedTemplate);
-    console.log("Show Email Modal?", showEmailModal);
+   
   }, [selectedTemplate, showEmailModal]);
   
   const handleEmailSubmit = async () => {

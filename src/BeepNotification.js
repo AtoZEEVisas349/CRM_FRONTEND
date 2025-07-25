@@ -19,6 +19,7 @@ const BeepNotification = ({
   const dismissTimeoutRef = useRef(null);
   const intervalRef = useRef(null);
   const soundGeneratorRef = useRef(null);
+const [lastPopupTime, setLastPopupTime] = useState(null);
 
   // Initialize sound generator
   useEffect(() => {
@@ -154,34 +155,42 @@ const BeepNotification = ({
   }, [showPopup, unreadCount, settings.enabled, settings.timing, playNotificationSound]);
 
   // Effect to handle notification logic
-  useEffect(() => {
-    if (unreadCount > 0) {
-      const { initialMessage, reminderMessage: remMessage, type } = getNotificationMessages(notifications);
-      
-      setReminderMessage(remMessage);
-      setNotificationType(type);
-      
-      if (isFirstMessage) {
+useEffect(() => {
+  if (unreadCount > 0) {
+    const { initialMessage, reminderMessage: remMessage, type } = getNotificationMessages(notifications);
+    
+    setReminderMessage(remMessage);
+    setNotificationType(type);
+
+    const now = Date.now();
+    const reminderDelayMs = (settings.reminderDelay || 60) * 1000;
+    const initialDelayMs = 30000; // 30 seconds
+
+    if (isFirstMessage && !lastPopupTime) {
+      // Delay the initial popup by 30 seconds
+      timeoutRef.current = setTimeout(() => {
         showNotificationPopup(initialMessage);
-        timeoutRef.current = setTimeout(() => {
-          if (showPopup) {
-            setPopupMessage(remMessage);
-            setIsFirstMessage(false);
-          }
-        }, 30000);
-      } else {
-        showNotificationPopup(remMessage);
-      }
-    } else {
-      setShowPopup(false);
-      setIsFirstMessage(true);
-      
-      // Clear all timeouts and intervals when no unread messages
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (dismissTimeoutRef.current) clearTimeout(dismissTimeoutRef.current);
-      if (intervalRef.current) clearInterval(intervalRef.current);
+        setLastPopupTime(Date.now());
+        setIsFirstMessage(false);
+      }, initialDelayMs);
+    } else if (!isFirstMessage && (!lastPopupTime || now - lastPopupTime > reminderDelayMs)) {
+      // After first message, show reminders every reminderDelay
+      showNotificationPopup(remMessage);
+      setLastPopupTime(now);
     }
-  }, [unreadCount, notifications, isFirstMessage, showNotificationPopup, showPopup, getNotificationMessages]);
+  } else {
+    // Reset when all notifications are read
+    setShowPopup(false);
+    setIsFirstMessage(true);
+    setLastPopupTime(null);
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (dismissTimeoutRef.current) clearTimeout(dismissTimeoutRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }
+}, [unreadCount, notifications, isFirstMessage, showNotificationPopup, showPopup, getNotificationMessages, settings.reminderDelay, lastPopupTime]);
+
+
 
   // Update first message state when popup message changes
   useEffect(() => {

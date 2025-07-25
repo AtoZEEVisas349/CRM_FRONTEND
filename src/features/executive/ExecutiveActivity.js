@@ -17,10 +17,9 @@ const ExecutiveActivity = () => {
   const { executiveInfo, executiveLoading, fetchExecutiveData, activityData, getExecutiveActivity } = useApi();
   
   useEffect(() => {
-    fetchExecutiveData(); // Call it only once on mount
+    fetchExecutiveData(); 
   }, [fetchExecutiveData,getExecutiveActivity]);
 
-  // ✅ Fetch daily activity data when executiveInfo is available
   useEffect(() => {
     if (executiveInfo?.id) {
       getExecutiveActivity(executiveInfo.id);
@@ -91,7 +90,7 @@ const ExecutiveActivity = () => {
 
   useEffect(() => {
     if (!executiveInfo && !executiveLoading) {
-      fetchExecutiveData(); // only when necessary
+      fetchExecutiveData();
     }
   }, [ executiveInfo, executiveLoading, fetchExecutiveData]);
   

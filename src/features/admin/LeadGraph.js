@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
@@ -9,18 +8,18 @@ import {
   endOfWeek,
   eachDayOfInterval,
   subWeeks,
-  format
+  format,
 } from "date-fns";
 
 const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
   const {
     fetchExecutiveActivity,
-    fetchAllExecutiveActivitiesByDateAPI
+    fetchAllExecutiveActivitiesByDateAPI,
   } = useApi();
 
   const [chartData, setChartData] = useState({
     weeklyData: [0, 0, 0, 0, 0, 0, 0],
-    totalVisits: 0
+    totalVisits: 0,
   });
   const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState("line");
@@ -41,7 +40,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       setLoading(true);
       try {
         const { start, end } = getWeekRange(weekOffset);
-        const weekDays = eachDayOfInterval({ start, end }).map(day =>
+        const weekDays = eachDayOfInterval({ start, end }).map((day) =>
           format(day, "yyyy-MM-dd")
         );
 
@@ -66,7 +65,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
           const allActivities = data?.dailyActivities || {};
           const dailySums = {};
 
-          Object.keys(allActivities).forEach(date => {
+          Object.keys(allActivities).forEach((date) => {
             if (weekDays.includes(date)) {
               const idx = weekDays.indexOf(date);
               const activities = allActivities[date];
@@ -85,14 +84,14 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
 
         const totalVisits = updatedWeeklyData.reduce((sum, visits) => sum + visits, 0);
         setChartData({
-          weeklyData: updatedWeeklyData.map(v => Math.max(0, v)),
-          totalVisits
+          weeklyData: updatedWeeklyData.map((v) => Math.max(0, v)),
+          totalVisits,
         });
       } catch (err) {
         console.error("Error fetching activities:", err);
         setChartData({
           weeklyData: [0, 0, 0, 0, 0, 0, 0],
-          totalVisits: 0
+          totalVisits: 0,
         });
       } finally {
         setLoading(false);
@@ -100,7 +99,12 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
     };
 
     fetchData();
-  }, [selectedExecutiveId, weekOffset,fetchAllExecutiveActivitiesByDateAPI,fetchExecutiveActivity]);
+  }, [
+    selectedExecutiveId,
+    weekOffset,
+    fetchAllExecutiveActivitiesByDateAPI, // Stable reference
+    fetchExecutiveActivity,
+  ]);
 
   const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const maxLead = Math.max(...chartData.weeklyData);
@@ -114,7 +118,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
     tension: 0.4,
     pointRadius: 3,
     pointHoverRadius: 5,
-    borderWidth: 2
+    borderWidth: 2,
   };
 
   const commonOptions = {
@@ -124,24 +128,24 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${ctx.raw} Visits`
-        }
+          label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} Visits`,
+        },
       },
       datalabels: {
         color: isDarkMode ? "#ffffff" : "#000000",
         font: { size: 10, weight: "bold" },
         anchor: "end",
         align: "top",
-        formatter: value => value
-      }
+        formatter: (value) => value,
+      },
     },
     scales: {
       x: {
         grid: { display: false },
         ticks: {
           color: isDarkMode ? "#ffffff" : "#333",
-          font: { size: 16, weight: "500" }
-        }
+          font: { size: 16, weight: "500" },
+        },
       },
       y: {
         beginAtZero: true,
@@ -150,20 +154,20 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
         ticks: {
           stepSize: 10,
           color: isDarkMode ? "#ffffff" : "#333",
-          font: { size: 10, weight: "500" }
+          font: { size: 10, weight: "500" },
         },
         grid: {
           color:
             getComputedStyle(document.documentElement).getPropertyValue(
               "--chart-grid"
-            ).trim() || "#e5e7eb"
-        }
-      }
-    }
+            ).trim() || "#e5e7eb",
+        },
+      },
+    },
   };
 
   const handleWeekToggle = () => {
-    setWeekOffset(prev => (prev + 1) % 4); // 0 → 1 → 2 → 3 → 0
+    setWeekOffset((prev) => (prev + 1) % 4); // 0 → 1 → 2 → 3 → 0
   };
 
   const getWeekLabel = () => {
@@ -204,7 +208,7 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
 
           <button
             onClick={() =>
-              setChartType(prev => (prev === "line" ? "bar" : "line"))
+              setChartType((prev) => (prev === "line" ? "bar" : "line"))
             }
             className="lead-graph-button"
           >
@@ -238,9 +242,9 @@ const LeadGraph = ({ selectedExecutiveId, executiveName }) => {
                   ...baseDataset,
                   backgroundColor: "#8b5cf6",
                   borderRadius: 4,
-                  borderWidth: 0
-                }
-              ]
+                  borderWidth: 0,
+                },
+              ],
             }}
             options={commonOptions}
             plugins={[ChartDataLabels]}

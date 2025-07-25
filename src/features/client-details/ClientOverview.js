@@ -573,8 +573,7 @@ const ClientOverview = () => {
   };
 
   useEffect(() => {
-    console.log("Template selected:", selectedTemplate);
-    console.log("Show Email Modal?", showEmailModal);
+   
   }, [selectedTemplate, showEmailModal]);
 
   const handleEmailSubmit = async () => {

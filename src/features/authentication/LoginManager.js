@@ -11,13 +11,11 @@ import img4 from "../../assets/img3.jpg";
 
 const LoginManager = ({ userType }) => {
   const { handleLoginManager } = useAuth();
-  // const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Memoize slides to prevent recreation on every render
   const slides = useMemo(
     () => [
       { text: "Fast & Secure", img: img1 },
@@ -32,7 +30,7 @@ const LoginManager = ({ userType }) => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [slides.length]); // Now slides.length is stable due to useMemo
+  }, [slides.length]); 
 
   const handleLogin = useCallback(
     async (e) => {

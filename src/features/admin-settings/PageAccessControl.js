@@ -12,7 +12,7 @@ const PageAccessControl = () => {
   } = usePermissionContext();
 
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(""); // Stores "id-role" (e.g., "4-Manager")
+  const [selectedUser, setSelectedUser] = useState(""); 
   const [selectedRole, setSelectedRole] = useState("");
   const [createStatus, setCreateStatus] = useState("");
   const [permissions, setPermissions] = useState([]);
@@ -46,14 +46,12 @@ const PageAccessControl = () => {
     fetchAllUsers();
   }, [fetchUsers]);
 
-  // Create permission
   const handleCreatePermission = async () => {
     if (!selectedUser || !selectedRole) {
       setCreateStatus("Please select both user and role.");
       return;
     }
 
-    // Parse selectedUser (e.g., "4-Manager")
     const [id, role] = selectedUser.split("-");
     if (!id || !role) {
       setCreateStatus("Invalid selection.");
@@ -218,13 +216,14 @@ const PageAccessControl = () => {
   return (
   <RequirePermission requiredKey="page_access">
     <div className="section-block">
-      <div className="create-permission-section" style={{ marginTop: "20px" }}>
+      <div className="create-permission-section">
         <h3>Create New Permission</h3>
         <div className="form-row">
         <select
-  value={selectedUser}
-  onChange={(e) => {
-    const selectedValue = e.target.value;
+       value={selectedUser}
+       onChange={(e) => {
+   
+     const selectedValue = e.target.value;
     if (!selectedValue) {
       setSelectedUser("");
       setSelectedRole("");
@@ -233,8 +232,8 @@ const PageAccessControl = () => {
     const [, role] = selectedValue.split("-");
     setSelectedUser(selectedValue);
     setSelectedRole(role);
-  }}
->
+  }} 
+  >
   <option value="">Select User</option>
 
   {["Executive", "Manager", "TL", "HR", "Process"].map((roleGroup) => {

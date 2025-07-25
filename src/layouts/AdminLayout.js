@@ -4,16 +4,15 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/admin/Header";
 import Summary from "../features/admin/Summary";
 import DealFunnel from "../features/admin/DealFunnel";
-import RevenueChart from "../features/admin/RevenueChart";
 import Meetings from "../features/admin/Meetings";
 import LeadGraph from "../features/admin/LeadGraph";
-import ExecutiveActi from "../features/admin/ExecuitveActi";
 import AdminSidebar from "../layouts/AdminSidebar";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
 import AdminNavbar from "./AdminNavbar";
 import CallData from "../features/admin/CallData";
+import Activity from "../features/admin/Activity";
 
 const AdminLayout = () => {
   const { topExecutive, fetchExecutives, fetchExecutivesAPI } = useApi();
@@ -89,7 +88,7 @@ const fetchExecutivesList = useCallback(async () => {
             <div className="charts">
               <div className="chart-row">
                 <DealFunnel executiveName={selectedExecutiveId === "all" ? null : currentExecutive?.username} />
-                <ExecutiveActi
+                <Activity
                   selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
                   executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />
@@ -102,9 +101,9 @@ const fetchExecutivesList = useCallback(async () => {
                 <ExecutiveList onSelectExecutive={setSelectedExecutive} />
               </div>
             </div>
-            <div className="revenue-executive-container">
+            {/* <div className="revenue-executive-container">
               <RevenueChart />
-            </div>
+            </div> */}
             <div className="additional-section">
               <CallData
                 selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}

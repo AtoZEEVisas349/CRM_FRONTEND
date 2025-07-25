@@ -38,35 +38,23 @@ import {
 } from "../services/processService";
 
 
-// 1. Create Context
 const ProcessServiceContext = createContext();
 
-// 2. Provider Component
 export const ProcessServiceProvider = ({ children }) => {
-  // -----------------------
-  // Stage Management State
-  // -----------------------
+
   const [stages, setStages] = useState(null);
   const [stageLoading, setStageLoading] = useState(false);
   const [stageError, setStageError] = useState(null);
 
-  // -----------------------
-  // Profile Settings State
-  // -----------------------
+
   const [profiles, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // -----------------------
-  // Other State
-  // -----------------------
   const [customers, setCustomers] = useState([]);
   const [processProfile, setProcessProfile] = useState(null);
  
 
-  // -----------------------
-  // Stage API Handlers
-  // -----------------------
   const handleCreateStages = async (data) => {
     setStageLoading(true);
     setStageError(null);
@@ -137,9 +125,7 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
-  // Process Profile Handlers
-  // -----------------------
+
   const getProcessProfile = async () => {
     setLoading(true);
     setError(null);
@@ -154,7 +140,6 @@ export const ProcessServiceProvider = ({ children }) => {
   };
 
   const processCreateFollowUp = async (payload) => {
-    console.log(payload,"m")
     setLoading(true);
     setError(null);
     try {
@@ -168,9 +153,7 @@ export const ProcessServiceProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
-  // Profile Settings Handlers
-  // -----------------------
+
   const profile = async (data) => {
     setLoading(true);
     setError(null);
@@ -250,7 +233,6 @@ const fetchCustomers = useCallback(async () => {
     setLoading(true)
     try {
       const res = await getCustomerStagesById(customerId);
-      console.log("Raw API response:", res);
       return res;
     } catch (error) {
       console.error("Error in handleGetCustomerStagesById:", error);
@@ -493,17 +475,17 @@ const fetchCustomers = useCallback(async () => {
     }
   },[])
 
-  const getAllProcessPersons = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllProcessPersonsApi();
-      return data;
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const getAllProcessPersons = useCallback(async () => {
+  setLoading(true);
+  try {
+    const data = await getAllProcessPersonsApi();
+    return data;
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   const createProcesstoConverted = async (payload) => {
     try {

@@ -14,7 +14,7 @@ const AttendanceTable = () => {
   const [endDate, setEndDate] = useState(dayjs().endOf("month"));
   const [showPayroll, setShowPayroll] = useState(false);
   const [search, setSearch] = useState("");
-  const [department, setDepartment] = useState("Manager"); // Default to Manager
+  const [department, setDepartment] = useState("Manager"); 
 
   const [allHRs, setAllHRs] = useState([]);
   const [allManagers, setAllManagers] = useState([]);
@@ -33,7 +33,6 @@ const AttendanceTable = () => {
   const isSidebarExpanded =
     localStorage.getItem("adminSidebarExpanded") === "true";
 
-  // ✅ Use useCallback to memoize fetchAttendance function
   const fetchAttendance = useCallback(async () => {
     try {
       showLoader("Fetching attendance report...", "admin");
@@ -52,7 +51,6 @@ const AttendanceTable = () => {
     }
   }, [startDate, endDate, handleGetAttendance, showLoader, hideLoader]);
 
-  // 🔁 Fetch attendance when not in payroll view or when date range changes
   useEffect(() => {
     if (!showPayroll) {
       fetchAttendance();
@@ -191,7 +189,7 @@ const AttendanceTable = () => {
             <button
               className="generate-payroll-btn"
               onClick={() => {
-                setDepartment("Manager"); // Reset to Manager on toggle
+                setDepartment("Manager"); 
                 setShowPayroll(!showPayroll);
               }}
             >

@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ThemeContext } from "../admin/ThemeContext";
 import RequirePermission from "../admin-settings/RequirePermission";
-import { useLoading } from "../../context/LoadingContext"; // ✅ Import spinner context
-import LoadingSpinner from "../../features/spinner/LoadingSpinner"; // ✅ Spinner component
+import { useLoading } from "../../context/LoadingContext"; 
+import LoadingSpinner from "../../features/spinner/LoadingSpinner";
 const SettingsLayout = () => {
   const { theme } = useContext(ThemeContext);
-  const { isLoading, loadingText } = useLoading(); // ✅ Use loading context
+  const { isLoading, loadingText } = useLoading(); 
   const location = useLocation();
 
   const settingsMenuItems = [

@@ -9,13 +9,11 @@ import img4 from "../../assets/img3.jpg";
 
 const LoginHr = ({ userType }) => {
   const { handleLoginHr } = useAuth();
-  // const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Memoize slides to prevent recreation on every render
   const slides = useMemo(
     () => [
       { text: "Fast & Secure", img: img1 },
@@ -30,7 +28,7 @@ const LoginHr = ({ userType }) => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [slides.length]); // Now slides.length is stable due to useMemo
+  }, [slides.length]); 
 
   const handleLogin = useCallback(
     async (e) => {
@@ -39,7 +37,6 @@ const LoginHr = ({ userType }) => {
 
       try {
         await handleLoginHr(email, password);
-        // Navigate after successful login if needed
         // navigate('/hr-dashboard'); // Uncomment and adjust route as needed
       } catch (error) {
         console.error("Login failed:", error);
@@ -107,11 +104,6 @@ const LoginHr = ({ userType }) => {
               </button>
 
               <div className="text-bottom">
-                {/* {isAdmin && (
-                  <p className="small-text">
-                    Don't have an account? <Link to="/admin/signup">Signup</Link>
-                  </p>
-                )} */}
                 <Link
                   to="/forgot-password"
                   style={{ color: "black", marginTop: "10px" }}

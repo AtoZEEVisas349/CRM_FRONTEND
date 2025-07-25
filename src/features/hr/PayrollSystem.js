@@ -86,7 +86,6 @@ const PayrollSystem = () => {
       fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' 
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        {/* Animated Header */}
         <div style={{ 
           marginBottom: '32px',
           textAlign: 'center',

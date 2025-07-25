@@ -49,15 +49,13 @@ const [, setManagers] = useState([]);
   const [isTeamLoading, setIsTeamLoading] = useState(false);
   const [teamAssigning, setTeamAssigning] = useState(false);
   const [focusedTeamId, setFocusedTeamId] = useState("");
-  const [alerts, setAlerts] = useState([]); // State for managing alerts
+  const [alerts, setAlerts] = useState([]); 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState(null);
-  // Drag and Drop States
   const [draggedExecutive, setDraggedExecutive] = useState(null);
   const [dragOverTeam, setDragOverTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState({});
 
-  // Function to add a new alert
   const showCustomPopup = (
     message,
     type,
@@ -65,7 +63,7 @@ const [, setManagers] = useState([]);
     title = type.charAt(0).toUpperCase() + type.slice(1),
     confirm = null
   ) => {
-    clearAllPopups(); // 🧹 Always clear previous alerts before showing new one
+    clearAllPopups(); 
 
     const id = Date.now();
     setAlerts([

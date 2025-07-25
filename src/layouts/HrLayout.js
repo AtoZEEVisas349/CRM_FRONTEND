@@ -7,13 +7,14 @@ import RevenueChart from "../features/admin/RevenueChart";
 import ProfitChart from "../features/admin/ProfitChart";
 import Meetings from "../features/admin/Meetings";
 import LeadGraph from "../features/admin/LeadGraph";
-import ExecutiveActi from "../features/admin/ExecuitveActi";
 import "../styles/admin.css";
 import ExecutiveList from "../features/admin/ExecutiveList";
 import { useApi } from "../context/ApiContext";
-import RequirePermission from '../features/admin-settings/RequirePermission'
+import RequirePermission from '../features/admin-settings/RequirePermission';
 import HrSidebar from "./HrSidebar";
 import HrNavbar from "./HrNavbar";
+import Activity from "../features/admin/Activity";
+
 const HrLayout = () => {
     const { topExecutive, fetchExecutives, fetchExecutivesAPI } = useApi();
     const location = useLocation();
@@ -59,8 +60,6 @@ const fetchExecutivesList = useCallback(async () => {
            <div className="dashboard-wrapper">
             <Header />
             <Summary />
-
-            {/* Selectors Section */}
             <div className="dashboard-selectors">
               <div className="selector-group">
                 <label htmlFor="executive-select" className="selector-label">
@@ -85,7 +84,7 @@ const fetchExecutivesList = useCallback(async () => {
             <div className="charts">
               <div className="chart-row">
                 <DealFunnel />
-                <ExecutiveActi
+                <Activity
                   selectedExecutiveId={selectedExecutiveId === "all" ? null : currentExecutive?.id}
                   executiveName={selectedExecutiveId === "all" ? "All Executives" : currentExecutive?.username}
                 />

@@ -11,10 +11,9 @@ import { Alert, soundManager } from "../modal/alert";
 const AssignTask = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [alerts, setAlerts] = useState([]); // Replaced error and success with alerts
-  const [isFormMode, setIsFormMode] = useState(false); // Toggle between file and form
+  const [alerts, setAlerts] = useState([]); 
+  const [isFormMode, setIsFormMode] = useState(false);
   const { isLoading, variant, showLoader, hideLoader } = useLoading();
-  // Helper function to get current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -28,7 +27,7 @@ const AssignTask = () => {
     experience: "",
     state: "",
     country: "",
-    dob: getCurrentDate(), // Set current date as default
+    dob: getCurrentDate(), 
     countryPreference: "",
   });
 
@@ -38,7 +37,6 @@ const AssignTask = () => {
   const isSidebarExpanded =
     localStorage.getItem("adminSidebarExpanded") === "true";
 
-  // Update date to current date when component mounts or when form is reset
   useEffect(() => {
     setLeadData(prev => ({
       ...prev,
@@ -79,7 +77,6 @@ const AssignTask = () => {
     const { name, value } = e.target;
     setLeadData((prev) => {
       const updatedData = { ...prev, [name]: value };
-      console.log("Updated leadData:", updatedData); // Debug log
       return updatedData;
     });
   };
@@ -138,7 +135,6 @@ const AssignTask = () => {
 
   // Handle form submission
   const handleFormSubmit = async () => {
-    console.log("Submitting leadData:", leadData); // Debug log
     if (!leadData.name) {
       setAlerts([
         ...alerts,

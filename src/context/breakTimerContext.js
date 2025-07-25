@@ -8,11 +8,8 @@ import React, {
 } from "react";
 import { useExecutiveActivity } from "./ExecutiveActivityContext";
 import { useProcessService } from "./ProcessServiceContext";
-// Create Break Timer Context
 const BreakTimerContext = createContext();
 
-
-// Provider Component
 export const BreakTimerProvider = ({ children }) => {
   const { handleStartBreak, handleStopBreak } = useExecutiveActivity();
   const {createStartBreak,createStopBreak}=useProcessService();
@@ -23,9 +20,7 @@ export const BreakTimerProvider = ({ children }) => {
 
   const intervalRef = useRef(null);
 
-  // -----------------------
-  // Timer Helpers
-  // -----------------------
+ 
   const startTimer = useCallback((startTime, previousSeconds = 0) => {
     clearInterval(intervalRef.current);
 
@@ -49,7 +44,6 @@ export const BreakTimerProvider = ({ children }) => {
     return hours * 3600 + minutes * 60 + seconds;
   };
 
-  // On mount: restore break session state
   useEffect(() => {
     const breakStart = localStorage.getItem("breakStartTime");
     const pausedSeconds = parseInt(localStorage.getItem("pausedBreakSeconds"));
@@ -68,9 +62,7 @@ export const BreakTimerProvider = ({ children }) => {
     return () => clearInterval(intervalRef.current);
   }, [startTimer]);
 
-  // -----------------------
-  // Break Actions
-  // -----------------------
+
   const startBreak = async () => {
     try {
       setTimerLoading(true);

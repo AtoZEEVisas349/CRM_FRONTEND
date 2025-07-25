@@ -72,7 +72,6 @@ function HrNavbar() {
   const fetchProfile = useCallback(async () => {
   try {
     const profile = await getHrProfile();
-    console.log(profile, "p");
     setHrProfile(profile);
   } catch (err) {
     console.error("Failed to load profile:", err.response?.data?.error || err.message);
@@ -85,7 +84,6 @@ const handleMouseEnter = useCallback(async () => {
   setShowPopover(true);
 
   if (!hrProfile && !loading) {
-    console.log("Fetching profile on mouse enter");
     await fetchProfile();
   }
 }, [hrProfile, loading, fetchProfile]);

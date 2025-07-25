@@ -12,7 +12,7 @@ import {
 } from "date-fns";
 
 const CallData = ({ selectedExecutiveId, executiveName }) => {
-  const { fetchExecutiveCallDurationsByDate } = useApi(); // must support date range
+  const { fetchExecutiveCallDurationsByDate } = useApi(); 
 
   const [weeklyData, setWeeklyData] = useState([0, 0, 0, 0, 0, 0, 0]);
   const [loading, setLoading] = useState(false);
@@ -133,7 +133,7 @@ const CallData = ({ selectedExecutiveId, executiveName }) => {
   };
 
   const handleWeekToggle = () => {
-    setWeekOffset(prev => (prev + 1) % 4); // cycles between current and past 3 weeks
+    setWeekOffset(prev => (prev + 1) % 4); 
   };
 
   const getWeekLabel = () => {

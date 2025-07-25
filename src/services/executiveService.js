@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const COMPANY_ID = process.env.REACT_APP_COMPANY_ID;
 
 // Get token from localStorage
 const getToken = () => localStorage.getItem('token');
@@ -9,7 +10,7 @@ const getToken = () => localStorage.getItem('token');
 const getHeaders = () => ({
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${getToken()}`,
-  'x-company-id': '0aa80c0b-0999-4d79-8980-e945b4ea700d', // ⬅️ Hardcoded company ID
+  'x-company-id': COMPANY_ID, // ⬅️ Hardcoded company ID
 });
 
 /**
@@ -218,6 +219,7 @@ export const sendEmail = async ({
     throw new Error(error.response?.data?.message || 'Failed to send email');
   }
 };
+
 export const getAttendance = async (startDate, endDate) => {
   try {
     const response = await axios.get(

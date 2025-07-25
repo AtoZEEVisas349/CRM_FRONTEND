@@ -16,9 +16,8 @@ const Signup = ({ userType }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const isAdmin = userType === "admin";
-  const role = isAdmin ? "Admin" : "Executive"; // default fallback
+  const role = isAdmin ? "Admin" : "Executive";
 
-  // Memoize slides to prevent recreation on every render
   const slides = useMemo(
     () => [
       { text: "Fast & Secure", img: img1 },
@@ -33,7 +32,7 @@ const Signup = ({ userType }) => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [slides.length]); // Now slides.length is stable due to useMemo
+  }, [slides.length]); 
 
   useEffect(() => {
     if (!isAdmin) {
@@ -48,7 +47,6 @@ const Signup = ({ userType }) => {
 
       try {
         await signup(username, email, password, role);
-        // Navigate after successful signup if needed
         // navigate('/admin/dashboard'); // Uncomment and adjust route as needed
       } catch (error) {
         console.error("Signup failed:", error);

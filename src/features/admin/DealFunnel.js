@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import { useApi } from "../../context/ApiContext";
 
 const DealFunnel = ({ executiveName }) => {
-  const { fetchDealFunnelData, fetchAssignedLeads } = useApi();
+  const { getDealFunnel, fetchAssignedLeads } = useApi();
   const [data, setData] = useState([]);
 
   const fetchData = useCallback(async () => {
@@ -13,7 +13,6 @@ const DealFunnel = ({ executiveName }) => {
       let statusCounts, totalLeads;
 
       if (executiveName) {
-        // Fetch leads for the specific executive
         const leads = await fetchAssignedLeads(executiveName);
         totalLeads = leads.length;
         statusCounts = {
@@ -25,51 +24,43 @@ const DealFunnel = ({ executiveName }) => {
           Closed: 0,
         };
 
-        // Calculate status counts from leads
         leads.forEach((lead) => {
           if (statusCounts.hasOwnProperty(lead.status)) {
             statusCounts[lead.status]++;
           }
         });
       } else {
-        // Fetch deal funnel data for all executives
-        const response = await fetchDealFunnelData();
-        statusCounts = response.statusCounts;
-        totalLeads = response.totalLeads;
+        const response = await getDealFunnel();
+        statusCounts = response?.statusCounts || {};
+        totalLeads = response?.totalLeads || 0;
       }
 
-      // Define the desired sequence of statuses
       const desiredSequence = ["New", "Assigned", "Follow-Up", "Meeting", "Converted", "Closed"];
 
-      // Transform data into chart format
       const transformed = desiredSequence.map((status) => ({
         name: status,
         value: statusCounts[status] || 0,
       }));
 
-      // Enrich with percentages
       const enriched = transformed.map((item) => ({
         ...item,
         percent: totalLeads ? ((item.value / totalLeads) * 100).toFixed(1) + "%" : "N/A",
       }));
 
-      // Sort by value in descending order (highest to lowest)
       const sortedData = enriched.sort((a, b) => b.value - a.value);
-
       setData(sortedData);
     } catch (err) {
       console.error("Error fetching deal funnel data:", err);
     }
-  }, [executiveName, fetchDealFunnelData, fetchAssignedLeads]);
+  }, [executiveName, fetchAssignedLeads, getDealFunnel]);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io("http://localhost:5000", { transports: ["websocket"] });
     socket.on("lead_status_update", fetchData);
-
-    // Initial load
-    fetchData();
+    fetchData(); // initial call
 
     return () => {
+      socket.off("lead_status_update", fetchData);
       socket.disconnect();
     };
   }, [fetchData]);
@@ -165,7 +156,7 @@ const getStatusColor = (status) => {
     New: "#3498db",
     Assigned: "#f39c12",
     "Follow-Up": "#9b59b6",
-    Meeting: "#8e44ad", // Added color for Meeting
+    Meeting: "#8e44ad",
     Converted: "#2ecc71",
     Closed: "#34495e",
     Rejected: "#e74c3c",

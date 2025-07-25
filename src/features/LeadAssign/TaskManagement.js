@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useContext,useCallback } from "react";
 import { Alert, soundManager } from "../modal/alert";
 import { useApi } from "../../context/ApiContext";
@@ -19,15 +17,17 @@ const TaskManagement = () => {
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [expandedLeads, setExpandedLeads] = useState({});
   const [selectedRange, setSelectedRange] = useState("");
-  const [leadsPerPage, setLeadsPerPage] = useState(10);
+  const [leadsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
-  const [filterType, setFilterType] = useState("all");
+  const [filterType, setFilterType] = useState("new");
   const [viewMode, setViewMode] = useState("executive");
   const [selectedProcess, setSelectedProcess] = useState("");
   const [processPersons, setProcessPersons] = useState([]);
   const totalPages = Math.ceil(totalLeads / leadsPerPage);
   const paginatedLeads = leads;
+  const [hasLoadedData, setHasLoadedData] = useState(false);
+  const [previousFilterType, setPreviousFilterType] = useState("new");
   const [showPagination, setShowPagination] = useState(false);
   const { theme } = useContext(ThemeContext);
   const { isLoading, variant, showLoader, hideLoader } = useLoading();
@@ -426,13 +426,6 @@ useEffect(() => {
           setTotalLeads(totalLeads - 1);
           showAlert("Lead deleted successfully.", "success");
         })
-        .then(() => {
-          const updatedLeads = leads.filter((lead) => lead.id !== leadId);
-          setLeads(updatedLeads);
-          setAllClients(allClients.filter((lead) => lead.id !== leadId));
-          setTotalLeads(totalLeads - 1);
-          showAlert("Lead deleted successfully.", "success");
-        })
         .catch((error) => {
           console.error("❌ Error deleting lead:", error);
           showAlert("Failed to delete lead.", "error");
@@ -465,22 +458,34 @@ useEffect(() => {
     fetchProcessPersons();
   }, [getAllProcessPersons]);
 
-  const [previousFilterType, setPreviousFilterType] = useState("all");
+useEffect(() => {
+  if (hasLoadedData) return;
 
-  useEffect(() => {
-    const loadDataByView = async () => {
-      if (viewMode === "process") {
-        setPreviousFilterType(filterType);
-        await getAllConvertedClients();
-        handleFilterChange("converted");
-      } else {
-        await getAllLeads();
-        handleFilterChange(previousFilterType);
-      }
-    };
+  const loadDataByView = async () => {
+    if (viewMode === "process") {
+      await getAllConvertedClients();
+      setFilterType("unassigned");
+    } else {
+      await getAllLeads();
+      setFilterType(previousFilterType || "all");
+    }
+    setHasLoadedData(true);
+  };
 
-    loadDataByView();
-}, [viewMode, filterType, getAllConvertedClients, getAllLeads, previousFilterType]);
+  loadDataByView();
+}, [viewMode, getAllConvertedClients, getAllLeads, previousFilterType, hasLoadedData]);
+
+useEffect(() => {
+  setHasLoadedData(false);
+}, [viewMode]);
+
+
+useEffect(() => {
+  if (viewMode !== "process") {
+    setPreviousFilterType(filterType);
+  }
+}, [filterType, viewMode]);
+
 
   const handleImportToProcess = async () => {
     if (!selectedProcess) {
@@ -531,7 +536,7 @@ useEffect(() => {
                     const newMode = prev === "executive" ? "process" : "executive";
                     if (newMode === "process") {
                       setPreviousFilterType(filterType);
-                      handleFilterChange("converted");
+                      handleFilterChange("unassigned");
                     } else {
                       handleFilterChange(previousFilterType);
                       getAllLeads();
@@ -578,14 +583,6 @@ useEffect(() => {
               <option value="21-50">21 - 50</option>
               <option value="51-100">51 - 100</option>
             </select>
-            <select
-    value={leadsPerPage}
-    onChange={(e) => setLeadsPerPage(Number(e.target.value))}
-  >
-    <option value={10}>10 per page</option>
-    <option value={20}>20 per page</option>
-    <option value={50}>50 per page</option>
-  </select>
             <div className="header-sort-filter">
               <button className="gradient-button" onClick={toggleSelectAll}>
                 Select/Unselect All Leads
@@ -609,7 +606,7 @@ useEffect(() => {
                <div className="lead-filter-buttons">
    {(viewMode === "executive"
     ? ["all", "new", "fresh", "followup", "converted", "closed", "meeting"]
-    : ["converted", "unassigned"]
+    : ["unassigned","converted"]
   ).map((type) => (
     <button
       key={type}
@@ -634,13 +631,31 @@ useEffect(() => {
               <div key={lead.id} className="lead-row">
                 <div className="lead-details">
                   <div className="lead-info-container">
-                    <input
-                      type="checkbox"
-                      className="lead-checkbox"
-                      checked={selectedLeads.includes(String(lead.id))}
-                      onChange={() => handleLeadSelection(lead.id)}
-                      disabled={viewMode === "process" && lead.assignedToExecutive}
-                    />
+           {(() => {
+ const isConverted = lead.status === "Converted";
+const isUnassigned = !lead.assignedToExecutive || String(lead.assignedToExecutive).trim() === "";
+const isDisabled = isConverted || (viewMode === "process" && !isUnassigned);
+
+
+  return (
+    <input
+      type="checkbox"
+      className="lead-checkbox"
+      checked={selectedLeads.includes(String(lead.id))}
+      onChange={() => handleLeadSelection(lead.id)}
+      disabled={isDisabled}
+      title={
+        isConverted
+          ? "You can't assign converted leads"
+          : !isUnassigned && viewMode === "process"
+          ? "Already assigned to executive"
+          : ""
+      }
+      style={isDisabled ? { cursor: "not-allowed" } : {}}
+    />
+  );
+})()}
+
                     <span className="container-icon">👤</span>
                     <div className="admin-lead-info">
                       <span>Name: {lead.name}</span>

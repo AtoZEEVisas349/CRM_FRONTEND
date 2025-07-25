@@ -23,10 +23,8 @@ export const BeepSettingsProvider = ({ children }) => {
     }
   }, []);
 
-  // Save settings to localStorage whenever they change
   const updateSettings = (newSettings) => {
     setSettings(newSettings);
-    // localStorage.setItem('beepSoundSettings', JSON.stringify(newSettings));
   };
 
   return (

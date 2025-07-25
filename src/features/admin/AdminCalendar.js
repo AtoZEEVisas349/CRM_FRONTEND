@@ -21,12 +21,11 @@ const AdminCalendar = () => {
           `https://crm-backend-production-c208.up.railway.app/api/holidays?year=${year}&month=${month}`,
           {
             headers: {
-              "x-company-id": "549403a0-8e59-440f-a381-17ae457c60c4",
+              "x-company-id": "01a972b6-42d1-4a82-b327-c79413863bcb",
               Authorization: `Bearer ${getToken()}`,
             },
           }
         );
-        console.log(res);
         setHolidays(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Failed to fetch holidays", err);
@@ -46,8 +45,6 @@ const AdminCalendar = () => {
   const tileClassName = ({ date, view }) => {
     if (view === "month") {
       const d = formatDate(date);
-      //const localDate = date.toLocaleDateString("en-CA"); // Format: YYYY-MM-DD
-
       const holiday = holidays.find((h) => h.date === d);
       if (holiday?.name === "Sunday") return "sunday";
       if (holiday) return "holiday";
@@ -60,7 +57,6 @@ const AdminCalendar = () => {
   };
 
   const onDayClick = (date) => {
-    //const iso = date.toISOString().split("T")[0];
     const d = formatDate(date);
     const found = holidays.find((h) => h.date === d);
     setSelectedDayInfo(found || { date: d, name: "No holiday" });

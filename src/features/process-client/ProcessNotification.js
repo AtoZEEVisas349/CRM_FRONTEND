@@ -30,7 +30,6 @@ const ProcessNotification = ({setUnreadCount}) => {
       if (userRole === "customer") {
         try {
           const response = await fetchNotifications(userRole);
-          console.log(response, "res");
           setNotificationData(response.notifications);
         } catch (error) {
           console.error("Error fetching notifications:", error);

@@ -13,7 +13,6 @@ const Meetings = ({ selectedExecutiveId }) => {
     const fetchExecutives = async () => {
       try {
         const execData = await fetchExecutivesAPI();
-        console.log("Fetched executives:", execData);
         setExecutives(Array.isArray(execData) ? execData : []);
       } catch (error) {
         console.error("❌ Error fetching executives:", error);
@@ -30,9 +29,6 @@ const Meetings = ({ selectedExecutiveId }) => {
       setMeetingsLoading(true);
       try {
         const allMeetings = await adminMeeting();
-        console.log("Fetched meetings:", allMeetings);
-        console.log("Selected Executive ID:", selectedExecutiveId);
-
         if (Array.isArray(allMeetings)) {
           let filtered = allMeetings;
 
@@ -41,7 +37,6 @@ const Meetings = ({ selectedExecutiveId }) => {
             filtered = allMeetings.filter(
               (meeting) => String(meeting.executiveId) === selectedExecutiveId
             );
-            console.log("Filtered meetings by executive:", filtered);
           }
 
           // Filter meetings where clientLead.status is "Meeting"
@@ -49,8 +44,6 @@ const Meetings = ({ selectedExecutiveId }) => {
             (meeting) =>
               meeting.freshLead?.lead?.clientLead?.status === "Meeting"
           );
-          console.log("Filtered meetings by status 'Meeting':", filtered);
-
           // Deduplicate meetings based on clientPhone and latest startTime
           const deduplicatedMap = filtered.reduce((map, meeting) => {
             const key = meeting.clientPhone;

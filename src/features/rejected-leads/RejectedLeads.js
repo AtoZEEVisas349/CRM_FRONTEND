@@ -23,8 +23,6 @@ const RejectedLeads = () => {
     const id = lead.fresh_lead_id  
     if (id) {
       const result = await getProcessFollowup(lead.fresh_lead_id );
-      console.log(result.data);
-      console.log(historyData);
       setHistoryData(result.data || []);
     }
 

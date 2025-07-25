@@ -26,20 +26,22 @@ const ReportCard = () => {
   const [missedMeetingsCount, setMissedMeetingsCount] = useState(0);
 
   // Load data once executive is ready
-  useEffect(() => {
-  if (executiveInfo?.id) {
-    fetchFreshLeadsAPI();
-    getAllFollowUps();
-    fetchConvertedClientsAPI();
-    refreshMeetings();
-  }
-}, [
-  executiveInfo,
-  fetchFreshLeadsAPI,
-  getAllFollowUps,
-  fetchConvertedClientsAPI,
-  refreshMeetings
-]);
+useEffect(() => {
+  if (!executiveInfo?.id) return;
+
+  const fetchAll = async () => {
+    await Promise.all([
+      fetchFreshLeadsAPI(),
+      getAllFollowUps(),
+      fetchConvertedClientsAPI(),
+      refreshMeetings()
+    ]);
+  };
+
+  fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [executiveInfo?.id]); 
+
   useEffect(() => {
     if (refreshDashboard) {
       toast.success("Dashboard updated");

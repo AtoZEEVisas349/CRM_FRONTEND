@@ -138,13 +138,9 @@ const TLSettings = () => {
         tax_id: tlProfile.tax_id,
       };
 
-      console.log("Updating profile with data:", updateData);
-      console.log("User ID:", tlProfile.id);
-
       // Use handleUpdateUserProfile from ApiContext
       const result = await handleUpdateUserProfile(tlProfile.id, updateData);
       
-      console.log("Update result:", result);
       setAlerts([
         ...alerts,
         {

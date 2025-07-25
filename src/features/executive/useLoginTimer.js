@@ -26,7 +26,7 @@ const useWorkTimer = () => {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, []); // This runs once on mount
+  }, []); 
 
   return timer;
 };

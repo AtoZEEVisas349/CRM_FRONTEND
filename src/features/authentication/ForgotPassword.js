@@ -15,7 +15,7 @@ const ForgotPassword = () => {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <FaLock className="auth-icon" /> {/* Lock Icon */}
+        <FaLock className="auth-icon" /> 
         <h2>Forgot Password</h2>
         <p>Enter your email to receive a password reset link.</p>
         <form onSubmit={handleForgotPassword}>

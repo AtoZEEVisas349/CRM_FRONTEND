@@ -8,7 +8,6 @@ const RequirePermission = ({ requiredKey, children }) => {
 
   const role = userData?.role?.toLowerCase();
 
-  // Skip permission check for Admin or Executive
   if (role === "admin") {
     return <>{children}</>;
   }
@@ -16,7 +15,6 @@ const RequirePermission = ({ requiredKey, children }) => {
   if (loading) return <div>Loading permissions...</div>;
   if (error) return <div>Error loading permissions: {error}</div>;
 
-  // Fallback: permissions missing
   if (!permissions) return <UnauthorizedAccess />;
 
   const hasPermission = permissions?.[requiredKey] === true;

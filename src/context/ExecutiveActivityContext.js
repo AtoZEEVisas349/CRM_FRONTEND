@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState,useCallback } from 'react';
 import {
   recordStartWork,
   recordStopWork,
@@ -29,9 +29,6 @@ export const ExecutiveActivityProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [startTimeData, setStartTimeData] = useState(null);
 
-  // ---------------------------------------
-  // Effect: Fetch current activity status
-  // ---------------------------------------
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -52,22 +49,16 @@ export const ExecutiveActivityProvider = ({ children }) => {
     fetchStatus();
   }, []);
 
-  // ---------------------------------------
-  // Effect: Start work automatically on mount
-  // ---------------------------------------
+
   useEffect(() => {
     handleStartWork();
-
-    // Cleanup function can be added here if needed
     return () => {
       // Cleanup logic (optional)
       // You could add handleStopWork() here if needed when component unmounts
     };
   }, []);
 
-  // ---------------------------------------
-  // Work Session Handlers
-  // ---------------------------------------
+
   const handleStartWork = async () => {
     try {
       setLoading(true);
@@ -101,9 +92,7 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------------------
-  // Break Handlers
-  // ---------------------------------------
+
   const handleStartBreak = async () => {
     try {
       setLoading(true);
@@ -129,9 +118,7 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------------------
-  // Call Activity Handlers
-  // ---------------------------------------
+ 
   const handleStartCall = async (leadId) => {
     try {
       setLoading(true);
@@ -156,27 +143,22 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------------------
-  // Lead Visit Tracking
-  // ---------------------------------------
-  const leadtrack = async (executiveId) => {
-    try {
-      setLoading(true);
-      if (!executiveId) {
-        console.error("❌ Executive ID is missing.");
-        return;
-      }
-      await leadtrackVisit(executiveId);
-    } catch (error) {
-      console.error("❌ Error in lead tracking:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // ---------------------------------------
-  // Email Sending Handler
-  // ---------------------------------------
+const leadtrack = useCallback(async (executiveId) => {
+  try {
+    setLoading(true);
+    if (!executiveId) {
+      console.error("❌ Executive ID is missing.");
+      return;
+    }
+    await leadtrackVisit(executiveId);
+  } catch (error) {
+    console.error("❌ Error in lead tracking:", error.message);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
   const handleSendEmail = async ({
     templateId,
     executiveName,
@@ -200,20 +182,20 @@ export const ExecutiveActivityProvider = ({ children }) => {
     }
   };
 
-  const handleGetAttendance = async (startDate, endDate) => {
-    try {
-      setLoading(true);
-      const data = await getAttendance(startDate, endDate);
-      return data || [];
-    } catch (error) {
-      console.error("Error fetching attendance:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  // ---------------------------------------
-  // Provider Return
-  // ---------------------------------------
+const handleGetAttendance = useCallback(async (startDate, endDate) => {
+  try {
+    setLoading(true);
+    const data = await getAttendance(startDate, endDate);
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching attendance:", error.message);
+    return [];
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
+
   return (
     <ExecutiveActivityContext.Provider
       value={{

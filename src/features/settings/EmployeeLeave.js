@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, User, Clock, CheckCircle, AlertCircle, X, History, Plus } from 'lucide-react';
 import { useApi } from '../../context/ApiContext';

@@ -47,7 +47,6 @@ const fetchAllTeamMembers = useCallback(async () => {
   setOnlineLoading(true);
   let onlineData = [];
   try {
-    console.log('Calling fetchOnlineExecutives...');
     onlineData = await fetchOnlineExecutivesData();
   } catch (error) {
     console.error('Error fetching online executives:', error);

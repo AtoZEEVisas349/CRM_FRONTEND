@@ -20,10 +20,8 @@ const NewsComponent = () => {
   
         let html = await response.text();
         
-        // Modify links to open in a new tab
         html = html.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ');
   
-// Inject CSS to hide scrollbars but allow scrolling
 html = html.replace(
   /<head>/,
   `<head><style>

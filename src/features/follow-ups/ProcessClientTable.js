@@ -122,12 +122,11 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
       const response = await getProcessFollowup(freshLeadId);
       const data = Array.isArray(response) ? response : response?.data || [];
 
-      // ✅ Sort by latest first and take top 2
       const sorted = [...data]
         .filter((item) => Number(item.fresh_lead_id) === Number(freshLeadId))
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // latest first
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
 
-      setLastFollowups(sorted.slice(0, 2)); // ✅ latest 2 follow-ups only
+      setLastFollowups(sorted.slice(0, 2)); 
     } catch (err) {
       console.error("Error fetching follow-up history:", err);
       setLastFollowups([]);
@@ -180,9 +179,6 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
         return "rating-default";
     }
   };
-
-  console.log(filteredClients, "hhh");
-
   return (
     <>
       <div className="client-table-wrapper" style={{ position: "relative" }}>
@@ -200,7 +196,6 @@ const ProcessClientTable = ({ filter = "All Follow Ups" }) => {
               position: "relative",
             }}
           >
-            {/* Close button */}
             <div
               style={{
                 position: "absolute",

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useCallback } from "react";
-import { useAuth } from "../../context/AuthContext"; // ✅ Import your auth context
+import { useAuth } from "../../context/AuthContext"; 
 
 const SessionTimeout = ({ timeout = 45 * 60 * 1000 }) => {
   const logoutTimerRef = useRef(null);
-  const { logout } = useAuth(); // ✅ Use context logout
+  const { logout } = useAuth();
 
   const resetSession = useCallback(() => {
     clearTimeout(logoutTimerRef.current);
@@ -21,7 +21,7 @@ const SessionTimeout = ({ timeout = 45 * 60 * 1000 }) => {
     const handleActivity = () => resetSession();
 
     events.forEach((event) => window.addEventListener(event, handleActivity));
-    resetSession(); // Start timer on mount
+    resetSession();
 
     return () => {
       events.forEach((event) =>

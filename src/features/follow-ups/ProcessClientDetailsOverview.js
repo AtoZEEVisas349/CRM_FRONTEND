@@ -112,7 +112,6 @@ const email = userData?.email || "";
   };
 
   useEffect(() => {
-    console.log("FollowUp Type Changed:", followUpType);
   }, [followUpType]);
 
   const clientFields = [
@@ -135,7 +134,6 @@ const email = userData?.email || "";
     try {
       const response = await getProcessFollowupHistory(id);
       setHistoryData(response)
-      console.log("Raw response:", response);
 
       const data = Array.isArray(response) ? response : response?.data || [];
 
@@ -143,15 +141,9 @@ const email = userData?.email || "";
       const filteredHistories = data.filter(
         (history) => Number(history.fresh_lead_id) === Number(id)
       );
-
-      console.log("Filtered Histories:", filteredHistories);
-
       const sortedHistories = [...filteredHistories].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-
-      console.log("Sorted Histories:", sortedHistories);
-
       if (sortedHistories.length > 0) {
         setHistories([sortedHistories[0]]);
         populateFormWithHistory(sortedHistories[0]);
@@ -492,7 +484,6 @@ useEffect(() => {
           setHistoryFollowup(result.data);
           if (result.data.document_name) {
       setDocName(result.data.document_name); } // The backend sends { message, data }
-          console.log(result.data);
         } catch (err) {
           console.error("Failed to load follow-up history", err.message);
          
@@ -505,7 +496,6 @@ useEffect(() => {
         fetchHistory();
       }
     }, [id,getProcessFollowup]);
-console.log(clientInfo,"id")
  const [latestComment, setLatestComment] = useState({});
   const [history, setHistory] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -601,7 +591,6 @@ setShowToast(true);
     console.error("Failed to add reminder:", err.message);
   }
 };
-console.log(clientInfo,"id");
    const handleTemplateSelect = (template, clientEmail) => {
     if (template) {
       setSelectedTemplate(template);
@@ -618,8 +607,7 @@ console.log(clientInfo,"id");
     }
   };
   useEffect(() => {
-    console.log("Template selected:", selectedTemplate);
-    console.log("Show Email Modal?", showEmailModal);
+   
   }, [selectedTemplate, showEmailModal]);
   
   const handleEmailSubmit = async () => {

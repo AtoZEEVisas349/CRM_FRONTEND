@@ -1,8 +1,3 @@
-
-
-
-
-
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/freshlead.css";
@@ -115,7 +110,6 @@ function FreshLead() {
 
   // Function to open chatbot popup
   const openChatbotPopup = (lead) => {
-    console.log("Opening chatbot popup for:", lead.name); // Debug log
     setSelectedLead(lead);
     localStorage.setItem(
       "activeClient",
@@ -126,7 +120,6 @@ function FreshLead() {
     );
     setShowChatbotPopup(true);
     setActivePopoverIndex(null); // Close the call options popover
-    console.log("Chatbot popup state set to true"); // Debug log
   };
 
   // Function to close chatbot popup

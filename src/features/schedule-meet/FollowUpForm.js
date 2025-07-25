@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { convertTo24HrFormat, capitalize } from "../../utils/helpers";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
-// FollowUpForm component for adding a new follow-up
+
 const FollowUpForm = ({ meeting, onClose, onSubmit }) => {
   const [clientName, setClientName] = useState(meeting.clientName || "");
   const [email, setEmail] = useState(meeting.clientEmail || "");
@@ -47,9 +47,6 @@ const interactionTime = defaultTime;
       });
       return;
     }
-
-    console.log("Submitting follow-up form with reason:", reasonDesc);
-
     onSubmit({
       clientName,
       email,

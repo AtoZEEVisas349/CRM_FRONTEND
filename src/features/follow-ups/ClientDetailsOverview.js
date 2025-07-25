@@ -135,7 +135,7 @@ const now = useMemo(() => new Date(), []);
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.continuous = true; // ENABLE continuous listening
+      recognition.continuous = true; 
       recognition.interimResults = false;
       recognition.lang = "en-US";
 
@@ -155,11 +155,10 @@ const now = useMemo(() => new Date(), []);
       };
 
       recognition.onend = () => {
-        // Don’t reset isListening here if we're actively listening
         if (isListeningRef.current) {
-          recognition.start(); // restart automatically
+          recognition.start(); 
         } else {
-          setIsListening(false); // only stop if we actually intended to
+          setIsListening(false); 
         }
       };
 
@@ -175,7 +174,6 @@ const now = useMemo(() => new Date(), []);
   };
 
   useEffect(() => {
-    console.log("FollowUp Type Changed:", followUpType);
   }, [followUpType]);
 
   const clientFields = [

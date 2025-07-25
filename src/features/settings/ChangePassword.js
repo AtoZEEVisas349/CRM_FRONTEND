@@ -4,7 +4,7 @@ import {useApi} from "../../context/ApiContext";
 
 
 const ChangePassword = () => {
-  const { handleChangePassword, isPasswordUpdating } = useApi(); // Get API functions
+  const { handleChangePassword, isPasswordUpdating } = useApi(); 
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -20,8 +20,8 @@ const ChangePassword = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear error on input change
-    setSuccess(""); // Clear success on input change
+    setError(""); 
+    setSuccess(""); 
   };
 
   const togglePasswordVisibility = (field) => {

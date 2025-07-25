@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import '../../styles/contactUs.css';
 import SidebarToggle from "./SidebarToggle";
@@ -21,7 +14,7 @@ const ContactUs = () => {
     preferred: "phone",
     message: "",
   });
-  const [alerts, setAlerts] = useState([]); // Added for alert.js integration
+  const [alerts, setAlerts] = useState([]); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +36,6 @@ const ContactUs = () => {
     soundManager.playSound("success");
   };
 
-  // Handle alert close
   const handleAlertClose = (id) => {
     setAlerts(alerts.filter((alert) => alert.id !== id));
   };
@@ -53,7 +45,7 @@ const ContactUs = () => {
       showLoader("Loading ContactUs...", "admin");
       const timeout = setTimeout(() => {
         hideLoader();
-      }, 400); // Show for at least 400ms
+      }, 400); 
       return () => clearTimeout(timeout);
     } catch (err) {
       console.error("Failed to load ContactUs:", err);

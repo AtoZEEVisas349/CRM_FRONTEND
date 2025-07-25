@@ -16,7 +16,7 @@ import {
 
 function AdminNavbar() {
   const [showPopover, setShowPopover] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false); // <-- NEW STATE
+  const [isLoggingOut, setIsLoggingOut] = useState(false); 
   const { logout } = useAuth();
   const { changeTheme, theme } = useContext(ThemeContext);
   const {

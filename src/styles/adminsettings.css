@@ -657,6 +657,11 @@ input:checked + .slider {
     transform: translateX(20px);
   }
 }
+/* In your CSS file or inside a <style> tag */
+.scrollable-select {
+  max-height: 300px; /* or whatever height fits your layout */
+  overflow-y: auto;
+}
 
 /*-------------------Blur overlay-------------------*/
 .blur-overlay-wrapper {

@@ -26,16 +26,13 @@ const Chat = ({ isCallActive , token}) => {
   const [authToken, setAuthToken] = useState(token);
 
   useEffect(() => {
-    // If token is passed as prop, use it
     if (token) {
       setAuthToken(token);
     } else {
-      // Fallback: try to get from localStorage
       const localToken = localStorage.getItem("token");
       if (localToken) {
         setAuthToken(localToken);
       } else {
-        // Fallback: try to get from URL params (for backward compatibility)
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
         if (urlToken) {
@@ -68,7 +65,6 @@ useEffect(() => {
         const decoded = jwtDecode(token);
         setExecutiveId(decoded.id);
         setExecutiveName(decoded.name);
-        console.log("✅ Executive decoded:", decoded.id, decoded.name);
       } catch (err) {
         console.error("❌ Invalid token:", err);
       }
@@ -82,21 +78,20 @@ useEffect(() => {
     setIsTyping(true);
   
     try {
-      console.log("📤 Sending:", input);
       const response = await fetch("https://crm-backend-production-c208.up.railway.app/api/crew/crew/executive", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${authToken}`,
-          "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
+          "x-company-id": "01a972b6-42d1-4a82-b327-c79413863bcb",
         },
-        body: JSON.stringify({ question: input }), // ✅ key change here
+        body: JSON.stringify({ question: input }),
       });
   
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to fetch response");
   
-      setMessages((prev) => [...prev, { text: data.answer, isUser: false }]); // backend sends { answer: "..." }
+      setMessages((prev) => [...prev, { text: data.answer, isUser: false }]); 
     } catch (error) {
       console.error("❌ API Error:", error);
       setMessages((prev) => [...prev, { text: "Error: Unable to get response.", isUser: false }]);
@@ -104,31 +99,21 @@ useEffect(() => {
       setIsTyping(false);
     }
   };
-  
 
   const toggleRecording = async () => {
-  console.log("🎬 toggleRecording clicked");
-  console.log("🎙️ isRecording state:", isRecording);
-
   if (!isRecording) {
     try {
-      console.log("🎤 Requesting mic access...");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("✅ Mic permission granted");
-
       mediaRecorderRef.current = new MediaRecorder(stream);
       recordChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (e) => {
         if (e.data.size > 0) {
           recordChunksRef.current.push(e.data);
-          console.log("📦 ondataavailable fired:", e.data.size);
         }
       };
 
       mediaRecorderRef.current.onstop = async () => {
-        console.log("🛑 onstop triggered");
-
         const blob = new Blob(recordChunksRef.current, { type: "audio/webm" });
         const fileName = `call_recording_${Date.now()}.webm`;
         const fakePath = `C:/Users/${executiveName}/Downloads/${fileName}`;
@@ -147,16 +132,16 @@ useEffect(() => {
         const callEndTime = new Date().toISOString();
         const duration = Math.floor((new Date(callEndTime) - new Date(callStartTime)) / 1000);
 
-        console.log("📋 Call Metadata Preview:", {
-          executiveId,
-          executiveName,
-          duration,
-          clientName,
-          clientPhone,
-          callStartTime,
-          callEndTime,
-          fakePath,
-        });
+        // console.log("📋 Call Metadata Preview:", {
+        //   executiveId,
+        //   executiveName,
+        //   duration,
+        //   clientName,
+        //   clientPhone,
+        //   callStartTime,
+        //   callEndTime,
+        //   fakePath,
+        // });
 
         if (!executiveId || !clientName || !clientPhone) {
           alert("❌ Missing metadata. Please select a client and try again.");
@@ -177,7 +162,7 @@ useEffect(() => {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
-              "x-company-id": "0aa80c0b-0999-4d79-8980-e945b4ea700d",
+              "x-company-id": "01a972b6-42d1-4a82-b327-c79413863bcb",
             },
             body: formData,
           });
@@ -190,14 +175,11 @@ useEffect(() => {
             console.warn("📛 Probably CORS or silent backend rejection");
           }
         }
-
         recordChunksRef.current = [];
       };
 
       mediaRecorderRef.current.start();
-      console.log("▶️ mediaRecorder.start() successfully triggered");
-
-      recordStartTimeRef.current = new Date(); // ✅ Capture accurate start time
+      recordStartTimeRef.current = new Date(); 
       setIsRecording(true);
       setRecordTime(0);
       timerRef.current = setInterval(() => setRecordTime((t) => t + 1), 1000);
@@ -205,7 +187,6 @@ useEffect(() => {
       console.error("❌ Mic access error:", err);
     }
   } else {
-    console.log("🛑 Stopping recording...");
     mediaRecorderRef.current?.stop();
     clearInterval(timerRef.current);
     setIsRecording(false);

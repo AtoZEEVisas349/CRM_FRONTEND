@@ -136,7 +136,6 @@ useEffect(() => {
     setMeetings(filtered);
   }
 }, [meetingData]);
-console.log(meetings);
   const handleShowHistory = async (meeting) => {
     setSelectedMeetingForHistory(meeting);
     setLoading(true);

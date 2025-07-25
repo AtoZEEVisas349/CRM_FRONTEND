@@ -283,7 +283,7 @@ background: linear-gradient(135deg, #0d1e9c, #275dbb);
 .lead-details {
   display: grid;
   grid-template-columns: 1fr 150px 150px 130px;
-  padding: 15px;
+  padding: 10px;
   width: 100%;
   align-items: center;
 }
@@ -389,7 +389,7 @@ background: linear-gradient(135deg, #0d1e9c, #275dbb);
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 15px 0;
+  padding: 10px 10px;
   width: 100%;
   background-color: white;
   border-top: 1px solid #e0e0e0;

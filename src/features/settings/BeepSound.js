@@ -2,7 +2,7 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import { ThemeContext } from "../admin/ThemeContext";
 import { BeepSettingsContext } from "../../context/BeepSettingsContext";
 import { SoundGenerator, soundOptions } from "./SoundGenerator";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2"; 
 
 function BeepSound() {
   const { theme } = useContext(ThemeContext);
@@ -23,10 +23,8 @@ function BeepSound() {
  }, [committedSettings, setCommittedSettings]);
  
   useEffect(() => {
-    // Initialize sound generator
     soundGeneratorRef.current = new SoundGenerator();
 
-    // Cleanup on unmount
     return () => {
       if (soundGeneratorRef.current) {
         soundGeneratorRef.current.close();
@@ -114,7 +112,7 @@ function BeepSound() {
       volume: 50,
       timing: 5,
       enabled: true,
-      reminderDelay: 30, // default in seconds
+      reminderDelay: 30, 
     };
     setDraftSettings(defaultSettings);
     setCommittedSettings(defaultSettings);

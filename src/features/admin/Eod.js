@@ -152,9 +152,6 @@ const Eod = () => {
       endDate: card.endDate,
       time: card.time,
     };
-
-    console.log("✅ Payload being sent:", payload);
-
     try {
       await sendEodReport(payload);
       showAlert("Report scheduled successfully!", "success");

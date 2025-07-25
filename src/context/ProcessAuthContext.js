@@ -16,9 +16,7 @@ export const ProcessProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);  
    const{stopWork}=useProcessService();
    const navigate=useNavigate();
-// ---------------------------------------
-// Load session from localStorage on refresh
-// ---------------------------------------
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -26,9 +24,7 @@ export const ProcessProvider = ({ children }) => {
     }
   }, []);
 
-// ---------------------------------------
-// Login Handler
-// ---------------------------------------
+
   const login = async (email, password) => {
     setLoading(true);
     try {
@@ -36,7 +32,7 @@ export const ProcessProvider = ({ children }) => {
 
       const userPayload = {
         ...(data.customer || data.person),
-        type: data.type, // ✅ Important for type-based UI control
+        type: data.type, 
       };
 
       setUser(userPayload);
@@ -70,9 +66,7 @@ export const ProcessProvider = ({ children }) => {
     }
   };
 
-// ---------------------------------------
-// Signup Handler
-// ---------------------------------------
+
 const signup = async (fullName, email, password, userType) => {
   setLoading(true);
   try {
@@ -101,9 +95,7 @@ const signup = async (fullName, email, password, userType) => {
   }
 };
 
-// ---------------------------------------
-// Logout Handler
-// ---------------------------------------
+
   const logout = async () => {
     try {
       const userType = user?.type || "customer";
@@ -120,9 +112,7 @@ const signup = async (fullName, email, password, userType) => {
     }
   };
 
-// ---------------------------------------
-// Provider Return
-// ---------------------------------------
+
   return (
     <ProcessContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
@@ -130,5 +120,4 @@ const signup = async (fullName, email, password, userType) => {
   );
 };
 
-//Custom Hook
 export const useProcess = () => useContext(ProcessContext);
