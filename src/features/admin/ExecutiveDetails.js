@@ -27,9 +27,7 @@ const ExecutiveDetails = () => {
     toggleTlLoginAccess,
     deleteTeamById,
   } = useApi();
-  const clearAllPopups = () => {
-    setAlerts([]);
-  };
+  const clearAllPopups = () => { setAlerts([]);};
 
   const { user } = useAuth();
   const isAdmin = user?.role?.toLowerCase() === "admin";
@@ -45,7 +43,7 @@ const ExecutiveDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [selectedManagers, setSelectedManagers] = useState([]);
-const [, setManagers] = useState([]);
+  const [, setManagers] = useState([]);
   const [isTeamLoading, setIsTeamLoading] = useState(false);
   const [teamAssigning, setTeamAssigning] = useState(false);
   const [focusedTeamId, setFocusedTeamId] = useState("");

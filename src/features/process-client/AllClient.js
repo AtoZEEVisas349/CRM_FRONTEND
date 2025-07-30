@@ -7,7 +7,7 @@ import {
   FaCalendarAlt,
   FaGlobeAsia,
 } from "react-icons/fa";
-import { useProcessService } from "../../context/ProcessServiceContext"; // ✅ use context
+import { useProcessService } from "../../context/ProcessServiceContext"; 
 
 const AllClient = () => {
   const {
@@ -15,28 +15,17 @@ const AllClient = () => {
     customers,
     setCustomers,
     handleImportConvertedClients,
-    // convertedClients,
-    // fetchConvertedClients,
-    // convertedLoading,
-    // convertedError,
-    // setConvertedClients,
-    // getComments // Assuming you have this setter exposed from context
   } = useProcessService();
 
   const navigate = useNavigate();
-
-  // Map clients to add id property from _id if needed
-  // This assumes fetchConvertedClients only fetches raw data, so mapping here is safe
-  // Alternatively, do this mapping inside fetchConvertedClients itself
   
   useEffect(() => {
     fetchCustomers()
       .then((data) => {
-        // If data returned from fetchConvertedClients is the raw clients array
         if (data && Array.isArray(data)) {
           const mappedClients = data.map((client) => ({
             ...client,
-            id: client.id || client._id, // prefer id, fallback to _id
+            id: client.id || client._id, 
           }));
           setCustomers(mappedClients);
         }
@@ -76,14 +65,6 @@ const AllClient = () => {
       <div className="all-client-header">
         <h1>All Clients</h1>
       </div>
-
-      {/* {convertedLoading ? (
-        <p className="client-count">Loading clients...</p>
-      ) : convertedError ? (
-        <p className="client-count" style={{ color: "red" }}>
-          {convertedError}
-        </p>
-      ) : ( */}
         <>
           <div className="client-count-row">
             <p className="client-count">Total clients: {customerData.length}</p>
@@ -98,7 +79,6 @@ const AllClient = () => {
             👉 Click on any client card below to view their dashboard.
           </p>
         </>
-      {/* )} */}
 
       <div className="client-list">
         {customerData.map((client) => (
@@ -138,7 +118,7 @@ const AllClient = () => {
           <button
   className="upload-btn"
   onClick={(e) => {
-    e.stopPropagation(); // prevent triggering card click
+    e.stopPropagation(); 
     handleCardUpload(client);
   }}
   style={{

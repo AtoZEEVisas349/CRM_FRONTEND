@@ -1,4 +1,3 @@
-// components/FollowUpHistory.jsx
 import React, { useEffect, useState,useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useApi } from "../../context/ApiContext";
 import { getComparableDateTime } from "../../utils/helpers";
-// FollowUpHistory component to display follow-up history for a meeting
+
 const FollowUpHistory = ({ meeting, onClose }) => {
     const { fetchFollowUpHistoriesAPI } = useApi();
     const [followUpHistories, setFollowUpHistories] = useState([]);

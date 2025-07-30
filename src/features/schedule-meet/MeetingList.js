@@ -1,4 +1,3 @@
-// components/MeetingList.jsx
 import React from "react";
 import MeetingItem from "./MeetingItem";
 

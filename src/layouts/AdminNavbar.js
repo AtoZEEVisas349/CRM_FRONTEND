@@ -24,30 +24,34 @@ function AdminNavbar() {
     loading,
     fetchAdmin,
     fetchNotifications,
-    notifications,
     unreadCount,
     unreadMeetingsCount,
   } = useApi();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const localStorageUser = JSON.parse(localStorage.getItem("user"));
+const localStorageUser = useRef(JSON.parse(localStorage.getItem("user")));
   const hoverTimeout = useRef(null);
   const isHovering = useRef(false);
   const badgeRef = useRef(null);
+const hasFetchedNotifications = useRef(false);
 
-  useEffect(() => {
-    if (
-      localStorageUser?.id &&
-      localStorageUser?.role &&
-      notifications.length === 0
-    ) {
-      fetchNotifications({
-        userId: localStorageUser.id,
-        userRole: localStorageUser.role,
-      });
-    }
-}, [fetchNotifications, localStorageUser.id, localStorageUser.role, notifications]);
+useEffect(() => {
+  if (
+    hasFetchedNotifications.current ||
+    !localStorageUser.current?.id ||
+    !localStorageUser.current?.role
+  ) {
+    return;
+  }
+
+  hasFetchedNotifications.current = true;
+
+  fetchNotifications({
+    userId: localStorageUser.current.id,
+    userRole: localStorageUser.current.role,
+  });
+}, [fetchNotifications]);
 
 
   useEffect(() => {

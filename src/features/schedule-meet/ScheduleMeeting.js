@@ -44,8 +44,8 @@ const ScheduleMeeting = () => {
       mode: "range",
       dateFormat: "Y-m-d",
       maxDate: "today",
-      static: true, // Use static positioning
-      appendTo: dropdownRef.current, // Append to dropdown container
+      static: true, 
+      appendTo: dropdownRef.current, 
       onChange: (selectedDates) => {
         if (selectedDates.length === 2) {
           setDateRange(selectedDates);
@@ -53,7 +53,6 @@ const ScheduleMeeting = () => {
         }
       },
       onReady: function() {
-        // Set z-index and positioning when calendar is ready
         const calendarElement = this.calendarContainer;
         if (calendarElement) {
           calendarElement.style.zIndex = "1000";
@@ -64,7 +63,6 @@ const ScheduleMeeting = () => {
         }
       },
       onOpen: function() {
-        // Ensure proper positioning when opened
         const calendarElement = this.calendarContainer;
         if (calendarElement) {
           calendarElement.style.zIndex = "1000";

@@ -76,7 +76,6 @@ const ClientUpload = () => {
 
   const triggerBrowse = () => inputRef.current.click();
 
-    // 👇 Memoize fetchDocs to avoid unnecessary re-renders
 const fetchDocs = useCallback(async (cid) => {
   if (!cid) return;
   setLoading(true);
@@ -104,7 +103,7 @@ const fetchDocs = useCallback(async (cid) => {
   } finally {
     setLoading(false);
   }
-}, [getDocumentsApi]); // ✅ include getDocumentsApi as a dependency
+}, [getDocumentsApi]); 
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -347,13 +346,13 @@ const fetchDocs = useCallback(async (cid) => {
                       }}
                     >
                        <FontAwesomeIcon icon={faTrash} style={{ 
-    color: 'red', 
-    paddingLeft: '10px',
-    border: '2px solid #1976d2',
-    borderRadius: '4px',      // Adjust radius as needed
-    padding: '7px',
-    fontSize:"12px"            // Adds space inside the border
-  }}  />
+                        color: 'red', 
+                        paddingLeft: '10px',
+                        border: '2px solid #1976d2',
+                        borderRadius: '4px',      
+                        padding: '7px',
+                        fontSize:"12px"            
+                      }}  />
                     </button>
                   </>
                 ) : (

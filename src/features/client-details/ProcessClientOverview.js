@@ -16,17 +16,17 @@ function convertTo24HrFormat(timeStr) {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-const ProcessClientOverview = () => {
+  const ProcessClientOverview = () => {
   const { id } = useParams();
-    const {handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,createReminder,fetchAllHistory } = useProcessService();
+  const {handleGetCustomerStagesById,processCreateFollowUp,getProcessFollowup,createMeetingApi,getComments,createStages,createReminder,fetchAllHistory } = useProcessService();
   const location = useLocation();
   const navigate = useNavigate();
-const client = useMemo(() => location.state?.client || {}, [location.state?.client]);
+  const client = useMemo(() => location.state?.client || {}, [location.state?.client]);
 
   const createFollowUpFlag = location.state?.createFollowUp || false;
-const userData = JSON.parse(localStorage.getItem("user"));
-const name = userData?.fullName || "";
-const email = userData?.email || "";
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const name = userData?.fullName || "";
+  const email = userData?.email || "";
   const {
     followUpLoading,
     fetchNotifications,
@@ -34,7 +34,7 @@ const email = userData?.email || "";
   } = useApi();
  
   useCopyNotification(createCopyNotification, fetchNotifications);
-const now = useMemo(() => new Date(), []);
+  const now = useMemo(() => new Date(), []);
   const todayStr = now.toISOString().split("T")[0];
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -63,7 +63,7 @@ const now = useMemo(() => new Date(), []);
   const[historyFollowup,setHistoryFollowup]=useState();
  
   let customerId;
-useEffect(() => {
+  useEffect(() => {
     const fetchFollowupAllHistory = async () => {
       try {
         const result = await fetchAllHistory(id);
@@ -75,7 +75,7 @@ useEffect(() => {
     
       }
     };
-if (id) fetchFollowupAllHistory();
+  if (id) fetchFollowupAllHistory();
   
   }, [id,fetchAllHistory]);
 
@@ -114,8 +114,6 @@ if (id) fetchFollowupAllHistory();
   };
 
   const timeSelectRef = useRef(null);
- 
-
   const recognitionRef = useRef(null);
   const isListeningRef = useRef(isListening);
   const interactionTime = useMemo(() => {
@@ -124,12 +122,13 @@ if (id) fetchFollowupAllHistory();
     if (ampm === "AM" && hr === 12) hr = 0;
     return `${hr.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:00`;
   }, [timeOnly, ampm]);
-const minDate =  todayStr
-  const maxDate = useMemo(() => {
-  const d = new Date(now);
-  d.setFullYear(d.getFullYear() + 5);
-  return d.toISOString().split("T")[0];
-}, [now]);
+
+    const minDate =  todayStr
+      const maxDate = useMemo(() => {
+      const d = new Date(now);
+      d.setFullYear(d.getFullYear() + 5);
+      return d.toISOString().split("T")[0];
+    }, [now]);
 
 
   const clientFields = [
@@ -189,21 +188,17 @@ const minDate =  todayStr
         };
         await createMeetingApi(meetingPayload);
          await getProcessFollowup(id);
-   Swal.fire({ 
+          Swal.fire({ 
                icon: "success", 
                title: "Meeting Created",
                text: "Meeting created successfully!"
-             });
-     
-       
-        
+             }); 
         setTimeout(() => {
-  navigate("/process/freshlead"); // Replace the current URL with the new one
-}, 1000);
+        navigate("/process/freshlead"); 
+      }, 1000);
         return;
       } else {
- 
-     
+
       }
 
       setFollowUpType("");

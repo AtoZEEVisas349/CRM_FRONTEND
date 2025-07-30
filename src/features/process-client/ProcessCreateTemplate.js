@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useApi } from "../../context/ApiContext"; // ✅ Import context hook
+import { useApi } from "../../context/ApiContext";
 import "../../styles/createTemplate.css";
 
 const ProcessCreateTemplate = () => {
@@ -14,7 +14,7 @@ const ProcessCreateTemplate = () => {
     templateLoading,
     templateSuccess,
     templateError,
-  } = useApi(); // ✅ Destructure from context
+  } = useApi(); 
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,10 +22,9 @@ const ProcessCreateTemplate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleCreateTemplate(form); // ✅ Call context method
+    await handleCreateTemplate(form); 
   };
 
-  // ✅ Effect to reset form or show alert on success/error
   useEffect(() => {
     if (templateSuccess) {
       alert("Template created successfully");

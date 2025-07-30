@@ -57,7 +57,6 @@ const AttendanceTable = () => {
     }
   }, [showPayroll, fetchAttendance]);
 
-  // 🔁 Fetch selected department roles when payroll view is active
   useEffect(() => {
     if (!showPayroll) return;
 

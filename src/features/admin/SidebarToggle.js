@@ -1,9 +1,6 @@
 
 import React, { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
-// import "../../styles/SidebarToggle.css";
-
-
 const SidebarToggle = () => {
   const [isExpanded, setIsExpanded] = useState(
     localStorage.getItem("adminSidebarExpanded") === "true"
@@ -26,14 +23,14 @@ const SidebarToggle = () => {
     document.body.classList.toggle("sidebar-collapsed", !updated);
     localStorage.setItem("adminSidebarExpanded", updated.toString());
     window.dispatchEvent(new Event("sidebarToggle"));
-    setIsExpanded(updated); // update local state
+    setIsExpanded(updated); 
   };
 
   return (
     <div
       className="custom-sidebar-toggle"
       style={{
-        paddingLeft: isExpanded ? "300px" : "100px", // adjust here
+        paddingLeft: isExpanded ? "300px" : "100px", 
         paddingTop: "20px",
         position: "fixed",
         top: 0,

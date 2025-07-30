@@ -32,21 +32,18 @@ const ExecutiveAssignments = () => {
   );
   const [allClients, setAllClients] = useState([]);
 
-  // Function to format date and time for meeting schedule
   const formatMeetingDateTime = (dateString) => {
     if (!dateString) return "N/A";
     
     try {
       const date = new Date(dateString);
       
-      // Format date (MM/DD/YYYY)
       const formattedDate = date.toLocaleDateString('en-US', {
         month: '2-digit',
         day: '2-digit',
         year: 'numeric'
       });
       
-      // Format time (12-hour format with AM/PM)
       const formattedTime = date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
@@ -65,7 +62,7 @@ const ExecutiveAssignments = () => {
   
     const handleScroll = () => {
       if (!container) return;
-      const threshold = 50; // small buffer from bottom
+      const threshold = 50; 
       const isBottom =
         container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
       setShowPagination(isBottom);
@@ -96,7 +93,7 @@ const ExecutiveAssignments = () => {
     const getAllLeads = async () => {
       try {
         showLoader("Loading task management...", "admin");
-        const data = await fetchAllClients(); // Make sure this returns { leads: [...] }
+        const data = await fetchAllClients(); 
         const normalizedLeads = Array.isArray(data) ? data : data.leads || [];
         setLeads(normalizedLeads);
         setAllClients(normalizedLeads); 
@@ -111,7 +108,7 @@ const ExecutiveAssignments = () => {
       }
     };
   
-    getAllLeads(); // Call the async function
+    getAllLeads(); 
 }, [fetchAllClients, showLoader, hideLoader]);
 
 useEffect(() => {
@@ -125,14 +122,14 @@ useEffect(() => {
   };
 
   fetchExecutives();
-}, [fetchExecutivesAPI]); // ✅ include dependency
+}, [fetchExecutivesAPI]); 
 
 
 
   const handleFilterChange = (type) => {
     setFilterType(type);
-    setCurrentPage(1); // Reset to first page when filter changes
-    setSelectedLeads([]); // Clear selected leads
+    setCurrentPage(1); 
+    setSelectedLeads([]); 
   };
 
   const handlePrev = () => {
@@ -190,7 +187,6 @@ useEffect(() => {
   useEffect(() => {
     let filtered = [...allClients];
 
-    // Filter by selected executive if one is chosen
     if (selectedExecutive) {
       const executive = executives.find((exec) => String(exec.id) === selectedExecutive);
       if (executive) {
@@ -198,7 +194,6 @@ useEffect(() => {
       }
     }
 
-    // Apply status filter based on filterType
     switch (filterType) {
       case "converted":
         filtered = filtered.filter((lead) => lead.status === "Converted");
@@ -213,11 +208,11 @@ useEffect(() => {
         filtered = filtered.filter((lead) => lead.status === "Meeting");
         // Filter out leads older than 2 days for Meetings section
         const twoDaysAgo = new Date();
-        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // June 15, 2025
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
         filtered = filtered.filter((lead) => {
           const meetingDate = lead.meetingScheduleDate
             ? new Date(lead.meetingScheduleDate)
-            : new Date(lead.updatedAt || lead.createdAt); // Fallback to updatedAt or createdAt
+            : new Date(lead.updatedAt || lead.createdAt); 
           return meetingDate >= twoDaysAgo;
         });
         break;
@@ -226,7 +221,6 @@ useEffect(() => {
         filtered = filtered.filter((lead) => lead.status === "Closed");
         break;
       default:
-        // "all" shows all leads for the selected executive (or all leads if no executive is selected)
         break;
     }
 

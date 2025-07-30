@@ -55,7 +55,7 @@ const AssignTask = () => {
 
     if (selectedFile && validTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
-      setAlerts([]); // Clear alerts
+      setAlerts([]); 
     } else {
       setAlerts([
         ...alerts,

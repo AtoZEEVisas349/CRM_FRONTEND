@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { useProcess } from "../../context/ProcessAuthContext";
 
 const ClientSignup = () => {
   const { signup } = useProcess();
-  const navigate = useNavigate(); // ✅ hook for programmatic navigation
+  const navigate = useNavigate(); 
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,7 +16,6 @@ const ClientSignup = () => {
       await signup(fullName, email, password);
       alert("Signup successful!");
 
-      // ✅ Redirect to login after 2 seconds
       setTimeout(() => {
         navigate("/process/client/login");
       }, 2000);

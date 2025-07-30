@@ -5,7 +5,7 @@ import '../../styles/verify.css';
 
 const Verify = () => {
   const { verifyExecutiveOTP, handleResendExecutiveOtp, otpResendLoading, otpResendError } = useApi();
-  const [email, setEmail] = useState(null); // Start as null
+  const [email, setEmail] = useState(null);
   const navigate = useNavigate();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,13 +13,13 @@ const Verify = () => {
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); // State for popup
+  const [showPopup, setShowPopup] = useState(false);
   const inputRefs = useRef([]);
 
   useEffect(() => {
     const stored = localStorage.getItem("executiveData");
     if (!stored) {
-      navigate("/login"); // If not present, redirect
+      navigate("/login"); 
       return;
     }
     try {
@@ -44,7 +44,6 @@ const Verify = () => {
     }
   }, [countdown]);
 
-  // Auto-close popup after 3 seconds
   useEffect(() => {
     if (showPopup) {
       const timer = setTimeout(() => setShowPopup(false), 3000);

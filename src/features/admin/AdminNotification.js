@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo,useRef } from "react";
 import { useApi } from "../../context/ApiContext";
 import "../../styles/adminNotification.css";
 import SidebarToggle from "./SidebarToggle";
@@ -24,37 +24,41 @@ function AdminNotification() {
   const [executiveMap, setExecutiveMap] = useState({});
   const [meetings, setMeetings] = useState([]);
   const [meetingsLoading, setMeetingsLoading] = useState(false);
-  const [meetingPage, setMeetingPage] = useState(1); // ✅ New
+  const [meetingPage, setMeetingPage] = useState(1); 
   const itemsPerPage = 8;
-  const meetingsPerPage = 8; // ✅ New
+  const meetingsPerPage = 8; 
 
-  const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
   const sidebarCollapsed = localStorage.getItem("adminSidebarExpanded") === "false";
+const hasFetched = useRef(false);
+useEffect(() => {
+  const loadInitialData = async () => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser?.id || !storedUser?.role) return;
 
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        showLoader("Loading notifications...", "admin");
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
-        if (user?.id && user?.role) {
-          await fetchNotifications({ userId: user.id, userRole: user.role });
-        }
+    try {
+      showLoader("Loading notifications...", "admin");
 
-        const execs = await fetchExecutivesAPI();
-        const map = {};
-        execs.forEach((exec) => {
-          map[String(exec.id)] = exec.username;
-        });
-        setExecutiveMap(map);
-      } catch (err) {
-        console.error("❌ Failed to load notifications or executives:", err);
-      } finally {
-        hideLoader();
-      }
-    };
+      await fetchNotifications({ userId: storedUser.id, userRole: storedUser.role });
 
-    loadInitialData();
-}, [fetchExecutivesAPI, fetchNotifications, hideLoader, showLoader, user.id, user.role]);
+      const execs = await fetchExecutivesAPI();
+      const map = {};
+      execs.forEach((exec) => {
+        map[String(exec.id)] = exec.username;
+      });
+      setExecutiveMap(map);
+    } catch (err) {
+      console.error("❌ Failed to load notifications or executives:", err);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  loadInitialData();
+}, [fetchExecutivesAPI, fetchNotifications, hideLoader, showLoader]);
+
 
   useEffect(() => {
     const loadMeetings = async () => {
@@ -117,7 +121,6 @@ const formatCopyMessage = (userId, message, createdAt) => {
     </>
   );
 };
-
 
   const unreadMeetingsCount = useMemo(() => {
     return meetings.filter((m) => !readMeetings[m.id]).length;

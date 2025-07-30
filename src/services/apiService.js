@@ -71,7 +71,7 @@ export const toggleTeamLeadLoginAccess = async (userId, can_login) => {
 export const fetchLeadsAPI = async (limit = 10, offset = 0) => {
   try {
     const response = await apiService.get(`/client-leads/getClients?limit=${limit}&offset=${offset}`);
-    return response.data; // Return the full response (including leads and pagination metadata)
+    return response.data; 
   } catch (error) {
     console.error("❌ Error fetching leads:", error);
     throw error;

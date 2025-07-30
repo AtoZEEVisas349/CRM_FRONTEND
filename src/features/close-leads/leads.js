@@ -3,12 +3,10 @@ import { useApi } from "../../context/ApiContext";
 import useCopyNotification from "../../hooks/useCopyNotification";
 import { SearchContext } from "../../context/SearchContext";
 import { FaPlus } from "react-icons/fa";
-import { useLoading } from "../../context/LoadingContext"; // ✅ Add this
-import LoadingSpinner from "../spinner/LoadingSpinner"; // ✅ Import spinner
+import { useLoading } from "../../context/LoadingContext"; 
+import LoadingSpinner from "../spinner/LoadingSpinner"; 
 
-// ...all imports remain unchanged
-
-const Leads = ({ searchQuery }) => {
+  const Leads = ({ searchQuery }) => {
   const {
     closeLeads,
     fetchAllCloseLeadsAPI,
@@ -39,7 +37,7 @@ const Leads = ({ searchQuery }) => {
   };
 
   loadCloseLeads();
-}, [fetchAllCloseLeadsAPI, showLoader, hideLoader]);
+  }, [fetchAllCloseLeadsAPI, showLoader, hideLoader]);
 
 
   const leadsArray = closeLeads?.data || [];
@@ -53,7 +51,7 @@ const Leads = ({ searchQuery }) => {
         )
       : leadsArray;
 
-  const handleViewHistory = async (lead) => {
+    const handleViewHistory = async (lead) => {
     setSelectedLead(lead);
     setFollowUpHistoriesLoading(true);
 
@@ -68,7 +66,7 @@ const Leads = ({ searchQuery }) => {
           })
         : [];
 
-      const parsed = filtered.map((item) => ({
+        const parsed = filtered.map((item) => ({
         date: item.follow_up_date || item.followUp?.follow_up_date || "N/A",
         time: item.follow_up_time || item.followUp?.follow_up_time || "N/A",
         reason:
@@ -162,26 +160,25 @@ const Leads = ({ searchQuery }) => {
                 </table>
               </div>
 
-      {/* OUTSIDE of table */}
-<div className="close-pagination-wrapper">
-  <div className="close-pagination">
-    <button
-      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-      disabled={currentPage === 1}
-    >
-      Prev
-    </button>
-    <span style={{ margin: "0 10px" }}>
-      Page {currentPage} of {totalPages}
-    </span>
-    <button
-      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-      disabled={currentPage === totalPages}
-    >
-      Next
-    </button>
-  </div>
-</div>
+                <div className="close-pagination-wrapper">
+                  <div className="close-pagination">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Prev
+                    </button>
+                    <span style={{ margin: "0 10px" }}>
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
 
             </>
           ) : (

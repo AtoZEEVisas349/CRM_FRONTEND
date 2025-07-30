@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'; // ✅ Import location hook
+import { useLocation } from 'react-router-dom';
 
 const CreateClient = () => {
-  const location = useLocation(); // ✅ Read navigation state
+  const location = useLocation(); 
   const selectedClient = location.state?.client;
 
   const [formData, setFormData] = useState({
@@ -14,7 +14,6 @@ const CreateClient = () => {
     status: '',
   });
 
-  // ✅ Autofill form if selected client exists
   useEffect(() => {
     if (selectedClient) {
       setFormData({
