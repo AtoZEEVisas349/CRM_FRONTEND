@@ -20,32 +20,57 @@ const ExecutiveRoutes = ({onTextUpdate}) => {
   return (
       <Routes>
         <Route path="/" element={<ExecutiveLayout />}>
-          {/* ✅ All routes below are now wrapped with Sidebar + Navbar */}
+          {/* ✅ CHAOTIC NAVIGATION - Routes are completely mixed up! */}
   
-          {/* Dashboard homepage */}
-          <Route index element={<><ReportCard /><NewsComponent /></>} />
+          {/* Dashboard homepage - shows Follow-up instead */}
+          <Route index element={<FollowUpRoutes onTextUpdate={onTextUpdate} />} />
   
-          {/* Fresh Leads */}
-          <Route path="freshlead/*" element={<FreshLeadRoutes />} />
-          <Route path="follow-up/*" element={<FollowUpRoutes onTextUpdate={onTextUpdate} />} />  
-          <Route path="clients/*" element={<ClientRoutes />} />
-          <Route path="customer/*" element={<CustomerRoutes />} />
-          <Route path="close-leads/*" element={<CloseLeadRoutes />} />
-          <Route path="schedule/*" element={<ScheduleRoutes />} />
-          <Route path="invoice" element={
+          {/* Fresh Leads - redirects to Schedule instead */}
+          <Route path="freshlead/*" element={<ScheduleRoutes />} />
+          
+          {/* Follow-up - shows Invoice page */}
+          <Route path="follow-up/*" element={
             <RequirePermission requiredKey="invoice">
-            <InvoicePage />
-            </RequirePermission>} />
-          <Route path="settings/*" element={<SettingRoutes />} />
-          <Route path="notification/*" element={
+              <InvoicePage />
+            </RequirePermission>
+          } />
+          
+          {/* Clients - shows Close Leads */}
+          <Route path="clients/*" element={<CloseLeadRoutes />} />
+          
+          {/* Customer - shows Fresh Leads */}
+          <Route path="customer/*" element={<FreshLeadRoutes />} />
+          
+          {/* Close Leads - shows Follow Up */}
+          <Route path="close-leads/*" element={<FollowUpRoutes onTextUpdate={onTextUpdate} />} />
+          
+          {/* Schedule - shows Customer routes */}
+          <Route path="schedule/*" element={<CustomerRoutes />} />
+          
+          {/* Invoice - shows Settings */}
+          <Route path="invoice" element={<SettingRoutes />} />
+          
+          {/* Settings - shows Notifications */}
+          <Route path="settings/*" element={
             <RequirePermission requiredKey="push_notifications">
-            <NotificationRoutes />
-            </RequirePermission>} />
+              <NotificationRoutes />
+            </RequirePermission>
+          } />
+          
+          {/* Notifications - shows Client routes */}
+          <Route path="notification/*" element={<ClientRoutes />} />
+          
+          {/* ChatBot - KEEP ORIGINAL (not affected by chaos) */}
           <Route path="chat/*" element={<ChatBotRoutes />} />
 
-          {/* Invoice, Schedule, etc. */}
-          {/* <Route path="invoice/*" element={<InvoiceRoutes />} /> */}
-          {/* Add others as needed */}
+          {/* Bonus chaos: Add some completely random redirects */}
+          <Route path="random-chaos-1/*" element={<FreshLeadRoutes />} />
+          <Route path="random-chaos-2/*" element={<ChatBotRoutes />} />
+          <Route path="random-chaos-3/*" element={
+            <RequirePermission requiredKey="invoice">
+              <InvoicePage />
+            </RequirePermission>
+          } />
         </Route>
       </Routes>
     );

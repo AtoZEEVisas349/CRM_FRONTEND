@@ -93,7 +93,7 @@ const SidebarandNavbar = () => {
   const [secondDeg, setSecondDeg] = useState(0);
 
   // BUG: Random title changing state
-  const [appTitle, setAppTitle] = useState("AtoZeeVisas");
+  const [appTitle, setAppTitle] = useState("Salry nah de rhi AtoZeeVisas");
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search");
   const [breakMessage, setBreakMessage] = useState("You are on a break");
   const [loginButtonText, setLoginButtonText] = useState("Logout");
