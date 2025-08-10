@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar, FileText, User, Clock, CheckCircle, AlertCircle, X, History, Plus } from 'lucide-react';
 import { useApi } from '../../context/ApiContext';
 import moment from 'moment';
@@ -67,15 +67,16 @@ const EmployeeLeave = () => {
   ];
 
   // Bug: Random annoying messages
-  const annoyingMessages = [
-    'Salary dedo pehle, phir chutti maango!',
-    'Kaam karo, chutti nahi!',
-    'Tumhara salary pending hai, chutti kya leni?',
-    'Office mein aao, ghar se kaam karne ki aadat ho gayi hai',
-    'Leave application? More like LEAVE the company!',
-    'HR ne kaha hai - No salary, no chutti!',
-    'Weekend hai, wo bhi kaam karo',
-  ];
+  const annoyingMessages = useMemo(() => [
+  'Salary dedo pehle, phir chutti maango!',
+  'Kaam karo, chutti nahi!',
+  'Tumhara salary pending hai, chutti kya leni?',
+  'Office mein aao, ghar se kaam karne ki aadat ho gayi hai',
+  'Leave application? More like LEAVE the company!',
+  'HR ne kaha hai - No salary, no chutti!',
+  'Weekend hai, wo bhi kaam karo',
+], []);
+
 
   const findSundaysBetweenDates = (startDate, endDate) => {
     const sundays = [];
@@ -102,10 +103,10 @@ const EmployeeLeave = () => {
   };
 
   // Bug: Random message generator
-  const generateRandomBugMessage = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * annoyingMessages.length);
-    setRandomBugMessage(annoyingMessages[randomIndex]);
-  }, [annoyingMessages]);
+const generateRandomBugMessage = useCallback(() => {
+  const randomIndex = Math.floor(Math.random() * annoyingMessages.length);
+  setRandomBugMessage(annoyingMessages[randomIndex]);
+}, [annoyingMessages]);
 
   useEffect(() => {
     const fetchUserDataAndLeaves = async () => {
