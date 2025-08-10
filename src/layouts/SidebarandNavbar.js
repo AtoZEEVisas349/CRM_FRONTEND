@@ -87,10 +87,16 @@ const SidebarandNavbar = () => {
   const [isActive, setIsActive] = useState(false);
   const [showTracker, setShowTracker] = useState(false);
   const [showUserPopover, setShowUserPopover] = useState(false);
-  const [showChatbot, setShowChatbot] = useState(false); // New state for chatbot popup
+  const [showChatbot, setShowChatbot] = useState(false);
   const [hourDeg, setHourDeg] = useState(0);
   const [minuteDeg, setMinuteDeg] = useState(0);
   const [secondDeg, setSecondDeg] = useState(0);
+
+  // BUG: Random title changing state
+  const [appTitle, setAppTitle] = useState("AtoZeeVisas");
+  const [searchPlaceholder, setSearchPlaceholder] = useState("Search");
+  const [breakMessage, setBreakMessage] = useState("You are on a break");
+  const [loginButtonText, setLoginButtonText] = useState("Logout");
 
   const popoverRef = useRef(null);
   const userIconRef = useRef(null);
@@ -104,6 +110,89 @@ const SidebarandNavbar = () => {
       await stopBreak();
     }
   };
+
+  // BUG: Title changes randomly every 3 seconds
+  useEffect(() => {
+    const titleVariations = [
+      "Salary dede AtoZeeVisas",
+      "Fraud AtoZeeVisas", 
+      "Atu jhatu zee Visa$", 
+      "gandu ViSaS",
+      "Gobar A2ZeeVisas",
+      "ChorAtoZeeVis@s",
+      "Fuddu AtoZeeVisaz",
+      "$a$"
+    ];
+    
+    let titleIndex = 0;
+    const titleInterval = setInterval(() => {
+      titleIndex = (titleIndex + 1) % titleVariations.length;
+      setAppTitle(titleVariations[titleIndex]);
+    }, 3000);
+
+    return () => clearInterval(titleInterval);
+  }, []);
+
+  // BUG: Search placeholder keeps changing
+  useEffect(() => {
+    const placeholders = [
+      "Dhundo bc",
+      "Serach",
+      "Search...",
+      "ha lele",
+      "Find something",
+      "Looking for?",
+      "Search here plz",
+      "chamm chum"
+    ];
+    
+    const placeholderInterval = setInterval(() => {
+      const randomPlaceholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+      setSearchPlaceholder(randomPlaceholder);
+    }, 2000);
+
+    return () => clearInterval(placeholderInterval);
+  }, []);
+
+  // BUG: Break message changes randomly
+  useEffect(() => {
+    if (isBreakActive) {
+      const messages = [
+        "You are on a break",
+        "chai piyo biscuit khao",
+        "mkc company ki",
+        "Taking a brake",
+        "lunch pe chla ab me!",
+        "Rest mode activated",
+        "Chill time",
+        "khane chla: ON"
+      ];
+      
+      const messageInterval = setInterval(() => {
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        setBreakMessage(randomMessage);
+      }, 1500);
+
+      return () => clearInterval(messageInterval);
+    }
+  }, [isBreakActive]);
+
+  // BUG: Logout button text keeps changing
+  useEffect(() => {
+    const buttonTexts = [
+      "Logout",
+      "nikal laude",
+    ];
+    
+    const buttonInterval = setInterval(() => {
+      if (!isLoggingOut) {
+        const randomText = buttonTexts[Math.floor(Math.random() * buttonTexts.length)];
+        setLoginButtonText(randomText);
+      }
+    }, 2500);
+
+    return () => clearInterval(buttonInterval);
+  }, [isLoggingOut]);
 
   // New function to handle chatbot toggle
   const handleChatbotToggle = () => {
@@ -139,6 +228,7 @@ const SidebarandNavbar = () => {
     }
     navigate("/executive");
   };
+
   useEffect(() => {
     if (!showChatbot || !chatbotRef.current || !chatbotHeaderRef.current)
       return;
@@ -228,6 +318,7 @@ const SidebarandNavbar = () => {
       markNotificationReadAPI(notification.id);
     });
   };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Close user popover if clicked outside
@@ -261,6 +352,17 @@ const SidebarandNavbar = () => {
     };
   }, []);
 
+  // BUG: Random text glitching for nav items
+  const getGlitchedText = (originalText) => {
+    if (Math.random() < 0.1) { // 10% chance of glitch
+      const glitchChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+      return originalText.split('').map(char => 
+        Math.random() < 0.3 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : char
+      ).join('');
+    }
+    return originalText;
+  };
+
   return (
     <>
       <section className="sidebar_navbar" data-theme={theme}>
@@ -269,16 +371,24 @@ const SidebarandNavbar = () => {
             <FontAwesomeIcon icon={faBars} />
           </button>
           <div className="sidebar_heading">
-            <h1>AtoZeeVisas</h1>
+            {/* BUG: Title changes every 3 seconds */}
+            <h1 style={{ 
+              transition: 'color 0.3s ease',
+              color: appTitle.includes('Raudy') ? '#ff6b6b' : 
+                     appTitle.includes('$') ? '#4ecdc4' : 
+                     appTitle.includes('@') ? '#45b7d1' : 'inherit'
+            }}>
+              {appTitle}
+            </h1>
           </div>
           <div>
-            <h3 className="sidebar_crm">CRM</h3>
+            <h3 className="sidebar_crm">{getGlitchedText("CRM")}</h3>
           </div>
           <nav className="navbar_container">
             <ul>
               <li>
                 <Link to="/executive" className="sidebar_nav">
-                  <FontAwesomeIcon icon={faHouse} /> Dashboard
+                  <FontAwesomeIcon icon={faHouse} /> {getGlitchedText("Dashboard")}
                 </Link>
               </li>
               <li style={{ position: "relative" }}>
@@ -287,7 +397,7 @@ const SidebarandNavbar = () => {
                   className="sidebar_nav"
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <FontAwesomeIcon icon={faUserPlus} /> Leads
+                  <FontAwesomeIcon icon={faUserPlus} /> {getGlitchedText("Leads")}
                   <span style={{ marginLeft: "auto", fontSize: "12px" }}>
                     ▼
                   </span>
@@ -300,7 +410,7 @@ const SidebarandNavbar = () => {
                         className="submenu_item"
                         onClick={() => setIsOpen(false)}
                       >
-                        <FontAwesomeIcon icon={faUsers} /> Fresh Leads
+                        <FontAwesomeIcon icon={faUsers} /> {getGlitchedText("Fresh Leads")}
                       </Link>
                     </li>
                     <li>
@@ -309,7 +419,7 @@ const SidebarandNavbar = () => {
                         className="submenu_item"
                         onClick={() => setIsOpen(false)}
                       >
-                        <FontAwesomeIcon icon={faList} /> Follow ups
+                        <FontAwesomeIcon icon={faList} /> {getGlitchedText("Follow ups")}
                       </Link>
                     </li>
                     <li>
@@ -318,7 +428,7 @@ const SidebarandNavbar = () => {
                         className="submenu_item"
                         onClick={() => setIsOpen(false)}
                       >
-                        <FontAwesomeIcon icon={faClock} /> Convert
+                        <FontAwesomeIcon icon={faClock} /> {getGlitchedText("Convert")}
                       </Link>
                     </li>
                     <li>
@@ -327,7 +437,7 @@ const SidebarandNavbar = () => {
                         className="submenu_item"
                         onClick={() => setIsOpen(false)}
                       >
-                        <FontAwesomeIcon icon={faCircleXmark} /> Close
+                        <FontAwesomeIcon icon={faCircleXmark} /> {getGlitchedText("Close")}
                       </Link>
                     </li>
                   </ul>
@@ -335,17 +445,17 @@ const SidebarandNavbar = () => {
               </li>
               <li>
                 <Link to="/executive/schedule" className="sidebar_nav">
-                  <FontAwesomeIcon icon={faFile} /> Scheduled Meetings
+                  <FontAwesomeIcon icon={faFile} /> {getGlitchedText("Scheduled Meetings")}
                 </Link>
               </li>
               <li>
                 <Link to="/executive/invoice" className="sidebar_nav">
-                  <FontAwesomeIcon icon={faReceipt} /> Invoice
+                  <FontAwesomeIcon icon={faReceipt} /> {getGlitchedText("Invoice")}
                 </Link>
               </li>
               <li>
                 <Link to="/executive/settings" className="sidebar_nav">
-                  <FontAwesomeIcon icon={faGear} /> Settings
+                  <FontAwesomeIcon icon={faGear} /> {getGlitchedText("Settings")}
                 </Link>
               </li>
             </ul>
@@ -363,10 +473,15 @@ const SidebarandNavbar = () => {
                 onClick={handleBack}
                 style={{ fontSize: "20px", cursor: "pointer" }}
               />
+              {/* BUG: Search placeholder keeps changing */}
               <input
                 className="search-input-exec"
-                placeholder="Search"
+                placeholder={searchPlaceholder}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  transition: 'all 0.3s ease',
+                  transform: searchPlaceholder.includes('plz') ? 'rotate(1deg)' : 'rotate(0deg)'
+                }}
               />
             </div>
           </div>
@@ -376,11 +491,15 @@ const SidebarandNavbar = () => {
               <button className="timer-btn-small">
                 <FaPause />
               </button>
-              <span className="timer-label-small">Work:</span>
+              <span className="timer-label-small">{getGlitchedText("Work")}:</span>
               <span className="timer-box-small">{timer}</span>
             </div>
 
-            <div className="analog-clock">
+            <div className="analog-clock" style={{
+              // BUG: Clock occasionally spins randomly
+              transform: Math.random() < 0.05 ? `rotate(${Math.random() * 360}deg)` : 'rotate(0deg)',
+              transition: 'transform 0.5s ease'
+            }}>
               <div
                 className="hand hour"
                 style={{ transform: `rotate(${hourDeg}deg)` }}
@@ -400,7 +519,7 @@ const SidebarandNavbar = () => {
               <button className="timer-btn-small" onClick={toggle}>
                 {isBreakActive ? <FaPause /> : <FaPlay />}
               </button>
-              <span className="timer-label-small">Break:</span>
+              <span className="timer-label-small">{getGlitchedText("Break")}:</span>
               <span className="timer-box-small">{breakTimer}</span>
             </div>
           </div>
@@ -411,28 +530,39 @@ const SidebarandNavbar = () => {
               <FontAwesomeIcon
                 className="navbar_icon"
                 icon={faBell}
-                style={{ cursor: "pointer" }}
-                title="Notifications"
+                style={{ 
+                  cursor: "pointer",
+                  // BUG: Bell icon randomly shakes
+                  animation: Math.random() < 0.1 ? 'shake 0.5s ease-in-out infinite' : 'none'
+                }}
+                title={getGlitchedText("Notifications")}
                 tabIndex="0"
                 onClick={() => navigate("/executive/notification")}
               />
               {unreadCount > 0 && (
-                <span className="notification-badge">{unreadCount}</span>
+                <span className="notification-badge" style={{
+                  // BUG: Notification badge randomly changes color
+                  backgroundColor: ['red', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'][Math.floor(Math.random() * 5)]
+                }}>{unreadCount}</span>
               )}
             </div>
 
-            {/* Updated chatbot icon to use popup instead of new window */}
             <FontAwesomeIcon
               className="navbar_icon bot_icon"
               icon={faRobot}
               onClick={handleChatbotToggle}
-              title="Open ChatBot"
-              style={{ cursor: "pointer" }}
+              title={getGlitchedText("Open ChatBot")}
+              style={{ 
+                cursor: "pointer",
+                // BUG: Bot icon randomly rotates
+                transform: Math.random() < 0.08 ? `rotate(${Math.random() * 360}deg)` : 'rotate(0deg)',
+                transition: 'transform 0.3s ease'
+              }}
             />
             <FontAwesomeIcon
               className="navbar_icon"
               icon={faClock}
-              title="Toggle Activity Tracker"
+              title={getGlitchedText("Toggle Activity Tracker")}
               onClick={() => setShowTracker((prev) => !prev)}
               style={{ cursor: "pointer" }}
             />
@@ -449,12 +579,16 @@ const SidebarandNavbar = () => {
                 className="navbar_icon"
                 icon={faCircleUser}
                 onClick={() => setShowUserPopover((prev) => !prev)}
+                style={{
+                  // BUG: User icon occasionally bounces
+                  animation: Math.random() < 0.07 ? 'bounce 1s ease-in-out infinite' : 'none'
+                }}
               />
 
               {showUserPopover && (
                 <div className="user_popover">
                   {executiveLoading ? (
-                    <p>Loading user details...</p>
+                    <p>{getGlitchedText("Loading user details...")}</p>
                   ) : (
                     <>
                       <div className="user_details">
@@ -471,15 +605,19 @@ const SidebarandNavbar = () => {
                         onClick={handleLogout}
                         disabled={isLoggingOut}
                         aria-label={
-                          isLoggingOut ? "Logging out, please wait" : "Logout"
+                          isLoggingOut ? "Logging out, please wait" : loginButtonText
                         }
+                        style={{
+                          // BUG: Logout button color changes randomly
+                          backgroundColor: Math.random() < 0.1 ? '#ff6b6b' : 'inherit'
+                        }}
                       >
                         <FontAwesomeIcon
                           icon={isLoggingOut ? faSpinner : faRightFromBracket}
                           className={isLoggingOut ? "logout-spinner" : ""}
                         />
                         <span className="logout-text">
-                          {isLoggingOut ? "Logging out" : "Logout"}
+                          {isLoggingOut ? getGlitchedText("Logging out") : loginButtonText}
                         </span>
                         {isLoggingOut && <span className="loading-dots"></span>}
                         {isLoggingOut && (
@@ -505,15 +643,22 @@ const SidebarandNavbar = () => {
                   key={index}
                   icon={icon}
                   className="floating-icon"
+                  style={{
+                    // BUG: Break icons randomly change size
+                    fontSize: Math.random() < 0.2 ? `${Math.random() * 2 + 0.5}em` : '1em'
+                  }}
                 />
               ))}
             </div>
-            <div className="break-message">
-              <FontAwesomeIcon icon={faMugHot} /> You are on a break
+            <div className="break-message" style={{
+              // BUG: Break message color changes
+              color: ['#ffffff', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'][Math.floor(Math.random() * 5)]
+            }}>
+              <FontAwesomeIcon icon={faMugHot} /> {breakMessage}
             </div>
             <div className="timer-display">{breakTimer}</div>
             <button className="stop-break-btn" onClick={stopBreak}>
-              <FontAwesomeIcon icon={faStopCircle} /> Stop break
+              <FontAwesomeIcon icon={faStopCircle} /> {getGlitchedText("Stop break")}
             </button>
           </div>
         )}
@@ -528,9 +673,12 @@ const SidebarandNavbar = () => {
               }
             }}
           >
-            <div className="chatbot-popup-container" ref={chatbotRef}>
+            <div className="chatbot-popup-container" ref={chatbotRef} style={{
+              // BUG: Chatbot popup randomly tilts
+              transform: Math.random() < 0.15 ? `rotate(${Math.random() * 10 - 5}deg)` : 'rotate(0deg)'
+            }}>
               <div className="chatbot-popup-header" ref={chatbotHeaderRef}>
-                <h3>ChatBot Assistant</h3>
+                <h3>{getGlitchedText("ChatBot Assistant")}</h3>
                 <button
                   className="chatbot-close-btn"
                   onClick={() => setShowChatbot(false)}
@@ -568,6 +716,20 @@ const SidebarandNavbar = () => {
         onDismissPopup={handleDismissBeepNotification}
         onMarkAllRead={handleMarkAllAsRead}
       />
+
+      {/* Add CSS animations for the bugs */}
+      <style jsx>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-2px); }
+          75% { transform: translateX(2px); }
+        }
+        
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+      `}</style>
     </>
   );
 };

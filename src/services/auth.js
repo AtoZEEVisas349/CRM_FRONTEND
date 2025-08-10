@@ -18,8 +18,6 @@ export const loginUser = async (email, password,role) => {
   });
 
   if (!res.ok) {
-    
-
     const err = await res.json();
     throw new Error(err.message || "Login failed");
   }
