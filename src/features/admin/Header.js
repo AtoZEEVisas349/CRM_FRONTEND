@@ -23,7 +23,7 @@ const Header = () => {
           <div>
             {/* ✅ Updated heading with role */}
             <h1 className="manager-dashboard-title">
-              {roleLabel} Dashboard
+              {roleLabel} Fraud company
             </h1>
             <div className="title-accent-line"></div>
           </div>

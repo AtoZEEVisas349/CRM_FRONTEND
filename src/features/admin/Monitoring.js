@@ -80,7 +80,7 @@ function Monitoring() {
             }}
             style={{ padding: "10px", fontSize: "16px", borderRadius: "8px", minWidth: "200px" }}
           >
-            <option value="all">All Executives</option>
+            <option value="all">Fraud company</option>
             {executives.map((e, i) => (
               <option key={i} value={e.username}>{e.username}</option>
             ))}
@@ -117,7 +117,7 @@ function Monitoring() {
                     </>
                   ) : (
                     <div style={{ textAlign: "center" }}>
-                      <p>Start Screen Cast</p>
+                      <p>Fraud company</p>
                       <FontAwesomeIcon icon={faDesktop} size="2x" onClick={() => triggerStream("screen")} style={{ cursor: "pointer" }} />
                     </div>
                   )}
@@ -134,7 +134,7 @@ function Monitoring() {
                     </>
                   ) : (
                     <div style={{ textAlign: "center" }}>
-                      <p>Start Webcam</p>
+                      <p>Fraud company</p>
                       <FontAwesomeIcon icon={faVideo} size="2x" onClick={() => triggerStream("video")} style={{ cursor: "pointer" }} />
                     </div>
                   )}
@@ -151,7 +151,7 @@ function Monitoring() {
                 </>
               ) : (
                 <div style={{ textAlign: "center" }}>
-                  <p>Start Audio Stream</p>
+                  <p>Fraud company</p>
                   <FontAwesomeIcon icon={faVolumeUp} size="2x" onClick={() => triggerStream("audio")} style={{ cursor: "pointer" }} />
                 </div>
               )}

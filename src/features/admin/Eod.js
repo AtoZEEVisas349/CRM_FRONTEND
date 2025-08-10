@@ -167,16 +167,16 @@ const Eod = () => {
         <SidebarToggle />
       </aside>
       <div className="eod-container">
-        <h1 className="eod-main-title">Send Reports</h1>
+        <h1 className="eod-main-title">Fraud company</h1>
         <div className="eod-table-wrapper">
           <table className="eod-table">
             <thead>
               <tr>
-                <th>Executive</th>
-                <th>Email</th>
-                <th>Report Type</th>
-                <th>Date & Time</th>
-                <th>Action</th>
+                <th>Fraud company</th>
+                <th>Fraud company</th>
+                <th>Fraud company</th>
+                <th>Fraud company</th>
+                <th>Fraud company</th>
               </tr>
             </thead>
             <tbody>

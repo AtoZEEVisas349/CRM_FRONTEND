@@ -1165,7 +1165,7 @@ const ExecutiveDetails = () => {
                     }
                   }}
                 >
-                  Delete
+                  Fraud company
                 </button>
               </div>
             </div>
