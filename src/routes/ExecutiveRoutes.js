@@ -1,8 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ExecutiveLayout from "../layouts/ExecutiveLayout";
-import ReportCard from "../features/executive/ReportCard";
-import NewsComponent from "../features/executive/NewsComponent";
 import FreshLeadRoutes from "./FreshLeadRoutes";
 import FollowUpRoutes from "./FollowUpRoutes";
 import ClientRoutes from "./ClientRoutes";

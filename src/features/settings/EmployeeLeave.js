@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, FileText, User, Clock, CheckCircle, AlertCircle, X, History, Plus } from 'lucide-react';
 import { useApi } from '../../context/ApiContext';
 import moment from 'moment';
@@ -102,10 +102,10 @@ const EmployeeLeave = () => {
   };
 
   // Bug: Random message generator
-  const generateRandomBugMessage = () => {
+  const generateRandomBugMessage = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * annoyingMessages.length);
     setRandomBugMessage(annoyingMessages[randomIndex]);
-  };
+  }, [annoyingMessages]);
 
   useEffect(() => {
     const fetchUserDataAndLeaves = async () => {
@@ -147,7 +147,7 @@ const EmployeeLeave = () => {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [fetchLeaveApplicationsAPI]);
+  }, [fetchLeaveApplicationsAPI, generateRandomBugMessage]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
