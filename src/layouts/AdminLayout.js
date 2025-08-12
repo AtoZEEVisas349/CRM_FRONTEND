@@ -67,7 +67,7 @@ const fetchExecutivesList = useCallback(async () => {
             <div className="dashboard-selectors">
               <div className="selector-group">
                 <label htmlFor="executive-select" className="selector-label">
-                  Fraud company
+                  Choose Executive
                 </label>
                 <select
                   id="executive-select"
@@ -75,7 +75,7 @@ const fetchExecutivesList = useCallback(async () => {
                   onChange={handleExecutiveChange}
                   className="dashboard-select"
                 >
-                  <option value="all">Fraud company</option>
+                  <option value="all">All Executives</option>
                   {executives.map((exec) => (
                     <option key={exec.id} value={exec.id}>
                       {exec.username} (ID: {exec.id})

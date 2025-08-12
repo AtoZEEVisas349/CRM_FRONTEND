@@ -6,33 +6,17 @@ const Theme = () => {
   const { changeTheme, themes, theme } = useContext(ThemeContext);
   const [hoveredTheme, setHoveredTheme] = useState(null);
   
-  // EXTREME BUG: Completely wrong theme mappings and chaotic text
   const themeMetadata = {
-    light: { name: 'Subha Hogyi Maamu 🌙', description: 'Andhera kar diya boss', icon: FaMoon },
-    dark: { name: 'Paagal Ho Gaye Ho Kya? 🎨', description: 'RGB gaming mode activated', icon: FaPalette },
-    blue: { name: 'Laal Peeli Ankhein 👁️', description: 'Traffic signal vibes', icon: FaEye },
-    red: { name: 'Hara Bhara Pakistan 🌱', description: 'Eco-friendly disaster', icon: FaLeaf },
-    green: { name: 'Chocolate Wala Bhaiya 🍫', description: 'Brown sugar madness', icon: FaPalette },
-    brown: { name: 'Lavender Singh 💜', description: 'Purple rain dance', icon: FaWater },
-    lavender: { name: 'Samudra Manthan 🌊', description: 'Ocean got confused', icon: FaWater },
-    ocean: { name: 'Aam Ka Season 🥭', description: 'Mango people unite', icon: FaLeaf },
-    peach: { name: 'Server Down Hai Bro 💀', description: 'Error 404: Theme not found', icon: FaSun }
-  };
+    light: { name: 'Light', description: 'Clean and bright', icon: FaSun },
+    dark: { name: 'Dark', description: 'Easy on the eyes', icon: FaMoon },
+    blue: { name: 'Blue', description: 'Calm and focused', icon: FaEye },
+    red: { name: 'Pink', description: 'Warm and energetic', icon: FaPalette },
+    green: { name: 'Green', description: 'Natural and fresh', icon: FaLeaf },
+    brown: { name: 'Brown', description: 'Grounded and warm', icon: FaPalette },
+    lavender: { name: 'Lavender Twilight', description: 'Elegant and calming', icon: FaWater },
+    ocean: { name: 'Ocean Blue Mist', description: 'Fresh and modern coastal vibe', icon: FaWater },
+    peach: { name: 'Peach Blossom', description: 'Soothing and flower vibe', icon: FaLeaf }
 
-  // BUG: Wrong theme mapping - clicking one theme activates a different one
-  const getBuggyThemeMapping = (clickedTheme) => {
-    const mappings = {
-      'light': 'brown',
-      'dark': 'peach', 
-      'blue': 'green',
-      'red': 'lavender',
-      'green': 'ocean',
-      'brown': 'dark',
-      'lavender': 'blue',
-      'ocean': 'red',
-      'peach': 'light'
-    };
-    return mappings[clickedTheme] || 'light';
   };
 
   const styles = {
@@ -54,14 +38,11 @@ const Theme = () => {
       marginBottom: '1.5rem',
       boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)'
     },
-    // BUG: Broken header styling
     headerTitle: {
       fontSize: '2.5rem',
       fontWeight: 'bold',
-      color: '#ff0000', // Always red regardless of theme
-      marginBottom: '1rem',
-      transform: 'rotate(-5deg)', // Tilted text
-      textShadow: '3px 3px 0px #00ff00, 6px 6px 0px #0000ff' // Rainbow shadow
+      color: '#1e293b',
+      marginBottom: '1rem'
     },
     headerDesc: {
       fontSize: '1.125rem',
@@ -152,8 +133,7 @@ const Theme = () => {
     position: 'relative',
     cursor: 'pointer',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    // BUG: Cards randomly shrink when active instead of growing
-    transform: isActive ? 'scale(0.85) rotate(10deg) translateY(20px)' : isHovered ? 'scale(1.1) translateY(-10px) rotate(-2deg)' : 'scale(1) translateY(0)',
+    transform: isActive ? 'scale(1.03) translateY(-2px)' : isHovered ? 'scale(1.01) translateY(-1px)' : 'scale(1) translateY(0)',
     zIndex: isActive ? 10 : isHovered ? 5 : 1
   });
 
@@ -163,12 +143,10 @@ const Theme = () => {
     borderRadius: '16px',
     padding: '1.25rem',
     height: '180px',
-    // BUG: Active cards become transparent, inactive ones are solid
-    background: isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.95)',
+    background: isActive ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
     backdropFilter: 'blur(12px)',
-    // BUG: Wrong border colors
-    border: isActive ? '2px dashed #ff1493' : '3px solid #00ff00',
-    boxShadow: isActive ? '0 0 30px #ff0000, inset 0 0 20px #0000ff' : '0 10px 20px rgba(0, 0, 0, 0.1)',
+    border: isActive ? '2px solid #3b82f6' : '1px solid rgba(255, 255, 255, 0.5)',
+    boxShadow: isActive ? '0 15px 30px rgba(59, 130, 246, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.1)' : '0 10px 20px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease'
   });
 
@@ -183,23 +161,16 @@ const Theme = () => {
   });
 
   const getThemeCircleStyle = (color, isActive, isHovered, themeKey) => {
-    // BUG: Light theme shows random colors, others show wrong colors
-    let backgroundColor = '#ff00ff'; // Default to magenta
-    if (themeKey === 'light') backgroundColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-    else if (themeKey === 'dark') backgroundColor = '#ffff00';
-    else if (themeKey === 'blue') backgroundColor = '#ff0000';
-    else if (themeKey === 'red') backgroundColor = '#00ff00';
-    else if (themeKey === 'green') backgroundColor = '#ffa500';
-    
+    const backgroundColor = themeKey === 'light' ? '#fbbf24' : color;
     return {
       width: '50px',
       height: '50px',
-      borderRadius: isActive ? '0%' : '50%', // BUG: Active themes become squares
+      borderRadius: '50%',
       marginBottom: '0.75rem',
       position: 'relative',
       overflow: 'hidden',
       transition: 'all 0.3s ease',
-      transform: isActive ? 'scale(1.05) rotate(45deg)' : isHovered ? 'scale(1.02)' : 'scale(1)',
+      transform: isActive ? 'scale(1.05)' : isHovered ? 'scale(1.02)' : 'scale(1)',
       background: `linear-gradient(135deg, ${backgroundColor} 0%, ${backgroundColor}dd 100%)`,
       border: `2px solid ${backgroundColor}aa`,
       boxShadow: isActive ? `0 8px 20px ${backgroundColor}40, 0 0 0 3px ${backgroundColor}20` : `0 4px 15px ${backgroundColor}25`
@@ -224,20 +195,16 @@ const Theme = () => {
     fontWeight: isActive ? '700' : '600',
     marginBottom: '0.25rem',
     transition: 'color 0.3s ease',
-    // BUG: Text becomes invisible when active
-    color: isActive ? 'transparent' : '#2c3e50',
-    textTransform: isActive ? 'uppercase' : 'lowercase', // BUG: Wrong casing
-    letterSpacing: isActive ? '5px' : '0.3px', // BUG: Extreme letter spacing when active
-    textDecoration: isActive ? 'line-through' : 'none' // BUG: Strike through active text
+    color: isActive ? '#007bff' : '#2c3e50',
+    textTransform: 'capitalize',
+    letterSpacing: '0.3px'
   });
 
   const getDescriptionStyle = (isActive) => ({
     fontSize: '0.75rem',
     transition: 'color 0.3s ease',
-    color: isActive ? '#ff0000' : '#64748b', // BUG: Active descriptions turn red
-    marginBottom: '0.5rem',
-    fontStyle: isActive ? 'italic' : 'normal',
-    textDecoration: isActive ? 'underline wavy' : 'none' // BUG: Wavy underlines
+    color: isActive ? '#3b82f6' : '#64748b',
+    marginBottom: '0.5rem'
   });
 
   const getStatusStyle = (isActive) => ({
@@ -248,10 +215,9 @@ const Theme = () => {
     fontWeight: isActive ? '600' : '400',
     fontStyle: 'italic',
     transition: 'all 0.3s ease',
-    background: isActive ? 'rgba(255, 0, 0, 0.8)' : 'rgba(0, 255, 0, 0.3)', // BUG: Wrong colors
-    color: isActive ? '#ffffff' : '#000000',
-    border: isActive ? '1px solid rgba(255, 0, 0, 0.9)' : '2px dashed #0000ff', // BUG: Crazy borders
-    animation: isActive ? 'blink 0.5s infinite' : 'none' // BUG: Blinking active status
+    background: isActive ? 'rgba(40, 167, 69, 0.1)' : 'transparent',
+    color: isActive ? '#28a745' : '#6c757d',
+    border: isActive ? '1px solid rgba(40, 167, 69, 0.2)' : 'none'
   });
 
   const getHoverGlowStyle = (color, isVisible) => ({
@@ -281,50 +247,27 @@ const Theme = () => {
     transition: 'opacity 0.3s ease'
   });
 
-  // BUG: Add random console errors
-  if (Math.random() > 0.7) {
-    console.error("Theme.js: Kuch toh gadbad hai daya!");
-  }
 
-  // BUG: Randomly crash the component
-  const shouldCrash = Math.random() > 0.95;
-  if (shouldCrash) {
-    throw new Error("💥 Component ne suicide kar liya! 💀");
-  }
 
   return (
-    <div style={styles.container}>
-      {/* BUG: Add blinking CSS animation */}
-      <style>
-        {`
-          @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-          }
-        `}
-      </style>
-      
+    <div style={styles.container} >
       <div style={styles.maxWidth}>
         {/* Header */}
         <div style={styles.headerContainer}>
           <div style={styles.headerIcon}>
             <FaPalette style={{ color: 'white', fontSize: '28px' }} />
           </div>
-          {/* BUG: Completely wrong header text */}
-          <h1 style={styles.headerTitle}>Theme Ka Baap 🎭</h1>
+          <h1 style={styles.headerTitle}>Choose Your Theme</h1>
           <p style={styles.headerDesc}>
-            idhar salary nahi mil rhi tumhe theme chahiye! 😂
+            Personalize your experience by selecting from our beautiful collection
+            of themes. Your choice will be applied across the entire application.
           </p>
         </div>
 
         {/* Theme Grid */}
         <div style={styles.grid}>
           {Object.entries(themes).map(([key, color]) => {
-            const metadata = themeMetadata[key] || { 
-              name: 'Server Crash Ho Gaya 💻', 
-              description: 'Error 500: Theme.exe has stopped working', 
-              icon: FaPalette 
-            };
+            const metadata = themeMetadata[key] || { name: key.replace(/([A-Z])/g, " $1").trim(), description: 'Beautiful theme', icon: FaPalette };
             const Icon = metadata.icon;
             const isActive = theme === key;
             const isHovered = hoveredTheme === key;
@@ -332,12 +275,7 @@ const Theme = () => {
             return (
               <div
                 key={key}
-                // BUG: Wrong theme gets activated
-                onClick={() => {
-                  const buggyTheme = getBuggyThemeMapping(key);
-                  console.log(`Clicked ${key}, but activating ${buggyTheme}! 🐛`);
-                  changeTheme(buggyTheme);
-                }}
+                onClick={() => changeTheme(key)}
                 onMouseEnter={() => setHoveredTheme(key)}
                 onMouseLeave={() => setHoveredTheme(null)}
                 style={getCardStyle(isActive, isHovered)}
@@ -362,7 +300,7 @@ const Theme = () => {
                     <h3 style={getThemeNameStyle(isActive)}>{metadata.name}</h3>
                     <p style={getDescriptionStyle(isActive)}>{metadata.description}</p>
                     <div style={getStatusStyle(isActive)}>
-                      {isActive ? '⚠️ Galat Theme Active Hai!' : '🎯 Kuch Aur Milega'}
+                      {isActive ? '✓ Currently Active' : 'Click to Apply'}
                     </div>
                   </div>
                   
@@ -375,20 +313,6 @@ const Theme = () => {
           })}
         </div>
 
-        {/* BUG: Add a fake error message that always shows */}
-        <div style={{
-          background: '#ff000020',
-          border: '2px solid #ff0000',
-          borderRadius: '8px',
-          padding: '1rem',
-          marginTop: '2rem',
-          textAlign: 'center',
-          color: '#ff0000',
-          fontWeight: 'bold'
-        }}>
-          🚨 WARNING: This theme selector is completely broken! 
-          Nothing works as expected. Good luck! 🤡
-        </div>
       </div>
     </div>
   );
